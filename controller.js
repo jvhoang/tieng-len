@@ -1,1 +1,1 @@
-[full controller from the read]
+the full controller

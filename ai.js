@@ -1,1 +1,1 @@
-[I need full ai, so read it first]
+the full ai I just read
