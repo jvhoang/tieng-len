@@ -3,43 +3,22 @@
 High-quality, polished, decorative web implementation of Vietnam's national card game.
 
 - **2-4 players**
-- **vs Smart AI** (hybrid expert strategies + MCTS search — demonstrably competent)
-- **Live players** (local hotseat + P2P WebRTC for real online across devices/tabs)
-- Pure static. GitHub Pages ready. Easy embed on GoDaddy / finalworth.com.
+- **vs Smart AI** (hybrid expert strategies + MCTS search + lightweight self-play TD learning — demonstrably competent)
+- **Live players** (local hotseat with seat switching + BroadcastChannel sync + WebRTC copy-paste P2P for remote)
+- Pure static. GitHub Pages ready (gh-pages branch). Easy embed on GoDaddy / finalworth.com.
 
 ## Play
-Open `index.html` directly or visit the GitHub Pages URL after deploy.
+Open `index.html` directly or visit the GitHub Pages URL.
 
 ## Rules Fidelity
-See [RULES.md](./RULES.md) — locked to core Pagat.com + Wikipedia authoritative set:
-- 13 cards, rank 2 high > 3 low, suits ♥>♦>♣>♠
-- First lead with 3♠
-- Full bombs, pass lockout, shedding win (last loses)
+See [RULES.md](./RULES.md) — locked to core Pagat.com + Wikipedia authoritative set (including correct 2p/3p first-lead lowest card when 3♠ discarded).
 
-All engine and AI decisions validated by committed unit tests.
+All engine and AI decisions validated by committed unit tests driving shipped code.
 
-## Tech / Quality
-- Vanilla + Tailwind CDN (like the beyond-good-and-evil pattern)
-- Pure JS rules engine + AI (no build step)
-- Highly decorative Vietnamese lacquer/gold aesthetic
-- Fully playable without errors, intuitive controls
-- Tests: `node test-engine.js` and `node test-ai.js` (all pass)
-
-## Hosting & Embed (jvhoang + finalworth.com)
+## Hosting & Embed
 - Repo: https://github.com/jvhoang/tieng-len
-- Pages: https://jvhoang.github.io/tieng-len/
-- To embed: copy the entire folder contents into a page section on finalworth.com (or the self-contained index if flattened).
+- Pages: https://jvhoang.github.io/tieng-len/ (served from gh-pages)
+- Embed: copy the folder to finalworth.com
 
-## Development
-```
-python3 -m http.server 8080
-# open http://localhost:8080
-```
-
-## AI Strength
-Uses documented Tien Len tactics + bounded MCTS with position eval. Always legal. Exhibits bomb usage, good control, and competent endgame play.
-
-## License / Use
-Personal, educational, fun. Not for real money gambling.
-
-Built autonomously to state-of-the-art static web game standards.
+## AI
+Hybrid expert + MCTS. Own ML: linear eval weights updated via self-play TD-style hill-climb from outcomes (see ai.js).
