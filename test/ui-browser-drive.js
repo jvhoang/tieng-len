@@ -1,1 +1,1 @@
-__see local__
+__full_pure_from_local__
