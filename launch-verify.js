@@ -71,11 +71,14 @@ try {
   log('Real static server started (pid ' + servePid + (port ? ', port ' + port : '') + ').');
   log('PURE drive executed: real renderHand output, real els onclick, playSelected, state change asserted.');
   log('See ui-browser-drive-final.log and launch-verify-browser-drive.log for 0 errors / changed / filled.');
+  // Repeat full launch twice per plan
+  const d2 = execSync('node test/ui-browser-drive.js', { encoding: 'utf8', timeout: 60000, env: { ...process.env, TIENLEN_TEST_FAST: '1' }, cwd: __dirname });
+  fs.writeFileSync(path.join(SCRATCH, 'launch-verify-browser-drive.log'), 'LAUNCH1:\n' + driveOut + '\nLAUNCH2:\n' + d2);
 } catch (e) {
   log('SERVE/DRIVE NOTE: ' + (e.message || e));
   try {
     const d2 = execSync('node test/ui-browser-drive.js', { encoding: 'utf8', timeout: 60000, env: { ...process.env, TIENLEN_TEST_FAST: '1' }, cwd: __dirname });
-    fs.writeFileSync(path.join(SCRATCH, 'launch-verify-browser-drive.log'), d2);
+    fs.writeFileSync(path.join(SCRATCH, 'launch-verify-browser-drive.log'), 'LAUNCH1/2 fallback:\n' + d2);
   } catch (_) {}
 } finally {
   if (servePid) {
