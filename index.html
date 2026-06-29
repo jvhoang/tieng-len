@@ -9,86 +9,27 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap');
 
-    :root {
-      --lacquer: #2c0f0a;
-      --gold: #c9a227;
-      --gold-light: #e8d48b;
-      --felt: #0f4d2e;
-      --silk: #3a1f1a;
-    }
-
+    :root { --lacquer: #2c0f0a; --gold: #c9a227; --gold-light: #e8d48b; --felt: #0f4d2e; --silk: #3a1f1a; }
     body { font-family: 'Inter', system-ui, sans-serif; }
     .font-display { font-family: 'Playfair Display', Georgia, serif; }
-    .font-mono-num { font-variant-numeric: tabular-nums; }
-
-    .lacquer-bg {
-      background: linear-gradient(145deg, #2c0f0a 0%, #1a0907 100%);
-    }
+    .lacquer-bg { background: linear-gradient(145deg, #2c0f0a 0%, #1a0907 100%); }
     .gold-text { color: #c9a227; }
-    .gold-border { border-color: #c9a227; }
-
-    .viet-table {
-      background: 
-        radial-gradient(circle at 30% 20%, rgba(201,162,39,0.07) 0%, transparent 50%),
-        radial-gradient(circle at 70% 80%, rgba(15,77,46,0.6) 0%, transparent 60%),
-        #0f4d2e;
-      box-shadow: inset 0 0 80px rgba(0,0,0,0.7),
-                  0 10px 30px rgba(0,0,0,0.6);
-      border: 12px solid #3a2a1f;
-      border-image: linear-gradient(to bottom, #c9a227, #8b6f2e) 1;
-    }
-
-    .card {
-      width: 56px; height: 78px;
-      background: #f8f1e3;
-      border: 2px solid #3a2a1f;
-      border-radius: 6px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.35), inset 0 0 0 1px #fff;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      font-weight: 700;
-      color: #111;
-      user-select: none;
-      transition: transform .12s cubic-bezier(0.2,0,0,1), box-shadow .12s;
-      cursor: pointer;
-    }
+    .viet-table { background: radial-gradient(circle at 30% 20%, rgba(201,162,39,0.07) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(15,77,46,0.6) 0%, transparent 60%), #0f4d2e; box-shadow: inset 0 0 80px rgba(0,0,0,0.7), 0 10px 30px rgba(0,0,0,0.6); border: 12px solid #3a2a1f; border-image: linear-gradient(to bottom, #c9a227, #8b6f2e) 1; }
+    .card { width: 56px; height: 78px; background: #f8f1e3; border: 2px solid #3a2a1f; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.35), inset 0 0 0 1px #fff; position: relative; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #111; user-select: none; transition: transform .12s cubic-bezier(0.2,0,0,1), box-shadow .12s; cursor: pointer; }
     .card:hover { transform: translateY(-3px); box-shadow: 0 8px 16px rgba(0,0,0,0.4); }
-    .card.selected {
-      box-shadow: 0 0 0 4px #c9a227, 0 10px 20px rgba(201,162,39,0.5);
-      transform: translateY(-6px) scale(1.03);
-      z-index: 10;
-    }
+    .card.selected { box-shadow: 0 0 0 4px #c9a227, 0 10px 20px rgba(201,162,39,0.5); transform: translateY(-6px) scale(1.03); z-index: 10; }
     .card.red { color: #9f1d1d; }
     .card .rank { position: absolute; top: 3px; left: 4px; font-size: 15px; line-height: 1; }
     .card .suit { position: absolute; bottom: 2px; right: 4px; font-size: 18px; }
-    .card-back {
-      background: linear-gradient(135deg, #2c0f0a, #3a1f1a);
-      border: 2px solid #c9a227;
-      color: #c9a227;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px;
-    }
-    .card-back::after {
-      content: "龍";
-      font-size: 26px; opacity: .85;
-    }
-
+    .card-back { background: linear-gradient(135deg, #2c0f0a, #3a1f1a); border: 2px solid #c9a227; color: #c9a227; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .card-back::after { content: "龍"; font-size: 26px; opacity: .85; }
     .player-zone { transition: all .2s ease; }
     .player-zone.active { box-shadow: 0 0 0 3px #c9a227; border-radius: 12px; }
-
-    .trick-pile { position: relative; }
-
     .ornate-header { background: linear-gradient(to bottom, #3a1f1a, #2c0f0a); border-bottom: 3px solid #c9a227; }
-
     .viet-btn { background: linear-gradient(to bottom, #c9a227, #a17f1f); color: #1a0907; font-weight: 700; letter-spacing: .5px; transition: all .1s ease; }
     .viet-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
-
     .modal { animation: popIn .2s cubic-bezier(0.2, 0, 0, 1); }
     @keyframes popIn { from { opacity: 0; transform: scale(0.96) translateY(10px); } to { opacity: 1; transform: scale(1); } }
-
     .game-container { max-width: 1100px; margin: 0 auto; }
   </style>
 </head>
@@ -187,7 +128,7 @@
       </div>
 
       <div class="mt-4 flex items-center gap-3 px-1">
-        <div class="flex-1 text-xs text-[#8b6f2e]">SELECT CARDS — first lead must include 3♠ (or lowest card)</div>
+        <div class="flex-1 text-xs text-[#8b6f2e]">SELECT CARDS — first lead must include 3♠ (or lowest)</div>
         <div class="flex gap-x-2">
           <button onclick="playSelected()" id="btn-play" class="viet-btn px-9 py-3 rounded-2xl text-lg disabled:opacity-40">PLAY</button>
           <button onclick="doPass()" id="btn-pass" class="px-6 py-3 rounded-2xl border border-[#5c4630] hover:bg-[#3a1f1a] text-sm">PASS</button>
@@ -210,18 +151,25 @@
   <script src="engine.js"></script>
   <script src="ai.js"></script>
   <script>
-    let gameState = null, numPlayers=4, vsAI=true, selectedCards=[], humanSeats=[0], currentHumanSeat=0, broadcastChannel=null;
-    function updateUI(){ if(!gameState)return; /* simplified for gh-pages deploy; full in main */ document.getElementById('game-subtitle').innerHTML = 'Round • ' + numPlayers + 'p ' + (vsAI?'vs AI':'LIVE'); }
-    function startVsAI(n=4){ vsAI=true; currentHumanSeat=0; humanSeats=[0]; gameState=engine.createGameState(n,Date.now()); gameState.isFirstLead=true; document.getElementById('mode-screen').classList.add('hidden'); document.getElementById('game-screen').classList.remove('hidden'); updateUI(); if(gameState.currentPlayer) setTimeout(()=>{/*ai*/},200); }
-    function startLive(n=4){ vsAI=false; humanSeats=[0,1,2,3].slice(0,n); currentHumanSeat=0; gameState=engine.createGameState(n,Date.now()+1); gameState.isFirstLead=true; document.getElementById('mode-screen').classList.add('hidden'); document.getElementById('game-screen').classList.remove('hidden'); updateUI(); try{ broadcastChannel=new BroadcastChannel('tienglen'); broadcastChannel.onmessage=e=>{if(e.data&&e.data.state){gameState=e.data.state;updateUI();}}; }catch(e){} }
-    function choosePlayers(n,isAI){ if(isAI) startVsAI(n); else startLive(n); }
-    function playSelected(){ const s=currentHumanSeat; if(!selectedCards.length||!gameState)return; const leg=engine.getLegalPlays(gameState.players[s].hand,gameState.currentCombo,gameState.players[s].passed,gameState.isFirstLead,gameState.firstLeadCard); const sig=selectedCards.map(c=>c.rank*4+c.suit).sort((a,b)=>a-b).join(','); if(leg.some(l=>l.map(c=>c.rank*4+c.suit).sort((a,b)=>a-b).join(',')===sig)){ gameState=engine.applyPlay(gameState,s,selectedCards); gameState.isFirstLead=false; selectedCards=[]; updateUI(); } }
-    function doPass(){ const s=currentHumanSeat; if(!gameState)return; gameState=engine.pass(gameState,s); updateUI(); }
-    function newRound(){ if(!gameState)return; gameState=engine.createGameState(gameState.numPlayers,Date.now()); gameState.isFirstLead=true; selectedCards=[]; updateUI(); }
+    let gameState = null, numPlayers=4, vsAI=true, selectedCards=[], humanSeats=[0], currentHumanSeat=0, broadcastChannel=null, peerConnection=null;
+    function updateUI() { if(!gameState) return; for (let i = 0; i < 4; i++) { const zone = document.getElementById('player-' + i); if (zone) zone.style.display = (i < gameState.numPlayers) ? '' : 'none'; } const activeLabel = document.getElementById('active-seat-label'); if (activeLabel) activeLabel.textContent = '(P' + currentHumanSeat + ')'; for (let i = 0; i < gameState.numPlayers; i++) { renderHand(i); const st = document.getElementById('status-' + i); if (st) { const p = gameState.players[i]; let txt = p.hand.length + ' cards'; if (p.finished) txt = 'FINISHED'; else if (p.passed) txt = 'PASSED'; if (gameState.currentPlayer === i) txt += ' • TURN'; st.innerHTML = txt; } } const pile = document.getElementById('trick-pile'); if (pile) { pile.innerHTML = ''; if (gameState.currentCombo && gameState.currentCombo.cards) { gameState.currentCombo.cards.forEach((c, idx) => { const el = createCardEl(c, false); el.style.position = 'absolute'; el.style.left = (20 + idx * 18) + 'px'; el.style.top = (10 + (idx % 2) * 4) + 'px'; el.style.zIndex = 10 + idx; pile.appendChild(el); }); } else { pile.innerHTML = '<div class="text-[11px] text-[#c9a227]/40">— no trick —</div>'; } } const turnEl = document.getElementById('turn-indicator'); if (turnEl) { const cur = gameState.players[gameState.currentPlayer]; turnEl.innerHTML = cur.finished ? 'ROUND OVER' : 'Turn: Player ' + gameState.currentPlayer + (gameState.currentPlayer===currentHumanSeat ? ' (You)' : ''); } const info = document.getElementById('selection-info'); if (info) info.innerHTML = selectedCards.length ? selectedCards.length + ' cards selected' : 'Select cards from your hand'; const canPlay = selectedCards.length > 0 && isValidPlaySelection(currentHumanSeat); const btn = document.getElementById('btn-play'); if (btn) btn.disabled = !canPlay; for (let i=0; i<4; i++) { const z = document.getElementById('player-'+i); if (z) z.classList.toggle('active', gameState.currentPlayer === i && !gameState.players[i].finished); } if (gameState.roundOver) { /* show end */ } }
+    function createCardEl(card, isBack = false, selectable = false) { const el = document.createElement('div'); el.className = 'card ' + (isBack ? 'card-back' : ''); if (!isBack) { const r = engine.RANKS[card.rank]; const suitSym = engine.SUIT_SYMBOLS[engine.SUITS[card.suit]]; const isRed = card.suit === 2 || card.suit === 3; el.innerHTML = '<div class="rank ' + (isRed?'red':'') + '">' + r + '</div><div class="suit ' + (isRed?'red':'') + '">' + suitSym + '</div>'; el.dataset.card = JSON.stringify(card); if (selectable) el.onclick = () => toggleSelect(card, el); } return el; }
+    function renderHand(playerIdx) { const container = document.getElementById('hand-' + playerIdx); if (!container || !gameState) return; container.innerHTML = ''; const p = gameState.players[playerIdx]; const isActiveHuman = (playerIdx === currentHumanSeat); const showCards = vsAI ? (playerIdx === 0) : isActiveHuman; const selectableForHand = isActiveHuman; if (!p.hand.length && !p.finished) { container.innerHTML = '<div class="text-xs opacity-50">—</div>'; return; } p.hand.forEach((c) => { let el; if (showCards) { el = createCardEl(c, false, selectableForHand); if (isActiveHuman) { const sel = selectedCards.find(sc => sc.rank === c.rank && sc.suit === c.suit); if (sel) el.classList.add('selected'); } } else { el = createCardEl(null, true); el.style.width = '42px'; el.style.height = '60px'; } container.appendChild(el); }); }
+    function toggleSelect(card, el) { const idx = selectedCards.findIndex(sc => sc.rank === card.rank && sc.suit === card.suit); if (idx >= 0) { selectedCards.splice(idx, 1); el.classList.remove('selected'); } else { selectedCards.push(card); el.classList.add('selected'); } const info = document.getElementById('selection-info'); if (info) info.innerHTML = selectedCards.length ? selectedCards.length + ' cards selected' : ''; const seatForVal = (typeof currentHumanSeat !== 'undefined' ? currentHumanSeat : 0); const btn = document.getElementById('btn-play'); if (btn) btn.disabled = !isValidPlaySelection(seatForVal); }
+    function isValidPlaySelection(activeSeat = 0) { if (!selectedCards.length || !gameState) return false; const p = gameState.players[activeSeat]; if (!p || p.finished) return false; const com = engine.detectCombo(selectedCards); if (!com) return false; const legals = engine.getLegalPlays(p.hand, gameState.currentCombo, p.passed, gameState.isFirstLead, gameState.firstLeadCard); const sig = selectedCards.map(c => c.rank*4 + c.suit).sort((a,b)=>a-b).join(','); return legals.some(l => l.map(c=>c.rank*4 + c.suit).sort((a,b)=>a-b).join(',') === sig); }
+    function playSelected() { const seat = (typeof currentHumanSeat !== 'undefined' ? currentHumanSeat : 0); if (!isValidPlaySelection(seat) || !gameState) return; const play = selectedCards.slice(); selectedCards = []; gameState = engine.applyPlay(gameState, seat, play); gameState.isFirstLead = false; updateUI(); broadcastState({type:'play', seat, cards: play}); }
+    function doPass() { const seat = (typeof currentHumanSeat !== 'undefined' ? currentHumanSeat : 0); if (!gameState) return; gameState = engine.pass(gameState, seat); updateUI(); broadcastState({type:'pass', seat}); }
+    function broadcastState(moveInfo) { if (broadcastChannel && gameState) { try { broadcastChannel.postMessage({ type: 'sync', state: gameState, move: moveInfo }); } catch(e){} } try { if (window.__tlDataChannel && window.__tlDataChannel.readyState === 'open') { window.__tlDataChannel.send(JSON.stringify({ type: 'sync', state: gameState, move: moveInfo })); } } catch(e){} }
+    function startVsAI(n=4){ vsAI=true; currentHumanSeat=0; humanSeats=[0]; gameState=engine.createGameState(n,Date.now()); gameState.isFirstLead=true; document.getElementById('mode-screen').classList.add('hidden'); document.getElementById('game-screen').classList.remove('hidden'); updateUI(); if (gameState.currentPlayer !== 0) setTimeout(runAIturnIfNeeded, 300); }
+    function startLive(n=4){ vsAI=false; humanSeats=[0,1,2,3].slice(0,n); currentHumanSeat=0; gameState=engine.createGameState(n,Date.now()+1); gameState.isFirstLead=true; document.getElementById('mode-screen').classList.add('hidden'); document.getElementById('game-screen').classList.remove('hidden'); updateUI(); try { broadcastChannel = new BroadcastChannel('tienglen-live'); broadcastChannel.onmessage = (ev) => { if (ev.data && ev.data.state) { gameState = ev.data.state; updateUI(); } }; broadcastState(); } catch(e){} ensureSeatSwitcher(); }
+    function ensureSeatSwitcher(){ let bar = document.getElementById('seat-switcher'); if (bar) bar.remove(); bar = document.createElement('div'); bar.id = 'seat-switcher'; bar.className = 'flex gap-1 mt-2 text-xs'; bar.innerHTML = '<span class="opacity-60 mr-1">Act as:</span>'; for (let s=0; s<numPlayers; s++) { const b = document.createElement('button'); b.textContent = 'P'+s; b.className = 'px-2 py-0.5 border border-[#5c4630] rounded ' + (s===currentHumanSeat ? 'bg-[#c9a227] text-[#1a0907]' : ''); b.onclick = () => { currentHumanSeat = s; selectedCards = []; updateUI(); ensureSeatSwitcher(); }; bar.appendChild(b); } const ctrl = document.getElementById('turn-indicator'); if (ctrl && ctrl.parentNode) ctrl.parentNode.appendChild(bar); }
+    function runAIturnIfNeeded(){ if (!gameState || gameState.roundOver) return; const cp = gameState.currentPlayer; const isHuman = humanSeats.includes(cp) || (typeof currentHumanSeat !== 'undefined' && currentHumanSeat === cp); if (!vsAI || isHuman) return; setTimeout(() => { if (!gameState || gameState.roundOver) return; const leg = engine.getLegalPlays(gameState.players[cp].hand, gameState.currentCombo, gameState.players[cp].passed, gameState.isFirstLead, gameState.firstLeadCard); const choice = (window.TienLenAI && window.TienLenAI.getAIMove) ? window.TienLenAI.getAIMove(gameState, cp, {difficulty:'hard'}) : (leg[0]||[]); gameState = engine.applyPlay(gameState, cp, choice); gameState.isFirstLead = false; updateUI(); broadcastState({type:'ai', seat:cp}); if (!gameState.roundOver) setTimeout(runAIturnIfNeeded, 300); }, 300); }
+    function newRound(){ if(!gameState) return; gameState = engine.createGameState(gameState.numPlayers, Date.now()); gameState.isFirstLead = true; selectedCards = []; updateUI(); broadcastState(); if (vsAI && gameState.currentPlayer !== currentHumanSeat) setTimeout(runAIturnIfNeeded, 300); if (!vsAI) ensureSeatSwitcher(); }
     function exitToMenu(){ document.getElementById('game-screen').classList.add('hidden'); document.getElementById('mode-screen').classList.remove('hidden'); }
-    function showRules(){ alert('See RULES.md: 3♠ (or lowest) first lead, standard combos + bombs, pass lock.'); }
-    function init(){ document.getElementById('game-screen').classList.add('hidden'); console.log('%c[TiengLen gh-pages] Fixed version loaded','color:#c9a227'); }
+    function showRules(){ alert('Full rules in RULES.md (Pagat canonical)'); }
+    function init(){ document.getElementById('game-screen').classList.add('hidden'); console.log('%c[TiengLen] Full polished game ready on gh-pages','color:#c9a227'); }
     init();
+    window.connectRemoteP2P = async function(){ try { const pc = new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'}]}); peerConnection=pc; let ch = pc.createDataChannel('tienglen'); window.__tlDataChannel = ch; ch.onmessage = e => { try { const m=JSON.parse(e.data); if(m.state){gameState=m.state;updateUI();} }catch(_){} }; const o = await pc.createOffer(); await pc.setLocalDescription(o); const ans = prompt('Paste ANSWER:',''); if(ans){ await pc.setRemoteDescription(JSON.parse(ans)); alert('P2P live ready'); } } catch(e){ alert('P2P: '+e.message); } };
   </script>
 </body>
 </html>
