@@ -15,7 +15,8 @@
 
 ## Deploy
 
-- Push main + gh-pages via GitHub API after local gates green.
+- Pushed `main` + `gh-pages` (force) 2026-07-09; Pages build status `built`.
+- Live verified: all scripts 200, free-lead engine symbols present, banners + hand-order + multiplayer + peerjs in index.
 - Live URL: https://jvhoang.github.io/tieng-len/
 
 ## Residual risks
