@@ -61,9 +61,45 @@
 
   /** Evolved champion — loaded from champion-genome.json when present (Node), else baseline. */
   let CHAMPION_GENOME = Object.assign({}, BASELINE_GENOME, {
-    id: 'champion-pending',
-    gen: 0
-  });
+  "handLenW": 14.110140838288835,
+  "pairB": 7.617794158821584,
+  "tripB": 3.870681931202292,
+  "quadB": 13.714395045677254,
+  "seqB": 10,
+  "twoHold": 4.204034844533838,
+  "isoHighPen": 4.0472344025771285,
+  "freeLeadB": 7.793700813781046,
+  "leaderB": 12,
+  "threat1": 80,
+  "threat2": 5,
+  "threat3": 6.666321256975737,
+  "threat5": 3.69679474651149,
+  "fewerCardsB": 3.67914805887267,
+  "oneCardFreeB": 82.92989027384266,
+  "multiLeadB": 6.173200991503786,
+  "shedLenB": 0.6057109763294984,
+  "topLeadCost": 0.3460275936638706,
+  "twoLeadMid": 28.17974481265992,
+  "twoLeadLate": 27.55212698583317,
+  "singleHighPen": 2.720557991809474,
+  "singleTwoLeadPen": 39.50579969678074,
+  "lowMultiB": 1.772245915578568,
+  "afterLenCost": 2.0356229487048876,
+  "beatTopCost": 0.5858197250067512,
+  "beatLenCost": 0.053276531863957644,
+  "twoBeatPen": 40.88868045985637,
+  "bombBeatPen": 11.976966242522392,
+  "bombVs2B": 26.367828924425407,
+  "endgameShed": 4.88066942521237,
+  "endgameTwoUse": 4.520084968661141,
+  "shortHandB": 0.10041785386432293,
+  "passHandMin": 5,
+  "passOppMin": 2,
+  "passMargin": 0.24054430733083113,
+  "winProbEdge": 0.011317374126639732,
+  "gen": 865,
+  "id": "champion-evolved-g865"
+});
 
   // Node: try load baked champion from repo root
   if (typeof require === 'function' && typeof __dirname !== 'undefined') {
