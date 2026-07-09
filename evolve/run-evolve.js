@@ -43,7 +43,8 @@ if (!fs.existsSync(SCRATCH)) fs.mkdirSync(SCRATCH, { recursive: true });
 if (!fs.existsSync(STRATEGIST_DIR)) fs.mkdirSync(STRATEGIST_DIR, { recursive: true });
 
 const SMOKE = !!process.env.TIENLEN_EVOLVE_SMOKE;
-const TOTAL_LOOPS = SMOKE ? 3 : parseInt(process.env.TIENLEN_EVOLVE_LOOPS || '1000', 10);
+// Default: 100k loops × 100 games = 10M games (override with env)
+const TOTAL_LOOPS = SMOKE ? 3 : parseInt(process.env.TIENLEN_EVOLVE_LOOPS || '100000', 10);
 const GAMES_PER = parseInt(process.env.TIENLEN_EVOLVE_GAMES || '100', 10);
 const STRATEGIST_EVERY = 20;
 const logPath = SMOKE ? SMOKE_LOG : FULL_LOG;
@@ -111,14 +112,14 @@ function playGame(genomeA, genomeB, seed) {
 }
 
 /**
- * Match: genomeCand vs genomeChamp for `games` games, alternating seats.
- * Returns { candWins, champWins, draws, games }
+ * Match with optional multi-lead quality probe (free-lead multi rate for cand).
+ * Promote uses wins; multi-lead stats logged for strategist.
  */
 function match(genomeCand, genomeChamp, games, baseSeed) {
   let candWins = 0, champWins = 0, draws = 0;
+  let candMultiLeads = 0, candLeads = 0;
   for (let i = 0; i < games; i++) {
     const seed = baseSeed + i * 17 + 3;
-    // Even: cand=seat0; Odd: cand=seat1 (swap)
     let winner;
     if (i % 2 === 0) {
       winner = playGame(genomeCand, genomeChamp, seed);
@@ -131,8 +132,22 @@ function match(genomeCand, genomeChamp, games, baseSeed) {
       else if (winner === 0) champWins++;
       else draws++;
     }
+    // Probe free-lead multi rate on a dedicated deal for cand
+    if (i % 5 === 0) {
+      const st = createGameState(2, seed + 99991);
+      const cp = st.currentPlayer;
+      // Only count when cand would be the one leading first if we force
+      const mv = getAIMove(st, cp, { genome: genomeCand, difficulty: 'easy', iterations: 0 });
+      if (mv) {
+        candLeads++;
+        if (mv.length >= 2) candMultiLeads++;
+      }
+    }
   }
-  return { candWins, champWins, draws, games };
+  return {
+    candWins, champWins, draws, games,
+    candMultiLeadRate: candLeads ? candMultiLeads / candLeads : 0
+  };
 }
 
 /**
@@ -303,17 +318,20 @@ function main() {
       directives = runStrategist(history, loop);
     }
 
-    // Checkpoint every 20 or last
-    if (loop % 20 === 0 || loop === TOTAL_LOOPS) {
+    // Checkpoint every 50 (or 20 for smaller runs) / last
+    const ckEvery = TOTAL_LOOPS >= 10000 ? 50 : 20;
+    if (loop % ckEvery === 0 || loop === TOTAL_LOOPS) {
       saveCheckpoint({
         loop,
         champion,
-        history: history.slice(-100), // keep last 100 for size
+        history: history.slice(-80),
         directives,
         totalGames,
         totalPromotions,
         updatedAt: new Date().toISOString()
       });
+      // Persist champion continuously so crash still ships best so far
+      bakeChampion(champion);
       flushLog();
     }
   }
@@ -353,8 +371,9 @@ function main() {
     console.error('ERROR: total games short');
     process.exit(1);
   }
-  if (TOTAL_LOOPS >= 1000 && totalGames < 100000) {
-    console.error('ERROR: expected ~100k games for full run');
+  const expected = TOTAL_LOOPS * GAMES_PER;
+  if (totalGames < expected) {
+    console.error('ERROR: expected ' + expected + ' games, got ' + totalGames);
     process.exit(1);
   }
   process.exit(0);

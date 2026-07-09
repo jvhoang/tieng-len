@@ -255,24 +255,40 @@ function scorePlay(play, state, myIdx, genome) {
   score += afterLen * g.afterLenCost;
 
   if (!cur) {
-    score -= comboPriority(com.type) * g.multiLeadB;
-    score -= play.length * g.shedLenB;
+    // FREE LEAD: strongly prefer multi-card sheds (pairs/seqs/trips) over singles
+    score -= comboPriority(com.type) * (g.multiLeadB + 6); // floor bias toward multi types
+    score -= play.length * (g.shedLenB + 3.5); // length is king when leading
     score += topRank(play) * g.topLeadCost;
     if (usesTwo) score += afterLen > 2 ? g.twoLeadMid : g.twoLeadLate;
-    if (com.type === 'single' && com.top.rank >= 10) score += g.singleHighPen;
-    if (com.type === 'single' && com.top.rank === 12) score += g.singleTwoLeadPen;
-    if ((com.type === 'seq' || com.type === 'pair' || com.type === 'triple') && topRank(play) <= 8) {
-      score -= g.lowMultiB;
+    // Singles are a last resort when multi structure exists in hand — penalize
+    if (com.type === 'single') {
+      score += 14 + g.singleHighPen * 0.5;
+      if (com.top.rank >= 10) score += g.singleHighPen + 8;
+      if (com.top.rank === 12) score += g.singleTwoLeadPen + 20;
+    } else {
+      // Bonus for low multi-card combos (preserve high control cards)
+      if (topRank(play) <= 9) score -= (g.lowMultiB + 8);
+      if (play.length >= 3) score -= 6;
+      if (play.length >= 5) score -= 4;
     }
   } else {
     score += topRank(play) * g.beatTopCost;
     score += play.length * g.beatLenCost;
-    if (usesTwo && !facing2) score += g.twoBeatPen;
+    // 2s: don't always refuse — use when facing high tops or short hands
+    if (usesTwo && !facing2) {
+      const curTop = cur.top ? cur.top.rank : 0;
+      let pen = g.twoBeatPen;
+      if (curTop >= 10) pen *= 0.25; // K/A/2 territory — 2s are fair game
+      else if (curTop >= 8) pen *= 0.55;
+      if (omin <= 3) pen *= 0.35;
+      if (hand.length <= 4) pen *= 0.4;
+      score += pen;
+    }
     if (bomb && !facing2) score += g.bombBeatPen;
     if (facing2 && bomb) score -= g.bombVs2B;
     if (cur.type === 'single' && com.type === 'single') {
       const gap = com.top.rank - cur.top.rank;
-      if (gap > 3 && com.top.rank >= 10) score += gap;
+      if (gap > 3 && com.top.rank >= 10 && !usesTwo) score += gap;
     }
   }
 
@@ -318,10 +334,17 @@ function shouldPassStrategically(state, myIdx, legals, genome) {
     if (legals.some(playIsBomb)) return false;
   }
 
-  // Fast path during evolution: skip win-prob sampling, use simple score
+  // Facing high singles/pairs (K/A/2) with a 2 or bomb: contest, don't fold forever
+  const curTop = state.currentCombo.top ? state.currentCombo.top.rank : 0;
+  if (curTop >= 10 && legals.some(p => playHasTwo(p) || playIsBomb(p))) {
+    return false;
+  }
+
+  // Fast path during evolution
   if (typeof process !== 'undefined' && process.env && process.env.TIENLEN_EVOLVE) {
-    // Midgame with only 2s/bombs: pass more often if hand still long
-    return me.hand.length > g.passHandMin + 1;
+    // Only pass pure-2 responses to low junk when hand is still deep
+    if (curTop < 8 && me.hand.length > g.passHandMin + 2) return true;
+    return false; // default: play something (including 2s) rather than chronic pass
   }
 
   const passP = estimateActionWinProb(state, myIdx, null, genome);
@@ -366,31 +389,62 @@ function getExpertMove(state, myIdx, genome) {
 }
 
 /**
+ * Free-lead hard preference: if any non-expensive multi-card legal exists,
+ * never open with a single (unless multi would empty? always prefer multi).
+ * This is NOT evolvable away — fixes chronic single-only leading.
+ */
+function pickFreeLead(state, myIdx, legals, genome) {
+  const g = G(genome);
+  if (!legals.length) return null;
+  const multi = legals.filter(p => p.length >= 2 && !playIsExpensive(p));
+  const pool = multi.length ? multi : legals.filter(p => !playIsExpensive(p));
+  const use = pool.length ? pool : legals;
+  return heuristicOrder(use, state, myIdx, g)[0] || legals[0];
+}
+
+/**
  * Rank legals by estimated P(win), break ties with scorePlay.
- * During TIENLEN_EVOLVE: scorePlay-only (much faster, still legal).
+ * Free lead uses multi-card hard preference. Evolve uses scorePlay-only (fast).
  */
 function pickBestPlay(state, myIdx, legals, genome) {
   if (!legals.length) return null;
   if (legals.length === 1) return legals[0];
   const g = G(genome);
 
+  // Free lead: multi-card first (always)
+  if (!state.currentCombo) {
+    return pickFreeLead(state, myIdx, legals, g);
+  }
+
   const ordered = heuristicOrder(legals, state, myIdx, g);
   const evolveFast = (typeof process !== 'undefined' && process.env && process.env.TIENLEN_EVOLVE);
   if (evolveFast) return ordered[0];
 
-  const candidates = ordered.slice(0, Math.min(12, ordered.length));
+  // Beating: prefer scorePlay among top candidates; light winProb only as tie-break
+  // so multi-card structure isn't abandoned for weak eval noise
+  const candidates = ordered.slice(0, Math.min(10, ordered.length));
   let best = candidates[0];
-  let bestP = -1;
-  let bestScore = 1e9;
+  let bestScore = scorePlay(best, state, myIdx, g);
+  let bestP = estimateActionWinProb(state, myIdx, best, g);
   const edge = g.winProbEdge || 0.02;
 
-  for (const pl of candidates) {
-    const p = estimateActionWinProb(state, myIdx, pl, g);
+  for (let i = 1; i < candidates.length; i++) {
+    const pl = candidates[i];
     const sc = scorePlay(pl, state, myIdx, g);
-    if (p > bestP + edge || (Math.abs(p - bestP) <= edge && sc < bestScore)) {
-      bestP = p;
-      bestScore = sc;
+    // Primary: lower scorePlay (minimal beat, multi when useful)
+    if (sc < bestScore - 0.5) {
       best = pl;
+      bestScore = sc;
+      bestP = estimateActionWinProb(state, myIdx, pl, g);
+      continue;
+    }
+    if (Math.abs(sc - bestScore) <= 0.5) {
+      const p = estimateActionWinProb(state, myIdx, pl, g);
+      if (p > bestP + edge) {
+        best = pl;
+        bestScore = sc;
+        bestP = p;
+      }
     }
   }
   return best;
@@ -642,22 +696,17 @@ function getAIMove(state, myIdx, opts = {}) {
 
   // Evolution / easy: pure expert with genome (fast)
   if (evolveFast || difficulty === 'easy' || iters === 0) {
-    if (!cur) return pickBestPlay(state, myIdx, legals, genome) || legals[0];
+    if (!cur) return pickFreeLead(state, myIdx, legals, genome) || legals[0];
     const cheap = cheapLegals(legals);
     if (cheap.length) return pickBestPlay(state, myIdx, cheap, genome) || cheap[0];
     if (shouldPassStrategically(state, myIdx, legals, genome)) return null;
     return pickBestPlay(state, myIdx, legals, genome) || legals[0];
   }
 
-  // FREE LEAD: always play (never null)
+  // FREE LEAD: always play multi when possible (never null, never single-only bias)
   if (!cur) {
-    const expert = pickBestPlay(state, myIdx, legals, genome) || legals[0];
-    if (iters >= 80 && !isFastEnv() && !inBrowser) {
-      try {
-        const mv = runMCTS(state, myIdx, iters);
-        if (mv && mv.length) return mv;
-      } catch (e) { /* fall through */ }
-    }
+    const expert = pickFreeLead(state, myIdx, legals, genome) || legals[0];
+    // Skip MCTS on free lead — it often reverts to weak singles under noise
     return expert;
   }
 
@@ -789,6 +838,7 @@ const TienLenAI = {
   shouldPassStrategically,
   cheapLegals,
   playIsExpensive,
+  pickFreeLead,
   getLowestLegalMove,
   valueToWinProb,
   setActiveGenome,

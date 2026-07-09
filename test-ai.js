@@ -142,8 +142,29 @@ log('\n--- Multi-combo lead preference ---');
     const mv = getAIMove(g, 0, { difficulty: 'easy', iterations: 10 });
     if (mv && mv.length >= 2) multiChosen++;
   }
-  // At least some multi-card plays (policy prefers multi on free lead)
-  assert('AI chooses multi-card combo on free lead in majority of trials', multiChosen >= 6, 'multiChosen=' + multiChosen);
+  // Hard preference: multi when available (never single-only on this hand)
+  assert('AI chooses multi-card combo on free lead in majority of trials', multiChosen >= 10, 'multiChosen=' + multiChosen);
+  // Browser-like path (no EVOLVE): still multi
+  delete process.env.TIENLEN_EVOLVE;
+  const mvBrowser = getAIMove(g, 0, { difficulty: 'hard', iterations: 0 });
+  assert('Browser free-lead prefers multi on crafted multi hand', mvBrowser && mvBrowser.length >= 2, JSON.stringify(mvBrowser));
+  process.env.TIENLEN_EVOLVE = '1';
+}
+
+// Aggregate free-lead multi rate over random deals
+log('\n--- Free-lead multi-card rate (random deals) ---');
+{
+  let multi = 0, n = 0;
+  for (let seed = 1; seed <= 80; seed++) {
+    const st = createGameState(4, seed * 31 + 5);
+    const mv = getAIMove(st, st.currentPlayer, { difficulty: 'hard', iterations: 0 });
+    if (!mv) continue;
+    n++;
+    if (mv.length >= 2) multi++;
+  }
+  const rate = n ? multi / n : 0;
+  log(`  free-lead multi rate: ${multi}/${n} = ${rate.toFixed(3)}`);
+  assert('Free-lead multi-card rate >= 40% over random deals', rate >= 0.40, 'rate=' + rate);
 }
 
 // Conserve 2s: when only legal beat is a high 2, AI may pass midgame
