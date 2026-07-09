@@ -196,19 +196,48 @@
         } else {
           let choice = null;
           try {
-            if (aiMod && typeof aiMod.getAIMove === 'function') {
-              choice = aiMod.getAIMove(state, cp, { difficulty: 'hard' });
+            // Prefer live global AI in browser (always freshest module)
+            const liveAI = (typeof window !== 'undefined' && window.TienLenAI) ? window.TienLenAI : aiMod;
+            if (liveAI && typeof liveAI.getAIMove === 'function') {
+              choice = liveAI.getAIMove(state, cp, { difficulty: 'hard' });
             }
-          } catch (_) {
+          } catch (err) {
+            // Never silently turn errors into pass-only — fall through to legal play
             choice = null;
+            try { console.warn('[TiengLen] AI error, falling back to legal play', err); } catch (_) {}
           }
-          // null from AI = strategic pass (only valid when there is a combo to beat)
+
+          // SAFETY: free lead must play
+          if (choice == null && !state.currentCombo) {
+            choice = legals[0];
+          }
+
+          // SAFETY: if any cheap (non-2, non-bomb) legal exists, never pass
+          if (choice == null && state.currentCombo) {
+            const cheap = legals.filter(function (pl) {
+              const hasTwo = pl.some(function (c) { return c.rank === 12; });
+              const com = engine.detectCombo(pl);
+              const bomb = com && (com.type === 'quad' || (com.type === 'doubleseq' && com.numPairs >= 3));
+              return !hasTwo && !bomb;
+            });
+            if (cheap.length > 0) {
+              // Prefer lowest-top cheap beat
+              cheap.sort(function (a, b) {
+                const ca = engine.detectCombo(a), cb = engine.detectCombo(b);
+                const ta = ca && ca.top ? ca.top.rank : 99;
+                const tb = cb && cb.top ? cb.top.rank : 99;
+                return ta - tb || a.length - b.length;
+              });
+              choice = cheap[0];
+            }
+          }
+
+          // null from AI = strategic pass only when no cheap beat and there is a combo
           if (choice == null) {
             if (state.currentCombo) {
               state = engine.pass(state, cp);
               action = { type: 'pass', seat: cp };
             } else {
-              // Must lead: take best legal
               choice = legals[0];
               state = engine.applyPlay(state, cp, choice);
               action = { type: 'play', seat: cp, cards: choice };

@@ -186,8 +186,9 @@ function estimateActionWinProb(state, myIdx, play /* null = pass */) {
   const evalV = evaluatePosition(next, myIdx);
   let p = valueToWinProb(evalV);
 
-  // Light rollout blend (a few playouts with fast policy) for calibration
-  const rollouts = isFastEnv() ? 0 : 2;
+  // Skip heavy rollouts in browser for snappy turns (eval is enough for ranking)
+  const inBrowser = (typeof window !== 'undefined' && typeof document !== 'undefined');
+  const rollouts = (isFastEnv() || inBrowser) ? 0 : 2;
   if (rollouts > 0) {
     let wins = 0;
     for (let r = 0; r < rollouts; r++) {
@@ -597,60 +598,64 @@ function runMCTS(rootState, myIdx, iterations) {
  */
 function getAIMove(state, myIdx, opts = {}) {
   const difficulty = opts.difficulty || 'hard';
-  let iters = difficulty === 'easy' ? 0 : (difficulty === 'medium' ? 80 : 220);
+  // Browser: keep interactive — expert + light search, not multi-second MCTS freezes
+  const inBrowser = (typeof window !== 'undefined' && typeof document !== 'undefined');
+  let iters = difficulty === 'easy' ? 0 : (difficulty === 'medium' ? 48 : (inBrowser ? 64 : 160));
   if (opts.iterations != null) iters = opts.iterations;
   if (isFastEnv()) {
     iters = Math.min(iters, opts.iterations != null ? opts.iterations : 24);
   }
 
+  // Resolve engine functions at call time (browser: window.TienLenEngine may bind late)
+  const eng = (typeof window !== 'undefined' && window.TienLenEngine) ? window.TienLenEngine : engine;
+  const legalFn = eng.getLegalPlays || getLegalPlays;
   const hand = state.players[myIdx].hand;
   const cur = state.currentCombo;
   const hp = state.players[myIdx].passed;
-  const legals = getLegalPlays(hand, cur, hp, state.isFirstLead, state.firstLeadCard);
+  const legals = legalFn(hand, cur, hp, state.isFirstLead, state.firstLeadCard);
 
   if (!legals.length) return null;
 
   // FREE LEAD: always play (never null)
   if (!cur) {
-    if (iters >= 40 && !isFastEnv()) {
+    // Expert-first for multi-combo quality; optional light MCTS only if time budget
+    const expert = pickBestPlay(state, myIdx, legals) || legals[0];
+    if (iters >= 80 && !isFastEnv() && !inBrowser) {
       try {
         const mv = runMCTS(state, myIdx, iters);
         if (mv && mv.length) return mv;
       } catch (e) { /* fall through */ }
     }
-    return pickBestPlay(state, myIdx, legals) || legals[0];
+    return expert;
   }
 
-  // Combating: hard rule — play cheap beats
+  // Combating: HARD RULE — play cheap beats (never pass)
   const cheap = cheapLegals(legals);
   if (cheap.length > 0) {
-    if (iters >= 50 && !isFastEnv()) {
+    // Always return a cheap play. MCTS may refine among cheap only.
+    if (iters >= 60 && !isFastEnv() && !inBrowser) {
       try {
         const mv = runMCTS(state, myIdx, iters);
-        // If MCTS returns pass or expensive when cheap exists, override
         if (mv && mv.length && !playIsExpensive(mv)) return mv;
-        if (mv && playIsExpensive(mv)) {
-          // only accept expensive if it wins immediately
-          if (mv.length === hand.length) return mv;
-        }
+        if (mv && playIsExpensive(mv) && mv.length === hand.length) return mv;
       } catch (e) { /* fall through */ }
     }
     return pickBestPlay(state, myIdx, cheap) || cheap[0];
   }
 
-  // Only expensive legals
+  // Only expensive legals (2s / bombs)
   if (shouldPassStrategically(state, myIdx, legals)) {
-    // Double-check with ranking
     const ranked = rankActions(state, myIdx);
     if (ranked.length && ranked[0].play == null) return null;
     if (ranked.length && ranked[0].play) return ranked[0].play;
     return null;
   }
 
-  if (iters >= 40 && !isFastEnv()) {
+  if (iters >= 60 && !isFastEnv() && !inBrowser) {
     try {
       const mv = runMCTS(state, myIdx, iters);
-      if (mv !== undefined) return mv;
+      if (mv !== undefined && mv !== null) return mv;
+      // if MCTS says pass but we decided not to above, play
     } catch (e) { /* fall through */ }
   }
 

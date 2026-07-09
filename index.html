@@ -439,13 +439,14 @@
   </div>
 
   <!-- PeerJS free cloud signaling for cross-device multiplayer (GitHub Pages safe) -->
+  <!-- Cache-bust query so browsers always load latest AI after deploys -->
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-  <script src="engine.js"></script>
-  <script src="ai.js"></script>
-  <script src="controller.js"></script>
-  <script src="hand-order.js"></script>
-  <script src="multiplayer.js"></script>
-  <script src="ui.js"></script>
+  <script src="engine.js?v=20260709c"></script>
+  <script src="ai.js?v=20260709c"></script>
+  <script src="controller.js?v=20260709c"></script>
+  <script src="hand-order.js?v=20260709c"></script>
+  <script src="multiplayer.js?v=20260709c"></script>
+  <script src="ui.js?v=20260709c"></script>
   <script>
     // Thin loader: modules provide the game. index.html = markup + styles + glue.
     (function(){

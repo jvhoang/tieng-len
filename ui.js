@@ -443,16 +443,43 @@
         if (c && typeof c.runAITurnIfNeeded === 'function') {
           setTimeout(() => {
             const acts = c.runAITurnIfNeeded() || [];
-            // Announce AI passes
-            acts.forEach(a => {
-              if (a.type === 'pass') {
-                showBanner('pass', `<span class="banner-pass-label">P${a.seat} PASSED</span>`, 1600);
-              }
-            });
+            announceAIActions(acts);
             updateUIFromController();
           }, 280);
         }
         return;
+      }
+    }
+
+    function announceAIActions(acts) {
+      (acts || []).forEach((a, i) => {
+        setTimeout(() => {
+          if (a.type === 'pass') {
+            showBanner('pass', `<span class="banner-pass-label">P${a.seat} PASSED</span>`, 1400);
+          } else if (a.type === 'play' && a.cards && a.cards.length) {
+            const label = describePlay(a.cards);
+            showBanner('ok', `<span class="banner-turn-label">P${a.seat} PLAYED</span><span class="banner-sub">${label}</span>`, 1500);
+          }
+        }, i * 420);
+      });
+    }
+
+    function describePlay(cards) {
+      try {
+        const com = engine.detectCombo(cards);
+        if (!com) return cards.length + ' cards';
+        const top = com.top;
+        const r = (engine.RANKS && engine.RANKS[top.rank]) || '?';
+        const s = (engine.SUIT_SYMBOLS && engine.SUITS && engine.SUIT_SYMBOLS[engine.SUITS[top.suit]]) || '';
+        if (com.type === 'single') return r + s;
+        if (com.type === 'pair') return 'Pair of ' + r;
+        if (com.type === 'triple') return 'Triple ' + r;
+        if (com.type === 'quad') return 'Quad ' + r;
+        if (com.type === 'seq') return 'Sequence ×' + com.size;
+        if (com.type === 'doubleseq') return 'Double-seq ×' + (com.numPairs || '?');
+        return com.type;
+      } catch (_) {
+        return (cards && cards.length ? cards.length + ' cards' : 'cards');
       }
     }
 
@@ -499,11 +526,7 @@
         if (c && typeof c.runAITurnIfNeeded === 'function') {
           setTimeout(() => {
             const acts = c.runAITurnIfNeeded() || [];
-            acts.forEach(a => {
-              if (a.type === 'pass') {
-                showBanner('pass', `<span class="banner-pass-label">P${a.seat} PASSED</span>`, 1600);
-              }
-            });
+            announceAIActions(acts);
             updateUIFromController();
           }, 200);
         }
@@ -716,9 +739,7 @@
         setTimeout(() => {
           if (ctrl && typeof ctrl.runAITurnIfNeeded === 'function') {
             const acts = ctrl.runAITurnIfNeeded() || [];
-            acts.forEach(a => {
-              if (a.type === 'pass') showBanner('pass', `<span class="banner-pass-label">P${a.seat} PASSED</span>`, 1500);
-            });
+            announceAIActions(acts);
             updateUIFromController();
           }
         }, 350);
