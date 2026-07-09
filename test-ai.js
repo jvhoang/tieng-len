@@ -213,6 +213,178 @@ log('\n--- Multi-seed full games: multi-combo types appear ---');
   assert('AI/engine multi-card combo types appear across games', multiTypes.length >= 1, 'types=' + multiTypes.join(','));
 }
 
+// ─── Pass discipline: never pass when cheap (non-2 non-bomb) beat exists ───
+log('\n--- Pass discipline (cheap beats must be played) ---');
+{
+  const { cheapLegals, playIsExpensive, rankActions, estimateActionWinProb } = ai;
+  let passOnCheap = 0, playOnCheap = 0, freeLeadNull = 0, freeLeadOk = 0;
+  const positions = [];
+
+  for (let seed = 1; seed <= 30; seed++) {
+    let game = createGameState(4, seed * 19 + 3);
+    let steps = 0;
+    while (!game.roundOver && steps < 50) {
+      const cp = game.currentPlayer;
+      const legals = getLegalPlays(
+        game.players[cp].hand, game.currentCombo, game.players[cp].passed,
+        game.isFirstLead, game.firstLeadCard
+      );
+
+      if (!game.currentCombo && legals.length) {
+        const mv = getAIMove(game, cp, { difficulty: 'hard', iterations: 16 });
+        if (mv == null) freeLeadNull++;
+        else freeLeadOk++;
+      }
+
+      if (game.currentCombo && legals.length) {
+        const cheap = typeof cheapLegals === 'function'
+          ? cheapLegals(legals)
+          : legals.filter(p => !p.some(c => c.rank === 12));
+        if (cheap.length >= 1) {
+          const mv = getAIMove(game, cp, { difficulty: 'hard', iterations: 16 });
+          if (mv == null) {
+            passOnCheap++;
+            if (positions.length < 5) {
+              positions.push({ seed, steps, handLen: game.players[cp].hand.length, cheap: cheap.length });
+            }
+          } else {
+            playOnCheap++;
+            // Must not be illegal
+            const sig = mv.map(c => c.rank * 4 + c.suit).sort().join();
+            const ok = legals.some(l => l.map(c => c.rank * 4 + c.suit).sort().join() === sig);
+            if (!ok) assert('cheap-path move always legal', false, JSON.stringify(mv));
+          }
+        }
+      }
+
+      if (!legals.length) {
+        game = pass(game, cp);
+      } else {
+        let choice = getAIMove(game, cp, { difficulty: 'easy', iterations: 6 });
+        if (choice == null && game.currentCombo) game = pass(game, cp);
+        else game = applyPlay(game, cp, choice || legals[0]);
+      }
+      game.isFirstLead = false;
+      steps++;
+    }
+  }
+
+  const totalCheap = passOnCheap + playOnCheap;
+  const passRate = totalCheap ? passOnCheap / totalCheap : 0;
+  log(`  cheap-beat decisions: play=${playOnCheap} pass=${passOnCheap} rate=${passRate.toFixed(3)}`);
+  log(`  free-lead: ok=${freeLeadOk} null=${freeLeadNull}`);
+  assert('Free lead never returns null when legals exist', freeLeadNull === 0 && freeLeadOk > 0);
+  assert('Pass rate on cheap beats is near zero (<10%)', passRate < 0.10, 'rate=' + passRate);
+  assert('Played cheap beats many times', playOnCheap >= 50, 'playOnCheap=' + playOnCheap);
+
+  // Crafted: low single on table, AI holds 5 and 2 — must play 5 not pass
+  let cg = createGameState(3, 42);
+  cg.isFirstLead = false;
+  cg.firstLeadCard = null;
+  cg.currentPlayer = 0;
+  cg.currentCombo = detectCombo([{ rank: 1, suit: 0 }]); // 4♠
+  cg.lastPlayBy = 1;
+  cg.players[0].hand = [
+    { rank: 2, suit: 3 }, // 5♥ cheap beat
+    { rank: 12, suit: 0 },
+    { rank: 0, suit: 1 }, { rank: 3, suit: 0 }, { rank: 5, suit: 1 }, { rank: 6, suit: 2 }
+  ];
+  cg.players[1].hand = [{ rank: 8, suit: 0 }, { rank: 9, suit: 0 }, { rank: 10, suit: 0 }];
+  cg.players[2].hand = [{ rank: 8, suit: 1 }, { rank: 9, suit: 1 }, { rank: 10, suit: 1 }];
+  cg.players.forEach(p => { p.passed = false; p.finished = false; });
+  const cmv = getAIMove(cg, 0, { difficulty: 'hard', iterations: 20 });
+  assert('Crafted midgame: AI plays (not null) when cheap 5 exists', cmv != null && cmv.length >= 1);
+  assert('Crafted midgame: AI does not use 2 when 5 works', cmv && !cmv.some(c => c.rank === 12));
+
+  // rankActions exposes win probs
+  if (typeof rankActions === 'function') {
+    const ranked = rankActions(cg, 0);
+    assert('rankActions returns ordered list', ranked && ranked.length >= 1);
+    assert('top ranked action has winProb', ranked[0].winProb >= 0 && ranked[0].winProb <= 1);
+    // top should be a play not pass when cheap exists
+    assert('top rank is a play when cheap beat exists', ranked[0].play != null);
+  }
+  if (typeof estimateActionWinProb === 'function') {
+    const pPlay = estimateActionWinProb(cg, 0, [{ rank: 2, suit: 3 }]);
+    const pPass = estimateActionWinProb(cg, 0, null);
+    assert('estimateActionWinProb returns [0,1] for play', pPlay >= 0 && pPlay <= 1);
+    log(`  P(win|play5)=${pPlay.toFixed(3)} P(win|pass)=${pPass.toFixed(3)}`);
+  }
+}
+
+// ─── Strength: AI vs always-lowest-legal baseline ───
+log('\n--- Strength vs lowest-legal baseline ---');
+{
+  const { getLowestLegalMove } = ai;
+  assert('getLowestLegalMove exported', typeof getLowestLegalMove === 'function');
+
+  let aiWins = 0, baseWins = 0, draws = 0;
+  const SEEDS = 12;
+  for (let seed = 0; seed < SEEDS; seed++) {
+    // Seat 0 = strong AI, seats 1+ = lowest-legal baseline
+    let game = createGameState(3, 7000 + seed * 11);
+    let steps = 0;
+    while (!game.roundOver && steps < 150) {
+      const cp = game.currentPlayer;
+      const legals = getLegalPlays(
+        game.players[cp].hand, game.currentCombo, game.players[cp].passed,
+        game.isFirstLead, game.firstLeadCard
+      );
+      let choice = null;
+      if (!legals.length) {
+        game = pass(game, cp);
+      } else {
+        if (cp === 0) {
+          choice = getAIMove(game, cp, { difficulty: 'hard', iterations: 20 });
+        } else {
+          choice = getLowestLegalMove(game, cp);
+        }
+        if (choice == null && game.currentCombo) {
+          game = pass(game, cp);
+        } else {
+          // validate
+          const sig = (choice || []).map(c => c.rank * 4 + c.suit).sort().join();
+          const ok = choice && legals.some(l => l.map(c => c.rank * 4 + c.suit).sort().join() === sig);
+          game = applyPlay(game, cp, ok ? choice : legals[0]);
+        }
+      }
+      game.isFirstLead = false;
+      steps++;
+    }
+    const winner = game.finishOrder && game.finishOrder[0];
+    if (winner === 0) aiWins++;
+    else if (winner != null) baseWins++;
+    else draws++;
+  }
+  log(`  AI (seat0) wins=${aiWins} baseline wins=${baseWins} draws/incomplete=${draws} over ${SEEDS} games`);
+  // AI should win at least as often as random seat would (~1/3); require not systematically worse
+  assert('AI wins at least 1 game vs baseline', aiWins >= 1);
+  assert('AI not systematically weaker than baseline (aiWins >= baseWins/2 or aiWins>=3)',
+    aiWins >= Math.floor(baseWins / 2) || aiWins >= 3,
+    `ai=${aiWins} base=${baseWins}`);
+}
+
+// Prefer low beat over overkill 2 when ranking
+log('\n--- Prefer low beat over overkill 2 ---');
+{
+  let g = createGameState(3, 99);
+  g.isFirstLead = false;
+  g.firstLeadCard = null;
+  g.currentPlayer = 0;
+  g.currentCombo = detectCombo([{ rank: 3, suit: 0 }]); // 6♠
+  g.lastPlayBy = 1;
+  g.players[0].hand = [
+    { rank: 4, suit: 1 }, // 7♣ — minimal beat
+    { rank: 12, suit: 3 }, // 2♥ overkill
+    { rank: 0, suit: 2 }, { rank: 1, suit: 1 }, { rank: 5, suit: 0 }, { rank: 8, suit: 2 }
+  ];
+  g.players[1].hand = [{ rank: 9, suit: 0 }, { rank: 10, suit: 0 }, { rank: 11, suit: 0 }];
+  g.players[2].hand = [{ rank: 9, suit: 1 }, { rank: 10, suit: 1 }, { rank: 11, suit: 1 }];
+  g.players.forEach(p => { p.passed = false; p.finished = false; });
+  const mv = getAIMove(g, 0, { difficulty: 'hard', iterations: 24 });
+  assert('Prefers 7 over 2 to beat 6', mv && mv.length === 1 && mv[0].rank === 4, JSON.stringify(mv));
+}
+
 log('\n=== AI TEST SUMMARY ===');
 log(`Passed: ${passed}  Failed: ${failed}`);
 if (failed > 0) process.exit(1);
