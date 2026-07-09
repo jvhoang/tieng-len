@@ -12,12 +12,45 @@
  */
 
 const engine = (typeof require === 'function') ? require('./engine.js') : (window.TienLenEngine || {});
+const genomeMod = (typeof require === 'function')
+  ? require('./genome.js')
+  : (typeof window !== 'undefined' ? window.TienLenGenome : null);
 const {
   detectCombo, getLegalPlays, applyPlay, pass, cardCompare, cloneState: engineClone
 } = engine;
 
 function cloneState(s) {
   return engineClone ? engineClone(s) : JSON.parse(JSON.stringify(s));
+}
+
+// Active policy genome (evolved champion becomes default)
+let _activeGenome = genomeMod
+  ? genomeMod.getChampion()
+  : null;
+
+function defaultGenome() {
+  if (genomeMod) return genomeMod.getChampion();
+  return {
+    handLenW: 18, pairB: 2.5, tripB: 4, quadB: 8, seqB: 3, twoHold: 6, isoHighPen: 1.2,
+    freeLeadB: 8, leaderB: 4, threat1: 35, threat2: 18, threat3: 8, threat5: 2, fewerCardsB: 1.5,
+    oneCardFreeB: 80, multiLeadB: 4, shedLenB: 2.5, topLeadCost: 0.5, twoLeadMid: 40, twoLeadLate: 8,
+    singleHighPen: 6, singleTwoLeadPen: 25, lowMultiB: 5, afterLenCost: 1.2, beatTopCost: 0.9,
+    beatLenCost: 0.1, twoBeatPen: 30, bombBeatPen: 50, bombVs2B: 20, endgameShed: 2, endgameTwoUse: 12,
+    shortHandB: 5, passHandMin: 4, passOppMin: 2, passMargin: 0.08, winProbEdge: 0.02, gen: 0, id: 'fallback'
+  };
+}
+
+function G(g) {
+  return g || _activeGenome || defaultGenome();
+}
+
+function setActiveGenome(g) {
+  _activeGenome = genomeMod ? genomeMod.normalizeGenome(g) : Object.assign({}, g);
+  return _activeGenome;
+}
+
+function getActiveGenome() {
+  return Object.assign({}, G());
 }
 
 function comboOf(play) {
@@ -75,12 +108,12 @@ function activeCount(state) {
 
 /**
  * Rich position value. Higher = better for myIdx.
- * Used as leaf eval and for one-ply ranking.
+ * Genome-parameterized for evolution.
  */
-function evaluatePosition(state, myIdx) {
+function evaluatePosition(state, myIdx, genome) {
+  const g = G(genome);
   const me = state.players[myIdx];
   if (me.finished) {
-    // Earlier finish is better
     const order = state.finishOrder || [];
     const place = order.indexOf(myIdx);
     if (place === 0) return 1000;
@@ -91,10 +124,8 @@ function evaluatePosition(state, myIdx) {
 
   let v = 0;
   const handLen = me.hand.length;
-  // Primary: fewer cards is much better
-  v -= handLen * 18;
+  v -= handLen * g.handLenW;
 
-  // Shed potential: multi-card structure in hand
   const byRank = {};
   me.hand.forEach(c => { byRank[c.rank] = (byRank[c.rank] || 0) + 1; });
   let pairs = 0, trips = 0, quads = 0;
@@ -104,44 +135,37 @@ function evaluatePosition(state, myIdx) {
     if (n >= 3) trips++;
     if (n >= 4) quads++;
   });
-  v += pairs * 2.5 + trips * 4 + quads * 8;
+  v += pairs * g.pairB + trips * g.tripB + quads * g.quadB;
 
-  // Sequence potential (consecutive ranks with ≥1)
   const ranks = Object.keys(byRank).map(Number).sort((a, b) => a - b);
   let run = 1, bestRun = 1;
   for (let i = 1; i < ranks.length; i++) {
     if (ranks[i] === ranks[i - 1] + 1) { run++; bestRun = Math.max(bestRun, run); }
     else run = 1;
   }
-  if (bestRun >= 3) v += (bestRun - 2) * 3;
+  if (bestRun >= 3) v += (bestRun - 2) * g.seqB;
 
-  // 2s are valuable control cards (hold them)
   const twos = me.hand.filter(c => c.rank === 12).length;
-  v += twos * 6;
+  v += twos * g.twoHold;
 
-  // Isolated high cards (A/K without pair) are slightly bad
   me.hand.forEach(c => {
-    if (c.rank >= 10 && c.rank < 12 && (byRank[c.rank] || 0) === 1) v -= 1.2;
+    if (c.rank >= 10 && c.rank < 12 && (byRank[c.rank] || 0) === 1) v -= g.isoHighPen;
   });
 
-  // Control of free lead is good
-  if (state.currentCombo == null && state.currentPlayer === myIdx) v += 8;
-  if (state.currentLeader === myIdx && state.currentCombo == null) v += 4;
+  if (state.currentCombo == null && state.currentPlayer === myIdx) v += g.freeLeadB;
+  if (state.currentLeader === myIdx && state.currentCombo == null) v += g.leaderB;
 
-  // Opponent pressure: someone close to out is dangerous
   state.players.forEach((p, i) => {
     if (i === myIdx || p.finished) return;
     const oh = p.hand.length;
-    if (oh <= 1) v -= 35;
-    else if (oh <= 2) v -= 18;
-    else if (oh <= 3) v -= 8;
-    else if (oh <= 5) v -= 2;
-    // Relative: if we have fewer cards than them, good
-    if (handLen < oh) v += 1.5;
+    if (oh <= 1) v -= g.threat1;
+    else if (oh <= 2) v -= g.threat2;
+    else if (oh <= 3) v -= g.threat3;
+    else if (oh <= 5) v -= g.threat5;
+    if (handLen < oh) v += g.fewerCardsB;
   });
 
-  // If we can empty next (1-card hand and free lead or can beat), huge
-  if (handLen === 1 && state.currentCombo == null) v += 80;
+  if (handLen === 1 && state.currentCombo == null) v += g.oneCardFreeB;
   if (handLen === 0) v += 200;
 
   return v;
@@ -161,7 +185,7 @@ function valueToWinProb(value) {
  * Estimate P(win) after taking an action (play cards or null=pass).
  * Uses one-ply apply + position eval + short light rollout blend.
  */
-function estimateActionWinProb(state, myIdx, play /* null = pass */) {
+function estimateActionWinProb(state, myIdx, play /* null = pass */, genome) {
   if (!state.currentCombo && play == null) return 0; // illegal pass on free lead
 
   let next;
@@ -175,7 +199,6 @@ function estimateActionWinProb(state, myIdx, play /* null = pass */) {
     return 0;
   }
 
-  // Immediate win
   if (next.players[myIdx].finished) {
     const place = (next.finishOrder || []).indexOf(myIdx);
     if (place === 0) return 0.98;
@@ -183,16 +206,17 @@ function estimateActionWinProb(state, myIdx, play /* null = pass */) {
   }
   if (next.roundOver && next.loser === myIdx) return 0.05;
 
-  const evalV = evaluatePosition(next, myIdx);
+  const evalV = evaluatePosition(next, myIdx, genome);
   let p = valueToWinProb(evalV);
 
-  // Skip heavy rollouts in browser for snappy turns (eval is enough for ranking)
+  // Evolution / tests / browser: skip rollouts (eval ranking is enough & fast)
   const inBrowser = (typeof window !== 'undefined' && typeof document !== 'undefined');
-  const rollouts = (isFastEnv() || inBrowser) ? 0 : 2;
+  const evolveFast = (typeof process !== 'undefined' && process.env && process.env.TIENLEN_EVOLVE);
+  const rollouts = (isFastEnv() || inBrowser || evolveFast) ? 0 : 2;
   if (rollouts > 0) {
     let wins = 0;
     for (let r = 0; r < rollouts; r++) {
-      wins += fastRollout(next, myIdx, 40 + r);
+      wins += fastRollout(next, myIdx, 40 + r, genome);
     }
     const rp = wins / rollouts;
     p = 0.55 * p + 0.45 * rp;
@@ -212,7 +236,8 @@ function isFastEnv() {
  * scorePlay: lower is better for ranking among plays.
  * Used for ordering and expert policy — NOT for pass threshold of "45".
  */
-function scorePlay(play, state, myIdx) {
+function scorePlay(play, state, myIdx, genome) {
+  const g = G(genome);
   const hand = state.players[myIdx].hand;
   const cur = state.currentCombo;
   const com = comboOf(play);
@@ -225,43 +250,37 @@ function scorePlay(play, state, myIdx) {
   const afterLen = hand.length - play.length;
   const omin = oppMinHand(state, myIdx);
 
-  // Prefer emptying
   if (afterLen === 0) return -1000;
 
-  // Prefer fewer remaining (but normalize so absolute level isn't huge)
-  score += afterLen * 1.2;
+  score += afterLen * g.afterLenCost;
 
   if (!cur) {
-    // FREE LEAD
-    score -= comboPriority(com.type) * 4;
-    score -= play.length * 2.5;
-    score += topRank(play) * 0.5;
-    if (usesTwo) score += afterLen > 2 ? 40 : 8;
-    if (com.type === 'single' && com.top.rank >= 10) score += 6;
-    if (com.type === 'single' && com.top.rank === 12) score += 25;
+    score -= comboPriority(com.type) * g.multiLeadB;
+    score -= play.length * g.shedLenB;
+    score += topRank(play) * g.topLeadCost;
+    if (usesTwo) score += afterLen > 2 ? g.twoLeadMid : g.twoLeadLate;
+    if (com.type === 'single' && com.top.rank >= 10) score += g.singleHighPen;
+    if (com.type === 'single' && com.top.rank === 12) score += g.singleTwoLeadPen;
     if ((com.type === 'seq' || com.type === 'pair' || com.type === 'triple') && topRank(play) <= 8) {
-      score -= 5;
+      score -= g.lowMultiB;
     }
   } else {
-    // BEATING — prefer minimal beat
-    score += topRank(play) * 0.9;
-    // Slight prefer just-enough single over multi when same top
-    score += play.length * 0.1;
-    if (usesTwo && !facing2) score += 30;
-    if (bomb && !facing2) score += 50;
-    if (facing2 && bomb) score -= 20;
+    score += topRank(play) * g.beatTopCost;
+    score += play.length * g.beatLenCost;
+    if (usesTwo && !facing2) score += g.twoBeatPen;
+    if (bomb && !facing2) score += g.bombBeatPen;
+    if (facing2 && bomb) score -= g.bombVs2B;
     if (cur.type === 'single' && com.type === 'single') {
       const gap = com.top.rank - cur.top.rank;
       if (gap > 3 && com.top.rank >= 10) score += gap;
     }
   }
 
-  // Endgame aggression
   if (omin <= 2) {
-    score -= play.length * 2;
-    if (usesTwo) score -= 12;
+    score -= play.length * g.endgameShed;
+    if (usesTwo) score -= g.endgameTwoUse;
   }
-  if (hand.length <= 3) score -= 5;
+  if (hand.length <= 3) score -= g.shortHandB;
 
   return score;
 }
@@ -281,90 +300,94 @@ function cheapLegals(legals) {
  * Never pass when any cheap legal exists.
  * Never pass on free lead.
  */
-function shouldPassStrategically(state, myIdx, legals) {
+function shouldPassStrategically(state, myIdx, legals, genome) {
   if (!state.currentCombo) return false;
   if (!legals || !legals.length) return true;
+  const g = G(genome);
 
   const cheap = cheapLegals(legals);
-  // ALWAYS play a cheap beat when available — this is the chronic-pass fix
+  // ALWAYS play a cheap beat when available
   if (cheap.length > 0) return false;
 
-  // Only expensive options remain
   const me = state.players[myIdx];
   const omin = oppMinHand(state, myIdx);
 
-  // Endgame / short hand: dump even a 2 if needed
-  if (omin <= 2 || me.hand.length <= 4) return false;
+  if (omin <= g.passOppMin || me.hand.length <= g.passHandMin) return false;
 
-  // Facing a 2 and we hold a bomb: use it
   if (state.currentCombo.cards.every(c => c.rank === 12)) {
     if (legals.some(playIsBomb)) return false;
   }
 
-  // Midgame: compare P(win) of pass vs best expensive play
-  const passP = estimateActionWinProb(state, myIdx, null);
+  // Fast path during evolution: skip win-prob sampling, use simple score
+  if (typeof process !== 'undefined' && process.env && process.env.TIENLEN_EVOLVE) {
+    // Midgame with only 2s/bombs: pass more often if hand still long
+    return me.hand.length > g.passHandMin + 1;
+  }
+
+  const passP = estimateActionWinProb(state, myIdx, null, genome);
   let bestPlayP = 0;
   for (const pl of legals.slice(0, 6)) {
-    bestPlayP = Math.max(bestPlayP, estimateActionWinProb(state, myIdx, pl));
+    bestPlayP = Math.max(bestPlayP, estimateActionWinProb(state, myIdx, pl, genome));
   }
-  // Prefer pass only if clearly better than burning a 2/bomb
-  return passP > bestPlayP + 0.08;
+  return passP > bestPlayP + g.passMargin;
 }
 
-function heuristicOrder(legals, state, myIdx) {
-  return legals.slice().sort((a, b) => scorePlay(a, state, myIdx) - scorePlay(b, state, myIdx));
+function heuristicOrder(legals, state, myIdx, genome) {
+  return legals.slice().sort((a, b) => scorePlay(a, state, myIdx, genome) - scorePlay(b, state, myIdx, genome));
 }
 
 // ─── Expert policy ───
 
-function getExpertMove(state, myIdx) {
+function getExpertMove(state, myIdx, genome) {
+  const g = G(genome);
   const hand = state.players[myIdx].hand;
   const cur = state.currentCombo;
   const hp = state.players[myIdx].passed;
   let legals = getLegalPlays(hand, cur, hp, state.isFirstLead, state.firstLeadCard);
   if (!legals.length) return null;
 
-  // Free lead: never pass
   if (!cur) {
-    return pickBestPlay(state, myIdx, legals);
+    return pickBestPlay(state, myIdx, legals, g);
   }
 
-  if (shouldPassStrategically(state, myIdx, legals)) {
+  if (shouldPassStrategically(state, myIdx, legals, g)) {
     return null;
   }
 
-  // Bombs vs 2s
   if (cur.cards.every(c => c.rank === 12)) {
     const bombs = legals.filter(playIsBomb);
     if (bombs.length) {
-      bombs.sort((a, b) => scorePlay(a, state, myIdx) - scorePlay(b, state, myIdx));
+      bombs.sort((a, b) => scorePlay(a, state, myIdx, g) - scorePlay(b, state, myIdx, g));
       return bombs[0];
     }
   }
 
-  return pickBestPlay(state, myIdx, legals);
+  return pickBestPlay(state, myIdx, legals, g);
 }
 
 /**
  * Rank legals by estimated P(win), break ties with scorePlay.
+ * During TIENLEN_EVOLVE: scorePlay-only (much faster, still legal).
  */
-function pickBestPlay(state, myIdx, legals) {
+function pickBestPlay(state, myIdx, legals, genome) {
   if (!legals.length) return null;
   if (legals.length === 1) return legals[0];
+  const g = G(genome);
 
-  // Prefer cheap moves first for evaluation budget
-  const ordered = heuristicOrder(legals, state, myIdx);
+  const ordered = heuristicOrder(legals, state, myIdx, g);
+  const evolveFast = (typeof process !== 'undefined' && process.env && process.env.TIENLEN_EVOLVE);
+  if (evolveFast) return ordered[0];
+
   const candidates = ordered.slice(0, Math.min(12, ordered.length));
-
   let best = candidates[0];
   let bestP = -1;
   let bestScore = 1e9;
+  const edge = g.winProbEdge || 0.02;
 
   for (const pl of candidates) {
-    const p = estimateActionWinProb(state, myIdx, pl);
-    const sc = scorePlay(pl, state, myIdx);
-    // Primary: higher win prob; secondary: lower heuristic cost
-    if (p > bestP + 0.02 || (Math.abs(p - bestP) <= 0.02 && sc < bestScore)) {
+    const p = estimateActionWinProb(state, myIdx, pl, g);
+    const sc = scorePlay(pl, state, myIdx, g);
+    if (p > bestP + edge || (Math.abs(p - bestP) <= edge && sc < bestScore)) {
       bestP = p;
       bestScore = sc;
       best = pl;
@@ -440,7 +463,7 @@ function fastPolicyMove(state, cp) {
   return { play: heuristicOrder(leg, state, cp)[0] };
 }
 
-function fastRollout(state, myIdx, maxSteps) {
+function fastRollout(state, myIdx, maxSteps, genome) {
   let s = cloneState(state);
   let steps = 0;
   while (!s.roundOver && steps < maxSteps) {
@@ -456,8 +479,7 @@ function fastRollout(state, myIdx, maxSteps) {
     return place === 0 ? 1 : (place > 0 ? 0.35 : 0.5);
   }
   if (s.roundOver && s.loser === myIdx) return 0;
-  // Partial: use eval
-  return valueToWinProb(evaluatePosition(s, myIdx));
+  return valueToWinProb(evaluatePosition(s, myIdx, genome));
 }
 
 // ─── MCTS ───
@@ -594,19 +616,21 @@ function runMCTS(rootState, myIdx, iterations) {
 
 /**
  * getAIMove(state, myIdx, opts) → cards[] | null
+ * opts.genome — optional policy params (evolution / testing)
+ * opts.difficulty — easy|medium|hard
  * null = pass (only when combating and policy says so)
  */
 function getAIMove(state, myIdx, opts = {}) {
+  const genome = opts.genome ? G(opts.genome) : G();
   const difficulty = opts.difficulty || 'hard';
-  // Browser: keep interactive — expert + light search, not multi-second MCTS freezes
   const inBrowser = (typeof window !== 'undefined' && typeof document !== 'undefined');
+  const evolveFast = (typeof process !== 'undefined' && process.env && process.env.TIENLEN_EVOLVE);
   let iters = difficulty === 'easy' ? 0 : (difficulty === 'medium' ? 48 : (inBrowser ? 64 : 160));
   if (opts.iterations != null) iters = opts.iterations;
-  if (isFastEnv()) {
-    iters = Math.min(iters, opts.iterations != null ? opts.iterations : 24);
+  if (isFastEnv() || evolveFast) {
+    iters = Math.min(iters, opts.iterations != null ? opts.iterations : (evolveFast ? 0 : 24));
   }
 
-  // Resolve engine functions at call time (browser: window.TienLenEngine may bind late)
   const eng = (typeof window !== 'undefined' && window.TienLenEngine) ? window.TienLenEngine : engine;
   const legalFn = eng.getLegalPlays || getLegalPlays;
   const hand = state.players[myIdx].hand;
@@ -616,10 +640,18 @@ function getAIMove(state, myIdx, opts = {}) {
 
   if (!legals.length) return null;
 
+  // Evolution / easy: pure expert with genome (fast)
+  if (evolveFast || difficulty === 'easy' || iters === 0) {
+    if (!cur) return pickBestPlay(state, myIdx, legals, genome) || legals[0];
+    const cheap = cheapLegals(legals);
+    if (cheap.length) return pickBestPlay(state, myIdx, cheap, genome) || cheap[0];
+    if (shouldPassStrategically(state, myIdx, legals, genome)) return null;
+    return pickBestPlay(state, myIdx, legals, genome) || legals[0];
+  }
+
   // FREE LEAD: always play (never null)
   if (!cur) {
-    // Expert-first for multi-combo quality; optional light MCTS only if time budget
-    const expert = pickBestPlay(state, myIdx, legals) || legals[0];
+    const expert = pickBestPlay(state, myIdx, legals, genome) || legals[0];
     if (iters >= 80 && !isFastEnv() && !inBrowser) {
       try {
         const mv = runMCTS(state, myIdx, iters);
@@ -632,7 +664,6 @@ function getAIMove(state, myIdx, opts = {}) {
   // Combating: HARD RULE — play cheap beats (never pass)
   const cheap = cheapLegals(legals);
   if (cheap.length > 0) {
-    // Always return a cheap play. MCTS may refine among cheap only.
     if (iters >= 60 && !isFastEnv() && !inBrowser) {
       try {
         const mv = runMCTS(state, myIdx, iters);
@@ -640,14 +671,10 @@ function getAIMove(state, myIdx, opts = {}) {
         if (mv && playIsExpensive(mv) && mv.length === hand.length) return mv;
       } catch (e) { /* fall through */ }
     }
-    return pickBestPlay(state, myIdx, cheap) || cheap[0];
+    return pickBestPlay(state, myIdx, cheap, genome) || cheap[0];
   }
 
-  // Only expensive legals (2s / bombs)
-  if (shouldPassStrategically(state, myIdx, legals)) {
-    const ranked = rankActions(state, myIdx);
-    if (ranked.length && ranked[0].play == null) return null;
-    if (ranked.length && ranked[0].play) return ranked[0].play;
+  if (shouldPassStrategically(state, myIdx, legals, genome)) {
     return null;
   }
 
@@ -655,11 +682,10 @@ function getAIMove(state, myIdx, opts = {}) {
     try {
       const mv = runMCTS(state, myIdx, iters);
       if (mv !== undefined && mv !== null) return mv;
-      // if MCTS says pass but we decided not to above, play
     } catch (e) { /* fall through */ }
   }
 
-  return pickBestPlay(state, myIdx, legals) || legals[0];
+  return pickBestPlay(state, myIdx, legals, genome) || legals[0];
 }
 
 function aiChoosesNonTrivial(state, myIdx) {
@@ -755,7 +781,7 @@ const TienLenAI = {
   getExpertMove,
   runMCTS,
   aiChoosesNonTrivial,
-  scorePosition: (s, i) => -evaluatePosition(s, i), // lower better for old API
+  scorePosition: (s, i, g) => -evaluatePosition(s, i, g),
   evaluatePosition,
   estimateActionWinProb,
   rankActions,
@@ -765,6 +791,8 @@ const TienLenAI = {
   playIsExpensive,
   getLowestLegalMove,
   valueToWinProb,
+  setActiveGenome,
+  getActiveGenome,
   getLearnedWeights: () => learnedWeights.slice(),
   selfPlayLearn
 };

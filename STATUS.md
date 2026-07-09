@@ -1,16 +1,20 @@
 # Tieng Len — STATUS
 
 **Date:** 2026-07-09  
-**Strong AI update**
+**Self-play evolution complete**
 
-## AI strength
-- Chronic-pass fixed: pass rate on cheap (non-2/non-bomb) beats = **0%** (was ~52%).
-- Free lead always plays (never null).
-- Ranking by estimated P(win) + expert heuristic + MCTS (hard).
-- Multi-combo leads; conserves 2s/bombs; prefers minimal beat over overkill.
-- Strength: AI seat wins **11/16** vs always-lowest-legal baseline (3p seeds).
-- Tests: `node test-ai.js` 32/32; launch-verify ALL GATES PASSED.
-- Evidence: `{SCRATCH}/ai-pass-rate.log`, `ai-strength.log`, `ai-tests.log`.
+## Evolution
+- **1000 loops × 100 games = 100,000** self-play matches (2p candidate vs champion)
+- Winner of each matchup promoted as champion (strict majority)
+- **Strategist every 20 loops** (50 strategist reports) directs mutation focus
+- Final champion: see `champion-genome.json` (gen ≥ 400 after evolution)
+- Runner: `node evolve/run-evolve.js` (smoke: `TIENLEN_EVOLVE_SMOKE=1`)
 
-## Live
-https://jvhoang.github.io/tieng-len/
+## Evidence (scratch)
+- evolve-full.log, evolve-summary.json, strategist-audit.log, strategist/*.json
+- champion-genome.json shipped as default policy params
+
+## Default AI
+- `genome.js` loads champion-genome.json
+- `ai.js` `getAIMove` uses active/champion genome
+- Browser loads `genome.js` before `ai.js`
