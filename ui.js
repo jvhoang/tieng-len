@@ -45,6 +45,7 @@
     let lastPassSeat = null;
     let customOrderKeys = null; // number[] of card keys for human hand
     let dragState = null; // { fromIndex, key, el }
+    let lastResultsKey = null; // avoid re-showing results modal every render
 
     function getCurrentController() {
       if (controller && typeof controller.getState === 'function') return controller;
@@ -639,12 +640,12 @@
       const turnEl = doc.getElementById('turn-indicator');
       if (turnEl) {
         if (st.roundOver) {
-          const order = (st.finishOrder || []).slice();
-          const winner = order.length ? order[0] : null;
-          const loser = (typeof st.loser === 'number') ? st.loser : null;
+          const standings = computeStandings(st, currentHumanSeat);
+          const my = standings.find(r => r.isYou);
+          const winner = standings[0];
           let txt = 'ROUND OVER';
-          if (winner !== null) txt += ` • Winner: P${winner}${winner === currentHumanSeat ? ' (You)' : ''}`;
-          if (loser !== null) txt += ` • Last: P${loser}`;
+          if (my) txt += ` • You: ${ordinal(my.place)}`;
+          if (winner) txt += ` • 1st: ${winner.label}`;
           turnEl.innerHTML = txt;
         } else {
           turnEl.innerHTML = `Turn: Player ${st.currentPlayer}${st.currentPlayer === currentHumanSeat ? ' (You)' : ''}`;
@@ -668,7 +669,7 @@
         lastNotifiedTurn = null;
       }
 
-      // Winner banner
+      // Winner banner + full placement results
       let winBanner = doc.getElementById('winner-banner');
       if (!winBanner) {
         const area = doc.getElementById('trick-area') || doc.getElementById('table-area');
@@ -679,21 +680,42 @@
           area.parentNode.appendChild(winBanner);
         }
       }
-      if (winBanner) {
-        if (st.roundOver) {
-          const w = (st.finishOrder && st.finishOrder[0] != null) ? st.finishOrder[0] : null;
-          winBanner.textContent = (w === currentHumanSeat) ? 'You win the round!' : (w != null ? `P${w} wins the round` : 'Round complete');
+      if (st.roundOver) {
+        const standings = computeStandings(st, currentHumanSeat);
+        const my = standings.find(r => r.isYou);
+        if (winBanner) {
           winBanner.classList.remove('hidden');
-        } else {
-          winBanner.classList.add('hidden');
+          if (my) {
+            winBanner.innerHTML = my.place === 1
+              ? '🥇 You finished <strong>1st</strong>!'
+              : `You finished <strong>${ordinal(my.place)}</strong>`;
+          } else {
+            winBanner.textContent = 'Round complete';
+          }
         }
+        // Show results overlay once per finished round
+        const resultsKey = (st.finishOrder || []).join(',') + '|' + st.loser + '|' + st.numPlayers;
+        if (lastResultsKey !== resultsKey) {
+          lastResultsKey = resultsKey;
+          showRoundResults(standings, st);
+        }
+      } else {
+        lastResultsKey = null;
+        hideRoundResults();
+        if (winBanner) winBanner.classList.add('hidden');
       }
 
       const info = doc.getElementById('selection-info');
       if (info) {
         info.innerHTML = selectedCards.length
           ? `${selectedCards.length} cards selected`
-          : (st.roundOver ? 'New round ready' : 'Select cards · drag to reorder hand');
+          : (st.roundOver
+            ? (function () {
+                const s = computeStandings(st, currentHumanSeat);
+                const me = s.find(r => r.isYou);
+                return me ? `You placed ${ordinal(me.place)} · New round ready` : 'New round ready';
+              })()
+            : 'Select cards · drag to reorder hand');
       }
 
       const bp = doc.getElementById('btn-play');
@@ -736,6 +758,225 @@
 
       // If computer holds first lead (3♠), kick AI immediately
       kickAIIfNeeded(350);
+    }
+
+    // ─── Placement / results ───
+
+    function ordinal(n) {
+      const v = n % 100;
+      if (v >= 11 && v <= 13) return n + 'th';
+      const d = n % 10;
+      if (d === 1) return n + 'st';
+      if (d === 2) return n + 'nd';
+      if (d === 3) return n + 'rd';
+      return n + 'th';
+    }
+
+    /**
+     * Build ranked standings from finishOrder + loser.
+     * finishOrder = seats who shed all cards (1st, 2nd, …); loser = last with cards.
+     */
+    function computeStandings(st, humanSeat) {
+      const n = st.numPlayers || (st.players ? st.players.length : 0);
+      const order = (st.finishOrder || []).slice();
+      const ranked = [];
+      const seen = new Set();
+      order.forEach((seat, i) => {
+        if (seat == null || seen.has(seat)) return;
+        seen.add(seat);
+        ranked.push({
+          place: i + 1,
+          seat,
+          isYou: seat === humanSeat,
+          label: seat === humanSeat ? 'You' : ('P' + seat + (vsAI && seat !== 0 ? ' · AI' : ''))
+        });
+      });
+      // Anyone still holding cards / loser
+      if (typeof st.loser === 'number' && !seen.has(st.loser)) {
+        ranked.push({
+          place: ranked.length + 1,
+          seat: st.loser,
+          isYou: st.loser === humanSeat,
+          label: st.loser === humanSeat ? 'You' : ('P' + st.loser + (vsAI && st.loser !== 0 ? ' · AI' : ''))
+        });
+        seen.add(st.loser);
+      }
+      // Safety: any missing seats
+      for (let s = 0; s < n; s++) {
+        if (!seen.has(s)) {
+          ranked.push({
+            place: ranked.length + 1,
+            seat: s,
+            isYou: s === humanSeat,
+            label: s === humanSeat ? 'You' : ('P' + s)
+          });
+        }
+      }
+      return ranked;
+    }
+
+    function ensureResultsOverlay() {
+      let overlay = doc.getElementById('results-overlay');
+      if (overlay) return overlay;
+      overlay = doc.createElement('div');
+      overlay.id = 'results-overlay';
+      overlay.className = 'results-overlay hidden';
+      overlay.innerHTML = `
+        <div class="results-card" role="dialog" aria-labelledby="results-title">
+          <div id="results-confetti" class="results-confetti" aria-hidden="true"></div>
+          <div id="results-glow" class="results-glow" aria-hidden="true"></div>
+          <div class="results-emoji" id="results-emoji">🏆</div>
+          <div class="results-title font-display" id="results-title">Round complete</div>
+          <div class="results-subtitle" id="results-subtitle"></div>
+          <ol class="results-list" id="results-list"></ol>
+          <div class="results-actions">
+            <button type="button" id="results-new-round" class="viet-btn results-btn">New Round</button>
+            <button type="button" id="results-dismiss" class="results-btn-secondary">Continue</button>
+          </div>
+        </div>
+      `;
+      const host = doc.getElementById('game-screen') || doc.body;
+      host.appendChild(overlay);
+      const nr = doc.getElementById('results-new-round');
+      if (nr) {
+        nr.onclick = () => {
+          hideRoundResults();
+          if (typeof newRound === 'function') newRound();
+          else if (typeof window !== 'undefined' && window.newRound) window.newRound();
+        };
+      }
+      const dis = doc.getElementById('results-dismiss');
+      if (dis) dis.onclick = () => hideRoundResults();
+      overlay.onclick = (e) => {
+        if (e.target === overlay) hideRoundResults();
+      };
+      return overlay;
+    }
+
+    function showRoundResults(standings, st) {
+      const overlay = ensureResultsOverlay();
+      if (!overlay) return;
+      const my = standings.find(r => r.isYou);
+      const title = doc.getElementById('results-title');
+      const sub = doc.getElementById('results-subtitle');
+      const list = doc.getElementById('results-list');
+      const emoji = doc.getElementById('results-emoji');
+      const confetti = doc.getElementById('results-confetti');
+      const glow = doc.getElementById('results-glow');
+
+      const place = my ? my.place : null;
+      const isWin = place === 1;
+      const isLast = place === standings.length;
+
+      if (title) {
+        if (isWin) title.textContent = 'Victory!';
+        else if (place === 2) title.textContent = '2nd Place';
+        else if (place === 3) title.textContent = '3rd Place';
+        else if (isLast) title.textContent = 'Last Place';
+        else title.textContent = place ? (ordinal(place) + ' Place') : 'Round complete';
+      }
+      if (sub) {
+        if (isWin) sub.textContent = 'You shed all your cards first — chúc mừng!';
+        else if (place === 2) sub.textContent = 'Solid finish — so close to the crown.';
+        else if (place === 3) sub.textContent = 'Mid of the pack. One more push next round.';
+        else if (isLast) sub.textContent = 'Last one holding cards. The table remembers…';
+        else sub.textContent = 'Round finished. See full standings below.';
+      }
+      if (emoji) {
+        emoji.textContent = isWin ? '🥇' : (place === 2 ? '🥈' : (place === 3 ? '🥉' : (isLast ? '😅' : '🎴')));
+      }
+      if (list) {
+        list.innerHTML = '';
+        standings.forEach((row) => {
+          const li = doc.createElement('li');
+          li.className = 'results-row' + (row.isYou ? ' results-row-you' : '') +
+            (row.place === 1 ? ' results-row-gold' : '');
+          const medal = row.place === 1 ? '🥇' : (row.place === 2 ? '🥈' : (row.place === 3 ? '🥉' : '•'));
+          li.innerHTML =
+            `<span class="results-place">${medal} ${ordinal(row.place)}</span>` +
+            `<span class="results-name">${row.label}${row.isYou ? '' : ''}</span>` +
+            (row.isYou ? '<span class="results-you-tag">YOU</span>' : '');
+          list.appendChild(li);
+        });
+      }
+
+      overlay.classList.remove('hidden');
+      overlay.classList.add('show');
+      if (isWin) {
+        overlay.classList.add('results-celebrate');
+        if (glow) glow.classList.add('active');
+        spawnConfetti(confetti);
+        playCelebrateSound();
+      } else {
+        overlay.classList.remove('results-celebrate');
+        if (glow) glow.classList.remove('active');
+        if (confetti) confetti.innerHTML = '';
+      }
+    }
+
+    function hideRoundResults() {
+      const overlay = doc.getElementById('results-overlay');
+      if (overlay) {
+        overlay.classList.add('hidden');
+        overlay.classList.remove('show', 'results-celebrate');
+        const confetti = doc.getElementById('results-confetti');
+        if (confetti) confetti.innerHTML = '';
+      }
+    }
+
+    function spawnConfetti(container) {
+      if (!container) return;
+      container.innerHTML = '';
+      const colors = ['#c9a227', '#e8d48b', '#ff6b6b', '#4ecdc4', '#ffe66d', '#a78bfa', '#f8f1e3', '#ff9f43'];
+      const n = 48;
+      for (let i = 0; i < n; i++) {
+        const p = doc.createElement('span');
+        p.className = 'confetti-piece';
+        const left = Math.random() * 100;
+        const delay = Math.random() * 0.6;
+        const dur = 1.6 + Math.random() * 1.4;
+        const size = 6 + Math.random() * 8;
+        const rot = Math.random() * 360;
+        p.style.left = left + '%';
+        p.style.background = colors[i % colors.length];
+        p.style.width = size + 'px';
+        p.style.height = (size * (0.6 + Math.random())) + 'px';
+        p.style.animationDelay = delay + 's';
+        p.style.animationDuration = dur + 's';
+        p.style.transform = 'rotate(' + rot + 'deg)';
+        p.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        container.appendChild(p);
+      }
+      // Burst rings
+      for (let r = 0; r < 3; r++) {
+        const ring = doc.createElement('div');
+        ring.className = 'celebrate-ring';
+        ring.style.animationDelay = (r * 0.15) + 's';
+        container.appendChild(ring);
+      }
+    }
+
+    function playCelebrateSound() {
+      try {
+        const AC = (typeof window !== 'undefined' && (window.AudioContext || window.webkitAudioContext));
+        if (!AC) return;
+        const ctx = new AC();
+        const notes = [523.25, 659.25, 783.99, 1046.5]; // C E G C
+        notes.forEach((freq, i) => {
+          const o = ctx.createOscillator();
+          const g = ctx.createGain();
+          o.type = 'triangle';
+          o.frequency.value = freq;
+          g.gain.value = 0.0001;
+          o.connect(g); g.connect(ctx.destination);
+          const t0 = ctx.currentTime + i * 0.12;
+          g.gain.exponentialRampToValueAtTime(0.06, t0 + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.35);
+          o.start(t0);
+          o.stop(t0 + 0.4);
+        });
+        setTimeout(() => { try { ctx.close && ctx.close(); } catch (_) {} }, 1200);
+      } catch (_) {}
     }
 
     /**
@@ -782,6 +1023,8 @@
       if (!ctrl || typeof ctrl.newRound !== 'function') return null;
       selectedCards = [];
       customOrderKeys = null;
+      lastResultsKey = null;
+      hideRoundResults();
       // Prefer resume helper when available (redeal + AI kick)
       let acts = [];
       if (typeof ctrl.newRoundAndResume === 'function') {
@@ -1267,6 +1510,10 @@
       resetHandOrder,
       newRound,
       kickAIIfNeeded,
+      computeStandings,
+      ordinal,
+      showRoundResults,
+      hideRoundResults,
       // pure helpers for tests
       sortHandDefault,
       applyHandOrder,

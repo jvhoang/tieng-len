@@ -238,6 +238,184 @@
     .game-container { max-width: 1100px; margin: 0 auto; }
 
     .hidden { display: none !important; }
+
+    /* ── Round results + celebration ── */
+    .results-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(10, 4, 3, 0.72);
+      backdrop-filter: blur(4px);
+      padding: 1rem;
+      opacity: 0;
+      transition: opacity .25s ease;
+      pointer-events: none;
+    }
+    .results-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .results-card {
+      position: relative;
+      width: min(420px, 100%);
+      background: linear-gradient(160deg, #2c0f0a 0%, #1a0907 55%, #0f4d2e22 100%);
+      border: 2px solid #c9a227;
+      border-radius: 1.5rem;
+      padding: 1.75rem 1.5rem 1.25rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.55), 0 0 40px rgba(201,162,39,0.15);
+      text-align: center;
+      overflow: hidden;
+      animation: resultsPop .35s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    @keyframes resultsPop {
+      from { opacity: 0; transform: scale(0.88) translateY(16px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .results-emoji {
+      font-size: 3.25rem;
+      line-height: 1;
+      margin-bottom: 0.35rem;
+      filter: drop-shadow(0 4px 12px rgba(201,162,39,0.45));
+    }
+    .results-celebrate .results-emoji {
+      animation: medalBounce 0.7s ease infinite alternate;
+    }
+    @keyframes medalBounce {
+      from { transform: scale(1) rotate(-4deg); }
+      to   { transform: scale(1.12) rotate(4deg); }
+    }
+    .results-title {
+      font-size: 2.25rem;
+      color: #e8d48b;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      text-shadow: 0 2px 16px rgba(201,162,39,0.35);
+    }
+    .results-subtitle {
+      margin-top: 0.4rem;
+      font-size: 0.95rem;
+      color: #d2b48c;
+      min-height: 1.25rem;
+    }
+    .results-list {
+      list-style: none;
+      margin: 1.1rem 0 1.25rem;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+    .results-row {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.55rem 0.85rem;
+      border-radius: 0.75rem;
+      background: rgba(0,0,0,0.28);
+      border: 1px solid #5c4630;
+      font-size: 0.95rem;
+      text-align: left;
+    }
+    .results-row-you {
+      border-color: #c9a227;
+      background: rgba(201,162,39,0.14);
+      box-shadow: 0 0 0 1px rgba(201,162,39,0.25);
+    }
+    .results-row-gold {
+      background: linear-gradient(90deg, rgba(201,162,39,0.22), rgba(0,0,0,0.2));
+    }
+    .results-place {
+      font-weight: 700;
+      color: #e8d48b;
+      min-width: 4.5rem;
+    }
+    .results-name { flex: 1; color: #f4e9d8; font-weight: 600; }
+    .results-you-tag {
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      font-weight: 700;
+      color: #1a0907;
+      background: #c9a227;
+      padding: 0.15rem 0.45rem;
+      border-radius: 999px;
+    }
+    .results-actions {
+      display: flex;
+      gap: 0.6rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .results-btn {
+      padding: 0.7rem 1.4rem;
+      border-radius: 0.85rem;
+      font-size: 0.95rem;
+    }
+    .results-btn-secondary {
+      padding: 0.7rem 1.2rem;
+      border-radius: 0.85rem;
+      font-size: 0.9rem;
+      border: 1px solid #5c4630;
+      background: transparent;
+      color: #d2b48c;
+      cursor: pointer;
+    }
+    .results-btn-secondary:hover { border-color: #c9a227; color: #e8d48b; }
+
+    .results-confetti {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .confetti-piece {
+      position: absolute;
+      top: -12px;
+      opacity: 0.95;
+      animation-name: confettiFall;
+      animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      animation-fill-mode: forwards;
+    }
+    @keyframes confettiFall {
+      0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(420px) rotate(720deg); opacity: 0; }
+    }
+    .celebrate-ring {
+      position: absolute;
+      left: 50%;
+      top: 28%;
+      width: 20px;
+      height: 20px;
+      margin: -10px 0 0 -10px;
+      border: 2px solid rgba(232, 212, 139, 0.7);
+      border-radius: 50%;
+      animation: ringBurst 0.9s ease-out forwards;
+      pointer-events: none;
+    }
+    @keyframes ringBurst {
+      from { transform: scale(0.4); opacity: 0.9; }
+      to   { transform: scale(12); opacity: 0; }
+    }
+    .results-glow {
+      position: absolute;
+      inset: -20%;
+      background: radial-gradient(circle at 50% 30%, rgba(201,162,39,0.35), transparent 55%);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .results-glow.active {
+      animation: glowPulse 1.2s ease-in-out infinite alternate;
+    }
+    @keyframes glowPulse {
+      from { opacity: 0.45; }
+      to   { opacity: 0.9; }
+    }
+    .results-celebrate .results-card {
+      border-color: #e8d48b;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.55), 0 0 50px rgba(201,162,39,0.35);
+    }
   </style>
 </head>
 <body class="lacquer-bg text-[#f4e9d8] min-h-screen">
@@ -441,12 +619,12 @@
   <!-- PeerJS free cloud signaling for cross-device multiplayer (GitHub Pages safe) -->
   <!-- Cache-bust query so browsers always load latest AI after deploys -->
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-  <script src="engine.js?v=20260709d"></script>
-  <script src="ai.js?v=20260709d"></script>
-  <script src="controller.js?v=20260709d"></script>
-  <script src="hand-order.js?v=20260709d"></script>
-  <script src="multiplayer.js?v=20260709d"></script>
-  <script src="ui.js?v=20260709d"></script>
+  <script src="engine.js?v=20260709e"></script>
+  <script src="ai.js?v=20260709e"></script>
+  <script src="controller.js?v=20260709e"></script>
+  <script src="hand-order.js?v=20260709e"></script>
+  <script src="multiplayer.js?v=20260709e"></script>
+  <script src="ui.js?v=20260709e"></script>
   <script>
     // Thin loader: modules provide the game. index.html = markup + styles + glue.
     (function(){
