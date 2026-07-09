@@ -441,12 +441,12 @@
   <!-- PeerJS free cloud signaling for cross-device multiplayer (GitHub Pages safe) -->
   <!-- Cache-bust query so browsers always load latest AI after deploys -->
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-  <script src="engine.js?v=20260709c"></script>
-  <script src="ai.js?v=20260709c"></script>
-  <script src="controller.js?v=20260709c"></script>
-  <script src="hand-order.js?v=20260709c"></script>
-  <script src="multiplayer.js?v=20260709c"></script>
-  <script src="ui.js?v=20260709c"></script>
+  <script src="engine.js?v=20260709d"></script>
+  <script src="ai.js?v=20260709d"></script>
+  <script src="controller.js?v=20260709d"></script>
+  <script src="hand-order.js?v=20260709d"></script>
+  <script src="multiplayer.js?v=20260709d"></script>
+  <script src="ui.js?v=20260709d"></script>
   <script>
     // Thin loader: modules provide the game. index.html = markup + styles + glue.
     (function(){
@@ -475,10 +475,25 @@
       window.clearSelection = function(){ if (ui.clearSelection) ui.clearSelection(); };
       window.choosePlayers = function(n, isAI) { if (isAI) window.startVsAI(n); else window.startLive(n); };
       window.newRound = function(){
+        // Must go through UI so AI is kicked when computer opens the new deal
+        if (ui && typeof ui.newRound === 'function') {
+          ui.newRound();
+          return;
+        }
         const c = window.controller;
         if (c && c.newRound) {
           c.newRound();
           if (window.TienLenUI && window.TienLenUI.updateUI) window.TienLenUI.updateUI();
+          // Fallback: kick AI if not human turn
+          if (c.runAITurnIfNeeded) {
+            const st = c.getState && c.getState();
+            if (st && !st.roundOver && st.currentPlayer !== 0) {
+              setTimeout(function() {
+                c.runAITurnIfNeeded();
+                if (window.TienLenUI && window.TienLenUI.updateUI) window.TienLenUI.updateUI();
+              }, 280);
+            }
+          }
         }
       };
       window.exitToMenu = function(){

@@ -261,8 +261,19 @@
     function newRound() {
       state = engine.createGameState(state.numPlayers, Date.now() + Math.floor(Math.random() * 1000));
       state.isFirstLead = true;
+      // Clear finished/pass from previous round is handled by createGameState
       notify({ type: 'newRound' });
       return getState();
+    }
+
+    /**
+     * newRoundAndResume: redeal then immediately run AI seats if they open.
+     * Used by UI so "New Round" never freezes on computer's turn.
+     */
+    function newRoundAndResume() {
+      newRound();
+      if (vsAI) return runAITurnIfNeeded();
+      return [];
     }
 
     function getBroadcastPayload(extra) {
@@ -285,6 +296,7 @@
       switchSeat,
       runAITurnIfNeeded,
       newRound,
+      newRoundAndResume,
       getBroadcastPayload,
       afterHumanAction,
       applyRemoteAction,

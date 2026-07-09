@@ -734,16 +734,73 @@
       updateUIFromController();
       ensureSortButton();
 
+      // If computer holds first lead (3♠), kick AI immediately
+      kickAIIfNeeded(350);
+    }
+
+    /**
+     * After new deal / start: if current player is not the human, run AI turns.
+     * Without this, New Round freezes when an AI seat opens.
+     */
+    function kickAIIfNeeded(delayMs) {
+      const delay = (typeof delayMs === 'number') ? delayMs : 300;
       const ctrl = getCurrentController();
-      if (ctrl && ctrl.getState && ctrl.getState().currentPlayer !== currentHumanSeat) {
-        setTimeout(() => {
-          if (ctrl && typeof ctrl.runAITurnIfNeeded === 'function') {
-            const acts = ctrl.runAITurnIfNeeded() || [];
-            announceAIActions(acts);
+      if (!ctrl || typeof ctrl.runAITurnIfNeeded !== 'function') return;
+      const st = ctrl.getState && ctrl.getState();
+      if (!st || st.roundOver) return;
+      if (st.currentPlayer === currentHumanSeat) return;
+      setTimeout(() => {
+        const c = getCurrentController();
+        if (!c || typeof c.runAITurnIfNeeded !== 'function') return;
+        const st2 = c.getState && c.getState();
+        if (!st2 || st2.roundOver) return;
+        if (st2.currentPlayer === currentHumanSeat) {
+          updateUIFromController();
+          return;
+        }
+        const acts = c.runAITurnIfNeeded() || [];
+        announceAIActions(acts);
+        updateUIFromController();
+        // If still AI turn (shouldn't happen unless human seats include only 0 and AI finished oddly), try once more
+        const st3 = c.getState && c.getState();
+        if (st3 && !st3.roundOver && st3.currentPlayer !== currentHumanSeat) {
+          setTimeout(() => {
+            const acts2 = c.runAITurnIfNeeded() || [];
+            announceAIActions(acts2);
             updateUIFromController();
-          }
-        }, 350);
+          }, 200);
+        }
+      }, delay);
+    }
+
+    /**
+     * New round: redeal, refresh UI, and if an AI opens, make them play.
+     * Runs AI synchronously so the table never freezes waiting for a timer.
+     */
+    function newRound() {
+      const ctrl = getCurrentController();
+      if (!ctrl || typeof ctrl.newRound !== 'function') return null;
+      selectedCards = [];
+      customOrderKeys = null;
+      // Prefer resume helper when available (redeal + AI kick)
+      let acts = [];
+      if (typeof ctrl.newRoundAndResume === 'function') {
+        acts = ctrl.newRoundAndResume() || [];
+      } else {
+        ctrl.newRound();
+        const st0 = ctrl.getState();
+        if (st0 && !st0.roundOver && st0.currentPlayer !== currentHumanSeat &&
+            typeof ctrl.runAITurnIfNeeded === 'function') {
+          acts = ctrl.runAITurnIfNeeded() || [];
+        }
       }
+      if (typeof window !== 'undefined') window.controller = ctrl;
+      updateUIFromController();
+      ensureSortButton();
+      if (acts.length) announceAIActions(acts);
+      // Belt-and-suspenders: if still AI turn (e.g. vsAI false briefly), async kick
+      kickAIIfNeeded(200);
+      return ctrl.getState();
     }
 
     function startLive(nPlayersArg = 4) {
@@ -1208,6 +1265,8 @@
       showFriendsLobby,
       ensureSeatSwitcher,
       resetHandOrder,
+      newRound,
+      kickAIIfNeeded,
       // pure helpers for tests
       sortHandDefault,
       applyHandOrder,
