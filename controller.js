@@ -1,0 +1,263 @@
+/**
+ * Tiến Lên Controller — pure integration layer (zero DOM)
+ * Owns human/AI/live flow, seat switching, strict turn enforcement, broadcast.
+ * UI and tests drive ONLY this module for game actions.
+ */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) {
+    module.exports = factory(require('./engine.js'), require('./ai.js'));
+  } else {
+    root.TienLenController = factory(root.TienLenEngine, root.TienLenAI);
+  }
+}(typeof self !== 'undefined' ? self : this, function (engine, aiMod) {
+
+  function cloneState(s) {
+    return JSON.parse(JSON.stringify(s));
+  }
+
+  /**
+   * createController({ vsAI, numPlayers, humanSeats, seed })
+   * Returns an object with the public API the buttons and tests use.
+   */
+  function createController(opts = {}) {
+    let numPlayers = opts.numPlayers || 4;
+    let vsAI = opts.vsAI !== false; // default true
+    let humanSeats = Array.isArray(opts.humanSeats) ? opts.humanSeats.slice() : [0];
+    let currentHumanSeat = (typeof opts.currentHumanSeat === 'number')
+      ? opts.currentHumanSeat
+      : (humanSeats[0] || 0);
+    let state = engine.createGameState(numPlayers, opts.seed != null ? opts.seed : Date.now());
+    state.isFirstLead = true;
+
+    // Listeners for multiplayer / UI (state change hooks)
+    const listeners = [];
+
+    function notify(event) {
+      for (const fn of listeners) {
+        try { fn(event, getState()); } catch (_) {}
+      }
+    }
+
+    function onChange(fn) {
+      if (typeof fn === 'function') listeners.push(fn);
+      return () => {
+        const i = listeners.indexOf(fn);
+        if (i >= 0) listeners.splice(i, 1);
+      };
+    }
+
+    function getState() { return cloneState(state); }
+
+    function setMode(m = {}) {
+      if (typeof m.vsAI === 'boolean') vsAI = m.vsAI;
+      if (Array.isArray(m.humanSeats)) humanSeats = m.humanSeats.slice();
+      if (typeof m.currentHumanSeat === 'number') currentHumanSeat = m.currentHumanSeat;
+      if (typeof m.numPlayers === 'number' && m.numPlayers >= 2 && m.numPlayers <= 4) {
+        // Does not re-deal; use reconfigure for full restart
+        numPlayers = m.numPlayers;
+      }
+    }
+
+    /**
+     * Fully recreate game with new player count / mode.
+     * Critical: must not reuse a stale 4p instance when user picks 2 or 3.
+     */
+    function reconfigure(m = {}) {
+      if (typeof m.vsAI === 'boolean') vsAI = m.vsAI;
+      if (typeof m.numPlayers === 'number') numPlayers = m.numPlayers;
+      if (Array.isArray(m.humanSeats)) humanSeats = m.humanSeats.slice();
+      if (typeof m.currentHumanSeat === 'number') currentHumanSeat = m.currentHumanSeat;
+      const seed = m.seed != null ? m.seed : (Date.now() + Math.floor(Math.random() * 1000));
+      state = engine.createGameState(numPlayers, seed);
+      state.isFirstLead = true;
+      notify({ type: 'reconfigure', numPlayers, vsAI });
+      return getState();
+    }
+
+    function getLegalFor(seat) {
+      if (!state || state.roundOver) return [];
+      const p = state.players[seat];
+      if (!p || p.finished) return [];
+      return engine.getLegalPlays(p.hand, state.currentCombo, p.passed, state.isFirstLead, state.firstLeadCard);
+    }
+
+    function isValidSelection(seat, cards) {
+      if (!cards || !cards.length || !state) return false;
+      const p = state.players[seat];
+      if (!p || p.finished) return false;
+      const com = engine.detectCombo(cards);
+      if (!com) return false;
+      const legals = getLegalFor(seat);
+      const sig = cards.map(c => c.rank * 4 + c.suit).sort((a, b) => a - b).join(',');
+      return legals.some(l => l.map(c => c.rank * 4 + c.suit).sort((a, b) => a - b).join(',') === sig);
+    }
+
+    function isHumanSeat(seat) {
+      return humanSeats.includes(seat);
+    }
+
+    /**
+     * playHuman(seat, cards) — only succeeds if seat is the current player
+     */
+    function playHuman(seat, cards) {
+      if (state.roundOver) return { ok: false, error: 'round over' };
+      if (seat !== state.currentPlayer) return { ok: false, error: 'not your turn' };
+      const p = state.players[seat];
+      if (!p || p.finished || p.passed) return { ok: false, error: 'cannot play' };
+      if (!isValidSelection(seat, cards)) return { ok: false, error: 'illegal selection' };
+
+      const before = cloneState(state);
+      state = engine.applyPlay(state, seat, cards);
+      state.isFirstLead = false;
+
+      const payload = { type: 'play', seat, cards: JSON.parse(JSON.stringify(cards)) };
+      notify(payload);
+      return { ok: true, state: getState(), before, payload };
+    }
+
+    function passHuman(seat) {
+      if (state.roundOver) return { ok: false, error: 'round over' };
+      if (seat !== state.currentPlayer) return { ok: false, error: 'not your turn' };
+      const p = state.players[seat];
+      if (!p || p.finished) return { ok: false, error: 'cannot pass' };
+      // Free lead: must play a combo, cannot pass the lead
+      if (!state.currentCombo) return { ok: false, error: 'must lead a combination' };
+
+      const before = cloneState(state);
+      state = engine.pass(state, seat);
+      state.isFirstLead = false;
+
+      const payload = { type: 'pass', seat };
+      notify(payload);
+      return { ok: true, state: getState(), before, payload };
+    }
+
+    function switchSeat(seat) {
+      if (seat < 0 || seat >= state.numPlayers) return { ok: false, error: 'bad seat' };
+      currentHumanSeat = seat;
+      if (!humanSeats.includes(seat)) humanSeats.push(seat);
+      return { ok: true, currentHumanSeat };
+    }
+
+    /**
+     * Apply a remote play/pass (host authority or guest applying host broadcast).
+     * For multiplayer: host applies and broadcasts; guests call applyRemoteState.
+     */
+    function applyRemoteAction(action) {
+      if (!action || state.roundOver) return { ok: false, error: 'invalid' };
+      if (action.type === 'play' && action.cards) {
+        return playHuman(action.seat, action.cards);
+      }
+      if (action.type === 'pass') {
+        return passHuman(action.seat);
+      }
+      return { ok: false, error: 'unknown action' };
+    }
+
+    /** Replace full state (guest sync from host) */
+    function applyRemoteState(remoteState) {
+      if (!remoteState || !remoteState.players) return { ok: false };
+      state = cloneState(remoteState);
+      notify({ type: 'sync' });
+      return { ok: true, state: getState() };
+    }
+
+    function runAITurnIfNeeded() {
+      const results = [];
+      if (state.roundOver) return results;
+      if (!vsAI) return results;
+
+      let guard = 0;
+      while (!state.roundOver && guard < 48) {
+        guard++;
+        const cp = state.currentPlayer;
+        if (isHumanSeat(cp)) break;
+
+        const legals = engine.getLegalPlays(
+          state.players[cp].hand,
+          state.currentCombo,
+          state.players[cp].passed,
+          state.isFirstLead,
+          state.firstLeadCard
+        );
+
+        let action;
+        if (legals.length === 0) {
+          state = engine.pass(state, cp);
+          action = { type: 'pass', seat: cp };
+        } else {
+          let choice = null;
+          try {
+            if (aiMod && typeof aiMod.getAIMove === 'function') {
+              choice = aiMod.getAIMove(state, cp, { difficulty: 'hard' });
+            }
+          } catch (_) {
+            choice = null;
+          }
+          // null from AI = strategic pass (only valid when there is a combo to beat)
+          if (choice == null) {
+            if (state.currentCombo) {
+              state = engine.pass(state, cp);
+              action = { type: 'pass', seat: cp };
+            } else {
+              // Must lead: take best legal
+              choice = legals[0];
+              state = engine.applyPlay(state, cp, choice);
+              action = { type: 'play', seat: cp, cards: choice };
+            }
+          } else {
+            // Validate AI choice is legal
+            const sig = choice.map(c => c.rank * 4 + c.suit).sort((a, b) => a - b).join(',');
+            const ok = legals.some(l => l.map(c => c.rank * 4 + c.suit).sort((a, b) => a - b).join(',') === sig);
+            if (!ok) choice = legals[0];
+            state = engine.applyPlay(state, cp, choice);
+            action = { type: 'play', seat: cp, cards: choice };
+          }
+        }
+        state.isFirstLead = false;
+        results.push(action);
+        notify(action);
+      }
+      return results;
+    }
+
+    function newRound() {
+      state = engine.createGameState(state.numPlayers, Date.now() + Math.floor(Math.random() * 1000));
+      state.isFirstLead = true;
+      notify({ type: 'newRound' });
+      return getState();
+    }
+
+    function getBroadcastPayload(extra) {
+      return { type: 'sync', state: getState(), extra: extra || null };
+    }
+
+    function afterHumanAction() {
+      if (state.roundOver) return [];
+      return runAITurnIfNeeded();
+    }
+
+    return {
+      getState,
+      setMode,
+      reconfigure,
+      getLegalFor,
+      isValidSelection,
+      playHuman,
+      passHuman,
+      switchSeat,
+      runAITurnIfNeeded,
+      newRound,
+      getBroadcastPayload,
+      afterHumanAction,
+      applyRemoteAction,
+      applyRemoteState,
+      onChange,
+      isHumanSeat: (s) => isHumanSeat(s),
+      // for tests/debug
+      _getInternals: () => ({ vsAI, humanSeats: humanSeats.slice(), currentHumanSeat, numPlayers })
+    };
+  }
+
+  return { createController };
+}));
