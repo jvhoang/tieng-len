@@ -97,6 +97,64 @@ for (const np of [2, 3, 4]) {
   t('3p after reconfigure: AI runs without throw', Array.isArray(acts));
 }
 
+// Bomb after pass: playHuman must accept legal bomb even when seat has passed (RULES)
+log('\n--- Bomb after pass via real playHuman ---');
+{
+  const ctrl = ctrlFac.createController({
+    vsAI: false,
+    numPlayers: 4,
+    humanSeats: [0, 1, 2, 3],
+    currentHumanSeat: 0,
+    seed: 1
+  });
+  // Craft state: P0 has passed, current is single 2, P0 holds a quad bomb, it is P0's turn
+  // Use applyRemoteState / internal via play path: build on engine then inject
+  let st = ctrl.getState();
+  // Mutate via reconfigure seed then force-apply remote crafted state from engine clone
+  st = engine.createGameState(4, 1);
+  st.isFirstLead = false;
+  st.firstLeadCard = null;
+  st.currentCombo = engine.detectCombo([{ rank: 12, suit: 0 }]); // single 2♠
+  st.lastPlayBy = 1;
+  st.currentPlayer = 0;
+  st.currentLeader = 1;
+  st.players[0].passed = true; // locked out of normal plays
+  st.players[0].finished = false;
+  st.players[0].hand = [
+    { rank: 3, suit: 0 }, { rank: 3, suit: 1 }, { rank: 3, suit: 2 }, { rank: 3, suit: 3 }, // quad 6s
+    { rank: 5, suit: 0 }, { rank: 7, suit: 1 }
+  ];
+  st.players[1].passed = false;
+  st.players[1].hand = [{ rank: 8, suit: 0 }, { rank: 9, suit: 0 }];
+  st.players[2].passed = true;
+  st.players[2].hand = [{ rank: 8, suit: 1 }];
+  st.players[3].passed = true;
+  st.players[3].hand = [{ rank: 8, suit: 2 }];
+  st.trickStack = [{ seat: 1, cards: [{ rank: 12, suit: 0 }], combo: st.currentCombo }];
+  st.roundOver = false;
+
+  const inj = ctrl.applyRemoteState(st);
+  t('crafted state applied', inj && inj.ok);
+
+  const bomb = [
+    { rank: 3, suit: 0 }, { rank: 3, suit: 1 }, { rank: 3, suit: 2 }, { rank: 3, suit: 3 }
+  ];
+  const leg = ctrl.getLegalFor(0);
+  const bombLegal = leg.some(l =>
+    l.length === 4 && l.every(c => c.rank === 3)
+  );
+  t('getLegalFor includes quad bomb while passed vs single 2', bombLegal, 'legals=' + leg.length);
+  t('isValidSelection true for bomb while passed', ctrl.isValidSelection(0, bomb));
+
+  const res = ctrl.playHuman(0, bomb);
+  t('playHuman accepts bomb after pass (ok)', res && res.ok, res && res.error);
+  if (res && res.ok) {
+    const after = ctrl.getState();
+    t('after bomb, combo is the quad (or free lead if others already out)', after.currentCombo == null || after.currentCombo.type === 'quad');
+    t('after bomb, player 0 no longer has the four 6s', !after.players[0].hand.some(c => c.rank === 3));
+  }
+}
+
 log('\nSUMMARY passed=' + passed + ' failed=' + failed);
 fs.writeFileSync(path.join(SCRATCH, 'controller-seats-tests.log'), out.join('\n') + '\n');
 if (failed > 0) process.exit(1);

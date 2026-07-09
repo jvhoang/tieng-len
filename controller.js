@@ -97,14 +97,22 @@
     }
 
     /**
-     * playHuman(seat, cards) — only succeeds if seat is the current player
+     * playHuman(seat, cards) — only succeeds if seat is the current player.
+     * Pass lockout is enforced by isValidSelection → getLegalPlays(hasPassed):
+     * after passing, only bombs vs 2s remain legal (RULES.md), so those still play.
      */
     function playHuman(seat, cards) {
       if (state.roundOver) return { ok: false, error: 'round over' };
       if (seat !== state.currentPlayer) return { ok: false, error: 'not your turn' };
       const p = state.players[seat];
-      if (!p || p.finished || p.passed) return { ok: false, error: 'cannot play' };
-      if (!isValidSelection(seat, cards)) return { ok: false, error: 'illegal selection' };
+      if (!p || p.finished) return { ok: false, error: 'cannot play' };
+      // Do NOT hard-reject p.passed: bombs vs 2s are legal after pass (engine encodes this).
+      if (!isValidSelection(seat, cards)) {
+        return {
+          ok: false,
+          error: p.passed ? 'cannot play (passed; only bombs vs 2s allowed)' : 'illegal selection'
+        };
+      }
 
       const before = cloneState(state);
       state = engine.applyPlay(state, seat, cards);
