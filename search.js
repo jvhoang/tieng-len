@@ -314,17 +314,8 @@
     for (i = 0; i < leg.length; i++) {
       if (!playIsExpensive(leg[i])) cheapS.push(leg[i]);
     }
-    if (cheapS.length) {
-      // If we hold A or K, lead it to force passes from folders (keep 2s)
-      var highs = cheapS.filter(function (p) {
-        return p.length === 1 && p[0].rank >= 10;
-      });
-      if (highs.length && hand.length <= 9) {
-        highs.sort(function (a, b) { return b[0].rank - a[0].rank || b[0].suit - a[0].suit; });
-        return highs[0];
-      }
-      return orderLegals(cheapS, state, cp)[0]; // low first
-    }
+    // No multi: always lowest cheap single (never dump A/K/2 first)
+    if (cheapS.length) return orderLegals(cheapS, state, cp)[0];
     return orderLegals(leg, state, cp)[0];
   }
 

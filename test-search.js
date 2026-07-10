@@ -237,8 +237,9 @@ console.log('=== Det-MCTS default (imperfect info) ===');
   ok(mv2 != null && mv2.length > 0, 'getAIMove hard+hidden returns free lead');
   const st2 = ai.getLastSearchStats();
   ok(st2 != null, 'getLastSearchStats after hidden hard move');
-  ok(st2.mode === 'det-mcts' || st2.mode === 'mcts' || st2.mode === 'forced-out',
-    'stats.mode is search mode (got ' + (st2 && st2.mode) + ')');
+  // Free lead uses hard multi policy (not MCTS) — mode is free-lead-hard
+  ok(st2.mode === 'free-lead-hard' || st2.mode === 'det-mcts' || st2.mode === 'mcts' || st2.mode === 'forced-out',
+    'stats.mode is free-lead or search (got ' + (st2 && st2.mode) + ')');
 }
 
 console.log('=== Adversarial opponent nodes (go-out preferred) ===');

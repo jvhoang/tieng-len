@@ -228,9 +228,38 @@
             try { console.warn('[TiengLen] AI error, falling back to legal play', err); } catch (_) {}
           }
 
-          // SAFETY: free lead must play
+          // Free-lead fallback: NEVER use legals[0] (engine lists singles first).
+          function freeLeadFallback(list) {
+            const multi = list.filter(function (pl) {
+              if (pl.length < 2) return false;
+              const hasTwo = pl.some(function (c) { return c.rank === 12; });
+              const com = engine.detectCombo(pl);
+              const bomb = com && (com.type === 'quad' || (com.type === 'doubleseq' && com.numPairs >= 3));
+              return !hasTwo && !bomb;
+            });
+            if (multi.length) {
+              multi.sort(function (a, b) {
+                const ca = engine.detectCombo(a), cb = engine.detectCombo(b);
+                const ta = ca && ca.top ? ca.top.rank : 99;
+                const tb = cb && cb.top ? cb.top.rank : 99;
+                return ta - tb || a.length - b.length;
+              });
+              return multi[0];
+            }
+            // lowest cheap single
+            const singles = list.filter(function (pl) {
+              return pl.length === 1 && pl[0].rank < 12;
+            });
+            if (singles.length) {
+              singles.sort(function (a, b) { return a[0].rank - b[0].rank || a[0].suit - b[0].suit; });
+              return singles[0];
+            }
+            return list[0];
+          }
+
+          // SAFETY: free lead must play multi when possible
           if (choice == null && !state.currentCombo) {
-            choice = legals[0];
+            choice = freeLeadFallback(legals);
           }
 
           // SAFETY: if any cheap (non-2, non-bomb) legal exists, never pass
@@ -242,7 +271,6 @@
               return !hasTwo && !bomb;
             });
             if (cheap.length > 0) {
-              // Prefer lowest-top cheap beat
               cheap.sort(function (a, b) {
                 const ca = engine.detectCombo(a), cb = engine.detectCombo(b);
                 const ta = ca && ca.top ? ca.top.rank : 99;
@@ -259,15 +287,26 @@
               state = engine.pass(state, cp);
               action = { type: 'pass', seat: cp };
             } else {
-              choice = legals[0];
+              choice = freeLeadFallback(legals);
               state = engine.applyPlay(state, cp, choice);
               action = { type: 'play', seat: cp, cards: choice };
             }
           } else {
             // Validate AI choice is legal
             const sig = choice.map(c => c.rank * 4 + c.suit).sort((a, b) => a - b).join(',');
-            const ok = legals.some(l => l.map(c => c.rank * 4 + c.suit).sort((a, b) => a - b).join(',') === sig);
-            if (!ok) choice = legals[0];
+            let ok = legals.some(l => l.map(c => c.rank * 4 + c.suit).sort((a, b) => a - b).join(',') === sig);
+            // Free lead: reject illegal OR single when multi exists
+            if (!state.currentCombo) {
+              const multiExists = legals.some(function (pl) {
+                if (pl.length < 2) return false;
+                const hasTwo = pl.some(function (c) { return c.rank === 12; });
+                return !hasTwo;
+              });
+              if (multiExists && choice.length < 2) ok = false;
+            }
+            if (!ok) {
+              choice = state.currentCombo ? legals[0] : freeLeadFallback(legals);
+            }
             state = engine.applyPlay(state, cp, choice);
             action = { type: 'play', seat: cp, cards: choice };
           }

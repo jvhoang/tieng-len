@@ -8,9 +8,16 @@
  *  4. Genome weights still tune eval/pass thresholds for evolution baselines.
  *
  * Pass discipline: NEVER pass when a cheap (non-2, non-bomb) legal beat exists.
- * Free lead: ALWAYS return a legal play (never null).
+ * Free lead: ALWAYS multi when safe multi exists (never search-noise singles).
  * Hard mode: real search with time budget (browser ~0.8–1.5s).
  */
+
+/** Shown on title screen — bump when shipping AI behavior changes. */
+const AI_BUILD = {
+  id: 'v2.1-guarded-multilead',
+  stamped: '2026-07-10T07:15:00-07:00',
+  label: 'Grandmaster v2.1'
+};
 
 const engine = (typeof require === 'function') ? require('./engine.js') : (window.TienLenEngine || {});
 const genomeMod = (typeof require === 'function')
@@ -422,6 +429,63 @@ function getExpertMove(state, myIdx, genome) {
  * This is NOT evolvable away — fixes chronic single-only leading.
  * Also prefers go-out and structure-preserving multi plays via search expert when present.
  */
+/**
+ * Prefer any multi over any single (used when free-lead fallbacks hit legals[0]).
+ * getLegalPlays emits singles first — never use legals[0] raw on free lead.
+ */
+function preferNonSingleLegal(legals) {
+  if (!legals || !legals.length) return null;
+  const multiSafe = legals.filter(p => p.length >= 2 && !playIsExpensive(p));
+  if (multiSafe.length) {
+    return multiSafe.slice().sort((a, b) => {
+      // low top, then prefer pairs, then shorter multi (2–4)
+      const ta = topRank(a), tb = topRank(b);
+      if (ta !== tb) return ta - tb;
+      if (a.length !== b.length) {
+        // prefer length 2–4
+        const sa = a.length <= 4 ? a.length : 10 - a.length;
+        const sb = b.length <= 4 ? b.length : 10 - b.length;
+        return sb - sa;
+      }
+      return 0;
+    })[0];
+  }
+  const multiAny = legals.filter(p => p.length >= 2);
+  if (multiAny.length) return multiAny[0];
+  const cheapS = legals.filter(p => !playIsExpensive(p));
+  if (cheapS.length) {
+    return cheapS.slice().sort((a, b) => topRank(a) - topRank(b) || a.length - b.length)[0];
+  }
+  return legals[0];
+}
+
+function forceMultiFreeLead(legals, proposed, state, myIdx) {
+  const multi = (legals || []).filter(p => p.length >= 2 && !playIsExpensive(p));
+  if (!multi.length) {
+    // No safe multi: lowest cheap single (never burn 2/A/K first if lower exists)
+    if (proposed && proposed.length === 1 && !playIsExpensive(proposed)) return proposed;
+    return preferNonSingleLegal(legals);
+  }
+  if (proposed && proposed.length >= 2 && !playIsExpensive(proposed)) {
+    const sig = proposed.map(c => c.rank * 4 + c.suit).sort((a, b) => a - b).join(',');
+    const ok = multi.some(m => m.map(c => c.rank * 4 + c.suit).sort((a, b) => a - b).join(',') === sig);
+    if (ok) return proposed;
+  }
+  // Pick best multi: low top, prefer pair/triple/short seq
+  return multi.slice().sort((a, b) => {
+    const ta = topRank(a), tb = topRank(b);
+    if (ta !== tb) return ta - tb;
+    const pa = comboPriority(detectCombo(a).type);
+    const pb = comboPriority(detectCombo(b).type);
+    if (pa !== pb) return pb - pa;
+    // prefer length 2–4 over mega dumps
+    const la = a.length >= 2 && a.length <= 4 ? 0 : 1;
+    const lb = b.length >= 2 && b.length <= 4 ? 0 : 1;
+    if (la !== lb) return la - lb;
+    return a.length - b.length;
+  })[0];
+}
+
 function pickFreeLead(state, myIdx, legals, genome) {
   const g = G(genome);
   if (!legals.length) return null;
@@ -430,17 +494,16 @@ function pickFreeLead(state, myIdx, legals, genome) {
     if (legals[i].length === state.players[myIdx].hand.length) return legals[i];
   }
   // HARD: multi-only when non-expensive multi exists (never single-open)
+  let pick = null;
   if (searchMod && searchMod.pickFreeLeadHard) {
-    return searchMod.pickFreeLeadHard(legals, state, myIdx);
+    pick = searchMod.pickFreeLeadHard(legals, state, myIdx);
+  } else {
+    const multi = legals.filter(p => p.length >= 2 && !playIsExpensive(p));
+    const pool = multi.length ? multi : legals.filter(p => !playIsExpensive(p));
+    const use = pool.length ? pool : legals;
+    pick = heuristicOrder(use, state, myIdx, g)[0] || legals[0];
   }
-  if (searchMod && searchMod.expertPolicy) {
-    const dec = searchMod.expertPolicy(state, myIdx);
-    if (dec && dec.play && dec.play.length >= 2) return dec.play;
-  }
-  const multi = legals.filter(p => p.length >= 2 && !playIsExpensive(p));
-  const pool = multi.length ? multi : legals.filter(p => !playIsExpensive(p));
-  const use = pool.length ? pool : legals;
-  return heuristicOrder(use, state, myIdx, g)[0] || legals[0];
+  return forceMultiFreeLead(legals, pick, state, myIdx);
 }
 
 /**
@@ -753,21 +816,34 @@ function getAIMove(state, myIdx, opts = {}) {
     if (legals[gi].length === hand.length) return legals[gi];
   }
 
+  // ─── FREE LEAD: never use search (noise → singles). Hard multi policy only. ───
+  if (!cur) {
+    let lead = pickFreeLead(state, myIdx, legals, genome);
+    if (searchMod && searchMod.enforcePolicyGuards) {
+      lead = searchMod.enforcePolicyGuards(state, myIdx, lead);
+    }
+    // Absolute multi veto if anything still slipped through
+    lead = forceMultiFreeLead(legals, lead, state, myIdx);
+    _lastSearchStats = {
+      mode: 'free-lead-hard',
+      policyVersion: AI_BUILD.id,
+      stamped: AI_BUILD.stamped,
+      multi: !!(lead && lead.length >= 2)
+    };
+    return lead || preferNonSingleLegal(legals) || legals[0];
+  }
+
   // Evolution / easy / forced expert: pure expert with genome (fast) + hard guards
   const forceExpert = evolveFast || difficulty === 'easy' || iters === 0 || opts.mode === 'expert';
   if (forceExpert) {
     let mv;
-    if (!cur) mv = pickFreeLead(state, myIdx, legals, genome) || legals[0];
-    else {
-      const cheap = cheapLegals(legals);
-      if (cheap.length) mv = pickBestPlay(state, myIdx, cheap, genome) || cheap[0];
-      else if (shouldPassStrategically(state, myIdx, legals, genome)) mv = null;
-      else mv = pickBestPlay(state, myIdx, legals, genome) || legals[0];
-    }
+    const cheap = cheapLegals(legals);
+    if (cheap.length) mv = pickBestPlay(state, myIdx, cheap, genome) || cheap[0];
+    else if (shouldPassStrategically(state, myIdx, legals, genome)) mv = null;
+    else mv = pickBestPlay(state, myIdx, legals, genome) || legals[0];
     if (searchMod && searchMod.enforcePolicyGuards) {
       mv = searchMod.enforcePolicyGuards(state, myIdx, mv);
     }
-    // Endgame via search helper when available
     if (searchMod && searchMod.endgamePick) {
       const eg = searchMod.endgamePick(state, myIdx);
       if (eg) mv = eg;
@@ -775,14 +851,12 @@ function getAIMove(state, myIdx, opts = {}) {
     return mv == null ? null : mv;
   }
 
-  // ─── Search path (medium / hard / grandmaster) ───
+  // ─── Search path (combat only) ───
   const useSearch = opts.useSearch !== false && searchMod && typeof searchMod.searchMove === 'function'
     && !isFastEnv();
 
   if (useSearch) {
     try {
-      // Default: imperfect-info det-mcts (do not peek opponent hands).
-      // Callers may pass perfectInfo:true only for debug / perfect-info experiments.
       const wantPerfect = opts.perfectInfo === true && opts.hiddenInfo !== true;
       const searchOpts = {
         difficulty: difficulty,
@@ -799,43 +873,38 @@ function getAIMove(state, myIdx, opts = {}) {
       };
       const result = searchMod.searchMove(state, myIdx, searchOpts);
       _lastSearchStats = result && result.stats ? result.stats : null;
-      if (_lastSearchStats) _lastSearchStats.policyVersion = 'v2';
+      if (_lastSearchStats) {
+        _lastSearchStats.policyVersion = AI_BUILD.id;
+        _lastSearchStats.stamped = AI_BUILD.stamped;
+      }
 
       let mv = result ? result.play : undefined;
 
-      // HARD GUARDS: free-lead multi, no cheap-pass, contest highs with 2s, structure
       if (searchMod.enforcePolicyGuards) {
         mv = searchMod.enforcePolicyGuards(state, myIdx, mv);
-      } else {
-        if (mv == null && !cur) mv = pickFreeLead(state, myIdx, legals, genome) || legals[0];
-        if (mv == null && cur) {
-          const cheapS = cheapLegals(legals);
-          if (cheapS.length) mv = pickBestPlay(state, myIdx, cheapS, genome) || cheapS[0];
-        }
+      } else if (mv == null) {
+        const cheapS = cheapLegals(legals);
+        if (cheapS.length) mv = pickBestPlay(state, myIdx, cheapS, genome) || cheapS[0];
       }
 
-      // Validate legality
       if (mv != null && mv.length) {
         const sig = mv.map(c => c.rank * 4 + c.suit).sort((a, b) => a - b).join(',');
         const ok = legals.some(l => l.map(c => c.rank * 4 + c.suit).sort((a, b) => a - b).join(',') === sig);
         if (!ok) {
           mv = searchMod.enforcePolicyGuards
             ? searchMod.enforcePolicyGuards(state, myIdx, null)
-            : (pickBestPlay(state, myIdx, legals, genome) || legals[0]);
+            : (pickBestPlay(state, myIdx, legals, genome) || preferNonSingleLegal(legals) || legals[0]);
         }
       }
 
       return mv == null ? null : mv;
     } catch (e) {
       try { console.warn('[TiengLen] search failed, expert fallback', e); } catch (_) {}
-      _lastSearchStats = { error: String(e && e.message || e) };
+      _lastSearchStats = { error: String(e && e.message || e), stamped: AI_BUILD.stamped };
     }
   }
 
-  // ─── Expert / legacy MCTS fallback ───
-  if (!cur) {
-    return pickFreeLead(state, myIdx, legals, genome) || legals[0];
-  }
+  // ─── Expert / legacy MCTS fallback (combat) ───
 
   const cheap = cheapLegals(legals);
   if (cheap.length > 0) {
@@ -952,6 +1021,7 @@ function getLowestLegalMove(state, myIdx) {
 }
 
 const TienLenAI = {
+  AI_BUILD,
   getAIMove,
   getExpertMove,
   runMCTS,
@@ -965,6 +1035,8 @@ const TienLenAI = {
   cheapLegals,
   playIsExpensive,
   pickFreeLead,
+  forceMultiFreeLead,
+  preferNonSingleLegal,
   getLowestLegalMove,
   valueToWinProb,
   setActiveGenome,

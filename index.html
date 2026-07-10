@@ -458,6 +458,9 @@
         <h1 class="font-display text-7xl tracking-[-3.5px] text-white mb-2">Tiến Lên</h1>
         <p class="text-2xl text-[#c9a227] tracking-tight">Vietnam's beloved national card game</p>
         <p class="mt-2 text-[#d2b48c] max-w-md mx-auto">Shed your cards first. Master the 2s. Outplay everyone.</p>
+        <p id="ai-version-badge" class="mt-4 inline-block px-4 py-1.5 rounded-full bg-[#3a1f1a] border border-[#c9a227]/60 text-xs tracking-wide text-[#e8d48b]">
+          AI: loading…
+        </p>
       </div>
 
       <!-- Mode Cards -->
@@ -469,7 +472,7 @@
             <div class="text-4xl"><i class="fa-solid fa-robot text-[#c9a227]"></i></div>
             <div>
               <div class="text-2xl font-semibold tracking-tight">Play vs Computer</div>
-              <div class="text-sm text-[#c9a227]">Grandmaster AI (MCTS + determinization + expert)</div>
+              <div class="text-sm text-[#c9a227]">Grandmaster AI v2.1 — multi free-lead enforced</div>
             </div>
           </div>
           <div class="flex gap-2 mt-6">
@@ -629,14 +632,14 @@
   <!-- PeerJS free cloud signaling for cross-device multiplayer (GitHub Pages safe) -->
   <!-- Cache-bust query so browsers always load latest AI after deploys -->
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-  <script src="engine.js?v=20260710c"></script>
-  <script src="genome.js?v=20260710c"></script>
-  <script src="search.js?v=20260710c"></script>
-  <script src="ai.js?v=20260710c"></script>
-  <script src="controller.js?v=20260710c"></script>
-  <script src="hand-order.js?v=20260710c"></script>
-  <script src="multiplayer.js?v=20260710c"></script>
-  <script src="ui.js?v=20260710c"></script>
+  <script src="engine.js?v=20260710d"></script>
+  <script src="genome.js?v=20260710d"></script>
+  <script src="search.js?v=20260710d"></script>
+  <script src="ai.js?v=20260710d"></script>
+  <script src="controller.js?v=20260710d"></script>
+  <script src="hand-order.js?v=20260710d"></script>
+  <script src="multiplayer.js?v=20260710d"></script>
+  <script src="ui.js?v=20260710d"></script>
   <script>
     // Thin loader: modules provide the game. index.html = markup + styles + glue.
     (function(){
@@ -738,7 +741,27 @@
       };
 
       ui.boot();
-      console.log('%c[TiengLen] Ready — grandmaster search AI, free lead, hand reorder, online friends.', 'color:#c9a227');
+
+      // Version badge on title screen (confirms which AI build is loaded)
+      (function showAIVersion() {
+        const badge = document.getElementById('ai-version-badge');
+        const build = (window.TienLenAI && window.TienLenAI.AI_BUILD) || null;
+        const searchOk = !!(window.TienLenSearch && window.TienLenSearch.enforcePolicyGuards);
+        const text = build
+          ? (build.label || build.id) + ' • ' + (build.stamped || '') + (searchOk ? ' • search OK' : ' • SEARCH MISSING')
+          : 'AI build unknown — hard-refresh (Cmd+Shift+R)';
+        if (badge) badge.textContent = 'AI: ' + text;
+        try {
+          console.log('%c[TiengLen] ' + text, 'color:#c9a227;font-weight:bold');
+          console.log('[TiengLen] modules', {
+            engine: !!window.TienLenEngine,
+            search: !!window.TienLenSearch,
+            ai: !!window.TienLenAI,
+            enforce: searchOk,
+            build: build
+          });
+        } catch (_) {}
+      })();
     })();
   </script>
 </body>
