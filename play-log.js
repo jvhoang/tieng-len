@@ -1,12 +1,17 @@
 /**
  * play-log.js — Extensive live-game recording for human-vs-AI analysis.
  *
- * Pure JS, browser + Node. Persistence defaults to localStorage (GitHub Pages safe).
+ * Local cache: localStorage (offline / crash safety).
+ * Public remote: GitHub Issues on a public repo (auto-publish on game end).
+ *   - Read is public (no token) for anyone viewing History.
+ *   - Write needs a fine-grained PAT once (Issues: Read/Write on that repo).
+ *
  * Schema is reconstruction-friendly: full deal + ordered events + outcome.
  *
- * Storage layout:
+ * Storage layout (local):
  *   tienlen_playlog_v1_index  → [{ id, summary fields... }]
  *   tienlen_playlog_v1_game_<id> → full game record
+ *   tienlen_playlog_v1_remote_cfg → { provider, owner, repo, label, token }
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
@@ -20,8 +25,18 @@
   var SCHEMA_VERSION = 1;
   var INDEX_KEY = 'tienlen_playlog_v1_index';
   var GAME_PREFIX = 'tienlen_playlog_v1_game_';
+  var REMOTE_CFG_KEY = 'tienlen_playlog_v1_remote_cfg';
   var MAX_GAMES = 80; // localStorage quota safety
   var MAX_LEGALS_STORED = 24;
+  var ISSUE_MARKER = '<!-- TIENLEN_PLAYLOG_V1 -->';
+  var DEFAULT_REMOTE = {
+    provider: 'github',
+    owner: 'jvhoang',
+    repo: 'tieng-len',
+    label: 'play-log',
+    token: '',
+    autoPublish: true
+  };
 
   function nowIso() {
     return new Date().toISOString();
@@ -71,12 +86,42 @@
 
   // ─── Core store ───
 
+  function issueTitle(rec) {
+    var r = rec.result || {};
+    var outcome = r.abandoned ? 'abandoned'
+      : (r.humanWon === true ? 'human-win' : (r.humanWon === false ? 'ai-win' : 'incomplete'));
+    var when = (rec.endedAt || rec.startedAt || '').slice(0, 19);
+    return 'playlog | ' + (rec.numPlayers || '?') + 'p | ' + outcome + ' | ' + when + ' | ' + rec.id;
+  }
+
+  function encodeIssueBody(rec) {
+    return ISSUE_MARKER + '\n\n' +
+      '**Mode:** ' + (rec.mode || '') +
+      ' · **AI:** ' + ((rec.aiBuild && (rec.aiBuild.label || rec.aiBuild.id)) || rec.aiDifficulty || '') +
+      ' · **Human won:** ' + String(rec.result && rec.result.humanWon) +
+      '\n\n```json\n' + JSON.stringify(rec) + '\n```\n';
+  }
+
+  function decodeIssueBody(body) {
+    if (!body || body.indexOf(ISSUE_MARKER) < 0) return null;
+    var m = body.match(/```json\s*([\s\S]*?)\s*```/);
+    if (!m) return null;
+    try {
+      return JSON.parse(m[1]);
+    } catch (e) {
+      return null;
+    }
+  }
+
   function createPlayLog(opts) {
     opts = opts || {};
     var storage = opts.storage || defaultStorage();
     var maxGames = opts.maxGames != null ? opts.maxGames : MAX_GAMES;
     var active = null; // in-progress game record
     var t0 = 0;
+    var fetchFn = opts.fetch || (typeof fetch === 'function' ? fetch.bind(typeof window !== 'undefined' ? window : globalThis) : null);
+    var lastPublishStatus = { ok: null, at: null, message: '', gameId: null };
+    var remoteCache = {}; // id -> full game from GitHub
 
     function readIndex() {
       try {
@@ -128,8 +173,219 @@
         eventCount: (rec.events && rec.events.length) || 0,
         durationMs: r.durationMs != null ? r.durationMs : null,
         seed: rec.seed,
-        complete: !!rec.endedAt
+        complete: !!rec.endedAt,
+        public: !!rec._public,
+        remoteIssueUrl: rec._remoteIssueUrl || null,
+        remoteIssueNumber: rec._remoteIssueNumber || null,
+        source: rec._source || 'local'
       };
+    }
+
+    // ─── Remote (public GitHub Issues) ───
+
+    function getRemoteConfig() {
+      try {
+        var raw = storage.getItem(REMOTE_CFG_KEY);
+        var cfg = raw ? JSON.parse(raw) : {};
+        var out = Object.assign({}, DEFAULT_REMOTE, cfg || {});
+        // Allow page-level override without re-prompt (optional)
+        try {
+          if (typeof window !== 'undefined' && window.TIENLEN_REMOTE_LOG) {
+            out = Object.assign({}, out, window.TIENLEN_REMOTE_LOG);
+          }
+        } catch (eW) { /* ignore */ }
+        return out;
+      } catch (e) {
+        return Object.assign({}, DEFAULT_REMOTE);
+      }
+    }
+
+    function setRemoteConfig(partial) {
+      var cur = getRemoteConfig();
+      var next = Object.assign({}, cur, partial || {});
+      // Never persist window-only secrets into empty wipe accidentally
+      storage.setItem(REMOTE_CFG_KEY, JSON.stringify({
+        provider: next.provider || 'github',
+        owner: next.owner || DEFAULT_REMOTE.owner,
+        repo: next.repo || DEFAULT_REMOTE.repo,
+        label: next.label || DEFAULT_REMOTE.label,
+        token: next.token || '',
+        autoPublish: next.autoPublish !== false
+      }));
+      return getRemoteConfig();
+    }
+
+    function hasPublishAuth() {
+      var cfg = getRemoteConfig();
+      return !!(cfg.token && cfg.owner && cfg.repo);
+    }
+
+    function githubHeaders(cfg, withAuth) {
+      var h = {
+        'Accept': 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28'
+      };
+      if (withAuth && cfg.token) h.Authorization = 'Bearer ' + cfg.token;
+      return h;
+    }
+
+    function ensureLabel(cfg) {
+      if (!fetchFn || !cfg.token) return Promise.resolve();
+      var url = 'https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo + '/labels/' + encodeURIComponent(cfg.label);
+      return fetchFn(url, { headers: githubHeaders(cfg, true) }).then(function (res) {
+        if (res.status === 200) return;
+        // create label
+        return fetchFn('https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo + '/labels', {
+          method: 'POST',
+          headers: Object.assign({ 'Content-Type': 'application/json' }, githubHeaders(cfg, true)),
+          body: JSON.stringify({
+            name: cfg.label,
+            color: 'c9a227',
+            description: 'Tiến Lên live play logs (auto-published for AI analysis)'
+          })
+        }).then(function () { return; }).catch(function () { return; });
+      }).catch(function () { return; });
+    }
+
+    /**
+     * Publish a finished game to public GitHub Issues.
+     * Idempotent: if rec already has remoteIssueNumber, PATCH that issue.
+     */
+    function publishGame(rec) {
+      var cfg = getRemoteConfig();
+      if (!cfg.autoPublish) {
+        lastPublishStatus = { ok: false, at: nowIso(), message: 'autoPublish disabled', gameId: rec && rec.id };
+        return Promise.resolve({ ok: false, skipped: true, reason: 'disabled' });
+      }
+      if (!cfg.token) {
+        lastPublishStatus = { ok: false, at: nowIso(), message: 'No GitHub token — set one in History to publish publicly', gameId: rec && rec.id };
+        return Promise.resolve({ ok: false, error: 'no-token', needsAuth: true });
+      }
+      if (!fetchFn) {
+        lastPublishStatus = { ok: false, at: nowIso(), message: 'fetch unavailable', gameId: rec && rec.id };
+        return Promise.resolve({ ok: false, error: 'no-fetch' });
+      }
+      var body = encodeIssueBody(rec);
+      var title = issueTitle(rec);
+      var base = 'https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo + '/issues';
+
+      return ensureLabel(cfg).then(function () {
+        if (rec._remoteIssueNumber) {
+          return fetchFn(base + '/' + rec._remoteIssueNumber, {
+            method: 'PATCH',
+            headers: Object.assign({ 'Content-Type': 'application/json' }, githubHeaders(cfg, true)),
+            body: JSON.stringify({ title: title, body: body, labels: [cfg.label] })
+          });
+        }
+        return fetchFn(base, {
+          method: 'POST',
+          headers: Object.assign({ 'Content-Type': 'application/json' }, githubHeaders(cfg, true)),
+          body: JSON.stringify({ title: title, body: body, labels: [cfg.label] })
+        });
+      }).then(function (res) {
+        return res.json().then(function (data) {
+          if (!res.ok) {
+            var msg = (data && data.message) || ('HTTP ' + res.status);
+            lastPublishStatus = { ok: false, at: nowIso(), message: msg, gameId: rec.id };
+            return { ok: false, error: msg, status: res.status };
+          }
+          rec._public = true;
+          rec._source = 'github';
+          rec._remoteIssueNumber = data.number;
+          rec._remoteIssueUrl = data.html_url;
+          try { saveGame(rec); } catch (eS) { /* ignore */ }
+          remoteCache[rec.id] = rec;
+          lastPublishStatus = {
+            ok: true,
+            at: nowIso(),
+            message: 'Published as issue #' + data.number,
+            gameId: rec.id,
+            url: data.html_url
+          };
+          return { ok: true, number: data.number, url: data.html_url, record: rec };
+        });
+      }).catch(function (err) {
+        var msg = String(err && err.message || err);
+        lastPublishStatus = { ok: false, at: nowIso(), message: msg, gameId: rec && rec.id };
+        return { ok: false, error: msg };
+      });
+    }
+
+    /**
+     * Pull public play-log issues (no token required for public repos).
+     * Returns array of full game records; also caches them and merges into local index.
+     */
+    function fetchPublicGames() {
+      var cfg = getRemoteConfig();
+      if (!fetchFn) return Promise.resolve([]);
+      // list issues by label (public)
+      var url = 'https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo +
+        '/issues?labels=' + encodeURIComponent(cfg.label) +
+        '&state=all&per_page=100&sort=created&direction=desc';
+      return fetchFn(url, { headers: githubHeaders(cfg, !!cfg.token) }).then(function (res) {
+        if (!res.ok) throw new Error('GitHub list failed HTTP ' + res.status);
+        return res.json();
+      }).then(function (issues) {
+        if (!Array.isArray(issues)) return [];
+        var games = [];
+        for (var i = 0; i < issues.length; i++) {
+          var iss = issues[i];
+          if (iss.pull_request) continue;
+          var rec = decodeIssueBody(iss.body || '');
+          if (!rec || !rec.id) continue;
+          rec._public = true;
+          rec._source = 'github';
+          rec._remoteIssueNumber = iss.number;
+          rec._remoteIssueUrl = iss.html_url;
+          remoteCache[rec.id] = rec;
+          // Mirror into local cache so offline detail works
+          try { saveGame(rec); } catch (eM) { /* quota */ }
+          games.push(rec);
+        }
+        return games;
+      }).catch(function (err) {
+        lastPublishStatus = {
+          ok: false,
+          at: nowIso(),
+          message: 'Fetch public logs failed: ' + String(err && err.message || err),
+          gameId: null
+        };
+        return [];
+      });
+    }
+
+    function listGamesMerged() {
+      // Prefer freshest by startedAt; mark public when known
+      var idx = readIndex();
+      return idx.map(function (s) {
+        if (remoteCache[s.id]) {
+          s.public = true;
+          s.source = 'github';
+          s.remoteIssueUrl = remoteCache[s.id]._remoteIssueUrl || s.remoteIssueUrl;
+        }
+        return s;
+      });
+    }
+
+    function getPublishStatus() {
+      return Object.assign({}, lastPublishStatus);
+    }
+
+    function testRemoteConnection() {
+      var cfg = getRemoteConfig();
+      if (!fetchFn) return Promise.resolve({ ok: false, error: 'no-fetch' });
+      if (!cfg.token) return Promise.resolve({ ok: false, error: 'no-token', needsAuth: true });
+      var url = 'https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo;
+      return fetchFn(url, { headers: githubHeaders(cfg, true) }).then(function (res) {
+        return res.json().then(function (data) {
+          if (!res.ok) return { ok: false, error: (data && data.message) || ('HTTP ' + res.status) };
+          return ensureLabel(cfg).then(function () {
+            return { ok: true, repo: data.full_name, private: data.private };
+          });
+        });
+      }).catch(function (e) {
+        return { ok: false, error: String(e && e.message || e) };
+      });
     }
 
     function handSnapshot(state) {
@@ -349,6 +605,14 @@
       try { saveGame(active); } catch (e) { /* ignore */ }
       var done = active;
       active = null;
+      // Public auto-publish (async; local already saved)
+      try {
+        publishGame(done).then(function (res) {
+          if (typeof opts.onPublish === 'function') {
+            try { opts.onPublish(res, done); } catch (eP) { /* ignore */ }
+          }
+        });
+      } catch (ePub) { /* ignore */ }
       return done;
     }
 
@@ -361,6 +625,7 @@
     }
 
     function getGame(id) {
+      if (remoteCache[id]) return clone(remoteCache[id]);
       try {
         var raw = storage.getItem(gameKey(id));
         if (!raw) return null;
@@ -443,6 +708,7 @@
       finalizeActive: finalizeActive,
       getActive: getActive,
       listGames: listGames,
+      listGamesMerged: listGamesMerged,
       getGame: getGame,
       deleteGame: deleteGame,
       clearAll: clearAll,
@@ -452,6 +718,17 @@
       stats: stats,
       summarize: summarize,
       cardsSig: cardsSig,
+      // remote / public
+      getRemoteConfig: getRemoteConfig,
+      setRemoteConfig: setRemoteConfig,
+      hasPublishAuth: hasPublishAuth,
+      publishGame: publishGame,
+      fetchPublicGames: fetchPublicGames,
+      getPublishStatus: getPublishStatus,
+      testRemoteConnection: testRemoteConnection,
+      encodeIssueBody: encodeIssueBody,
+      decodeIssueBody: decodeIssueBody,
+      issueTitle: issueTitle,
       // test helpers
       _createMemoryStorage: createMemoryStorage,
       _readIndex: readIndex
@@ -467,8 +744,11 @@
 
   return {
     SCHEMA_VERSION: SCHEMA_VERSION,
+    DEFAULT_REMOTE: DEFAULT_REMOTE,
     createPlayLog: createPlayLog,
     getDefault: getDefault,
-    createMemoryStorage: createMemoryStorage
+    createMemoryStorage: createMemoryStorage,
+    encodeIssueBody: encodeIssueBody,
+    decodeIssueBody: decodeIssueBody
   };
 }));

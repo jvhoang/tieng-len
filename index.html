@@ -655,28 +655,64 @@
   <!-- Play History Modal -->
   <div id="history-modal" onclick="if (event.target.id==='history-modal') hidePlayHistory()" class="hidden fixed inset-0 bg-black/75 z-[110] flex items-center justify-center p-3 sm:p-4">
     <div onclick="event.stopImmediatePropagation()" class="modal bg-[#1a0907] border border-[#5c4630] rounded-3xl max-w-5xl w-full p-5 sm:p-7 text-sm max-h-[90vh] overflow-hidden flex flex-col">
-      <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
+      <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
         <div>
           <div class="font-display text-2xl text-white">Game History</div>
-          <div id="history-stats-line" class="text-xs text-[#c9a227] mt-1">Local data collection for AI analysis</div>
+          <div id="history-stats-line" class="text-xs text-[#c9a227] mt-1">Public auto-sync to GitHub Issues</div>
         </div>
         <div class="flex flex-wrap gap-2">
-          <button onclick="exportAllPlayLogs()" class="px-3 py-1.5 text-xs border border-[#c9a227]/50 rounded-full text-[#c9a227] hover:bg-[#3a1f1a]">Export all JSON</button>
-          <button onclick="clearAllPlayLogs()" class="px-3 py-1.5 text-xs border border-[#5c4630] rounded-full hover:border-red-700 text-[#d2b48c]">Clear all</button>
+          <button onclick="refreshPublicPlayLogs()" class="px-3 py-1.5 text-xs border border-[#5c4630] rounded-full text-[#d2b48c] hover:border-[#c9a227]">↻ Refresh public</button>
+          <button onclick="exportAllPlayLogs()" class="px-3 py-1.5 text-xs border border-[#c9a227]/50 rounded-full text-[#c9a227] hover:bg-[#3a1f1a]">Export JSON</button>
+          <button onclick="clearAllPlayLogs()" class="px-3 py-1.5 text-xs border border-[#5c4630] rounded-full hover:border-red-700 text-[#d2b48c]">Clear local</button>
           <button onclick="hidePlayHistory()" class="px-3 py-1.5 text-xs text-[#c9a227]">✕</button>
         </div>
       </div>
+
+      <!-- Public remote setup -->
+      <div id="remote-log-setup" class="mb-3 p-3 rounded-2xl border border-[#5c4630] bg-[#120806]">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+          <div class="text-xs font-semibold text-[#c9a227]">Public auto-publish (GitHub Issues)</div>
+          <div id="remote-log-status" class="text-[10px] text-[#8b6f2e]">Checking…</div>
+        </div>
+        <p class="text-[11px] text-[#8b6f2e] mb-2 leading-relaxed">
+          Finished games publish automatically as public issues labeled <code class="text-[#c9a227]">play-log</code> on
+          <code class="text-[#c9a227]">jvhoang/tieng-len</code>. Anyone can read them; you only need a token once to write.
+        </p>
+        <div class="grid sm:grid-cols-2 gap-2 mb-2">
+          <label class="text-[10px] text-[#8b6f2e]">Repo owner
+            <input id="remote-owner" class="mt-0.5 w-full bg-[#1a0907] border border-[#5c4630] rounded-xl px-2 py-1.5 text-xs text-white outline-none focus:border-[#c9a227]" value="jvhoang" />
+          </label>
+          <label class="text-[10px] text-[#8b6f2e]">Repo name
+            <input id="remote-repo" class="mt-0.5 w-full bg-[#1a0907] border border-[#5c4630] rounded-xl px-2 py-1.5 text-xs text-white outline-none focus:border-[#c9a227]" value="tieng-len" />
+          </label>
+        </div>
+        <label class="text-[10px] text-[#8b6f2e] block mb-2">GitHub fine-grained PAT (Issues: Read &amp; Write on this repo only)
+          <input id="remote-token" type="password" autocomplete="off" placeholder="github_pat_… or ghp_… (stored only in this browser)"
+            class="mt-0.5 w-full bg-[#1a0907] border border-[#5c4630] rounded-xl px-2 py-1.5 text-xs text-white outline-none focus:border-[#c9a227]" />
+        </label>
+        <div class="flex flex-wrap gap-2 items-center">
+          <button onclick="saveRemoteLogConfig()" class="viet-btn px-3 py-1.5 rounded-full text-xs">Save &amp; enable auto-publish</button>
+          <button onclick="testRemoteLogConfig()" class="px-3 py-1.5 text-xs border border-[#5c4630] rounded-full text-[#d2b48c]">Test connection</button>
+          <a id="remote-issues-link" href="https://github.com/jvhoang/tieng-len/issues?q=label%3Aplay-log" target="_blank" rel="noopener"
+             class="text-[10px] text-[#c9a227] underline">View public issues ↗</a>
+        </div>
+        <p class="text-[10px] text-[#6b5238] mt-2">
+          Create token: GitHub → Settings → Developer settings → Fine-grained tokens → only repo <strong>tieng-len</strong> → Permissions → Issues: Read and write.
+          Token never leaves this browser except as Authorization to api.github.com.
+        </p>
+      </div>
+
       <div class="grid md:grid-cols-5 gap-4 min-h-0 flex-1 overflow-hidden">
-        <div class="md:col-span-2 overflow-y-auto max-h-[65vh] pr-1 space-y-2" id="history-list">
+        <div class="md:col-span-2 overflow-y-auto max-h-[50vh] pr-1 space-y-2" id="history-list">
           <div class="text-[#8b6f2e] text-xs p-3">No games yet — play vs Computer to start collecting.</div>
         </div>
-        <div class="md:col-span-3 overflow-y-auto max-h-[65vh] rounded-2xl border border-[#5c4630]/60 bg-[#120806] p-4" id="history-detail">
+        <div class="md:col-span-3 overflow-y-auto max-h-[50vh] rounded-2xl border border-[#5c4630]/60 bg-[#120806] p-4" id="history-detail">
           <div class="text-[#8b6f2e] text-sm">Select a game to inspect deal, moves, AI stats, and outcome.</div>
         </div>
       </div>
       <div class="mt-3 text-[10px] text-[#6b5238]">
-        Logs are stored in this browser (localStorage). Export JSON before clearing or switching devices.
-        Each record includes the full deal, every play/pass, legal-move counts, human think time, AI search stats, and result.
+        Local cache + public GitHub Issues. Each record: full deal, every play/pass, legal counts, think times, AI stats, result.
+        After enabling the token, every finished game uploads automatically — no export needed.
       </div>
     </div>
   </div>
@@ -684,16 +720,16 @@
   <!-- PeerJS free cloud signaling for cross-device multiplayer (GitHub Pages safe) -->
   <!-- Cache-bust query so browsers always load latest AI after deploys -->
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-  <script>window.TIENLEN_SITE_BUILD = '20260710g';</script>
-  <script src="engine.js?v=20260710g"></script>
-  <script src="genome.js?v=20260710g"></script>
-  <script src="search.js?v=20260710g"></script>
-  <script src="ai.js?v=20260710g"></script>
-  <script src="play-log.js?v=20260710g"></script>
-  <script src="controller.js?v=20260710g"></script>
-  <script src="hand-order.js?v=20260710g"></script>
-  <script src="multiplayer.js?v=20260710g"></script>
-  <script src="ui.js?v=20260710g"></script>
+  <script>window.TIENLEN_SITE_BUILD = '20260710h';</script>
+  <script src="engine.js?v=20260710h"></script>
+  <script src="genome.js?v=20260710h"></script>
+  <script src="search.js?v=20260710h"></script>
+  <script src="ai.js?v=20260710h"></script>
+  <script src="play-log.js?v=20260710h"></script>
+  <script src="controller.js?v=20260710h"></script>
+  <script src="hand-order.js?v=20260710h"></script>
+  <script src="multiplayer.js?v=20260710h"></script>
+  <script src="ui.js?v=20260710h"></script>
   <script>
     // Thin loader: modules provide the game. index.html = markup + styles + glue.
     (function(){
@@ -761,6 +797,84 @@
         el.textContent = String(st.total || 0);
       }
 
+      function loadRemoteConfigIntoForm() {
+        const pl = getPlayLog();
+        if (!pl || !pl.getRemoteConfig) return;
+        const cfg = pl.getRemoteConfig();
+        const o = document.getElementById('remote-owner');
+        const r = document.getElementById('remote-repo');
+        const t = document.getElementById('remote-token');
+        if (o) o.value = cfg.owner || 'jvhoang';
+        if (r) r.value = cfg.repo || 'tieng-len';
+        if (t) t.value = cfg.token || '';
+        const link = document.getElementById('remote-issues-link');
+        if (link) {
+          link.href = 'https://github.com/' + (cfg.owner || 'jvhoang') + '/' + (cfg.repo || 'tieng-len') +
+            '/issues?q=label%3A' + encodeURIComponent(cfg.label || 'play-log');
+        }
+        updateRemoteStatusLine();
+      }
+
+      function updateRemoteStatusLine() {
+        const pl = getPlayLog();
+        const el = document.getElementById('remote-log-status');
+        if (!el || !pl) return;
+        const cfg = pl.getRemoteConfig ? pl.getRemoteConfig() : {};
+        const pub = pl.getPublishStatus ? pl.getPublishStatus() : {};
+        if (!cfg.token) {
+          el.textContent = 'Not publishing — add a token once to enable auto-sync';
+          el.className = 'text-[10px] text-amber-400/90';
+        } else if (pub.ok === true) {
+          el.textContent = 'Last publish OK: ' + (pub.message || '') + (pub.at ? ' @ ' + new Date(pub.at).toLocaleTimeString() : '');
+          el.className = 'text-[10px] text-emerald-400';
+        } else if (pub.ok === false && pub.message) {
+          el.textContent = 'Last publish: ' + pub.message;
+          el.className = 'text-[10px] text-red-300';
+        } else {
+          el.textContent = 'Auto-publish enabled for ' + cfg.owner + '/' + cfg.repo;
+          el.className = 'text-[10px] text-emerald-400/90';
+        }
+      }
+
+      window.saveRemoteLogConfig = function () {
+        const pl = getPlayLog();
+        if (!pl || !pl.setRemoteConfig) return;
+        const owner = (document.getElementById('remote-owner') || {}).value || 'jvhoang';
+        const repo = (document.getElementById('remote-repo') || {}).value || 'tieng-len';
+        const token = (document.getElementById('remote-token') || {}).value || '';
+        pl.setRemoteConfig({ owner: owner.trim(), repo: repo.trim(), token: token.trim(), autoPublish: true, label: 'play-log' });
+        updateRemoteStatusLine();
+        if (pl.testRemoteConnection) {
+          pl.testRemoteConnection().then(function (res) {
+            const el = document.getElementById('remote-log-status');
+            if (!el) return;
+            if (res.ok) {
+              el.textContent = 'Connected to ' + res.repo + ' — auto-publish ON';
+              el.className = 'text-[10px] text-emerald-400';
+            } else {
+              el.textContent = 'Connection failed: ' + (res.error || 'unknown');
+              el.className = 'text-[10px] text-red-300';
+            }
+          });
+        }
+      };
+
+      window.testRemoteLogConfig = function () {
+        window.saveRemoteLogConfig();
+      };
+
+      window.refreshPublicPlayLogs = function () {
+        const pl = getPlayLog();
+        const list = document.getElementById('history-list');
+        if (!pl || !pl.fetchPublicGames) return;
+        if (list) list.innerHTML = '<div class="text-[#8b6f2e] text-xs p-3">Loading public logs from GitHub…</div>';
+        pl.fetchPublicGames().then(function () {
+          renderHistoryList();
+          refreshHistorySummary();
+          updateRemoteStatusLine();
+        });
+      };
+
       function renderHistoryList() {
         const pl = getPlayLog();
         const list = document.getElementById('history-list');
@@ -770,15 +884,16 @@
           list.innerHTML = '<div class="text-red-400/80 text-xs p-3">Play log module not loaded.</div>';
           return;
         }
-        const games = pl.listGames();
+        const games = pl.listGamesMerged ? pl.listGamesMerged() : pl.listGames();
         const st = pl.stats();
         if (statsLine) {
           const rate = st.humanWinRate != null ? (st.humanWinRate * 100).toFixed(0) + '% human wins' : 'no completed games yet';
+          const auth = pl.hasPublishAuth && pl.hasPublishAuth() ? 'public sync ON' : 'local only';
           statsLine.textContent = st.total + ' stored • ' + st.complete + ' complete • ' + rate +
-            ' • AI ' + ((st.aiWins != null) ? st.aiWins : 0) + ' wins';
+            ' • AI ' + ((st.aiWins != null) ? st.aiWins : 0) + ' wins • ' + auth;
         }
         if (!games.length) {
-          list.innerHTML = '<div class="text-[#8b6f2e] text-xs p-3">No games yet — play vs Computer to start collecting.</div>';
+          list.innerHTML = '<div class="text-[#8b6f2e] text-xs p-3">No games yet — play vs Computer to start collecting. Enable a GitHub token above for public auto-publish.</div>';
           return;
         }
         list.innerHTML = games.map(function (g) {
@@ -788,9 +903,12 @@
           const color = g.humanWon === true ? 'text-emerald-400' : (g.humanWon === false ? 'text-red-300' : 'text-[#c9a227]');
           const diff = g.aiDifficulty || '?';
           const n = g.numPlayers || '?';
+          const pub = (g.public || g.source === 'github')
+            ? '<span class="text-[9px] px-1.5 py-0.5 rounded-full border border-emerald-700/50 text-emerald-400/90">PUBLIC</span>'
+            : '<span class="text-[9px] px-1.5 py-0.5 rounded-full border border-[#5c4630] text-[#6b5238]">local</span>';
           return '<button type="button" data-gid="' + g.id + '" class="history-item w-full text-left p-3 rounded-2xl border border-[#5c4630] hover:border-[#c9a227] bg-[#120806] transition-colors">' +
-            '<div class="flex justify-between gap-2"><span class="text-xs text-[#d2b48c]">' + when + '</span>' +
-            '<span class="text-[10px] ' + color + '">' + outcome + '</span></div>' +
+            '<div class="flex justify-between gap-2 items-center"><span class="text-xs text-[#d2b48c]">' + when + '</span>' +
+            '<span class="flex items-center gap-1"><span class="text-[10px] ' + color + '">' + outcome + '</span>' + pub + '</span></div>' +
             '<div class="text-[11px] text-[#8b6f2e] mt-1">' + n + 'p • ' + (g.mode || 'vsAI') + ' • AI ' + diff +
             ' • ' + (g.eventCount || 0) + ' events</div>' +
             '<div class="text-[10px] text-[#6b5238] truncate mt-0.5">' + (g.aiBuildLabel || g.aiBuildId || '') + '</div>' +
@@ -846,13 +964,18 @@
             '<span class="text-[#8b6f2e]">' + think + mode + fb + sizes + '</span></div>';
         }).join('');
 
+        const issueLink = g._remoteIssueUrl
+          ? '<a href="' + g._remoteIssueUrl + '" target="_blank" rel="noopener" class="px-2 py-1 text-[10px] border border-emerald-700/40 rounded-full text-emerald-400">Public issue ↗</a>'
+          : '';
+        const republish = '<button onclick="republishPlayLog(\'' + g.id + '\')" class="px-2 py-1 text-[10px] border border-[#5c4630] rounded-full text-[#c9a227]">Publish now</button>';
         panel.innerHTML =
           '<div class="flex flex-wrap justify-between gap-2 mb-3">' +
             '<div><div class="text-white font-semibold">Game ' + g.id + '</div>' +
             '<div class="text-[11px] text-[#8b6f2e]">' + (g.startedAt || '') + ' → ' + (g.endedAt || '…') + '</div></div>' +
-            '<div class="flex gap-2">' +
+            '<div class="flex flex-wrap gap-2">' +
+              issueLink + republish +
               '<button onclick="exportOnePlayLog(\'' + g.id + '\')" class="px-2 py-1 text-[10px] border border-[#5c4630] rounded-full text-[#c9a227]">Export</button>' +
-              '<button onclick="deleteOnePlayLog(\'' + g.id + '\')" class="px-2 py-1 text-[10px] border border-[#5c4630] rounded-full text-[#d2b48c]">Delete</button>' +
+              '<button onclick="deleteOnePlayLog(\'' + g.id + '\')" class="px-2 py-1 text-[10px] border border-[#5c4630] rounded-full text-[#d2b48c]">Delete local</button>' +
             '</div></div>' +
           '<div class="text-xs text-[#d2b48c] mb-2">' +
             (g.numPlayers || '?') + 'p • ' + (g.mode || '') + ' • AI ' + (g.aiDifficulty || '') +
@@ -870,11 +993,39 @@
           '<div class="space-y-0">' + movesHtml + '</div>';
       }
 
+      window.republishPlayLog = function (id) {
+        const pl = getPlayLog();
+        if (!pl || !pl.publishGame) return;
+        const g = pl.getGame(id);
+        if (!g) return;
+        const el = document.getElementById('remote-log-status');
+        if (el) { el.textContent = 'Publishing…'; el.className = 'text-[10px] text-[#c9a227]'; }
+        pl.publishGame(g).then(function (res) {
+          updateRemoteStatusLine();
+          if (res && res.ok) {
+            showHistoryDetail(id);
+            renderHistoryList();
+          } else {
+            alert('Publish failed: ' + ((res && res.error) || 'unknown') +
+              (res && res.needsAuth ? '\n\nAdd a GitHub token in the setup box first.' : ''));
+          }
+        });
+      };
+
       window.showPlayHistory = function () {
         const m = document.getElementById('history-modal');
         if (m) m.classList.remove('hidden');
+        loadRemoteConfigIntoForm();
         renderHistoryList();
         refreshHistorySummary();
+        // Always pull public issues (no token needed for public repo)
+        const pl = getPlayLog();
+        if (pl && pl.fetchPublicGames) {
+          pl.fetchPublicGames().then(function () {
+            renderHistoryList();
+            refreshHistorySummary();
+          });
+        }
       };
       window.hidePlayHistory = function () {
         const m = document.getElementById('history-modal');

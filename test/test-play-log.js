@@ -144,7 +144,37 @@ console.log('=== controller logs a mini vs-AI game ===');
   ok(hasAi, 'ai actions logged');
 }
 
-console.log('=== SUMMARY ===');
-console.log('Passed:', passed, 'Failed:', failed);
-if (failed) process.exit(1);
-console.log('ALL PLAY-LOG TESTS PASSED');
+console.log('=== GitHub issue encode/decode ===');
+{
+  const pl = playLogMod.createPlayLog({ storage: playLogMod.createMemoryStorage() });
+  const sample = {
+    schemaVersion: 1,
+    id: 'g_test_remote',
+    startedAt: '2026-07-10T00:00:00.000Z',
+    endedAt: '2026-07-10T00:05:00.000Z',
+    mode: 'vsAI',
+    numPlayers: 2,
+    humanSeats: [0],
+    aiDifficulty: 'hard',
+    events: [{ i: 0, type: 'game_start' }],
+    result: { humanWon: true, winner: 0, loser: 1 }
+  };
+  const body = pl.encodeIssueBody(sample);
+  ok(body.indexOf('TIENLEN_PLAYLOG_V1') >= 0, 'issue body has marker');
+  const decoded = pl.decodeIssueBody(body);
+  ok(decoded && decoded.id === 'g_test_remote', 'decode round-trip id');
+  ok(decoded.result && decoded.result.humanWon === true, 'decode preserves result');
+  ok(pl.issueTitle(sample).indexOf('human-win') >= 0, 'issue title encodes outcome');
+  // publish without token → needsAuth
+  pl.setRemoteConfig({ token: '', autoPublish: true, owner: 'jvhoang', repo: 'tieng-len' });
+  pl.publishGame(sample).then(function (res) {
+    ok(res && res.needsAuth === true, 'publish without token reports needsAuth');
+    console.log('=== SUMMARY ===');
+    console.log('Passed:', passed, 'Failed:', failed);
+    if (failed) process.exit(1);
+    console.log('ALL PLAY-LOG TESTS PASSED');
+  }).catch(function (e) {
+    console.log('FAIL: publish promise', e);
+    process.exit(1);
+  });
+}
