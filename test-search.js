@@ -176,6 +176,80 @@ console.log('=== Determinization preserves my hand ===');
   ok(total === 52 || total === 13 * 4, 'all cards accounted (got ' + total + ')');
 }
 
+console.log('=== publicHistory + constrained determinize ===');
+{
+  let st = engine.createGameState(2, 77);
+  st.isFirstLead = false;
+  // Craft: seat 0 leads a 5, seat 1 passes (so seat 1 must not hold a non-bomb beater of 5)
+  st.currentPlayer = 0;
+  st.currentCombo = null;
+  st.publicHistory = [];
+  const lead5 = [{ rank: 5, suit: 0 }];
+  st.players[0].hand = [{ rank: 5, suit: 0 }, { rank: 3, suit: 1 }, { rank: 4, suit: 1 }];
+  st.players[1].hand = [{ rank: 6, suit: 0 }, { rank: 7, suit: 0 }, { rank: 8, suit: 0 }];
+  st = engine.applyPlay(st, 0, lead5);
+  ok(st.publicHistory && st.publicHistory.some(function (e) { return e.type === 'play'; }),
+    'publicHistory records play');
+  st = engine.pass(st, 1);
+  ok(st.publicHistory.some(function (e) { return e.type === 'pass' && e.seat === 1; }),
+    'publicHistory records pass');
+  // handHasNonBombBeater: hand with 6 must beat single 5
+  const against = { type: 'single', size: 1, top: { rank: 5, suit: 0 }, cards: lead5 };
+  ok(search.handHasNonBombBeater([{ rank: 6, suit: 0 }], against),
+    'higher single is a non-bomb beater');
+  ok(!search.handHasNonBombBeater([{ rank: 4, suit: 0 }], against),
+    'lower single is not a beater');
+  // Constrained det: pool includes cards that do NOT beat single-3, so rejection
+  // can succeed. Seat1 size=2 from pool of 4 low/high mix.
+  let st2 = engine.createGameState(2, 88);
+  st2.isFirstLead = false;
+  st2.players[0].hand = [{ rank: 3, suit: 0 }, { rank: 12, suit: 0 }]; // keep a 2
+  // Unknown pool will be opponent cards: mix of non-beaters (rank<=3) and beaters
+  st2.players[1].hand = [
+    { rank: 0, suit: 1 }, { rank: 1, suit: 1 }, { rank: 2, suit: 1 },
+    { rank: 9, suit: 0 }, { rank: 10, suit: 0 }
+  ];
+  // Make seat1 size 2 after we only use 2 cards as "unknown" — set sizes by hand lens
+  st2.players[1].hand = [
+    { rank: 0, suit: 1 }, { rank: 1, suit: 1 }, { rank: 9, suit: 0 }, { rank: 10, suit: 0 }
+  ];
+  st2.currentCombo = null;
+  st2.publicHistory = [];
+  st2 = engine.applyPlay(st2, 0, [{ rank: 3, suit: 0 }]);
+  st2 = engine.pass(st2, 1);
+  // Now seat0 has [12], seat1 has 4 cards. Shrink seat1 to 2 for cleaner test:
+  st2.players[1].hand = st2.players[1].hand.slice(0, 2);
+  // Actually re-setup cleanly:
+  st2.players[0].hand = [{ rank: 12, suit: 0 }];
+  st2.players[1].hand = [
+    { rank: 0, suit: 1 }, { rank: 1, suit: 1 }, { rank: 9, suit: 0 }, { rank: 10, suit: 0 }
+  ];
+  // Seat1 size 2: only two of the four pool cards assigned each det
+  st2.players[1].hand = st2.players[1].hand; // 4 cards — det redistributes
+  // Use 2-card opp: pool of 4 by adding fake third player? Simpler: 2p with sizes 1 and 2
+  // pool = 2 cards only. Put non-beaters only so all samples consistent:
+  st2.players[1].hand = [{ rank: 0, suit: 1 }, { rank: 1, suit: 1 }];
+  const my = 0;
+  let consistent = 0;
+  const rng2 = search.seededRandom(12345);
+  const passEv = (st2.publicHistory || []).find(function (e) { return e.type === 'pass'; });
+  ok(!!passEv, 'pass event exists for constraint test');
+  for (let t = 0; t < 30; t++) {
+    const d = search.determinize(st2, my, rng2, false);
+    const oppHand = d.players[1].hand;
+    if (!search.handHasNonBombBeater(oppHand, passEv.against)) consistent++;
+  }
+  ok(consistent === 30, 'constrained det keeps non-beater hands consistent (got ' + consistent + ')');
+
+  // Rejection: pool only beaters → cannot satisfy; still returns a full deal (fallback)
+  let st3 = engine.cloneStateFast(st2);
+  st3.players[1].hand = [{ rank: 9, suit: 0 }, { rank: 10, suit: 0 }];
+  st3.publicHistory = st2.publicHistory.slice();
+  const d3 = search.determinize(st3, my, search.seededRandom(1), false);
+  ok(d3.players[1].hand.length === 2, 'fallback det still assigns correct hand size');
+  ok(d3.players[0].hand.length === st3.players[0].hand.length, 'my hand fixed on fallback');
+}
+
 console.log('=== Go-out forced ===');
 {
   const st = engine.createGameState(2, 1);

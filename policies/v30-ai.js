@@ -14,17 +14,17 @@
 
 /** Shown on title screen — bump when shipping AI behavior changes. */
 const AI_BUILD = {
-  id: 'v4.0-hidden-constrained',
-  stamped: '2026-07-10T18:30:00-07:00',
-  label: 'Grandmaster v4.0'
+  id: 'v3.0-trash-control-endgame',
+  stamped: '2026-07-10T10:30:00-07:00',
+  label: 'Grandmaster v3.0'
 };
 
-const engine = (typeof require === 'function') ? require('./engine.js') : (window.TienLenEngine || {});
+const engine = (typeof require === 'function') ? require('../engine.js') : (window.TienLenEngine || {});
 const genomeMod = (typeof require === 'function')
-  ? require('./genome.js')
+  ? require('../genome.js')
   : (typeof window !== 'undefined' ? window.TienLenGenome : null);
 const searchMod = (typeof require === 'function')
-  ? require('./search.js')
+  ? require('./v30-search.js')
   : (typeof window !== 'undefined' ? window.TienLenSearch : null);
 const {
   detectCombo, getLegalPlays, applyPlay, pass, cardCompare, cloneState: engineClone
@@ -873,13 +873,7 @@ function getAIMove(state, myIdx, opts = {}) {
         hiddenInfo: !wantPerfect,
         determinizations: opts.determinizations != null ? opts.determinizations : (wantPerfect ? 1 : 16),
         seed: opts.seed,
-        maxBranch: opts.maxBranch != null ? opts.maxBranch : (freeLead ? 16 : 12),
-        exploit: opts.exploit,
-        exactExploit: opts.exactExploit,
-        exactExploitMs: opts.exactExploitMs != null ? opts.exactExploitMs : opts.timeMs,
-        bestResponse: opts.bestResponse,
-        alphaBeta: opts.alphaBeta,
-        brTrials: opts.brTrials
+        maxBranch: opts.maxBranch != null ? opts.maxBranch : (freeLead ? 16 : 12)
       };
       const result = searchMod.searchMove(state, myIdx, searchOpts);
       _lastSearchStats = result && result.stats ? result.stats : null;
@@ -889,31 +883,13 @@ function getAIMove(state, myIdx, opts = {}) {
       }
 
       let mv = result ? result.play : undefined;
-      const exploitMode = _lastSearchStats && (
-        _lastSearchStats.mode === 'exploit-v30' ||
-        _lastSearchStats.mode === 'exact-exploit' ||
-        _lastSearchStats.mode === 'exact-exploit-out' ||
-        _lastSearchStats.mode === 'exact-exploit-soft' ||
-        _lastSearchStats.mode === 'exact-endgame' ||
-        _lastSearchStats.mode === 'alpha-beta'
-      );
 
       if (searchMod.enforcePolicyGuards) {
-        // Exploit/exact already searched; only apply hard safety (no-gift), not multi overrides
-        if (exploitMode) {
-          const omin = oppMinHand(state, myIdx);
-          if (!cur && mv && mv.length === 1 && omin === 1 && mv[0].rank < 10) {
-            mv = searchMod.pickFreeLeadHard
-              ? searchMod.pickFreeLeadHard(legals, state, myIdx)
-              : mv;
-          }
-        } else {
-          mv = searchMod.enforcePolicyGuards(state, myIdx, mv);
-        }
+        mv = searchMod.enforcePolicyGuards(state, myIdx, mv);
       }
-      if (!cur && !exploitMode) {
+      if (!cur) {
         mv = forceMultiFreeLead(legals, mv, state, myIdx);
-      } else if (mv == null && cur) {
+      } else if (mv == null) {
         const cheapS = cheapLegals(legals);
         if (cheapS.length) mv = pickBestPlay(state, myIdx, cheapS, genome) || cheapS[0];
       }

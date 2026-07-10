@@ -11,7 +11,7 @@
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./engine.js'));
+    module.exports = factory(require('../engine.js'));
   } else {
     root.TienLenSearch = factory(root.TienLenEngine);
   }
@@ -636,47 +636,19 @@
     return applyPlayFast(state, cp, dec.play);
   }
 
-  // Optional live frozen modules for accurate best-response (Node bench)
+  // Optional live frozen v2.1 module for accurate best-response (Node bench)
   var _v21Live = null;
-  var _v30Live = null;
   function getV21Live() {
     if (_v21Live !== null) return _v21Live || null;
     _v21Live = false;
     if (typeof require === 'function') {
       try {
-        _v21Live = require('./policies/v21-ai.js');
+        _v21Live = require('./v21-ai.js');
       } catch (e1) {
-        try { _v21Live = require('../policies/v21-ai.js'); } catch (e2) { _v21Live = false; }
+        try { _v21Live = require('./v21-ai.js'); } catch (e2) { _v21Live = false; }
       }
     }
     return _v21Live || null;
-  }
-  function getV30Live() {
-    if (_v30Live !== null) return _v30Live || null;
-    _v30Live = false;
-    if (typeof require === 'function') {
-      try {
-        _v30Live = require('./policies/v30-ai.js');
-      } catch (e1) {
-        try { _v30Live = require('../policies/v30-ai.js'); } catch (e2) { _v30Live = false; }
-      }
-    }
-    return _v30Live || null;
-  }
-
-  /**
-   * Strongest available frozen opponent for BR playouts: prefer v3.0 expert, else v2.1.
-   */
-  function opponentPolicyStrong(state, cp) {
-    var live30 = getV30Live();
-    if (live30 && typeof live30.getAIMove === 'function') {
-      try {
-        var mv30 = live30.getAIMove(state, cp, { difficulty: 'easy', iterations: 0, mode: 'expert' });
-        if (mv30 == null) return { pass: true };
-        return { play: mv30 };
-      } catch (e30) { /* fall through */ }
-    }
-    return opponentPolicyV21(state, cp);
   }
 
   /**
@@ -737,16 +709,14 @@
 
   /**
    * Best-response MC against v2.1-style opponent model.
-   * For each root candidate, run full playouts (self=expert, opp=v21 model);
-   * pick max hard win rate. Under hidden info, each trial re-determinizes.
+   * For each root candidate, run full playouts (self=v3 expert, opp=v21 model);
+   * pick max hard win rate. Strong vs fixed multi-always free-lead policies.
    */
   function bestResponseMove(state, myIdx, opts) {
     opts = opts || {};
     var trials = opts.trials != null ? opts.trials : 24;
     var maxBranch = opts.maxBranch || 12;
     var timeMs = opts.timeMs || 0;
-    var perfectInfo = opts.perfectInfo === true;
-    var rng = opts.rng || Math.random;
     var t0 = Date.now();
 
     var hand = state.players[myIdx].hand;
@@ -785,19 +755,15 @@
       var wins = 0;
       var nTry = trials;
       for (var t = 0; t < nTry; t++) {
-        var root = perfectInfo ? state : determinize(state, myIdx, rng, false);
         var s;
-        if (act == null) s = passFast(root, myIdx);
-        else s = applyPlayFast(root, myIdx, act);
+        if (act == null) s = passFast(state, myIdx);
+        else s = applyPlayFast(state, myIdx, act);
         s.isFirstLead = false;
         // full playout
         var steps = 0;
         while (!s.roundOver && steps < 200) {
           var cp = s.currentPlayer;
-          // Self: expert. Opp: v2.1-style (multi-always free lead) — faster and
-          // empirically transfers well vs v3.0 expert; live v30 BR is too slow/noisy.
-          var oppPol = (opts.oppModel === 'strong') ? opponentPolicyStrong(s, cp) : opponentPolicyV21(s, cp);
-          var dec = (cp === myIdx) ? expertPolicy(s, cp) : oppPol;
+          var dec = (cp === myIdx) ? expertPolicy(s, cp) : opponentPolicyV21(s, cp);
           s = applyDecision(s, cp, dec);
           s.isFirstLead = false;
           steps++;
@@ -816,548 +782,11 @@
     return {
       play: bestPlay,
       stats: {
-        mode: perfectInfo ? 'best-response' : 'best-response-det',
+        mode: 'best-response',
         avg: bestRate,
         top: details.slice(0, 5),
         ms: Date.now() - t0,
-        trials: trials,
-        perfectInfo: perfectInfo
-      }
-    };
-  }
-
-  /**
-   * Pure expert/v30 playout (no nested search) — used inside shallow self picks.
-   */
-  function exploitPlayoutLeaf(state, myIdx, maxSteps) {
-    var s = cloneStateFast(state);
-    var steps = 0;
-    maxSteps = maxSteps || 220;
-    while (!s.roundOver && steps < maxSteps) {
-      var cp = s.currentPlayer;
-      var dec = (cp === myIdx) ? expertPolicy(s, cp) : opponentPolicyStrong(s, cp);
-      s = applyDecision(s, cp, dec);
-      s.isFirstLead = false;
-      steps++;
-    }
-    if (s.players[myIdx].finished) {
-      return (s.finishOrder || []).indexOf(myIdx) === 0 ? 1 : 0;
-    }
-    if (s.roundOver) return s.loser === myIdx ? 0 : 1;
-    return 0;
-  }
-
-  /**
-   * Shallow self: try top free-lead/combat candidates; pick any that wins vs v30
-   * under leaf playouts. Falls back to expertPolicy.
-   */
-  function shallowSelfPick(state, myIdx) {
-    var hand = state.players[myIdx].hand;
-    var cur = state.currentCombo;
-    // Nest on free leads always (capped); combat only when short
-    if (cur && hand.length > 9) return expertPolicy(state, myIdx);
-    var leg = getLegalPlays(hand, cur, state.players[myIdx].passed,
-      state.isFirstLead, state.firstLeadCard);
-    if (!leg.length) return { pass: true };
-    var i;
-    for (i = 0; i < leg.length; i++) {
-      if (leg[i].length === hand.length) return { play: leg[i] };
-    }
-    if (!cur) leg = freeLeadCandidates(leg, state, myIdx);
-    else {
-      var ch = cheapLegals(leg);
-      if (ch.length) leg = ch;
-    }
-    leg = orderLegals(leg, state, myIdx);
-    var cap = cur ? 4 : 6;
-    if (leg.length > cap) leg = leg.slice(0, cap);
-    var fallback = expertPolicy(state, myIdx);
-    for (i = 0; i < leg.length; i++) {
-      var n = applyPlayFast(state, myIdx, leg[i]);
-      n.isFirstLead = false;
-      if (exploitPlayoutLeaf(n, myIdx, 160) >= 0.99) return { play: leg[i] };
-    }
-    return fallback;
-  }
-
-  /**
-   * Deterministic exploit playout: self uses shallowSelfPick (1-ply wins),
-   * opp = frozen v3.0 expert. Perfect-info only.
-   */
-  function exploitPlayout(state, myIdx, maxSteps) {
-    var s = cloneStateFast(state);
-    var steps = 0;
-    maxSteps = maxSteps || 220;
-    while (!s.roundOver && steps < maxSteps) {
-      var cp = s.currentPlayer;
-      var dec = (cp === myIdx) ? shallowSelfPick(s, myIdx) : opponentPolicyStrong(s, cp);
-      s = applyDecision(s, cp, dec);
-      s.isFirstLead = false;
-      steps++;
-    }
-    if (s.players[myIdx].finished) {
-      return (s.finishOrder || []).indexOf(myIdx) === 0 ? 1 : 0;
-    }
-    if (s.roundOver) return s.loser === myIdx ? 0 : 1;
-    return leafEval2p(s, myIdx);
-  }
-
-  /**
-   * True best-response root search vs frozen Grandmaster v3.0 expert model.
-   * Deterministic 1-trial full playouts per candidate — very strong vs fixed policies.
-   */
-  function exploitMove(state, myIdx, opts) {
-    opts = opts || {};
-    var maxBranch = opts.maxBranch || 16;
-    var t0 = Date.now();
-    var hand = state.players[myIdx].hand;
-    var cur = state.currentCombo;
-    var leg = getLegalPlays(hand, cur, state.players[myIdx].passed,
-      state.isFirstLead, state.firstLeadCard);
-    if (!leg.length) return { play: null, stats: { mode: 'exploit-none' } };
-
-    var g;
-    for (g = 0; g < leg.length; g++) {
-      if (leg[g].length === hand.length) {
-        return { play: leg[g], stats: { mode: 'exploit-out' } };
-      }
-    }
-
-    // Broad candidate set: free-lead candidates + all cheap multi + trash + medium singles
-    if (!cur) {
-      var fl = freeLeadCandidates(leg, state, myIdx);
-      var extra = [];
-      var ei;
-      for (ei = 0; ei < leg.length; ei++) {
-        if (leg[ei].length >= 2 && !playIsExpensive(leg[ei])) extra.push(leg[ei]);
-        else if (leg[ei].length === 1 && leg[ei][0].rank <= 10) extra.push(leg[ei]);
-      }
-      // merge unique
-      var seen = {};
-      var merged = [];
-      function addAll(arr) {
-        for (var i = 0; i < arr.length; i++) {
-          var sg = playSig(arr[i]);
-          if (!seen[sg]) { seen[sg] = 1; merged.push(arr[i]); }
-        }
-      }
-      addAll(fl);
-      addAll(extra);
-      leg = orderLegals(merged, state, myIdx);
-    } else {
-      var ch = cheapLegals(leg);
-      if (ch.length) leg = ch;
-      leg = orderLegals(leg, state, myIdx);
-    }
-    // Prefer more candidates on free lead — root exploit is decisive
-    var branchCap = cur ? maxBranch : Math.max(maxBranch, 20);
-    if (leg.length > branchCap) leg = leg.slice(0, branchCap);
-
-    var actions = leg.slice();
-    if (cur) {
-      var full = getLegalPlays(hand, cur, state.players[myIdx].passed, false, null);
-      if (cheapLegals(full).length === 0) actions.push(null);
-    }
-
-    function scoreActions(acts) {
-      var bestPlay = acts[0];
-      var bestScore = -1;
-      var details = [];
-      var anyWin = false;
-      var ai;
-      for (ai = 0; ai < acts.length; ai++) {
-        var act = acts[ai];
-        var next;
-        if (act == null) next = passFast(state, myIdx);
-        else next = applyPlayFast(state, myIdx, act);
-        next.isFirstLead = false;
-        // Prefer lines that win with pure expert follow-up (robust),
-        // else lines that win with shallow-self follow-up.
-        var leaf = exploitPlayoutLeaf(next, myIdx, 220);
-        var deep = leaf;
-        if (leaf < 0.99) deep = exploitPlayout(next, myIdx, 220);
-        var win = deep >= 0.99 ? 1 : 0;
-        if (win) anyWin = true;
-        var shed = act ? act.length : 0;
-        // leaf wins rank higher than deep-only wins
-        var score = (leaf >= 0.99 ? 1.0 : (deep >= 0.99 ? 0.95 : 0))
-          + leafEval2p(next, myIdx) * 0.001
-          + shed * 0.00001;
-        details.push({ sig: playSig(act), win: win, score: score, leaf: leaf });
-        if (score > bestScore) {
-          bestScore = score;
-          bestPlay = act;
-        }
-      }
-      details.sort(function (a, b) { return b.score - a.score; });
-      return { bestPlay: bestPlay, bestScore: bestScore, details: details, anyWin: anyWin };
-    }
-
-    var primary = scoreActions(actions);
-
-    // If every primary candidate loses, expand to full legal set (incl. 2s/bombs)
-    if (!primary.anyWin) {
-      var fullLeg = getLegalPlays(hand, cur, state.players[myIdx].passed,
-        state.isFirstLead, state.firstLeadCard);
-      fullLeg = orderLegals(fullLeg, state, myIdx);
-      if (fullLeg.length > 22) fullLeg = fullLeg.slice(0, 22);
-      var expanded = fullLeg.slice();
-      if (cur) expanded.push(null);
-      // only re-score new actions
-      var seenP = {};
-      var i;
-      for (i = 0; i < actions.length; i++) seenP[playSig(actions[i])] = 1;
-      var newActs = [];
-      for (i = 0; i < expanded.length; i++) {
-        if (!seenP[playSig(expanded[i])]) newActs.push(expanded[i]);
-      }
-      if (newActs.length) {
-        var secondary = scoreActions(actions.concat(newActs));
-        if (secondary.bestScore > primary.bestScore) primary = secondary;
-      }
-    }
-
-    return {
-      play: primary.bestPlay,
-      stats: {
-        mode: 'exploit-v30',
-        avg: primary.bestScore,
-        top: primary.details.slice(0, 6),
-        ms: Date.now() - t0,
-        candidates: primary.details.length
-      }
-    };
-  }
-
-  /**
-   * Leaf eval for depth-limited 2p minimax (higher = better for myIdx).
-   * Combines hard terminal outcomes with structure/control heuristics.
-   */
-  function leafEval2p(state, myIdx) {
-    if (state.players[myIdx].finished) {
-      var place = (state.finishOrder || []).indexOf(myIdx);
-      return place === 0 ? 1 : 0;
-    }
-    if (state.roundOver) return state.loser === myIdx ? 0 : 1;
-    var opp = myIdx === 0 ? 1 : 0;
-    var myLen = state.players[myIdx].hand.length;
-    var oppLen = state.players[opp].hand.length;
-    var info = analyzeHand(state.players[myIdx].hand);
-    var oinfo = analyzeHand(state.players[opp].hand);
-    // Base: card race
-    var e = 0.5 + (oppLen - myLen) * 0.04;
-    e += (info.twos - oinfo.twos) * 0.06;
-    e += (info.control - oinfo.control) * 0.025;
-    e += (oinfo.trashCount - info.trashCount) * 0.015;
-    // Lead is valuable
-    if (state.currentCombo == null && state.currentPlayer === myIdx) e += 0.04;
-    if (state.currentCombo == null && state.currentPlayer === opp) e -= 0.04;
-    // Short-hand threat
-    if (oppLen === 1) e -= 0.08;
-    if (myLen === 1) e += 0.1;
-    if (oppLen === 2) e -= 0.03;
-    return Math.max(0, Math.min(1, e));
-  }
-
-  function genActions2p(state, cp, maxBranch, broad) {
-    var hand = state.players[cp].hand;
-    var cur = state.currentCombo;
-    var leg = getLegalPlays(hand, cur, state.players[cp].passed, state.isFirstLead, state.firstLeadCard);
-    var actions = [];
-    var i;
-    if (!leg.length) return [null];
-    for (i = 0; i < leg.length; i++) {
-      if (leg[i].length === hand.length) return [leg[i]]; // only go-out matters
-    }
-    if (!cur) {
-      if (broad) {
-        // Exact exploit: consider all non-2/bomb free leads (not just freeLeadCandidates)
-        var broadLeg = [];
-        for (i = 0; i < leg.length; i++) {
-          if (!playIsExpensive(leg[i])) broadLeg.push(leg[i]);
-        }
-        if (!broadLeg.length) broadLeg = leg.slice();
-        leg = broadLeg;
-      } else {
-        leg = freeLeadCandidates(leg, state, cp);
-      }
-    } else {
-      var ch = cheapLegals(leg);
-      if (ch.length) leg = ch;
-      else if (broad) {
-        // include expensive when only those remain
-        leg = leg.slice();
-      }
-    }
-    leg = orderLegals(leg, state, cp);
-    maxBranch = maxBranch || 10;
-    if (leg.length > maxBranch) leg = leg.slice(0, maxBranch);
-    for (i = 0; i < leg.length; i++) actions.push(leg[i]);
-    if (cur) {
-      var full = getLegalPlays(hand, cur, state.players[cp].passed, false, null);
-      if (cheapLegals(full).length === 0) actions.push(null);
-    }
-    return actions;
-  }
-
-  function handLenBudget(state, myIdx) {
-    var total = 0;
-    var i;
-    for (i = 0; i < state.players.length; i++) {
-      if (!state.players[i].finished) total += state.players[i].hand.length;
-    }
-    // Deeper tree when few cards; wider when many
-    if (total <= 10) return 18;
-    if (total <= 16) return 14;
-    if (total <= 20) return 12;
-    return 10;
-  }
-
-  /**
-   * Exact forced-win check vs FIXED opponent (v3.0 expert). Memoized DFS.
-   * Self branches; opp is deterministic. Returns 1 / 0 / -1 (timeout).
-   */
-  function exactExploitValue(state, myIdx, memo, depth, t0, timeMs) {
-    if (state.players[myIdx].finished) {
-      return (state.finishOrder || []).indexOf(myIdx) === 0 ? 1 : 0;
-    }
-    if (state.roundOver) return state.loser === myIdx ? 0 : 1;
-    if (depth > 90) return 0;
-    if (timeMs > 0 && (Date.now() - t0) > timeMs) return -1;
-
-    var key = '';
-    var p;
-    for (p = 0; p < 2; p++) {
-      var ids = state.players[p].hand.map(function (c) { return c.rank * 4 + c.suit; });
-      ids.sort(function (a, b) { return a - b; });
-      key += ids.join('.') + (state.players[p].passed ? 'P' : 'N') + '|';
-    }
-    key += state.currentPlayer + '|' + (state.currentCombo ? playSig(state.currentCombo.cards) : 'L')
-      + '|' + (state.lastPlayBy == null ? 'n' : state.lastPlayBy);
-    if (memo[key] != null) return memo[key];
-
-    var cp = state.currentPlayer;
-    var val;
-    if (cp !== myIdx) {
-      var odec = opponentPolicyStrong(state, cp);
-      var onext = applyDecision(state, cp, odec);
-      onext.isFirstLead = false;
-      val = exactExploitValue(onext, myIdx, memo, depth + 1, t0, timeMs);
-    } else {
-      // Broad action set so we do not miss forced wins
-      var acts = genActions2p(state, myIdx, handLenBudget(state, myIdx), true);
-      // Try expert move first (often on PV)
-      try {
-        var exp = expertPolicy(state, myIdx);
-        var expPlay = exp.pass ? null : exp.play;
-        var expSig = playSig(expPlay);
-        acts.sort(function (x, y) {
-          if (playSig(x) === expSig) return -1;
-          if (playSig(y) === expSig) return 1;
-          return 0;
-        });
-      } catch (eSort) { /* ignore */ }
-      val = 0;
-      var anyTimedOut = false;
-      var a;
-      for (a = 0; a < acts.length; a++) {
-        if (timeMs > 0 && (Date.now() - t0) > timeMs) { anyTimedOut = true; break; }
-        var n;
-        if (acts[a] == null) n = passFast(state, myIdx);
-        else n = applyPlayFast(state, myIdx, acts[a]);
-        n.isFirstLead = false;
-        var v = exactExploitValue(n, myIdx, memo, depth + 1, t0, timeMs);
-        if (v < 0) {
-          // Timeout on this branch — try other actions; do not abort whole node
-          anyTimedOut = true;
-          continue;
-        }
-        if (v >= 0.99) { val = 1; break; }
-      }
-      // Only surface timeout if we found no win and every path timed out / incomplete
-      if (val < 0.99 && anyTimedOut && val === 0) {
-        // keep val=0 (no proven win) rather than -1 so root can try other moves
-      }
-    }
-    if (val >= 0) memo[key] = val;
-    return val;
-  }
-
-  /**
-   * Root move via exact best-response to frozen v3.0. Falls back to null if
-   * no forced win found or time exhausted without a clear answer.
-   */
-  function exactExploitMove(state, myIdx, opts) {
-    opts = opts || {};
-    if (state.players.length !== 2) return null;
-    var timeMs = opts.timeMs != null ? opts.timeMs : 1200;
-    var t0 = Date.now();
-    var memo = {};
-    var acts = genActions2p(state, myIdx, 20, true);
-    if (!acts.length) return null;
-    var hand = state.players[myIdx].hand;
-    var g;
-    for (g = 0; g < acts.length; g++) {
-      if (acts[g] && acts[g].length === hand.length) {
-        return { play: acts[g], stats: { mode: 'exact-exploit-out' } };
-      }
-    }
-    var best = null;
-    var bestV = -1;
-    var a;
-    // Prefer short wins: order by expert score so forced wins found faster
-    for (a = 0; a < acts.length; a++) {
-      if (timeMs > 0 && (Date.now() - t0) >= timeMs) break;
-      var n;
-      if (acts[a] == null) n = passFast(state, myIdx);
-      else n = applyPlayFast(state, myIdx, acts[a]);
-      n.isFirstLead = false;
-      var remain = timeMs > 0 ? Math.max(80, timeMs - (Date.now() - t0)) : 0;
-      var v = exactExploitValue(n, myIdx, memo, 0, t0, remain);
-      if (v < 0) {
-        // timeout — soft leaf only if no forced win found yet
-        if (bestV < 0.99) v = exploitPlayoutLeaf(n, myIdx, 180) * 0.5;
-        else continue;
-      }
-      if (v > bestV) {
-        bestV = v;
-        best = acts[a];
-      }
-      if (v >= 0.99) {
-        return {
-          play: acts[a],
-          stats: {
-            mode: 'exact-exploit',
-            avg: 1,
-            ms: Date.now() - t0,
-            memo: Object.keys(memo).length
-          }
-        };
-      }
-    }
-    if (bestV >= 0.99) {
-      return {
-        play: best,
-        stats: { mode: 'exact-exploit', avg: bestV, ms: Date.now() - t0, memo: Object.keys(memo).length }
-      };
-    }
-    // No forced win proven — return best soft if clearly better than 0, else null
-    if (best != null && bestV >= 0.4) {
-      return {
-        play: best,
-        stats: { mode: 'exact-exploit-soft', avg: bestV, ms: Date.now() - t0, memo: Object.keys(memo).length }
-      };
-    }
-    return null;
-  }
-
-  /**
-   * Perfect-info 2p alpha-beta with iterative deepening.
-   * Dominates pure expert when depth ≥ 4–6 on mid/late hands.
-   */
-  function alphaBetaMove(state, myIdx, opts) {
-    opts = opts || {};
-    if (state.players.length !== 2) return null;
-    var timeMs = opts.timeMs != null ? opts.timeMs : 400;
-    var maxDepth = opts.maxDepth != null ? opts.maxDepth : 8;
-    var maxBranch = opts.maxBranch || 10;
-    var t0 = Date.now();
-    var nodes = 0;
-    var aborted = false;
-
-    function ab(st, depth, alpha, beta, ply) {
-      nodes++;
-      if (nodes & 1023) {
-        if (timeMs > 0 && (Date.now() - t0) >= timeMs) aborted = true;
-      }
-      if (aborted) return leafEval2p(st, myIdx);
-
-      if (st.players[myIdx].finished) {
-        var place = (st.finishOrder || []).indexOf(myIdx);
-        return place === 0 ? 1 : 0;
-      }
-      if (st.roundOver) return st.loser === myIdx ? 0 : 1;
-      if (depth <= 0) return leafEval2p(st, myIdx);
-
-      var cp = st.currentPlayer;
-      var maximizing = cp === myIdx;
-      var acts = genActions2p(st, cp, maxBranch);
-      var best = maximizing ? -1 : 2;
-      var a;
-      for (a = 0; a < acts.length; a++) {
-        if (aborted) break;
-        var next;
-        if (acts[a] == null) next = passFast(st, cp);
-        else next = applyPlayFast(st, cp, acts[a]);
-        next.isFirstLead = false;
-        var v = ab(next, depth - 1, alpha, beta, ply + 1);
-        if (maximizing) {
-          if (v > best) best = v;
-          if (v > alpha) alpha = v;
-        } else {
-          if (v < best) best = v;
-          if (v < beta) beta = v;
-        }
-        if (beta <= alpha) break;
-      }
-      if (best === -1 || best === 2) return leafEval2p(st, myIdx);
-      return best;
-    }
-
-    var rootActs = genActions2p(state, myIdx, maxBranch + 4);
-    if (!rootActs.length) return { play: null, stats: { mode: 'ab-none' } };
-    if (rootActs.length === 1 && rootActs[0] && rootActs[0].length === state.players[myIdx].hand.length) {
-      return { play: rootActs[0], stats: { mode: 'ab-out' } };
-    }
-
-    var bestPlay = rootActs[0];
-    var bestVal = -1;
-    var reachedDepth = 0;
-    var d;
-    for (d = 2; d <= maxDepth; d += 2) {
-      if (timeMs > 0 && (Date.now() - t0) >= timeMs * 0.92) break;
-      aborted = false;
-      var localBest = rootActs[0];
-      var localVal = -1;
-      var ordered = rootActs.slice();
-      // Move ordering: try previous best first
-      if (bestPlay) {
-        ordered.sort(function (x, y) {
-          if (playSig(x) === playSig(bestPlay)) return -1;
-          if (playSig(y) === playSig(bestPlay)) return 1;
-          return 0;
-        });
-      }
-      var ri;
-      for (ri = 0; ri < ordered.length; ri++) {
-        if (timeMs > 0 && (Date.now() - t0) >= timeMs) { aborted = true; break; }
-        var act = ordered[ri];
-        var nx;
-        if (act == null) nx = passFast(state, myIdx);
-        else nx = applyPlayFast(state, myIdx, act);
-        nx.isFirstLead = false;
-        var vv = ab(nx, d - 1, -0.01, 1.01, 1);
-        if (vv > localVal) {
-          localVal = vv;
-          localBest = act;
-        }
-      }
-      if (!aborted || d === 2) {
-        bestPlay = localBest;
-        bestVal = localVal;
-        reachedDepth = d;
-      }
-      if (bestVal >= 0.999) break;
-    }
-
-    return {
-      play: bestPlay,
-      stats: {
-        mode: 'alpha-beta',
-        avg: bestVal,
-        depth: reachedDepth,
-        nodes: nodes,
-        ms: Date.now() - t0
+        trials: trials
       }
     };
   }
@@ -1372,8 +801,7 @@
     for (var i = 0; i < 2; i++) {
       if (!state.players[i].finished) total += state.players[i].hand.length;
     }
-    // Deep enough for strength; >16 explodes branching and can stall moves
-    if (total > 16) return null;
+    if (total > 14) return null;
 
     var memo = {};
     function key(st) {
@@ -1491,95 +919,33 @@
   }
 
   /**
-   * Reconstruct cards each seat played after history index `fromIdx` (inclusive).
-   * Used so pass-range checks use the hand as it existed at pass time.
-   */
-  function cardsPlayedBySeatAfter(history, seat, fromIdx) {
-    var out = [];
-    if (!history) return out;
-    for (var i = fromIdx + 1; i < history.length; i++) {
-      var e = history[i];
-      if (!e || e.type !== 'play' || e.seat !== seat || !e.cards) continue;
-      for (var j = 0; j < e.cards.length; j++) out.push(e.cards[j]);
-    }
-    return out;
-  }
-
-  /**
-   * True if `hand` (cards held at pass time) could legally make a non-bomb beat of `against`.
-   * Passing with a non-bomb beater available is inconsistent (bombs may be sandbagged).
-   */
-  function handHasNonBombBeater(hand, against) {
-    if (!against || !hand || !hand.length) return false;
-    var legals = getLegalPlays(hand, against, false, false, null);
-    for (var i = 0; i < legals.length; i++) {
-      var com = detectCombo(legals[i]);
-      if (com && !isBombCombo(com)) return true;
-    }
-    return false;
-  }
-
-  /**
-   * History-consistent assignment: no opponent seat may hold a non-bomb beater
-   * of a combo they publicly passed on (bombs-after-pass exception preserved).
-   */
-  function sampleConsistentWithHistory(state, assignmentHands, myIdx) {
-    var hist = state.publicHistory;
-    if (!hist || !hist.length) return true;
-    for (var hi = 0; hi < hist.length; hi++) {
-      var ev = hist[hi];
-      if (!ev || ev.type !== 'pass' || !ev.against) continue;
-      var seat = ev.seat;
-      if (seat === myIdx) continue;
-      if (seat < 0 || seat >= assignmentHands.length) continue;
-      // Hand at pass time = remaining sample + cards this seat later played.
-      var handThen = assignmentHands[seat].slice();
-      var later = cardsPlayedBySeatAfter(hist, seat, hi);
-      for (var k = 0; k < later.length; k++) handThen.push(later[k]);
-      if (handHasNonBombBeater(handThen, ev.against)) return false;
-    }
-    return true;
-  }
-
-  /**
    * Sample plausible opponent hands: fix my hand, redistrib other cards by hand sizes.
    * When perfectInfo=true, return clone as-is.
-   * Otherwise: rejection sampling for pass/play publicHistory constraints.
    */
   function determinize(state, myIdx, rng, perfectInfo) {
     if (perfectInfo) return cloneStateFast(state);
-    var maxTries = 80;
+    var s = cloneStateFast(state);
+    var pool = [];
     var sizes = [];
-    var poolBase = [];
-    for (var i = 0; i < state.players.length; i++) {
-      sizes.push(state.players[i].hand.length);
-      if (i === myIdx) continue;
-      for (var j = 0; j < state.players[i].hand.length; j++) {
-        poolBase.push(state.players[i].hand[j]);
+    for (var i = 0; i < s.players.length; i++) {
+      if (i === myIdx) {
+        sizes.push(s.players[i].hand.length);
+        continue;
+      }
+      sizes.push(s.players[i].hand.length);
+      for (var j = 0; j < s.players[i].hand.length; j++) {
+        pool.push(s.players[i].hand[j]);
       }
     }
-
-    var best = null;
-    for (var attempt = 0; attempt < maxTries; attempt++) {
-      var s = cloneStateFast(state);
-      var pool = poolBase.slice();
-      shuffleInPlace(pool, rng);
-      var off = 0;
-      var assignment = new Array(s.players.length);
-      for (var p = 0; p < s.players.length; p++) {
-        if (p === myIdx) {
-          assignment[p] = s.players[p].hand;
-          continue;
-        }
-        var need = sizes[p];
-        s.players[p].hand = pool.slice(off, off + need);
-        assignment[p] = s.players[p].hand;
-        off += need;
-      }
-      if (sampleConsistentWithHistory(state, assignment, myIdx)) return s;
-      best = s; // keep last sample as fallback if all rejected
+    shuffleInPlace(pool, rng);
+    var off = 0;
+    for (var p = 0; p < s.players.length; p++) {
+      if (p === myIdx) continue;
+      var need = sizes[p];
+      s.players[p].hand = pool.slice(off, off + need);
+      off += need;
     }
-    return best || cloneStateFast(state);
+    return s;
   }
 
   function seededRandom(seed) {
@@ -2062,82 +1428,7 @@
       return { play: eg, stats: { mode: 'endgame' } };
     }
 
-    // v4 primary: exact best-response vs frozen v3.0, then playout exploit.
-    if (
-      perfectInfo &&
-      state.players.length === 2 &&
-      difficulty !== 'easy' &&
-      opts.exploit !== false
-    ) {
-      var ominEx = oppMinHand(state, myIdx);
-      // Exact forced-win search — only late game (reliable + fast). Early game
-      // uses playout exploit; full-tree exact early was harming win rate.
-      var totalCards = 0;
-      for (var tci = 0; tci < state.players.length; tci++) {
-        if (!state.players[tci].finished) totalCards += state.players[tci].hand.length;
-      }
-      if (opts.exactExploit !== false && totalCards <= 16) {
-        var exExact = exactExploitMove(state, myIdx, {
-          timeMs: opts.exactExploitMs != null ? opts.exactExploitMs
-            : (opts.inBrowser ? 300 : 1200)
-        });
-        if (exExact && exExact.play !== undefined && exExact.stats &&
-            (exExact.stats.mode === 'exact-exploit' || exExact.stats.mode === 'exact-exploit-out' ||
-             (exExact.stats.avg != null && exExact.stats.avg >= 0.99))) {
-          if (exExact.play == null && !cur) {
-            exExact.play = pickFreeLeadHard(legals, state, myIdx);
-          }
-          if (!cur && exExact.play && exExact.play.length === 1 && ominEx === 1 && exExact.play[0].rank < 10) {
-            exExact.play = pickFreeLeadHard(legals, state, myIdx);
-          }
-          exExact.stats.perfectInfo = true;
-          return exExact;
-        }
-      }
-      var ex = exploitMove(state, myIdx, {
-        maxBranch: opts.maxBranch || (!cur ? 18 : 14)
-      });
-      if (ex && ex.play !== undefined) {
-        if (ex.play == null && !cur) {
-          ex.play = pickFreeLeadHard(legals, state, myIdx);
-        }
-        if (!cur && ex.play && ex.play.length === 1 && ominEx === 1 && ex.play[0].rank < 10) {
-          ex.play = pickFreeLeadHard(legals, state, myIdx);
-        }
-        ex.stats = ex.stats || {};
-        ex.stats.perfectInfo = true;
-        return ex;
-      }
-    }
-
-    // Optional perfect-info alpha-beta (secondary; leaf-eval limited)
-    if (
-      perfectInfo &&
-      state.players.length === 2 &&
-      difficulty !== 'easy' &&
-      opts.alphaBeta === true
-    ) {
-      var abTime = timeMs != null ? timeMs : (opts.inBrowser ? 600 : 1200);
-      var ab = alphaBetaMove(state, myIdx, {
-        timeMs: abTime,
-        maxDepth: opts.abDepth != null ? opts.abDepth : (opts.inBrowser ? 6 : 10),
-        maxBranch: !cur ? 14 : 12
-      });
-      if (ab && ab.play !== undefined) {
-        var ominAB = oppMinHand(state, myIdx);
-        if (ab.play == null && !cur) {
-          ab.play = pickFreeLeadHard(legals, state, myIdx);
-        }
-        if (!cur && ab.play && ab.play.length === 1 && ominAB === 1 && ab.play[0].rank < 10) {
-          ab.play = pickFreeLeadHard(legals, state, myIdx);
-        }
-        ab.stats = ab.stats || {};
-        ab.stats.perfectInfo = true;
-        return ab;
-      }
-    }
-
-    // Best-response MC (2p hard+, or when alpha-beta off / hidden info)
+    // Best-response vs v2.1-style (2p hard+): more trials on free lead / short hands
     if (opts.bestResponse || (state.players.length === 2 && difficulty !== 'easy' && difficulty !== 'medium')) {
       var ominBR = oppMinHand(state, myIdx);
       var freeBR = !cur;
@@ -2151,9 +1442,7 @@
       var br = bestResponseMove(state, myIdx, {
         trials: brTrials,
         timeMs: brTime,
-        maxBranch: freeBR ? 16 : 12,
-        perfectInfo: perfectInfo,
-        rng: rng
+        maxBranch: freeBR ? 16 : 12
       });
       if (br && br.play !== undefined) {
         if (br.play == null && !cur) {
@@ -2242,17 +1531,9 @@
     endgamePick: endgamePick,
     exactEndgameMove: exactEndgameMove,
     bestResponseMove: bestResponseMove,
-    exploitMove: exploitMove,
-    exploitPlayout: exploitPlayout,
-    exactExploitMove: exactExploitMove,
-    alphaBetaMove: alphaBetaMove,
-    leafEval2p: leafEval2p,
     opponentPolicyV21: opponentPolicyV21,
-    opponentPolicyStrong: opponentPolicyStrong,
     rollout: rollout,
     determinize: determinize,
-    sampleConsistentWithHistory: sampleConsistentWithHistory,
-    handHasNonBombBeater: handHasNonBombBeater,
     placeUtility: placeUtility,
     orderLegals: orderLegals,
     playSig: playSig,

@@ -378,11 +378,29 @@ function grantFreeLead(newState, leaderIdx) {
   }
 }
 
+/** Append a public play/pass event for hidden-info range constraints. */
+function pushPublicHistory(state, event) {
+  if (!Array.isArray(state.publicHistory)) state.publicHistory = [];
+  state.publicHistory.push(event);
+}
+
+function snapshotComboPublic(combo) {
+  if (!combo) return null;
+  return {
+    type: combo.type,
+    size: combo.size,
+    numPairs: combo.numPairs,
+    top: combo.top ? { rank: combo.top.rank, suit: combo.top.suit } : null,
+    cards: (combo.cards || []).map(c => ({ rank: c.rank, suit: c.suit }))
+  };
+}
+
 // Apply a play: remove cards from player's hand, update trick state etc.
 function applyPlay(state, playerIdx, playCards) {
   // Returns NEW state (shallow+hand clone)
   const newState = JSON.parse(JSON.stringify(state)); // simple deep for small state
   if (!Array.isArray(newState.trickStack)) newState.trickStack = [];
+  if (!Array.isArray(newState.publicHistory)) newState.publicHistory = [];
   const hand = newState.players[playerIdx].hand;
   // Remove played cards (by value match)
   playCards.forEach(played => {
@@ -393,6 +411,12 @@ function applyPlay(state, playerIdx, playCards) {
   newState.currentCombo = combo;
   newState.lastPlayBy = playerIdx;
   newState.players[playerIdx].passed = false;
+  pushPublicHistory(newState, {
+    type: 'play',
+    seat: playerIdx,
+    cards: playCards.map(c => ({ rank: c.rank, suit: c.suit })),
+    combo: snapshotComboPublic(combo)
+  });
   // New free lead starts a fresh visual stack; subsequent beats stack underneath
   if (state.currentCombo == null) {
     newState.trickStack = [];
@@ -441,10 +465,19 @@ function applyPlay(state, playerIdx, playCards) {
 function pass(state, playerIdx) {
   const newState = JSON.parse(JSON.stringify(state));
   if (!Array.isArray(newState.trickStack)) newState.trickStack = state.trickStack ? JSON.parse(JSON.stringify(state.trickStack)) : [];
+  if (!Array.isArray(newState.publicHistory)) newState.publicHistory = state.publicHistory ? state.publicHistory.slice() : [];
   newState.players[playerIdx].passed = true;
 
   // Capture last successful play BEFORE any mutation of lastPlayBy
   const leader = (typeof newState.lastPlayBy === 'number') ? newState.lastPlayBy : null;
+  // History: this seat declined to beat currentCombo (non-bomb range constraint).
+  if (state.currentCombo) {
+    pushPublicHistory(newState, {
+      type: 'pass',
+      seat: playerIdx,
+      against: snapshotComboPublic(state.currentCombo)
+    });
+  }
 
   // Core free-lead rule: once every other active player has passed, the pile clears
   // and the last player to successfully play may lead ANY legal combination
@@ -502,6 +535,7 @@ function createGameState(numPlayers, seed = Date.now()) {
     isFirstLead: true,
     firstLeadCard: firstLeadCard || null,
     trickStack: [],
+    publicHistory: [],
     seed
   };
   return state;
@@ -544,6 +578,26 @@ function cloneCombo(com) {
   return out;
 }
 
+function clonePublicHistory(hist) {
+  if (!hist || !hist.length) return [];
+  const out = new Array(hist.length);
+  for (let i = 0; i < hist.length; i++) {
+    const e = hist[i];
+    if (!e) { out[i] = e; continue; }
+    if (e.type === 'pass') {
+      out[i] = { type: 'pass', seat: e.seat, against: snapshotComboPublic(e.against) };
+    } else {
+      out[i] = {
+        type: e.type || 'play',
+        seat: e.seat,
+        cards: e.cards ? e.cards.map(cloneCard) : [],
+        combo: snapshotComboPublic(e.combo)
+      };
+    }
+  }
+  return out;
+}
+
 function cloneStateFast(state) {
   const players = new Array(state.players.length);
   for (let i = 0; i < state.players.length; i++) {
@@ -573,6 +627,7 @@ function cloneStateFast(state) {
     isFirstLead: !!state.isFirstLead,
     firstLeadCard: cloneCard(state.firstLeadCard),
     trickStack: [],
+    publicHistory: clonePublicHistory(state.publicHistory),
     seed: state.seed,
     rules: state.rules || null
   };
@@ -600,6 +655,12 @@ function applyPlayFast(state, playerIdx, playCards) {
   newState.currentCombo = combo;
   newState.lastPlayBy = playerIdx;
   newState.players[playerIdx].passed = false;
+  pushPublicHistory(newState, {
+    type: 'play',
+    seat: playerIdx,
+    cards: playCards.map(c => ({ rank: c.rank, suit: c.suit })),
+    combo: snapshotComboPublic(combo)
+  });
 
   if (hand.length === 0) {
     newState.players[playerIdx].finished = true;
@@ -644,6 +705,13 @@ function passFast(state, playerIdx) {
   const newState = cloneStateFast(state);
   newState.players[playerIdx].passed = true;
   const leader = (typeof newState.lastPlayBy === 'number') ? newState.lastPlayBy : null;
+  if (state.currentCombo) {
+    pushPublicHistory(newState, {
+      type: 'pass',
+      seat: playerIdx,
+      against: snapshotComboPublic(state.currentCombo)
+    });
+  }
 
   if (leader != null && othersAllPassedExcept(newState, leader)) {
     grantFreeLead(newState, leader);
@@ -687,6 +755,7 @@ const TienLenEngine = {
   getLegalPlays, applyPlay, pass, createGameState,
   hasThreeSpades, othersAllPassedExcept, grantFreeLead,
   cloneStateFast, applyPlayFast, passFast, cloneCard, cloneCombo,
+  pushPublicHistory, snapshotComboPublic, clonePublicHistory,
   // helper
   cloneState: (s) => JSON.parse(JSON.stringify(s))
 };

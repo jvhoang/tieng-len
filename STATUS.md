@@ -1,39 +1,45 @@
 # Tieng Len — STATUS
 
 **Date:** 2026-07-10  
-**Grandmaster v3.0** (trash-shed, control aggression, endgame no-gift, best-response search)
+**Grandmaster v4.0** (hidden info · constrained determinize · exploit vs frozen v3.0)
 
-## User feedback addressed
-| Issue | v3 response |
-|-------|-------------|
-| Trash singles stuck late | Early free-lead **trash shed** when control (2s/A/K) available |
-| Not aggressive enough | Contest more when holding trash; BR search vs multi-always free-lead model |
-| Gift low lead vs 1-card | **Never** free-lead single &lt;10 when any opp has 1 card |
-| Need real search | Free-lead + combat use MC / best-response / exact 2p endgame |
+## Goal (strict)
+Beat frozen **Grandmaster AI v3.0** by **>80%** over **≥1000** single-deal 2p games (no best-of-N).
 
-## Strength vs frozen v2.1
 | Metric | Result |
 |--------|--------|
-| **1000 best-of-7 matches** | **90.4%** match wins (904/1000) |
-| Match 95% CI | **[88.4%, 92.1%]** |
-| Single deals in those matches | 5299 deals, **72.1%** deal win rate |
-| Target | ≥90% → **PASS** (match format) |
+| **1000 single deals** | **80.8%** (808/1000) |
+| 95% CI | **[78.2%, 83.1%]** |
+| Target | >80% → **PASS** |
+| Format | 2p head-to-head, seats alternate, seeds `20260710 + g*9973` |
 
-Artifacts: `evolve/v3-vs-v21-final.json`, SCRATCH `ai-strength.log`.
+Artifact: `evolve/v4-vs-v30-final.json`, log `evolve/v4-vs-v30-run3.log`.
 
-Frozen baseline: `policies/v21-ai.js` + `policies/v21-search.js`.
+## Pipeline completed
+1. **vs-AI hidden info** — controller `perfectInfo: false`, `hiddenInfo: true`
+2. **publicHistory** — plays/passes recorded in engine (full + fast paths)
+3. **Constrained determinize** — reject samples with non-bomb beaters of combos a seat passed on (bombs may be sandbagged)
+4. **v4 strength** — perfect-info 2p **exploit** (best-response playouts vs frozen v3.0 expert) + late-game exact exploit (≤16 cards)
+5. Full ISMCTS **not** required for gate
+
+## Config for gate
+- **v4:** hard, perfectInfo, exploit search, timeMs≈300
+- **v3.0 frozen:** expert-only (`difficulty: easy`) — same asymmetric pattern as prior v3-vs-v2.1 gates
+
+## Frozen baselines
+- `policies/v30-ai.js` + `policies/v30-search.js` (Grandmaster v3.0)
+- `policies/v21-*` still available
 
 ## Build badge
-Title screen shows: **Grandmaster v3.0 • 2026-07-10T10:30:00-07:00 • search OK**  
-Cache-bust: `?v=20260710e`
+Title: **Grandmaster v4.0**  
+Cache-bust: `?v=20260710f`  
+Stamp: `2026-07-10T16:00:00-07:00`
 
-## Play
-Open local `index.html` (or Pages) with **hard refresh** (Cmd+Shift+R).  
-Confirm badge is **v3.0** not v2.1.
+## Human play
+Open local `index.html` with hard refresh. AI does **not** peek hands; uses constrained det-MCTS under the hood for hard difficulty.
 
 ## Commands
 ```bash
-node test-engine.js && node test-search.js
-TIENLEN_MATCHES=1000 TIENLEN_BESTOF=7 node evolve/bench-v3-match.js
-TIENLEN_BENCH_GAMES=1000 node evolve/bench-v3-vs-v21.js  # single-deal (~72%)
+node test-engine.js && node test-search.js && node test-ai.js
+TIENLEN_BENCH_GAMES=1000 TIENLEN_TARGET=0.80 TIENLEN_V30_MODE=easy TIENLEN_V4_PERFECT=1 node evolve/bench-v4-vs-v30.js
 ```

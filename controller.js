@@ -215,10 +215,10 @@
             if (liveAI && typeof liveAI.getAIMove === 'function') {
               choice = liveAI.getAIMove(state, cp, {
                 difficulty: aiDifficulty,
-                // Local vs-AI: perfect-info search (standard computer opponent).
-                // Policy guards still force multi free-leads, structure, smart 2s.
-                perfectInfo: true,
-                hiddenInfo: false,
+                // Local vs-AI: hidden-info (no peeking opponent hands). Constrained
+                // determinization uses public pass/play history for plausible ranges.
+                perfectInfo: false,
+                hiddenInfo: true,
                 useSearch: true
               });
             }

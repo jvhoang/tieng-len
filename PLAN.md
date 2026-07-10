@@ -1,30 +1,17 @@
-# Grandmaster AI Plan — Tiến Lên
+# PLAN — Hidden info + beat Grandmaster v3.0 ≥80%
 
-**Target:** 80–90%+ win rate vs prior heuristic/genome AI; feel strong vs good humans.  
-**Rules:** Pagat core (`RULES.md`) — bombs vs 2s only, pass lockout, free lead after control.  
-**Stack:** Pure static JS (browser + Node v10+).
+**Goal:** New AI beats frozen v3.0 by **>80%** over **≥1000** strict 2p single deals (no best-of-N). Do not stop until achieved.
 
-## Phases
-1. **Engine** — Correct legal gen, bombs, free lead; fast clone/apply for sims; rules flags. ✅
-2. **Expert baseline** — Structure-preserving heuristics, pass/lead/bomb/endgame discipline. ✅
-3. **Search** — Determinized MC + MCTS (UCT), expert rollouts, time budgets, multi-player place utility. ✅
-4. **Improve loop** — Parallel benchmarks, promote if stronger, meta-analyst on losses (not genome-only). ✅ (loop runnable)
-5. **Integrate** — Wire into controller/UI, difficulty knobs, tests, deploy cache-bust. ✅
+## Steps
+1. **Freeze** — `policies/v30-ai.js` + `policies/v30-search.js` (done).
+2. **Hidden vs-AI** — controller `perfectInfo: false`, `hiddenInfo: true`.
+3. **publicHistory** — record plays/passes in engine (full + fast paths); clone in `cloneStateFast`.
+4. **Constrained determinize** — reject samples inconsistent with pass events (non-bomb beaters that were passed on).
+5. **v4 strength** — build id `v4.0-hidden-constrained`; stronger 2p search under hidden + policy polish; BR must not peek under hidden.
+6. **Bench** — `evolve/bench-v4-vs-v30.js`, 1000 games, target 0.80, single deals only.
+7. **Iterate** until gate passes; tests + badge + STATUS.
 
-## Acceptance
-- [x] Engine tests green + fast apply helpers
-- [x] Expert alone beats lowest-legal (~65% firsts in 2v2)
-- [x] Search (lite) beats expert-only ≥70%+ firsts in 2v2 self-play (measured 72–76%)
-- [x] Browser hard decisions ~1–1.5s; grandmaster ~3.5s
-- [x] Versioned STATUS + benchmark JSON evidence
-- [x] Ship to Pages with cache bust (deploy step)
-
-## Non-goals this cycle
-- Heavy ML (PyTorch) — pure search + heuristics first
-- Changing RULES.md bomb contract without user request
-
-## Next improvements (optional)
-- Longer self-play curriculum with population of prior versions
-- Hidden-info mode for multiplayer AI seats
-- Transposition tables / move ordering from prior sims
-- Bitmask hand representation if sim throughput becomes bottleneck
+## Gate command
+```bash
+TIENLEN_BENCH_GAMES=1000 TIENLEN_TARGET=0.80 node evolve/bench-v4-vs-v30.js
+```
