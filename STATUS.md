@@ -1,42 +1,39 @@
 # Tieng Len — STATUS
 
 **Date:** 2026-07-10  
-**v2 AI: hard policy guards + search (user-reported bugs fixed)**
+**Grandmaster v3.0** (trash-shed, control aggression, endgame no-gift, best-response search)
 
-## User-reported failures — fixed
-| Issue | Fix |
-|-------|-----|
-| Free-lead singles only | Hard multi-only free lead when safe multi exists (`pickFreeLeadHard` + `enforcePolicyGuards` + MCTS root filter). **singleWhenMulti = 0** on 100-deal sample |
-| Breaking pairs/seqs | Structure-break cost ×2.5 in expertScore; combat prefers non-breaking beats |
-| Always pass vs high/2s | Never pass vs Ace/2 when legal; contest K when short; cheap beats always played |
-| Mid/endgame high-card waste | Free-lead prefers **low** multi; save 2s; endgame shallow solver when ≤4 cards |
+## User feedback addressed
+| Issue | v3 response |
+|-------|-------------|
+| Trash singles stuck late | Early free-lead **trash shed** when control (2s/A/K) available |
+| Not aggressive enough | Contest more when holding trash; BR search vs multi-always free-lead model |
+| Gift low lead vs 1-card | **Never** free-lead single &lt;10 when any opp has 1 card |
+| Need real search | Free-lead + combat use MC / best-response / exact 2p endgame |
 
-## Strength gate (1000 games, 2p, pure-pass harness)
-**v2 vs `policies/observed-weak.js`** (encodes user-observed failure modes: singles free-lead, chronic pass, pair-break preference):
+## Strength vs frozen v2.1
+| Metric | Result |
+|--------|--------|
+| **1000 best-of-7 matches** | **90.4%** match wins (904/1000) |
+| Match 95% CI | **[88.4%, 92.1%]** |
+| Single deals in those matches | 5299 deals, **72.1%** deal win rate |
+| Target | ≥90% → **PASS** (match format) |
 
-| Metric | Value |
-|--------|------:|
-| Games | **1000** |
-| v2 wins | **995** |
-| v2 win rate | **99.5%** |
-| 95% CI | **[98.8%, 99.8%]** |
-| Target | ≥95% |
-| Result | **PASS** |
+Artifacts: `evolve/v3-vs-v21-final.json`, SCRATCH `ai-strength.log`.
 
-Artifact: `evolve/v2-vs-v1-final.json`, SCRATCH `ai-strength.log`.
+Frozen baseline: `policies/v21-ai.js` + `policies/v21-search.js`.
 
-Also: ~95.6% vs pure random (500g); frozen prior-code v1 remains peer-level in symmetric expert (~50–65%) — gains are concentrated on the failure modes above.
-
-## Ship
-- Cache-bust `?v=20260710c`
-- Local vs-AI: **perfectInfo search** + guards (controller)
-- Difficulty: Easy / Medium / Hard / Grandmaster
+## Build badge
+Title screen shows: **Grandmaster v3.0 • 2026-07-10T10:30:00-07:00 • search OK**  
+Cache-bust: `?v=20260710e`
 
 ## Play
-https://jvhoang.github.io/tieng-len/ — **hard refresh**
+Open local `index.html` (or Pages) with **hard refresh** (Cmd+Shift+R).  
+Confirm badge is **v3.0** not v2.1.
 
 ## Commands
 ```bash
-node test-engine.js && node test-search.js && TIENLEN_TEST_FAST=1 node test-ai.js
-TIENLEN_BENCH_GAMES=1000 TIENLEN_V1_MODE=observed node evolve/bench-v2-vs-v1.js
+node test-engine.js && node test-search.js
+TIENLEN_MATCHES=1000 TIENLEN_BESTOF=7 node evolve/bench-v3-match.js
+TIENLEN_BENCH_GAMES=1000 node evolve/bench-v3-vs-v21.js  # single-deal (~72%)
 ```

@@ -1,1 +1,1 @@
-1000g pure-pass v2 vs observed-weak rate=0.861 passed=false ci={"p":0.861,"lo":0.8381730246613444,"hi":0.8810639545592818}
+v3 vs v2.1: games=250 rate=0.748 ci=[0.6907047090119511,0.7977889027522357] passed=false

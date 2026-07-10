@@ -228,7 +228,8 @@
             try { console.warn('[TiengLen] AI error, falling back to legal play', err); } catch (_) {}
           }
 
-          // Free-lead fallback: NEVER use legals[0] (engine lists singles first).
+          // Free-lead fallback: never use legals[0] raw (singles listed first).
+          // Prefer multi, else lowest non-2 single (trash-shed).
           function freeLeadFallback(list) {
             const multi = list.filter(function (pl) {
               if (pl.length < 2) return false;
@@ -246,7 +247,6 @@
               });
               return multi[0];
             }
-            // lowest cheap single
             const singles = list.filter(function (pl) {
               return pl.length === 1 && pl[0].rank < 12;
             });
@@ -295,14 +295,20 @@
             // Validate AI choice is legal
             const sig = choice.map(c => c.rank * 4 + c.suit).sort((a, b) => a - b).join(',');
             let ok = legals.some(l => l.map(c => c.rank * 4 + c.suit).sort((a, b) => a - b).join(',') === sig);
-            // Free lead: reject illegal OR single when multi exists
-            if (!state.currentCombo) {
-              const multiExists = legals.some(function (pl) {
-                if (pl.length < 2) return false;
-                const hasTwo = pl.some(function (c) { return c.rank === 12; });
-                return !hasTwo;
+            // Free lead: reject illegal; reject gift low single if any opp has 1 card
+            if (!state.currentCombo && choice && choice.length === 1) {
+              const oneCardOpp = state.players.some(function (p, i) {
+                return i !== cp && !p.finished && p.hand.length === 1;
               });
-              if (multiExists && choice.length < 2) ok = false;
+              if (oneCardOpp && choice[0].rank < 10) ok = false;
+              // reject early high (K/A/2) singles if multi exists
+              if (choice[0].rank >= 10) {
+                const multiExists = legals.some(function (pl) {
+                  if (pl.length < 2) return false;
+                  return !pl.some(function (c) { return c.rank === 12; });
+                });
+                if (multiExists && state.players[cp].hand.length > 5) ok = false;
+              }
             }
             if (!ok) {
               choice = state.currentCombo ? legals[0] : freeLeadFallback(legals);

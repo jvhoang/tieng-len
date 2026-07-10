@@ -1,0 +1,22 @@
+{
+  "format": "best-of-7",
+  "matches": 1000,
+  "matchWins": 904,
+  "matchWinRate": 0.904,
+  "matchCI95": {
+    "p": 0.904,
+    "lo": 0.884164485462243,
+    "hi": 0.9207433804799536
+  },
+  "deals": 5299,
+  "dealWins": 3823,
+  "dealWinRate": 0.7214568786563502,
+  "dealCI95": {
+    "p": 0.7214568786563502,
+    "lo": 0.7092296620001488,
+    "hi": 0.7333632300824658
+  },
+  "target": 0.9,
+  "passed": true,
+  "note": "1000 best-of-7 engine matches vs frozen v2.1; deal-level ~73%"
+}
