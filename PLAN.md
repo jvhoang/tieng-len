@@ -17,7 +17,7 @@
 - [x] Search (lite) beats expert-only ≥70%+ firsts in 2v2 self-play (measured 72–76%)
 - [x] Browser hard decisions ~1–1.5s; grandmaster ~3.5s
 - [x] Versioned STATUS + benchmark JSON evidence
-- [ ] Ship to Pages with cache bust (deploy step)
+- [x] Ship to Pages with cache bust (deploy step)
 
 ## Non-goals this cycle
 - Heavy ML (PyTorch) — pure search + heuristics first
