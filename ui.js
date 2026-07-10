@@ -1072,7 +1072,10 @@
         numPlayers,
         humanSeats: humanSeats.slice(),
         currentHumanSeat: 0,
-        seed: Date.now() + 9
+        seed: Date.now() + 9,
+        beginGame: true,
+        mode: 'hotseat',
+        siteBuild: (typeof window !== 'undefined' && window.TIENLEN_SITE_BUILD) || null
       });
 
       showGameScreen();
