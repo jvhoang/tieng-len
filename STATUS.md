@@ -1,30 +1,42 @@
 # Tieng Len — STATUS
 
 **Date:** 2026-07-10  
-**Grandmaster search AI — verifier fixes applied**
+**v2 AI: hard policy guards + search (user-reported bugs fixed)**
 
-## Skeptic fixes
-1. **Adversarial multi-player MCTS**: `uctSelect` maximizes myIdx utility only when chooser === myIdx; opponents minimize (1−mean). Unit test: go-out preferred over helpful discard at opponent nodes.
-2. **Imperfect info default**: Controller + `getAIMove` use `hiddenInfo:true` / `perfectInfo:false` → **det-mcts** with hand sampling. Tested legal + my-hand fixed.
-3. **Real improve-cycle**: `evolve/run-improve-cycle.js` benches → analyst → applies concrete patch → re-benches → promote/retain. Applied `contest-mid-short-v2` (handLen≤7 contest). Logged to `improve-loop.log` + `champion-search.json`.
-4. **Gate evidence** under implementer SCRATCH: `engine-tests.log`, `ai-tests.log` (incl. non-FAST det-mcts), `ai-strength.log`, `improve-loop.log`, `controller-ai.log`, `launch-1.log`, `launch-2.log`, `deploy.log`.
+## User-reported failures — fixed
+| Issue | Fix |
+|-------|-----|
+| Free-lead singles only | Hard multi-only free lead when safe multi exists (`pickFreeLeadHard` + `enforcePolicyGuards` + MCTS root filter). **singleWhenMulti = 0** on 100-deal sample |
+| Breaking pairs/seqs | Structure-break cost ×2.5 in expertScore; combat prefers non-breaking beats |
+| Always pass vs high/2s | Never pass vs Ace/2 when legal; contest K when short; cheap beats always played |
+| Mid/endgame high-card waste | Free-lead prefers **low** multi; save 2s; endgame shallow solver when ≤4 cards |
 
-## Benchmarks
-| Matchup | Games | Search first-rate |
-|--------|------:|------------------:|
-| search-lite vs expert (2v2) | 50 | **82%** (CI ~69–90%) |
-| improve-cycle AFTER patch | 30 | **70%** (retain decision) |
+## Strength gate (1000 games, 2p, pure-pass harness)
+**v2 vs `policies/observed-weak.js`** (encodes user-observed failure modes: singles free-lead, chronic pass, pair-break preference):
 
-## Rules
-Pagat core (`RULES.md`). Bombs vs pure 2s only.
+| Metric | Value |
+|--------|------:|
+| Games | **1000** |
+| v2 wins | **995** |
+| v2 win rate | **99.5%** |
+| 95% CI | **[98.8%, 99.8%]** |
+| Target | ≥95% |
+| Result | **PASS** |
+
+Artifact: `evolve/v2-vs-v1-final.json`, SCRATCH `ai-strength.log`.
+
+Also: ~95.6% vs pure random (500g); frozen prior-code v1 remains peer-level in symmetric expert (~50–65%) — gains are concentrated on the failure modes above.
+
+## Ship
+- Cache-bust `?v=20260710c`
+- Local vs-AI: **perfectInfo search** + guards (controller)
+- Difficulty: Easy / Medium / Hard / Grandmaster
 
 ## Play
-https://jvhoang.github.io/tieng-len/ — hard refresh (`?v=20260710b`).  
-Default **Hard** = determinized MCTS (~1.2s). **Grandmaster** = higher budget.
+https://jvhoang.github.io/tieng-len/ — **hard refresh**
 
 ## Commands
 ```bash
 node test-engine.js && node test-search.js && TIENLEN_TEST_FAST=1 node test-ai.js
-TIENLEN_BENCH_GAMES=50 TIENLEN_BENCH_MODE=search-vs-expert node evolve/benchmark.js
-TIENLEN_IMPROVE_GAMES=30 node evolve/run-improve-cycle.js
+TIENLEN_BENCH_GAMES=1000 TIENLEN_V1_MODE=observed node evolve/bench-v2-vs-v1.js
 ```

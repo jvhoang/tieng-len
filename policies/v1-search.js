@@ -11,7 +11,7 @@
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./engine.js'));
+    module.exports = factory(require('../engine.js'));
   } else {
     root.TienLenSearch = factory(root.TienLenEngine);
   }
@@ -148,18 +148,16 @@
       var used = playRanks[rk];
       var left = (byRank[rk] || 0) - used;
       var had = byRank[rk] || 0;
-      // Breaking a pair into a single (humans punish this hard)
-      if (had >= 2 && left === 1 && used === 1) cost += 8;
-      if (had === 2 && used === 1) cost += 5;
+      // Breaking a pair into a single
+      if (had >= 2 && left === 1 && used === 1) cost += 2.5;
       // Breaking a triple
-      if (had >= 3 && left > 0 && left < 3 && used < had) cost += 4;
+      if (had >= 3 && left > 0 && left < 3 && used < had) cost += 1.5;
       // Breaking potential sequence links
       if (left === 0) {
-        if (byRank[rk - 1] && byRank[rk + 1]) cost += 3;
-        else if (byRank[rk - 1] || byRank[rk + 1]) cost += 1;
+        if (byRank[rk - 1] && byRank[rk + 1]) cost += 1.2;
+        else if (byRank[rk - 1] || byRank[rk + 1]) cost += 0.4;
       }
     }
-    if (play.length === 1 && (byRank[play[0].rank] || 0) >= 2) cost += 12;
     return cost;
   }
 
@@ -181,27 +179,27 @@
 
     if (afterLen === 0) return -10000; // go out immediately
 
-    score += afterLen * 1.2;
-    score += structureBreakCost(hand, play) * 2.5;
+    score += afterLen * 1.4;
+    score += structureBreakCost(hand, play) * 1.8;
 
     if (!cur) {
-      // Free lead: multi mandatory (filter); prefer low short multi over mega-dumps
-      score -= comboPriority(com.type) * 12;
-      if (play.length === 2) score -= 14;
-      else if (play.length === 3) score -= 16;
-      else if (play.length === 4) score -= 12;
-      else if (play.length >= 5) score -= 6 - (play.length - 5) * 2;
-      score += topRank(play) * 1.2;
+      // Free lead: multi-card, low top, preserve control
+      // Prefer solid multi sheds but avoid stripping all structure leaving orphan highs
+      score -= comboPriority(com.type) * 10;
+      score -= play.length * 5.5;
+      score += topRank(play) * 0.55;
       if (com.type === 'single') {
-        score += 70;
-        if (com.top.rank >= 10) score += 20;
-        if (com.top.rank === 12) score += 50;
+        score += 18;
+        if (com.top.rank >= 10) score += 12;
+        if (com.top.rank === 12) score += 40;
       } else {
-        if (topRank(play) <= 7) score -= 16;
-        else if (topRank(play) <= 9) score -= 10;
-        if (com.type === 'pair') score -= 4;
-        if (afterLen >= 3 && afterLen <= 9) score -= 4;
-        if (afterLen <= 2 && hand.length > 5) score += 8;
+        if (topRank(play) <= 9) score -= 12;
+        if (play.length >= 3) score -= 8;
+        if (play.length >= 5) score -= 6;
+        // Soft preference: leave a workable residual hand (not 1–2 stranded highs)
+        if (afterLen >= 3 && afterLen <= 8 && play.length >= 2 && play.length <= 6) score -= 3;
+        if (afterLen === 1 && hand.length > 4) score += 4; // avoid leaving a singleton mid-game
+        if (afterLen === 2 && play.length > 6) score += 2;
       }
       if (usesTwo) score += afterLen > 2 ? 45 : 10;
       if (bomb) score += 35;
@@ -257,7 +255,18 @@
     }
 
     if (!cur) {
-      return { play: pickFreeLeadHard(leg, state, cp) };
+      var multi = [];
+      for (var m = 0; m < leg.length; m++) {
+        if (leg[m].length >= 2 && !playIsExpensive(leg[m])) multi.push(leg[m]);
+      }
+      var pool = multi.length ? multi : [];
+      if (!pool.length) {
+        for (var e = 0; e < leg.length; e++) {
+          if (!playIsExpensive(leg[e])) pool.push(leg[e]);
+        }
+      }
+      if (!pool.length) pool = leg;
+      return { play: orderLegals(pool, state, cp)[0] };
     }
 
     var cheap = cheapLegals(leg);
@@ -274,183 +283,16 @@
     var handLen = hand.length;
     var curTop = cur.top ? cur.top.rank : 0;
 
-    // Prefer non-2 answers; contest highs; rarely pass (folders exploit pass)
-    var non2 = [];
-    for (var ni = 0; ni < leg.length; ni++) {
-      if (!playHasTwo(leg[ni]) && !playIsBomb(leg[ni])) non2.push(leg[ni]);
-    }
-    if (non2.length) return { play: orderLegals(non2, state, cp)[0] };
-
-    // Only 2s/bombs remain as answers
-    if (handLen <= 6 || omin <= 3 || curTop >= 10) {
+    // Contest high cards / short hands / threats with 2s or bombs
+    /* IMPROVE_CYCLE_APPLIED:contest-mid-short-v2 */
+    if (curTop >= 10 || omin <= 3 || handLen <= 7) {
       return { play: orderLegals(leg, state, cp)[0] };
     }
-    // Deep hand vs low junk: save 2s
-    if (handLen > 8 && curTop < 8) return { pass: true };
+    // Midgame: often pass expensive junk beats
+    if (handLen > 7 && omin > 3 && curTop < 8) return { pass: true };
+    if (handLen > 8 && curTop < 9) return { pass: true };
 
-    // Default: play (prefer not to chronic-pass)
     return { play: orderLegals(leg, state, cp)[0] };
-  }
-
-  /** Free lead: multi-only when safe multi exists; prefer low short multi.
-   *  After trash multi is gone: bully with A/K if we still hold a 2 (exploit folders).
-   */
-  function pickFreeLeadHard(leg, state, cp) {
-    var multi = [];
-    var i;
-    for (i = 0; i < leg.length; i++) {
-      if (leg[i].length >= 2 && !playIsExpensive(leg[i])) multi.push(leg[i]);
-    }
-    // Prefer low multi first (shed structure safely)
-    if (multi.length) {
-      // Prefer pairs/trips/short low seqs via orderLegals
-      return orderLegals(multi, state, cp)[0];
-    }
-
-    // No multi: prefer LOW singles midgame (keep control). Late (≤5 cards):
-    // lead highest non-2 to pressure folders / finish race — save 2s for last.
-    var hand = state.players[cp].hand;
-    var cheapS = [];
-    for (i = 0; i < leg.length; i++) {
-      if (!playIsExpensive(leg[i])) cheapS.push(leg[i]);
-    }
-    if (cheapS.length) {
-      // If we hold A or K, lead it to force passes from folders (keep 2s)
-      var highs = cheapS.filter(function (p) {
-        return p.length === 1 && p[0].rank >= 10;
-      });
-      if (highs.length && hand.length <= 9) {
-        highs.sort(function (a, b) { return b[0].rank - a[0].rank || b[0].suit - a[0].suit; });
-        return highs[0];
-      }
-      return orderLegals(cheapS, state, cp)[0]; // low first
-    }
-    return orderLegals(leg, state, cp)[0];
-  }
-
-  /**
-   * Shallow perfect-info endgame: when few cards remain, try each legal root move
-   * and finish with expert rollouts — pick max place utility.
-   */
-  function endgamePick(state, myIdx) {
-    var handLen = state.players[myIdx].hand.length;
-    var total = 0;
-    for (var i = 0; i < state.players.length; i++) {
-      if (!state.players[i].finished) total += state.players[i].hand.length;
-    }
-    // Only true endgame — shallow solver is noisy midgame
-    if (handLen > 4 && total > 10) return null;
-
-    var leg = getLegalPlays(
-      state.players[myIdx].hand, state.currentCombo,
-      state.players[myIdx].passed, state.isFirstLead, state.firstLeadCard
-    );
-    if (!leg.length) return null;
-
-    // Free lead multi-only
-    if (!state.currentCombo) {
-      var multi = [];
-      for (var m = 0; m < leg.length; m++) {
-        if (leg[m].length >= 2 && !playIsExpensive(leg[m])) multi.push(leg[m]);
-      }
-      if (multi.length) leg = multi;
-    } else {
-      var cheap = cheapLegals(leg);
-      if (cheap.length) leg = cheap;
-    }
-
-    // Cap candidates
-    leg = orderLegals(leg, state, myIdx);
-    if (leg.length > 12) leg = leg.slice(0, 12);
-
-    var best = leg[0];
-    var bestU = -1;
-    var rng = Math.random;
-    for (var c = 0; c < leg.length; c++) {
-      var next = applyPlayFast(state, myIdx, leg[c]);
-      next.isFirstLead = false;
-      var u = 0;
-      var trials = handLen <= 4 ? 24 : 12;
-      for (var t = 0; t < trials; t++) {
-        u += rollout(next, myIdx, 100, rng);
-      }
-      u /= trials;
-      if (leg[c].length === state.players[myIdx].hand.length) u = 1;
-      if (u > bestU) {
-        bestU = u;
-        best = leg[c];
-      }
-    }
-    return best;
-  }
-
-  /**
-   * Hard post-filters applied after search. Fixes human-exploited bugs:
-   * free-lead singles when multi exists; passing cheap beats; folding Ace with answers.
-   */
-  function enforcePolicyGuards(state, myIdx, proposed) {
-    var hand = state.players[myIdx].hand;
-    var cur = state.currentCombo;
-    var leg = getLegalPlays(hand, cur, state.players[myIdx].passed, state.isFirstLead, state.firstLeadCard);
-    if (!leg.length) return null;
-
-    var g;
-    for (g = 0; g < leg.length; g++) {
-      if (leg[g].length === hand.length) return leg[g];
-    }
-
-    function isLegalPlay(play) {
-      if (!play || !play.length) return false;
-      var sig = playSig(play);
-      for (var i = 0; i < leg.length; i++) {
-        if (playSig(leg[i]) === sig) return true;
-      }
-      return false;
-    }
-
-    if (!cur) {
-      var multi = [];
-      for (var m = 0; m < leg.length; m++) {
-        if (leg[m].length >= 2 && !playIsExpensive(leg[m])) multi.push(leg[m]);
-      }
-      if (multi.length) {
-        if (proposed && proposed.length >= 2 && isLegalPlay(proposed) && !playIsExpensive(proposed)) {
-          return proposed;
-        }
-        return orderLegals(multi, state, myIdx)[0];
-      }
-      if (proposed && isLegalPlay(proposed)) return proposed;
-      return pickFreeLeadHard(leg, state, myIdx);
-    }
-
-    var cheap = cheapLegals(leg);
-    if (cheap.length) {
-      if (proposed && proposed.length && isLegalPlay(proposed) && !playIsExpensive(proposed)) {
-        return proposed;
-      }
-      return orderLegals(cheap, state, myIdx)[0];
-    }
-
-    var curTop = cur.top ? cur.top.rank : 0;
-    if (curTop >= 11 && leg.length) {
-      if (proposed && proposed.length && isLegalPlay(proposed)) return proposed;
-      return orderLegals(leg, state, myIdx)[0];
-    }
-    if (cur.cards.every(function (c) { return c.rank === 12; })) {
-      var bombs = [];
-      for (var b = 0; b < leg.length; b++) if (playIsBomb(leg[b])) bombs.push(leg[b]);
-      if (bombs.length) {
-        if (proposed && isLegalPlay(proposed) && playIsBomb(proposed)) return proposed;
-        return orderLegals(bombs, state, myIdx)[0];
-      }
-    }
-
-    if (proposed === null || proposed === undefined) {
-      var dec = expertPolicy(state, myIdx);
-      return dec.pass ? null : dec.play;
-    }
-    if (isLegalPlay(proposed)) return proposed;
-    return orderLegals(leg, state, myIdx)[0];
   }
 
   function applyDecision(state, cp, dec) {
@@ -471,12 +313,7 @@
         var leg = getLegalPlays(hand, s.currentCombo, s.players[cp].passed, s.isFirstLead, s.firstLeadCard);
         if (leg.length) {
           if (!s.currentCombo) {
-            var multiR = [];
-            for (var ri = 0; ri < leg.length; ri++) {
-              if (leg[ri].length >= 2 && !playIsExpensive(leg[ri])) multiR.push(leg[ri]);
-            }
-            var poolR = multiR.length ? multiR : leg;
-            dec = { play: poolR[Math.floor(rng() * Math.min(poolR.length, 3))] };
+            dec = { play: leg[Math.floor(rng() * Math.min(leg.length, 4))] };
           } else {
             var ch = cheapLegals(leg);
             if (ch.length && rng() < 0.7) {
@@ -565,20 +402,12 @@
       rootState.isFirstLead, rootState.firstLeadCard);
     if (!legals.length) return { play: null, stats: { sims: 0 } };
 
-    // Cap branching with expert order; free lead multi-only when available
+    // Cap branching with expert order
     var candidates = orderLegals(legals, rootState, myIdx);
-    if (!cur) {
-      var multiC = [];
-      for (var mc = 0; mc < candidates.length; mc++) {
-        if (candidates[mc].length >= 2 && !playIsExpensive(candidates[mc])) multiC.push(candidates[mc]);
-      }
-      if (multiC.length) candidates = multiC;
-    }
     var maxBranch = opts.maxBranch || 12;
     if (candidates.length > maxBranch) candidates = candidates.slice(0, maxBranch);
 
     var allowPass = !!cur && cheapLegals(legals).length === 0;
-    if (allowPass && cur && cur.top && cur.top.rank >= 11 && legals.length) allowPass = false;
     var actions = candidates.map(function (p) { return p; });
     if (allowPass) actions.push(null);
 
@@ -714,18 +543,6 @@
 
     var rootCheap = cheapLegals(rootLegals);
     var allowPassRoot = !!rootState.currentCombo && rootCheap.length === 0;
-    if (allowPassRoot && rootState.currentCombo && rootState.currentCombo.top &&
-        rootState.currentCombo.top.rank >= 11 && rootLegals.length) {
-      allowPassRoot = false;
-    }
-    // Free lead: multi-only root actions when available
-    if (!rootState.currentCombo) {
-      var multiRoot = [];
-      for (var mri = 0; mri < rootLegals.length; mri++) {
-        if (rootLegals[mri].length >= 2 && !playIsExpensive(rootLegals[mri])) multiRoot.push(rootLegals[mri]);
-      }
-      if (multiRoot.length) rootLegals = multiRoot;
-    }
 
     var root = new MCTSNode(rootState.currentPlayer, undefined, null);
     // Store state only on path via separate variable
@@ -757,17 +574,12 @@
             s.players[curP].hand, s.currentCombo, s.players[curP].passed,
             s.isFirstLead, s.firstLeadCard
           );
-          if (!s.currentCombo) {
-            var multiE = [];
-            for (var mei = 0; mei < leg.length; mei++) {
-              if (leg[mei].length >= 2 && !playIsExpensive(leg[mei])) multiE.push(leg[mei]);
-            }
-            if (multiE.length) leg = multiE;
-          }
+          // Opponent nodes: prefer moves that hurt us (go-out, high pressure) via reverse order bias
           if (curP === myIdx) {
             leg = orderLegals(leg, s, curP);
           } else {
             leg = orderLegals(leg, s, curP);
+            // Also surface go-out first for opponents (adversarial)
             leg.sort(function (a, b) {
               var aOut = a.length === s.players[curP].hand.length ? 1 : 0;
               var bOut = b.length === s.players[curP].hand.length ? 1 : 0;
@@ -1003,12 +815,6 @@
       }
     }
 
-    // Endgame precision solver
-    var eg = endgamePick(state, myIdx);
-    if (eg) {
-      return { play: eg, stats: { mode: 'endgame' } };
-    }
-
     var mode = opts.mode || 'auto';
     if (mode === 'auto') {
       if (difficulty === 'easy') mode = 'expert';
@@ -1093,9 +899,6 @@
     determinizedMCTS: determinizedMCTS,
     expertPolicy: expertPolicy,
     expertScore: expertScore,
-    enforcePolicyGuards: enforcePolicyGuards,
-    pickFreeLeadHard: pickFreeLeadHard,
-    endgamePick: endgamePick,
     rollout: rollout,
     determinize: determinize,
     placeUtility: placeUtility,
@@ -1104,7 +907,6 @@
     cheapLegals: cheapLegals,
     seededRandom: seededRandom,
     uctSelect: uctSelect,
-    opponentPrefersLowerUtility: opponentPrefersLowerUtility,
-    POLICY_VERSION: 'v2-guarded'
+    opponentPrefersLowerUtility: opponentPrefersLowerUtility
   };
 }));

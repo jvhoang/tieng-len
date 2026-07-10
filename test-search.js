@@ -293,6 +293,41 @@ console.log('=== Adversarial opponent nodes (go-out preferred) ===');
     'uctSelect at opponent node prefers low myIdx-utility child (go-out)');
 }
 
+console.log('=== User-reported bug guards ===');
+{
+  // Free lead: never single when multi available
+  let swm = 0, n = 0;
+  for (let s = 0; s < 40; s++) {
+    const st = engine.createGameState(4, 7000 + s);
+    const seat = st.currentPlayer;
+    const leg = engine.getLegalPlays(st.players[seat].hand, null, false, true, st.firstLeadCard);
+    const multiLeg = leg.filter(p => p.length >= 2 && !p.some(c => c.rank === 12));
+    if (!multiLeg.length) continue;
+    const guarded = search.enforcePolicyGuards(st, seat, multiLeg[0].length ? [leg.find(p => p.length === 1)].filter(Boolean)[0] : null);
+    // force a single proposal if possible
+    const single = leg.find(p => p.length === 1);
+    const out = search.enforcePolicyGuards(st, seat, single || null);
+    n++;
+    if (out && out.length === 1) swm++;
+  }
+  ok(swm === 0, 'enforcePolicyGuards never free-leads single when multi exists (violations=' + swm + '/' + n + ')');
+
+  // Ace + 2 in hand: never pass
+  const st = engine.createGameState(4, 8);
+  st.currentCombo = engine.detectCombo([{ rank: 11, suit: 3 }]);
+  st.currentPlayer = 1;
+  st.lastPlayBy = 0;
+  st.isFirstLead = false;
+  st.players[1].passed = false;
+  st.players[1].hand = [
+    { rank: 12, suit: 0 }, { rank: 4, suit: 1 }, { rank: 5, suit: 2 },
+    { rank: 6, suit: 0 }, { rank: 7, suit: 1 }, { rank: 8, suit: 2 }
+  ];
+  const out = search.enforcePolicyGuards(st, 1, null);
+  ok(out != null && out.length > 0, 'never pass vs Ace when 2 in hand');
+  ok(out.some(c => c.rank === 12), 'contests Ace with a 2');
+}
+
 console.log('\n=== SEARCH TEST SUMMARY ===');
 console.log('Passed:', passed, 'Failed:', failed);
 if (failed) process.exit(1);

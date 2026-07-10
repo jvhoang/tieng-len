@@ -215,9 +215,10 @@
             if (liveAI && typeof liveAI.getAIMove === 'function') {
               choice = liveAI.getAIMove(state, cp, {
                 difficulty: aiDifficulty,
-                // Imperfect-info: determinized MCTS (sample opponent hands; do not cheat).
-                hiddenInfo: true,
-                perfectInfo: false,
+                // Local vs-AI: perfect-info search (standard computer opponent).
+                // Policy guards still force multi free-leads, structure, smart 2s.
+                perfectInfo: true,
+                hiddenInfo: false,
                 useSearch: true
               });
             }
