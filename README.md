@@ -3,7 +3,7 @@
 High-quality, polished web implementation of Vietnam's national card game.
 
 - **2–4 players**
-- **vs Smart AI** (multi-combo play, conserves 2s, strategic pass)
+- **vs Grandmaster AI** (UCT MCTS + expert rollouts + optional determinization; Easy/Medium/Hard/Grandmaster strengths)
 - **Play with Friends** — same-device hotseat **or** real-time online (separate computers) via room code + share link
 - Pure static site — GitHub Pages ready — embeddable on finalworth.com
 
