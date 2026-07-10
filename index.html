@@ -469,7 +469,7 @@
             <div class="text-4xl"><i class="fa-solid fa-robot text-[#c9a227]"></i></div>
             <div>
               <div class="text-2xl font-semibold tracking-tight">Play vs Computer</div>
-              <div class="text-sm text-[#c9a227]">Smart AI opponent (MCTS + expert)</div>
+              <div class="text-sm text-[#c9a227]">Grandmaster AI (MCTS + determinization + expert)</div>
             </div>
           </div>
           <div class="flex gap-2 mt-6">
@@ -512,7 +512,17 @@
           <div id="game-title" class="font-display text-3xl tracking-tight">Tiến Lên</div>
           <div id="game-subtitle" class="text-sm text-[#c9a227]">Round 1 • 4 Players</div>
         </div>
-        <div class="flex gap-x-2">
+        <div class="flex gap-x-2 items-center flex-wrap justify-end">
+          <label class="text-[10px] text-[#8b6f2e] flex items-center gap-1">
+            AI
+            <select id="ai-difficulty" onchange="setAIDifficulty(this.value)"
+              class="bg-[#1a0907] border border-[#5c4630] rounded-full px-2 py-1 text-xs text-[#c9a227] outline-none">
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard" selected>Hard (search)</option>
+              <option value="grandmaster">Grandmaster</option>
+            </select>
+          </label>
           <button onclick="requestHint()" class="px-3 py-1.5 text-xs border border-[#5c4630] rounded-full hover:border-[#c9a227]">Hint</button>
           <button onclick="newRound()" class="px-3 py-1.5 text-xs border border-[#5c4630] rounded-full hover:border-[#c9a227]">New Round</button>
           <button onclick="exitToMenu()" class="px-3 py-1.5 text-xs bg-[#3a1f1a] rounded-full">Exit</button>
@@ -619,13 +629,14 @@
   <!-- PeerJS free cloud signaling for cross-device multiplayer (GitHub Pages safe) -->
   <!-- Cache-bust query so browsers always load latest AI after deploys -->
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-  <script src="engine.js?v=20260709h"></script>
-  <script src="genome.js?v=20260709h"></script>
-  <script src="ai.js?v=20260709h"></script>
-  <script src="controller.js?v=20260709h"></script>
-  <script src="hand-order.js?v=20260709h"></script>
-  <script src="multiplayer.js?v=20260709h"></script>
-  <script src="ui.js?v=20260709h"></script>
+  <script src="engine.js?v=20260710a"></script>
+  <script src="genome.js?v=20260710a"></script>
+  <script src="search.js?v=20260710a"></script>
+  <script src="ai.js?v=20260710a"></script>
+  <script src="controller.js?v=20260710a"></script>
+  <script src="hand-order.js?v=20260710a"></script>
+  <script src="multiplayer.js?v=20260710a"></script>
+  <script src="ui.js?v=20260710a"></script>
   <script>
     // Thin loader: modules provide the game. index.html = markup + styles + glue.
     (function(){
@@ -691,19 +702,33 @@
         const m = document.getElementById('rules-modal');
         if (m) m.classList.add('hidden');
       };
+      window.setAIDifficulty = function(d){
+        const c = window.controller;
+        if (c && c.setAIDifficulty) c.setAIDifficulty(d);
+        const info = document.getElementById('selection-info');
+        if (info) info.innerHTML = 'AI strength: ' + d;
+      };
       window.requestHint = function(){
         const c = window.controller;
         const st = c && c.getState ? c.getState() : null;
         if (!st) return;
         const seat = st.currentPlayer;
         const ai = window.TienLenAI;
-        const mv = (ai && ai.getAIMove) ? ai.getAIMove(st, seat, {difficulty:'medium'}) : null;
+        const diff = (c && c.getAIDifficulty) ? c.getAIDifficulty() : 'hard';
+        const mv = (ai && ai.getAIMove) ? ai.getAIMove(st, seat, {
+          difficulty: diff === 'easy' ? 'medium' : diff,
+          timeMs: 400,
+          useSearch: true
+        }) : null;
         const info = document.getElementById('selection-info');
+        const stats = ai && ai.getLastSearchStats ? ai.getLastSearchStats() : null;
         if (info) {
           if (mv && mv.length) {
-            info.innerHTML = 'Hint: play ' + mv.map(card =>
+            let msg = 'Hint: play ' + mv.map(card =>
               (eng.RANKS||[])[card.rank] + ((eng.SUIT_SYMBOLS||{})[(eng.SUITS||[])[card.suit]] || '')
             ).join(' ');
+            if (stats && stats.avg != null) msg += ' <span class="opacity-60">(EV≈' + Number(stats.avg).toFixed(2) + ')</span>';
+            info.innerHTML = msg;
           } else if (mv == null && st.currentCombo) {
             info.innerHTML = 'Hint: PASS (save your high cards)';
           } else {
@@ -713,7 +738,7 @@
       };
 
       ui.boot();
-      console.log('%c[TiengLen] Ready — free lead, smart AI, hand reorder, online friends.', 'color:#c9a227');
+      console.log('%c[TiengLen] Ready — grandmaster search AI, free lead, hand reorder, online friends.', 'color:#c9a227');
     })();
   </script>
 </body>

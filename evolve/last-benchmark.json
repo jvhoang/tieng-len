@@ -1,0 +1,32 @@
+{
+  "games": 80,
+  "nPlayers": 4,
+  "ms": 4745,
+  "gamesPerSec": 16.859852476290833,
+  "results": [
+    {
+      "name": "search-lite",
+      "firstRate": 0.7625,
+      "firsts": 61,
+      "games": 80,
+      "meanPlace": 2.85625,
+      "ci95": {
+        "p": 0.7625,
+        "lo": 0.6585901502919854,
+        "hi": 0.8423544881691125
+      }
+    },
+    {
+      "name": "expert-genome",
+      "firstRate": 0.2375,
+      "firsts": 19,
+      "games": 80,
+      "meanPlace": 3.64375,
+      "ci95": {
+        "p": 0.2375,
+        "lo": 0.15764551183088746,
+        "hi": 0.3414098497080144
+      }
+    }
+  ]
+}

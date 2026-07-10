@@ -22,6 +22,7 @@
   function createController(opts = {}) {
     let numPlayers = opts.numPlayers || 4;
     let vsAI = opts.vsAI !== false; // default true
+    let aiDifficulty = opts.aiDifficulty || 'hard'; // easy | medium | hard | grandmaster
     let humanSeats = Array.isArray(opts.humanSeats) ? opts.humanSeats.slice() : [0];
     let currentHumanSeat = (typeof opts.currentHumanSeat === 'number')
       ? opts.currentHumanSeat
@@ -56,6 +57,18 @@
         // Does not re-deal; use reconfigure for full restart
         numPlayers = m.numPlayers;
       }
+      if (typeof m.aiDifficulty === 'string') aiDifficulty = m.aiDifficulty;
+    }
+
+    function setAIDifficulty(d) {
+      if (d === 'easy' || d === 'medium' || d === 'hard' || d === 'grandmaster') {
+        aiDifficulty = d;
+      }
+      return aiDifficulty;
+    }
+
+    function getAIDifficulty() {
+      return aiDifficulty;
     }
 
     /**
@@ -67,10 +80,11 @@
       if (typeof m.numPlayers === 'number') numPlayers = m.numPlayers;
       if (Array.isArray(m.humanSeats)) humanSeats = m.humanSeats.slice();
       if (typeof m.currentHumanSeat === 'number') currentHumanSeat = m.currentHumanSeat;
+      if (typeof m.aiDifficulty === 'string') aiDifficulty = m.aiDifficulty;
       const seed = m.seed != null ? m.seed : (Date.now() + Math.floor(Math.random() * 1000));
       state = engine.createGameState(numPlayers, seed);
       state.isFirstLead = true;
-      notify({ type: 'reconfigure', numPlayers, vsAI });
+      notify({ type: 'reconfigure', numPlayers, vsAI, aiDifficulty });
       return getState();
     }
 
@@ -199,7 +213,12 @@
             // Prefer live global AI in browser (always freshest module)
             const liveAI = (typeof window !== 'undefined' && window.TienLenAI) ? window.TienLenAI : aiMod;
             if (liveAI && typeof liveAI.getAIMove === 'function') {
-              choice = liveAI.getAIMove(state, cp, { difficulty: 'hard' });
+              choice = liveAI.getAIMove(state, cp, {
+                difficulty: aiDifficulty,
+                // Perfect info in local vs-AI (full state). Hidden-info for future fair modes.
+                perfectInfo: true,
+                useSearch: true
+              });
             }
           } catch (err) {
             // Never silently turn errors into pass-only — fall through to legal play
@@ -302,9 +321,11 @@
       applyRemoteAction,
       applyRemoteState,
       onChange,
+      setAIDifficulty,
+      getAIDifficulty,
       isHumanSeat: (s) => isHumanSeat(s),
       // for tests/debug
-      _getInternals: () => ({ vsAI, humanSeats: humanSeats.slice(), currentHumanSeat, numPlayers })
+      _getInternals: () => ({ vsAI, humanSeats: humanSeats.slice(), currentHumanSeat, numPlayers, aiDifficulty })
     };
   }
 

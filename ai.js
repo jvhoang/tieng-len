@@ -1,20 +1,24 @@
 /**
- * Tiến Lên AI — Strong competitive player
+ * Tiến Lên AI — Grandmaster competitive player
  *
  * Architecture (pure static JS, browser + Node):
  *  1. Legal generator from engine (never illegal).
- *  2. Expert heuristic ranks moves (shed low multi-combos, conserve 2s/bombs).
- *  3. Explicit P(win) estimate via position eval + one-ply rollouts.
- *  4. Optional MCTS (hard difficulty) for deeper search.
+ *  2. Expert heuristic ranks moves (structure, multi-leads, conserve 2s/bombs).
+ *  3. Search core (search.js): flat MC + UCT MCTS + optional determinization.
+ *  4. Genome weights still tune eval/pass thresholds for evolution baselines.
  *
  * Pass discipline: NEVER pass when a cheap (non-2, non-bomb) legal beat exists.
  * Free lead: ALWAYS return a legal play (never null).
+ * Hard mode: real search with time budget (browser ~0.8–1.5s).
  */
 
 const engine = (typeof require === 'function') ? require('./engine.js') : (window.TienLenEngine || {});
 const genomeMod = (typeof require === 'function')
   ? require('./genome.js')
   : (typeof window !== 'undefined' ? window.TienLenGenome : null);
+const searchMod = (typeof require === 'function')
+  ? require('./search.js')
+  : (typeof window !== 'undefined' ? window.TienLenSearch : null);
 const {
   detectCombo, getLegalPlays, applyPlay, pass, cardCompare, cloneState: engineClone
 } = engine;
@@ -392,10 +396,19 @@ function getExpertMove(state, myIdx, genome) {
  * Free-lead hard preference: if any non-expensive multi-card legal exists,
  * never open with a single (unless multi would empty? always prefer multi).
  * This is NOT evolvable away — fixes chronic single-only leading.
+ * Also prefers go-out and structure-preserving multi plays via search expert when present.
  */
 function pickFreeLead(state, myIdx, legals, genome) {
   const g = G(genome);
   if (!legals.length) return null;
+  // Immediate empty
+  for (let i = 0; i < legals.length; i++) {
+    if (legals[i].length === state.players[myIdx].hand.length) return legals[i];
+  }
+  if (searchMod && searchMod.expertPolicy) {
+    const dec = searchMod.expertPolicy(state, myIdx);
+    if (dec && dec.play && dec.play.length) return dec.play;
+  }
   const multi = legals.filter(p => p.length >= 2 && !playIsExpensive(p));
   const pool = multi.length ? multi : legals.filter(p => !playIsExpensive(p));
   const use = pool.length ? pool : legals;
@@ -669,9 +682,19 @@ function runMCTS(rootState, myIdx, iterations) {
 // ─── Public API ───
 
 /**
+ * Last search diagnostics (browser debug / tests).
+ */
+let _lastSearchStats = null;
+
+function getLastSearchStats() {
+  return _lastSearchStats ? Object.assign({}, _lastSearchStats) : null;
+}
+
+/**
  * getAIMove(state, myIdx, opts) → cards[] | null
  * opts.genome — optional policy params (evolution / testing)
- * opts.difficulty — easy|medium|hard
+ * opts.difficulty — easy|medium|hard|grandmaster
+ * opts.timeMs / iterations / mode / hiddenInfo / perfectInfo / useSearch
  * null = pass (only when combating and policy says so)
  */
 function getAIMove(state, myIdx, opts = {}) {
@@ -679,7 +702,10 @@ function getAIMove(state, myIdx, opts = {}) {
   const difficulty = opts.difficulty || 'hard';
   const inBrowser = (typeof window !== 'undefined' && typeof document !== 'undefined');
   const evolveFast = (typeof process !== 'undefined' && process.env && process.env.TIENLEN_EVOLVE);
-  let iters = difficulty === 'easy' ? 0 : (difficulty === 'medium' ? 48 : (inBrowser ? 64 : 160));
+  let iters = difficulty === 'easy' ? 0
+    : (difficulty === 'medium' ? 48
+      : (difficulty === 'grandmaster' ? 600
+        : (inBrowser ? 200 : 400)));
   if (opts.iterations != null) iters = opts.iterations;
   if (isFastEnv() || evolveFast) {
     iters = Math.min(iters, opts.iterations != null ? opts.iterations : (evolveFast ? 0 : 24));
@@ -694,8 +720,14 @@ function getAIMove(state, myIdx, opts = {}) {
 
   if (!legals.length) return null;
 
-  // Evolution / easy: pure expert with genome (fast)
-  if (evolveFast || difficulty === 'easy' || iters === 0) {
+  // Immediate go-out always
+  for (let gi = 0; gi < legals.length; gi++) {
+    if (legals[gi].length === hand.length) return legals[gi];
+  }
+
+  // Evolution / easy / forced expert: pure expert with genome (fast)
+  const forceExpert = evolveFast || difficulty === 'easy' || iters === 0 || opts.mode === 'expert';
+  if (forceExpert) {
     if (!cur) return pickFreeLead(state, myIdx, legals, genome) || legals[0];
     const cheap = cheapLegals(legals);
     if (cheap.length) return pickBestPlay(state, myIdx, cheap, genome) || cheap[0];
@@ -703,17 +735,66 @@ function getAIMove(state, myIdx, opts = {}) {
     return pickBestPlay(state, myIdx, legals, genome) || legals[0];
   }
 
-  // FREE LEAD: always play multi when possible (never null, never single-only bias)
-  if (!cur) {
-    const expert = pickFreeLead(state, myIdx, legals, genome) || legals[0];
-    // Skip MCTS on free lead — it often reverts to weak singles under noise
-    return expert;
+  // ─── Search path (medium / hard / grandmaster) ───
+  const useSearch = opts.useSearch !== false && searchMod && typeof searchMod.searchMove === 'function'
+    && !isFastEnv();
+
+  if (useSearch) {
+    try {
+      const searchOpts = {
+        difficulty: difficulty,
+        inBrowser: inBrowser,
+        iterations: opts.iterations,
+        timeMs: opts.timeMs,
+        maxSims: opts.maxSims,
+        mode: opts.mode || (difficulty === 'medium' ? 'mc' : 'mcts'),
+        // vs-AI has full state → perfect info. Set hiddenInfo:true for fair multiplayer AI.
+        perfectInfo: opts.hiddenInfo ? false : (opts.perfectInfo !== false),
+        hiddenInfo: !!opts.hiddenInfo,
+        determinizations: opts.determinizations,
+        seed: opts.seed,
+        maxBranch: opts.maxBranch
+      };
+      const result = searchMod.searchMove(state, myIdx, searchOpts);
+      _lastSearchStats = result && result.stats ? result.stats : null;
+
+      let mv = result ? result.play : undefined;
+
+      // Free lead: never null
+      if (mv == null && !cur) {
+        mv = pickFreeLead(state, myIdx, legals, genome) || legals[0];
+      }
+
+      // Never pass when cheap legal exists
+      if (mv == null && cur) {
+        const cheapS = cheapLegals(legals);
+        if (cheapS.length) {
+          mv = pickBestPlay(state, myIdx, cheapS, genome) || cheapS[0];
+        }
+      }
+
+      // Validate legality
+      if (mv != null && mv.length) {
+        const sig = mv.map(c => c.rank * 4 + c.suit).sort((a, b) => a - b).join(',');
+        const ok = legals.some(l => l.map(c => c.rank * 4 + c.suit).sort((a, b) => a - b).join(',') === sig);
+        if (!ok) mv = pickBestPlay(state, myIdx, legals, genome) || legals[0];
+      }
+
+      return mv == null ? null : mv;
+    } catch (e) {
+      try { console.warn('[TiengLen] search failed, expert fallback', e); } catch (_) {}
+      _lastSearchStats = { error: String(e && e.message || e) };
+    }
   }
 
-  // Combating: HARD RULE — play cheap beats (never pass)
+  // ─── Expert / legacy MCTS fallback ───
+  if (!cur) {
+    return pickFreeLead(state, myIdx, legals, genome) || legals[0];
+  }
+
   const cheap = cheapLegals(legals);
   if (cheap.length > 0) {
-    if (iters >= 60 && !isFastEnv() && !inBrowser) {
+    if (iters >= 80 && !isFastEnv() && !inBrowser && !searchMod) {
       try {
         const mv = runMCTS(state, myIdx, iters);
         if (mv && mv.length && !playIsExpensive(mv)) return mv;
@@ -727,7 +808,7 @@ function getAIMove(state, myIdx, opts = {}) {
     return null;
   }
 
-  if (iters >= 60 && !isFastEnv() && !inBrowser) {
+  if (iters >= 80 && !isFastEnv() && !inBrowser && !searchMod) {
     try {
       const mv = runMCTS(state, myIdx, iters);
       if (mv !== undefined && mv !== null) return mv;
@@ -844,7 +925,9 @@ const TienLenAI = {
   setActiveGenome,
   getActiveGenome,
   getLearnedWeights: () => learnedWeights.slice(),
-  selfPlayLearn
+  selfPlayLearn,
+  getLastSearchStats,
+  search: searchMod
 };
 
 if (typeof module !== 'undefined' && module.exports) module.exports = TienLenAI;
