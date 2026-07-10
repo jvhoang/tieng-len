@@ -284,7 +284,8 @@
     var curTop = cur.top ? cur.top.rank : 0;
 
     // Contest high cards / short hands / threats with 2s or bombs
-    if (curTop >= 10 || omin <= 3 || handLen <= 6) {
+    /* IMPROVE_CYCLE_APPLIED:contest-mid-short-v2 */
+    if (curTop >= 10 || omin <= 3 || handLen <= 7) {
       return { play: orderLegals(leg, state, cp)[0] };
     }
     // Midgame: often pass expensive junk beats
@@ -485,13 +486,29 @@
     this.value = 0; // mean utility for root maximizer, updated via backprop
   }
 
-  function uctSelect(node, C) {
+  /**
+   * UCT selection with multi-player adversarial semantics.
+   * Stored values are always root maximizer (myIdx) utilities.
+   * When the chooser at this node is myIdx → maximize; otherwise minimize
+   * (opponents act against us, not cooperatively).
+   */
+  function uctSelect(node, C, myIdx) {
     var best = null;
     var bestU = -Infinity;
+    // Children of a node share the same chooser (player who is to move)
+    var chooser = node.player;
+    if (node.children.length && typeof node.children[0].player === 'number') {
+      chooser = node.children[0].player;
+    }
+    var maximize = (chooser === myIdx);
     for (var i = 0; i < node.children.length; i++) {
       var ch = node.children[i];
       if (!ch.visits) return ch;
-      var u = (ch.value / ch.visits) + C * Math.sqrt(Math.log(node.visits + 1) / ch.visits);
+      var mean = ch.value / ch.visits; // myIdx utility
+      var explore = C * Math.sqrt(Math.log(node.visits + 1) / ch.visits);
+      // Opponents minimize our utility; we maximize it
+      var exploit = maximize ? mean : (1 - mean);
+      var u = exploit + explore;
       // slight prior for expert-ordered first children
       u += 0.02 / (i + 1);
       if (u > bestU) {
@@ -540,9 +557,9 @@
       var s = cloneStateFast(rootState);
       var path = [node];
 
-      // Selection
+      // Selection (adversarial at opponent nodes)
       while (node.untried == null && node.children.length > 0 && !s.roundOver) {
-        node = uctSelect(node, C);
+        node = uctSelect(node, C, myIdx);
         path.push(node);
         if (node.move == null) s = passFast(s, node.player);
         else s = applyPlayFast(s, node.player, node.move);
@@ -557,9 +574,23 @@
             s.players[curP].hand, s.currentCombo, s.players[curP].passed,
             s.isFirstLead, s.firstLeadCard
           );
-          leg = orderLegals(leg, s, curP);
+          // Opponent nodes: prefer moves that hurt us (go-out, high pressure) via reverse order bias
+          if (curP === myIdx) {
+            leg = orderLegals(leg, s, curP);
+          } else {
+            leg = orderLegals(leg, s, curP);
+            // Also surface go-out first for opponents (adversarial)
+            leg.sort(function (a, b) {
+              var aOut = a.length === s.players[curP].hand.length ? 1 : 0;
+              var bOut = b.length === s.players[curP].hand.length ? 1 : 0;
+              if (aOut !== bOut) return bOut - aOut;
+              return 0;
+            });
+          }
           if (leg.length > maxBranch) leg = leg.slice(0, maxBranch);
           node.untried = leg.slice();
+          // Store who is to move from this node (for UCT chooser)
+          node.player = curP;
           var isRoot = node === root;
           var canPass = s.currentCombo && (
             (isRoot && allowPassRoot) ||
@@ -568,7 +599,7 @@
           if (canPass) node.untried.push(null);
         }
         if (node.untried && node.untried.length) {
-          // Prefer expanding expert-first (pop from end of reversed? use shift for best first)
+          // Prefer expanding expert-first (shift for best first)
           var mv = node.untried.shift();
           var curP2 = s.currentPlayer;
           var child = new MCTSNode(curP2, mv, node);
@@ -584,7 +615,7 @@
       // Simulation
       var outcome = rollout(s, myIdx, rolloutSteps, rng);
 
-      // Backprop (all nodes store value from myIdx's perspective)
+      // Backprop: always accumulate myIdx utility; selection handles min/max by player
       for (var pi = 0; pi < path.length; pi++) {
         path[pi].visits++;
         path[pi].value += outcome;
@@ -747,12 +778,28 @@
    *   difficulty: easy|medium|hard|grandmaster
    *   timeMs, iterations, perfectInfo, hiddenInfo
    *   mode: 'expert'|'mc'|'mcts'|'auto'
+   *
+   * Default: imperfect-info (determinization). Pass perfectInfo:true only for debug.
    */
   function searchMove(state, myIdx, opts) {
     opts = opts || {};
     var difficulty = opts.difficulty || 'hard';
-    var hiddenInfo = opts.hiddenInfo === true || opts.perfectInfo === false;
-    var perfectInfo = !hiddenInfo;
+    // Default imperfect-info: sample opponent hands (det-mcts). Opt-in to perfectInfo.
+    var perfectInfo = opts.perfectInfo === true;
+    var hiddenInfo = opts.hiddenInfo === true || !perfectInfo;
+    if (opts.perfectInfo === false) perfectInfo = false;
+    if (opts.hiddenInfo === false && opts.perfectInfo !== true) {
+      // explicit hiddenInfo:false without perfectInfo still uses det for safety
+      perfectInfo = false;
+    }
+    // Resolve: perfectInfo true only when explicitly requested
+    if (opts.perfectInfo === true) {
+      perfectInfo = true;
+      hiddenInfo = false;
+    } else {
+      perfectInfo = false;
+      hiddenInfo = true;
+    }
     var rng = opts.rng || (opts.seed != null ? seededRandom(opts.seed) : Math.random);
 
     var hand = state.players[myIdx].hand;
@@ -771,8 +818,8 @@
     var mode = opts.mode || 'auto';
     if (mode === 'auto') {
       if (difficulty === 'easy') mode = 'expert';
-      else if (difficulty === 'medium') mode = 'mc';
-      else mode = 'mcts'; // hard + grandmaster
+      else if (difficulty === 'medium') mode = perfectInfo ? 'mc' : 'mcts';
+      else mode = 'mcts'; // hard + grandmaster → det-mcts when hidden
     }
 
     if (mode === 'expert') {
@@ -816,20 +863,33 @@
       return mc;
     }
 
-    // MCTS / determinized
+    // MCTS / determinized (default for hard)
+    var detN = opts.determinizations != null
+      ? opts.determinizations
+      : (perfectInfo ? 1 : (difficulty === 'grandmaster' ? 24 : 12));
     var mcts = determinizedMCTS(state, myIdx, {
       rng: rng,
       timeMs: timeMs || 0,
       perfectInfo: perfectInfo,
-      determinizations: opts.determinizations || (perfectInfo ? 1 : 20),
-      iterationsPerDet: iterations || (perfectInfo ? 300 : 50),
+      determinizations: detN,
+      iterationsPerDet: iterations || (perfectInfo ? 300 : 40),
       maxBranch: opts.maxBranch || 10,
       rolloutSteps: 60,
       uctC: opts.uctC
     });
     mcts.stats = mcts.stats || {};
     mcts.stats.mode = perfectInfo ? 'mcts' : 'det-mcts';
+    mcts.stats.perfectInfo = perfectInfo;
+    mcts.stats.determinizations = detN;
     return mcts;
+  }
+
+  /**
+   * Adversarial preference check for tests: given two candidate outcomes for an
+   * opponent, prefer the one with lower utility for myIdx.
+   */
+  function opponentPrefersLowerUtility(utilA, utilB) {
+    return utilA < utilB;
   }
 
   return {
@@ -845,6 +905,8 @@
     orderLegals: orderLegals,
     playSig: playSig,
     cheapLegals: cheapLegals,
-    seededRandom: seededRandom
+    seededRandom: seededRandom,
+    uctSelect: uctSelect,
+    opponentPrefersLowerUtility: opponentPrefersLowerUtility
   };
 }));

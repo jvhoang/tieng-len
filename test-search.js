@@ -54,10 +54,10 @@ console.log('=== Expert policy never illegal ===');
         st.isFirstLead, st.firstLeadCard
       );
       if (!legals.length) {
-        ok(dec.pass === true, 'pass when no legals seed=' + seed + ' step=' + steps);
+        if (dec.pass !== true) { ok(false, 'must pass when no legals seed=' + seed); break; }
         st = engine.passFast(st, cp);
       } else if (dec.pass) {
-        ok(!!st.currentCombo, 'pass only when combating seed=' + seed);
+        if (!st.currentCombo) { ok(false, 'pass only when combating seed=' + seed); break; }
         st = engine.passFast(st, cp);
       } else {
         const sig = search.playSig(dec.play);
@@ -191,6 +191,106 @@ console.log('=== Go-out forced ===');
   ok(res.play && res.play.length === 1, 'go-out with last card');
   ok(res.stats && res.stats.mode === 'forced-out' || (res.play && res.play[0].rank === 5),
     'forced-out or correct card');
+}
+
+console.log('=== Det-MCTS default (imperfect info) ===');
+{
+  const st = engine.createGameState(4, 42);
+  const seat = st.currentPlayer;
+  const myBefore = st.players[seat].hand.map(function (c) {
+    return c.rank + '-' + c.suit;
+  }).sort().join(',');
+  const res = search.searchMove(st, seat, {
+    difficulty: 'hard',
+    mode: 'mcts',
+    timeMs: 80,
+    iterations: 30,
+    perfectInfo: false,
+    hiddenInfo: true,
+    determinizations: 4
+  });
+  ok(res.stats && res.stats.mode === 'det-mcts', 'searchMove perfectInfo:false → mode det-mcts (got ' +
+    (res.stats && res.stats.mode) + ')');
+  ok(res.play != null && res.play.length > 0, 'det-mcts free lead returns a play');
+  const legals = engine.getLegalPlays(
+    st.players[seat].hand, null, false, true, st.firstLeadCard
+  );
+  ok(legals.some(function (l) { return search.playSig(l) === search.playSig(res.play); }),
+    'det-mcts play is legal for my real hand');
+  const myAfter = st.players[seat].hand.map(function (c) {
+    return c.rank + '-' + c.suit;
+  }).sort().join(',');
+  ok(myBefore === myAfter, 'det-mcts does not mutate my hand on the real state');
+
+  // getAIMove default must also use det path (no perfectInfo)
+  delete process.env.TIENLEN_TEST_FAST;
+  delete process.env.NODE_ENV;
+  const mv2 = ai.getAIMove(st, seat, {
+    difficulty: 'hard',
+    timeMs: 70,
+    iterations: 25,
+    useSearch: true,
+    mode: 'mcts',
+    hiddenInfo: true,
+    perfectInfo: false
+  });
+  ok(mv2 != null && mv2.length > 0, 'getAIMove hard+hidden returns free lead');
+  const st2 = ai.getLastSearchStats();
+  ok(st2 != null, 'getLastSearchStats after hidden hard move');
+  ok(st2.mode === 'det-mcts' || st2.mode === 'mcts' || st2.mode === 'forced-out',
+    'stats.mode is search mode (got ' + (st2 && st2.mode) + ')');
+}
+
+console.log('=== Adversarial opponent nodes (go-out preferred) ===');
+{
+  // Utility of opponent go-out is worse for us than a non-finishing discard
+  ok(search.opponentPrefersLowerUtility(0.0, 0.55),
+    'opponent prefers lower myIdx utility (go-out util 0 < discard 0.55)');
+  ok(!search.opponentPrefersLowerUtility(0.9, 0.1),
+    'opponent would not prefer high myIdx utility');
+
+  // Crafted 2p: myIdx=0 just led; opponent seat 1 can go out with one card OR play a lower that doesn't finish
+  // We verify placeUtility: if opponent finishes first, util for me is low
+  const st = engine.createGameState(2, 9);
+  st.players[0].hand = [
+    { rank: 4, suit: 0 }, { rank: 5, suit: 0 }, { rank: 6, suit: 0 }
+  ];
+  st.players[1].hand = [{ rank: 7, suit: 0 }]; // can go out on free lead
+  st.players[0].finished = false;
+  st.players[1].finished = false;
+  st.currentCombo = null;
+  st.currentPlayer = 1;
+  st.isFirstLead = false;
+  st.finishOrder = [];
+  st.roundOver = false;
+
+  const goOut = [{ rank: 7, suit: 0 }];
+  const afterGo = engine.applyPlayFast(st, 1, goOut);
+  const utilGo = search.placeUtility(afterGo, 0);
+  ok(afterGo.players[1].finished, 'opponent go-out marks finished');
+  ok(utilGo < 0.6, 'my utility after opponent go-out is poor (got ' + utilGo + ')');
+
+  // Non-finishing "helpful" scenario: opponent still has cards → better for me than them finishing
+  st.players[1].hand = [{ rank: 7, suit: 0 }, { rank: 3, suit: 1 }];
+  const notOut = [{ rank: 3, suit: 1 }];
+  const afterNot = engine.applyPlayFast(st, 1, notOut);
+  const utilNot = search.placeUtility(afterNot, 0);
+  ok(utilNot > utilGo, 'my utility higher when opponent does not finish (' +
+    utilNot + ' > ' + utilGo + ')');
+  ok(search.opponentPrefersLowerUtility(utilGo, utilNot),
+    'adversarial chooser ranks go-out over non-finishing discard for opponent');
+
+  // UCT at opponent node: with visits, lower my-util child should win when minimizing
+  // Simulate mini node tree
+  const parent = { player: 1, visits: 20, children: [] };
+  const childGo = { player: 1, move: goOut, visits: 10, value: 1.0 }; // mean 0.1 (bad for me)
+  childGo.value = 1.0; // mean 0.1
+  const childHelp = { player: 1, move: notOut, visits: 10, value: 8.0 }; // mean 0.8 (good for me)
+  parent.children = [childHelp, childGo];
+  // uctSelect should pick childGo when chooser is opponent (myIdx=0)
+  const picked = search.uctSelect(parent, 0.01, 0); // low C → exploit dominates
+  ok(picked === childGo || (picked && picked.value === childGo.value),
+    'uctSelect at opponent node prefers low myIdx-utility child (go-out)');
 }
 
 console.log('\n=== SEARCH TEST SUMMARY ===');

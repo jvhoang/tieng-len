@@ -1,27 +1,27 @@
 {
-  "timestamp": "2026-07-10T05:56:00.676Z",
-  "games": 20,
-  "firsts": 7,
-  "lossesOrMarginal": 6,
+  "timestamp": "2026-07-10T06:01:42.965Z",
+  "games": 16,
+  "firsts": 9,
+  "lossesOrMarginal": 3,
   "counters": {
-    "leadSingle": 27,
-    "leadMulti": 18,
-    "passCount": 98,
-    "playCount": 154,
-    "usedTwoEarly": 3,
+    "leadSingle": 18,
+    "leadMulti": 15,
+    "passCount": 74,
+    "playCount": 117,
+    "usedTwoEarly": 2,
     "bombUsed": 1,
     "bombOpportunitiesMissed": 0
   },
-  "multiLeadRate": 0.4,
+  "multiLeadRate": 0.45454545454545453,
   "findings": [
     {
       "severity": "high",
-      "issue": "Free-lead multi rate low (40%)",
+      "issue": "Free-lead multi rate low (45%)",
       "fix": "Increase multiLeadB / shedLenB floors; ensure search free-lead uses expertOrder multi pool first"
     },
     {
       "severity": "medium",
-      "issue": "Losses often pass-heavy (6/6)",
+      "issue": "Losses often pass-heavy (2/3)",
       "fix": "In expertPolicy, contest more when handLen<=6 even vs mid tops; reduce midgame auto-pass"
     }
   ],
@@ -47,40 +47,22 @@
   ],
   "sampleLossSeeds": [
     {
-      "seed": 5093,
-      "place": 4,
-      "steps": 50,
-      "traceLen": 13
+      "seed": 5000,
+      "place": 3,
+      "steps": 60,
+      "traceLen": 17
     },
     {
       "seed": 5124,
-      "place": 4,
-      "steps": 50,
-      "traceLen": 12
+      "place": 3,
+      "steps": 62,
+      "traceLen": 18
     },
     {
       "seed": 5310,
       "place": 4,
       "steps": 44,
       "traceLen": 12
-    },
-    {
-      "seed": 5434,
-      "place": 4,
-      "steps": 60,
-      "traceLen": 14
-    },
-    {
-      "seed": 5465,
-      "place": 3,
-      "steps": 62,
-      "traceLen": 18
-    },
-    {
-      "seed": 5558,
-      "place": 3,
-      "steps": 51,
-      "traceLen": 15
     }
   ]
 }

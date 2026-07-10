@@ -215,8 +215,9 @@
             if (liveAI && typeof liveAI.getAIMove === 'function') {
               choice = liveAI.getAIMove(state, cp, {
                 difficulty: aiDifficulty,
-                // Perfect info in local vs-AI (full state). Hidden-info for future fair modes.
-                perfectInfo: true,
+                // Imperfect-info: determinized MCTS (sample opponent hands; do not cheat).
+                hiddenInfo: true,
+                perfectInfo: false,
                 useSearch: true
               });
             }

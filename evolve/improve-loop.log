@@ -1,0 +1,15 @@
+[2026-07-10T06:01:39.064Z] === Tiến Lên improve-cycle start games=30 ===
+[2026-07-10T06:01:39.126Z] Step 1: baseline benchmark search-lite vs expert
+[2026-07-10T06:01:41.335Z] BEFORE: [{"name":"search-lite","firstRate":0.7666666666666667,"firsts":23,"games":30,"meanPlace":2.85,"ci95":{"p":0.7666666666666667,"lo":0.5907132766967573,"hi":0.8820776078949878}},{"name":"expert-genome","firstRate":0.23333333333333334,"firsts":7,"games":30,"meanPlace":3.65,"ci95":{"p":0.23333333333333334,"lo":0.11792239210501229,"hi":0.40928672330324267}}]
+[2026-07-10T06:01:41.336Z] BEFORE search firstRate=0.7666666666666667 meanPlace=2.85
+[2026-07-10T06:01:41.336Z] Step 2: meta-analyst
+[2026-07-10T06:01:42.966Z] Analyst findings: [{"severity":"high","issue":"Free-lead multi rate low (45%)","fix":"Increase multiLeadB / shedLenB floors; ensure search free-lead uses expertOrder multi pool first"},{"severity":"medium","issue":"Losses often pass-heavy (2/3)","fix":"In expertPolicy, contest more when handLen<=6 even vs mid tops; reduce midgame auto-pass"}]
+[2026-07-10T06:01:42.966Z] Analyst proposals: contest-mid-short, free-lead-residual, raise-hard-budget
+[2026-07-10T06:01:42.966Z] Step 3: apply concrete policy change from analyst direction
+[2026-07-10T06:01:42.967Z] Applied: {"id":"contest-mid-short-v2","description":"Contest expensive with handLen<=7 (was <=6)","applied":true,"marker":"/* IMPROVE_CYCLE_APPLIED:contest-mid-short-v2 */"}
+[2026-07-10T06:01:43.028Z] Step 4: re-benchmark after change
+[2026-07-10T06:01:45.207Z] AFTER: [{"name":"search-lite","firstRate":0.7,"firsts":21,"games":30,"meanPlace":2.95,"ci95":{"p":0.7,"lo":0.5212387898833981,"hi":0.8333543735604106}},{"name":"expert-genome","firstRate":0.3,"firsts":9,"games":30,"meanPlace":3.55,"ci95":{"p":0.3,"lo":0.16664562643958936,"hi":0.47876121011660183}}]
+[2026-07-10T06:01:45.207Z] AFTER search firstRate=0.7 meanPlace=2.95
+[2026-07-10T06:01:45.207Z] Decision: retain — keeping patch on disk
+[2026-07-10T06:01:45.208Z] Wrote champion /Users/johnhoang/Developer/Grok/tieng-len/evolve/champion-search.json
+[2026-07-10T06:01:45.208Z] === improve-cycle done decision=retain ===

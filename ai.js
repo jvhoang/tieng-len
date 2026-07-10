@@ -741,6 +741,9 @@ function getAIMove(state, myIdx, opts = {}) {
 
   if (useSearch) {
     try {
+      // Default: imperfect-info det-mcts (do not peek opponent hands).
+      // Callers may pass perfectInfo:true only for debug / perfect-info experiments.
+      const wantPerfect = opts.perfectInfo === true && opts.hiddenInfo !== true;
       const searchOpts = {
         difficulty: difficulty,
         inBrowser: inBrowser,
@@ -748,9 +751,8 @@ function getAIMove(state, myIdx, opts = {}) {
         timeMs: opts.timeMs,
         maxSims: opts.maxSims,
         mode: opts.mode || (difficulty === 'medium' ? 'mc' : 'mcts'),
-        // vs-AI has full state → perfect info. Set hiddenInfo:true for fair multiplayer AI.
-        perfectInfo: opts.hiddenInfo ? false : (opts.perfectInfo !== false),
-        hiddenInfo: !!opts.hiddenInfo,
+        perfectInfo: wantPerfect,
+        hiddenInfo: !wantPerfect,
         determinizations: opts.determinizations,
         seed: opts.seed,
         maxBranch: opts.maxBranch

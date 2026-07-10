@@ -1,31 +1,31 @@
 {
-  "games": 80,
+  "games": 50,
   "nPlayers": 4,
-  "ms": 4745,
-  "gamesPerSec": 16.859852476290833,
+  "ms": 3354,
+  "gamesPerSec": 14.907573047107931,
   "results": [
     {
       "name": "search-lite",
-      "firstRate": 0.7625,
-      "firsts": 61,
-      "games": 80,
-      "meanPlace": 2.85625,
+      "firstRate": 0.82,
+      "firsts": 41,
+      "games": 50,
+      "meanPlace": 2.77,
       "ci95": {
-        "p": 0.7625,
-        "lo": 0.6585901502919854,
-        "hi": 0.8423544881691125
+        "p": 0.82,
+        "lo": 0.6920368054529739,
+        "hi": 0.902299172675462
       }
     },
     {
       "name": "expert-genome",
-      "firstRate": 0.2375,
-      "firsts": 19,
-      "games": 80,
-      "meanPlace": 3.64375,
+      "firstRate": 0.18,
+      "firsts": 9,
+      "games": 50,
+      "meanPlace": 3.73,
       "ci95": {
-        "p": 0.2375,
-        "lo": 0.15764551183088746,
-        "hi": 0.3414098497080144
+        "p": 0.18,
+        "lo": 0.0977008273245379,
+        "hi": 0.3079631945470261
       }
     }
   ]

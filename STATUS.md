@@ -1,36 +1,30 @@
 # Tieng Len — STATUS
 
 **Date:** 2026-07-10  
-**Grandmaster search AI (Phase 1–5)**
+**Grandmaster search AI — verifier fixes applied**
 
-## What shipped
-- **`search.js`**: Flat Monte Carlo + UCT MCTS + optional determinization; expert rollouts; multi-player place utility (1st=1.0 … 4th=0).
-- **`engine.js`**: `cloneStateFast` / `applyPlayFast` / `passFast` + `DEFAULT_RULES` for sim throughput.
-- **`ai.js`**: Hard path uses real search (browser ~1.2s budget); easy/evolve stay expert-fast; `getLastSearchStats()` for hints/debug.
-- **Controller**: `aiDifficulty` easy|medium|hard|grandmaster; wired into `runAITurnIfNeeded`.
-- **UI**: AI difficulty dropdown; cache-bust `?v=20260710a`; loads `search.js`.
-- **Harness**: `evolve/benchmark.js`, `evolve/meta-analyst.js` (not genome-mutation-only).
+## Skeptic fixes
+1. **Adversarial multi-player MCTS**: `uctSelect` maximizes myIdx utility only when chooser === myIdx; opponents minimize (1−mean). Unit test: go-out preferred over helpful discard at opponent nodes.
+2. **Imperfect info default**: Controller + `getAIMove` use `hiddenInfo:true` / `perfectInfo:false` → **det-mcts** with hand sampling. Tested legal + my-hand fixed.
+3. **Real improve-cycle**: `evolve/run-improve-cycle.js` benches → analyst → applies concrete patch → re-benches → promote/retain. Applied `contest-mid-short-v2` (handLen≤7 contest). Logged to `improve-loop.log` + `champion-search.json`.
+4. **Gate evidence** under implementer SCRATCH: `engine-tests.log`, `ai-tests.log` (incl. non-FAST det-mcts), `ai-strength.log`, `improve-loop.log`, `controller-ai.log`, `launch-1.log`, `launch-2.log`, `deploy.log`.
 
-## Benchmarks (evidence)
-| Matchup | Games | Search first-rate | Notes |
-|--------|------:|------------------:|-------|
-| search-lite vs expert-genome (2v2 seats) | 100 | **72%** (CI ~62–80%) | lite budget ~80ms/move |
-| search-lite vs expert (post-analyst) | 80 | **76%** (CI ~66–84%) | GATE OK |
-| expert vs lowest-legal | 60 | expert **65%** firsts | baseline hierarchy |
-| four-way (search/expert/lowest/random) | 40 | search **50%**, expert 30%, lowest 20%, random 0% | single seat each |
-
-Files: `evolve/last-benchmark.json`, `evolve/analyst-report.json`.
+## Benchmarks
+| Matchup | Games | Search first-rate |
+|--------|------:|------------------:|
+| search-lite vs expert (2v2) | 50 | **82%** (CI ~69–90%) |
+| improve-cycle AFTER patch | 30 | **70%** (retain decision) |
 
 ## Rules
-Pagat core per `RULES.md` (bombs only vs pure 2s; pass lockout; free lead after control). Bombs configurable via `DEFAULT_RULES` flags (logic still Pagat-encoded).
+Pagat core (`RULES.md`). Bombs vs pure 2s only.
 
 ## Play
-https://jvhoang.github.io/tieng-len/ — hard refresh.  
-AI defaults to **Hard (search)**. Use **Grandmaster** for ~3.5s thinking.
+https://jvhoang.github.io/tieng-len/ — hard refresh (`?v=20260710b`).  
+Default **Hard** = determinized MCTS (~1.2s). **Grandmaster** = higher budget.
 
-## Run locally
+## Commands
 ```bash
 node test-engine.js && node test-search.js && TIENLEN_TEST_FAST=1 node test-ai.js
-TIENLEN_BENCH_GAMES=80 TIENLEN_BENCH_MODE=search-vs-expert node evolve/benchmark.js
-TIENLEN_ANALYST_GAMES=20 node evolve/meta-analyst.js
+TIENLEN_BENCH_GAMES=50 TIENLEN_BENCH_MODE=search-vs-expert node evolve/benchmark.js
+TIENLEN_IMPROVE_GAMES=30 node evolve/run-improve-cycle.js
 ```

@@ -1,0 +1,36 @@
+{
+  "version": "search-gm-1783663305207",
+  "decision": "retain",
+  "change": {
+    "id": "contest-mid-short-v2",
+    "description": "Contest expensive with handLen<=7 (was <=6)",
+    "applied": true,
+    "marker": "/* IMPROVE_CYCLE_APPLIED:contest-mid-short-v2 */"
+  },
+  "before": {
+    "name": "search-lite",
+    "firstRate": 0.7666666666666667,
+    "firsts": 23,
+    "games": 30,
+    "meanPlace": 2.85,
+    "ci95": {
+      "p": 0.7666666666666667,
+      "lo": 0.5907132766967573,
+      "hi": 0.8820776078949878
+    }
+  },
+  "after": {
+    "name": "search-lite",
+    "firstRate": 0.7,
+    "firsts": 21,
+    "games": 30,
+    "meanPlace": 2.95,
+    "ci95": {
+      "p": 0.7,
+      "lo": 0.5212387898833981,
+      "hi": 0.8333543735604106
+    }
+  },
+  "games": 30,
+  "timestamp": "2026-07-10T06:01:45.207Z"
+}
