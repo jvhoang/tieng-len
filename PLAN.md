@@ -1,17 +1,17 @@
-# PLAN — Hidden info + beat Grandmaster v3.0 ≥80%
+# PLAN — Live play log / history (data collection)
 
-**Goal:** New AI beats frozen v3.0 by **>80%** over **≥1000** strict 2p single deals (no best-of-N). Do not stop until achieved.
+**Goal:** Record every live game on the GitHub site with analysis-grade detail, and provide a UI to browse/export logs so human-vs-AI deep dives can improve the AI.
 
-## Steps
-1. **Freeze** — `policies/v30-ai.js` + `policies/v30-search.js` (done).
-2. **Hidden vs-AI** — controller `perfectInfo: false`, `hiddenInfo: true`.
-3. **publicHistory** — record plays/passes in engine (full + fast paths); clone in `cloneStateFast`.
-4. **Constrained determinize** — reject samples inconsistent with pass events (non-bomb beaters that were passed on).
-5. **v4 strength** — build id `v4.0-hidden-constrained`; stronger 2p search under hidden + policy polish; BR must not peek under hidden.
-6. **Bench** — `evolve/bench-v4-vs-v30.js`, 1000 games, target 0.80, single deals only.
-7. **Iterate** until gate passes; tests + badge + STATUS.
+## Design
+- **Client-side first** (static Pages): `localStorage` via `play-log.js`
+- **Schema v1:** full deal hands + ordered events (play/pass) + AI search stats + outcome
+- **Controller hooks:** start on reconfigure/newRound; log each human/AI action; finalize on roundOver
+- **UI:** title-screen “Game History” card → panel list + detail + export JSON / clear
+- **No new remote backend** yet (export files for offline analysis); optional remote later
 
-## Gate command
-```bash
-TIENLEN_BENCH_GAMES=1000 TIENLEN_TARGET=0.80 node evolve/bench-v4-vs-v30.js
-```
+## Deliverables
+1. `play-log.js`
+2. Controller integration
+3. History UI in `index.html` (+ glue)
+4. Tests for store/export/schema
+5. Cache-bust + STATUS

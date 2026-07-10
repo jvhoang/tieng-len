@@ -745,7 +745,10 @@
         numPlayers,
         humanSeats: [0],
         currentHumanSeat: 0,
-        seed: Date.now()
+        seed: Date.now(),
+        beginGame: true,
+        mode: 'vsAI',
+        siteBuild: (typeof window !== 'undefined' && window.TIENLEN_SITE_BUILD) || null
       });
 
       showGameScreen();

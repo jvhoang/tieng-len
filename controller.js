@@ -5,18 +5,22 @@
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./engine.js'), require('./ai.js'));
+    module.exports = factory(
+      require('./engine.js'),
+      require('./ai.js'),
+      (function () { try { return require('./play-log.js'); } catch (e) { return null; } })()
+    );
   } else {
-    root.TienLenController = factory(root.TienLenEngine, root.TienLenAI);
+    root.TienLenController = factory(root.TienLenEngine, root.TienLenAI, root.TienLenPlayLog);
   }
-}(typeof self !== 'undefined' ? self : this, function (engine, aiMod) {
+}(typeof self !== 'undefined' ? self : this, function (engine, aiMod, playLogMod) {
 
   function cloneState(s) {
     return JSON.parse(JSON.stringify(s));
   }
 
   /**
-   * createController({ vsAI, numPlayers, humanSeats, seed })
+   * createController({ vsAI, numPlayers, humanSeats, seed, playLog, mode, siteBuild })
    * Returns an object with the public API the buttons and tests use.
    */
   function createController(opts = {}) {
@@ -27,8 +31,49 @@
     let currentHumanSeat = (typeof opts.currentHumanSeat === 'number')
       ? opts.currentHumanSeat
       : (humanSeats[0] || 0);
+    let playMode = opts.mode || (vsAI ? 'vsAI' : 'hotseat');
+    let siteBuild = opts.siteBuild || null;
     let state = engine.createGameState(numPlayers, opts.seed != null ? opts.seed : Date.now());
     state.isFirstLead = true;
+
+    // Play log (analysis-grade). Can inject store for tests.
+    let playLog = opts.playLog || null;
+    if (!playLog && playLogMod) {
+      try {
+        playLog = opts.playLogStore
+          ? playLogMod.createPlayLog({ storage: opts.playLogStore })
+          : (typeof playLogMod.getDefault === 'function' ? playLogMod.getDefault() : playLogMod.createPlayLog());
+      } catch (ePl) { playLog = null; }
+    }
+    let loggingEnabled = opts.logging !== false && !!playLog;
+    let humanTurnStartedAt = Date.now();
+
+    function getAIBuild() {
+      try {
+        const live = (typeof window !== 'undefined' && window.TienLenAI) ? window.TienLenAI : aiMod;
+        return (live && live.AI_BUILD) ? live.AI_BUILD : null;
+      } catch (e) { return null; }
+    }
+
+    function startPlayLog(reason) {
+      if (!loggingEnabled || !playLog || typeof playLog.startGame !== 'function') return;
+      try {
+        playLog.startGame(state, {
+          mode: playMode,
+          vsAI: vsAI,
+          numPlayers: numPlayers,
+          humanSeats: humanSeats.slice(),
+          aiDifficulty: aiDifficulty,
+          aiBuild: getAIBuild(),
+          seed: state.seed,
+          siteBuild: siteBuild,
+          tags: reason ? [reason] : []
+        });
+        humanTurnStartedAt = Date.now();
+      } catch (eStart) {
+        try { console.warn('[TiengLen] play-log start failed', eStart); } catch (_) {}
+      }
+    }
 
     // Listeners for multiplayer / UI (state change hooks)
     const listeners = [];
@@ -58,6 +103,9 @@
         numPlayers = m.numPlayers;
       }
       if (typeof m.aiDifficulty === 'string') aiDifficulty = m.aiDifficulty;
+      if (typeof m.mode === 'string') playMode = m.mode;
+      if (typeof m.siteBuild === 'string') siteBuild = m.siteBuild;
+      if (typeof m.logging === 'boolean') loggingEnabled = m.logging && !!playLog;
     }
 
     function setAIDifficulty(d) {
@@ -81,9 +129,15 @@
       if (Array.isArray(m.humanSeats)) humanSeats = m.humanSeats.slice();
       if (typeof m.currentHumanSeat === 'number') currentHumanSeat = m.currentHumanSeat;
       if (typeof m.aiDifficulty === 'string') aiDifficulty = m.aiDifficulty;
+      if (typeof m.mode === 'string') playMode = m.mode;
+      else playMode = vsAI ? 'vsAI' : 'hotseat';
+      if (typeof m.siteBuild === 'string') siteBuild = m.siteBuild;
+      if (typeof m.logging === 'boolean') loggingEnabled = m.logging && !!playLog;
       const seed = m.seed != null ? m.seed : (Date.now() + Math.floor(Math.random() * 1000));
       state = engine.createGameState(numPlayers, seed);
       state.isFirstLead = true;
+      startPlayLog('reconfigure');
+      humanTurnStartedAt = Date.now();
       notify({ type: 'reconfigure', numPlayers, vsAI, aiDifficulty });
       return getState();
     }
@@ -129,11 +183,31 @@
       }
 
       const before = cloneState(state);
+      const legals = getLegalFor(seat);
+      const thinkMs = Date.now() - humanTurnStartedAt;
+      const combo = engine.detectCombo(cards);
       state = engine.applyPlay(state, seat, cards);
       state.isFirstLead = false;
 
+      if (loggingEnabled && playLog) {
+        try {
+          playLog.logAction({
+            type: 'play',
+            seat: seat,
+            actor: isHumanSeat(seat) ? 'human' : 'remote',
+            cards: cards,
+            combo: combo,
+            beforeState: before,
+            afterState: state,
+            legals: legals,
+            humanThinkMs: thinkMs
+          });
+        } catch (eLog) { /* never break play */ }
+      }
+
       const payload = { type: 'play', seat, cards: JSON.parse(JSON.stringify(cards)) };
       notify(payload);
+      humanTurnStartedAt = Date.now();
       return { ok: true, state: getState(), before, payload };
     }
 
@@ -146,11 +220,30 @@
       if (!state.currentCombo) return { ok: false, error: 'must lead a combination' };
 
       const before = cloneState(state);
+      const legals = getLegalFor(seat);
+      const thinkMs = Date.now() - humanTurnStartedAt;
       state = engine.pass(state, seat);
       state.isFirstLead = false;
 
+      if (loggingEnabled && playLog) {
+        try {
+          playLog.logAction({
+            type: 'pass',
+            seat: seat,
+            actor: isHumanSeat(seat) ? 'human' : 'remote',
+            cards: null,
+            combo: null,
+            beforeState: before,
+            afterState: state,
+            legals: legals,
+            humanThinkMs: thinkMs
+          });
+        } catch (eLog) { /* never break play */ }
+      }
+
       const payload = { type: 'pass', seat };
       notify(payload);
+      humanTurnStartedAt = Date.now();
       return { ok: true, state: getState(), before, payload };
     }
 
@@ -204,11 +297,23 @@
         );
 
         let action;
+        const beforeAI = cloneState(state);
+        let aiMeta = { thinkMs: 0, stats: null, fallbackUsed: false, error: null };
         if (legals.length === 0) {
           state = engine.pass(state, cp);
           action = { type: 'pass', seat: cp };
+          if (loggingEnabled && playLog) {
+            try {
+              playLog.logAction({
+                type: 'pass', seat: cp, actor: 'ai', cards: null, combo: null,
+                beforeState: beforeAI, afterState: state, legals: legals,
+                ai: Object.assign({}, aiMeta, { reason: 'no-legals' })
+              });
+            } catch (eL) { /* ignore */ }
+          }
         } else {
           let choice = null;
+          const tThink0 = Date.now();
           try {
             // Prefer live global AI in browser (always freshest module)
             const liveAI = (typeof window !== 'undefined' && window.TienLenAI) ? window.TienLenAI : aiMod;
@@ -221,12 +326,17 @@
                 hiddenInfo: true,
                 useSearch: true
               });
+              if (liveAI.getLastSearchStats) {
+                try { aiMeta.stats = liveAI.getLastSearchStats(); } catch (_) {}
+              }
             }
           } catch (err) {
             // Never silently turn errors into pass-only — fall through to legal play
             choice = null;
+            aiMeta.error = String(err && err.message || err);
             try { console.warn('[TiengLen] AI error, falling back to legal play', err); } catch (_) {}
           }
+          aiMeta.thinkMs = Date.now() - tThink0;
 
           // Free-lead fallback: never use legals[0] raw (singles listed first).
           // Prefer multi, else lowest non-2 single (trash-shed).
@@ -260,6 +370,8 @@
           // SAFETY: free lead must play multi when possible
           if (choice == null && !state.currentCombo) {
             choice = freeLeadFallback(legals);
+            aiMeta.fallbackUsed = true;
+            aiMeta.fallbackReason = 'null-free-lead';
           }
 
           // SAFETY: if any cheap (non-2, non-bomb) legal exists, never pass
@@ -278,6 +390,8 @@
                 return ta - tb || a.length - b.length;
               });
               choice = cheap[0];
+              aiMeta.fallbackUsed = true;
+              aiMeta.fallbackReason = 'cheap-force';
             }
           }
 
@@ -288,6 +402,8 @@
               action = { type: 'pass', seat: cp };
             } else {
               choice = freeLeadFallback(legals);
+              aiMeta.fallbackUsed = true;
+              aiMeta.fallbackReason = 'forced-free-lead';
               state = engine.applyPlay(state, cp, choice);
               action = { type: 'play', seat: cp, cards: choice };
             }
@@ -312,21 +428,47 @@
             }
             if (!ok) {
               choice = state.currentCombo ? legals[0] : freeLeadFallback(legals);
+              aiMeta.fallbackUsed = true;
+              aiMeta.fallbackReason = 'illegal-or-guard';
             }
             state = engine.applyPlay(state, cp, choice);
             action = { type: 'play', seat: cp, cards: choice };
+          }
+
+          if (loggingEnabled && playLog) {
+            try {
+              const playedCards = action.type === 'play' ? action.cards : null;
+              playLog.logAction({
+                type: action.type,
+                seat: cp,
+                actor: 'ai',
+                cards: playedCards,
+                combo: playedCards ? engine.detectCombo(playedCards) : null,
+                beforeState: beforeAI,
+                afterState: state,
+                legals: legals,
+                ai: Object.assign({}, aiMeta, {
+                  choice: playedCards,
+                  difficulty: aiDifficulty
+                })
+              });
+            } catch (eLogAi) { /* ignore */ }
           }
         }
         state.isFirstLead = false;
         results.push(action);
         notify(action);
+        if (state.roundOver) break;
       }
+      humanTurnStartedAt = Date.now();
       return results;
     }
 
     function newRound() {
       state = engine.createGameState(state.numPlayers, Date.now() + Math.floor(Math.random() * 1000));
       state.isFirstLead = true;
+      startPlayLog('newRound');
+      humanTurnStartedAt = Date.now();
       // Clear finished/pass from previous round is handled by createGameState
       notify({ type: 'newRound' });
       return getState();
@@ -351,6 +493,11 @@
       return runAITurnIfNeeded();
     }
 
+    // Title-screen bootstrap omits seed/beginGame → no log. Real games pass seed.
+    if (opts.seed != null || opts.beginGame === true) {
+      startPlayLog(opts.beginGame ? 'begin' : 'create');
+    }
+
     return {
       getState,
       setMode,
@@ -371,8 +518,12 @@
       setAIDifficulty,
       getAIDifficulty,
       isHumanSeat: (s) => isHumanSeat(s),
+      getPlayLog: () => playLog,
       // for tests/debug
-      _getInternals: () => ({ vsAI, humanSeats: humanSeats.slice(), currentHumanSeat, numPlayers, aiDifficulty })
+      _getInternals: () => ({
+        vsAI, humanSeats: humanSeats.slice(), currentHumanSeat, numPlayers, aiDifficulty,
+        playMode, loggingEnabled
+      })
     };
   }
 

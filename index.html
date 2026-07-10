@@ -505,6 +505,29 @@
         </div>
       </div>
 
+      <!-- Game History / data collection -->
+      <div class="mt-8 max-w-4xl mx-auto">
+        <div onclick="showPlayHistory()"
+             class="group bg-[#1a0907] border-2 border-[#5c4630] hover:border-[#c9a227] rounded-3xl p-6 cursor-pointer transition-all active:scale-[0.99]">
+          <div class="flex items-center justify-between gap-4">
+            <div class="flex items-center gap-x-3">
+              <div class="text-3xl"><i class="fa-solid fa-clipboard-list text-[#c9a227]"></i></div>
+              <div>
+                <div class="text-xl font-semibold tracking-tight">Game History &amp; Play Logs</div>
+                <div class="text-sm text-[#c9a227]">Every live game is recorded for AI improvement analysis</div>
+              </div>
+            </div>
+            <div class="text-right">
+              <div id="history-summary-count" class="text-2xl font-semibold text-white">0</div>
+              <div class="text-[10px] text-[#8b6f2e] uppercase tracking-widest">saved games</div>
+            </div>
+          </div>
+          <div class="mt-3 text-[11px] text-[#8b6f2e]">
+            Opens a detailed log: deal, every move, AI think time/stats, outcomes. Export JSON for deep dives.
+          </div>
+        </div>
+      </div>
+
       <div class="mt-8 text-center text-xs text-[#8b6f2e]">First to shed all cards wins • Last player with cards loses • Bombs beat 2s</div>
     </div>
 
@@ -629,17 +652,48 @@
     </div>
   </div>
 
+  <!-- Play History Modal -->
+  <div id="history-modal" onclick="if (event.target.id==='history-modal') hidePlayHistory()" class="hidden fixed inset-0 bg-black/75 z-[110] flex items-center justify-center p-3 sm:p-4">
+    <div onclick="event.stopImmediatePropagation()" class="modal bg-[#1a0907] border border-[#5c4630] rounded-3xl max-w-5xl w-full p-5 sm:p-7 text-sm max-h-[90vh] overflow-hidden flex flex-col">
+      <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
+        <div>
+          <div class="font-display text-2xl text-white">Game History</div>
+          <div id="history-stats-line" class="text-xs text-[#c9a227] mt-1">Local data collection for AI analysis</div>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button onclick="exportAllPlayLogs()" class="px-3 py-1.5 text-xs border border-[#c9a227]/50 rounded-full text-[#c9a227] hover:bg-[#3a1f1a]">Export all JSON</button>
+          <button onclick="clearAllPlayLogs()" class="px-3 py-1.5 text-xs border border-[#5c4630] rounded-full hover:border-red-700 text-[#d2b48c]">Clear all</button>
+          <button onclick="hidePlayHistory()" class="px-3 py-1.5 text-xs text-[#c9a227]">✕</button>
+        </div>
+      </div>
+      <div class="grid md:grid-cols-5 gap-4 min-h-0 flex-1 overflow-hidden">
+        <div class="md:col-span-2 overflow-y-auto max-h-[65vh] pr-1 space-y-2" id="history-list">
+          <div class="text-[#8b6f2e] text-xs p-3">No games yet — play vs Computer to start collecting.</div>
+        </div>
+        <div class="md:col-span-3 overflow-y-auto max-h-[65vh] rounded-2xl border border-[#5c4630]/60 bg-[#120806] p-4" id="history-detail">
+          <div class="text-[#8b6f2e] text-sm">Select a game to inspect deal, moves, AI stats, and outcome.</div>
+        </div>
+      </div>
+      <div class="mt-3 text-[10px] text-[#6b5238]">
+        Logs are stored in this browser (localStorage). Export JSON before clearing or switching devices.
+        Each record includes the full deal, every play/pass, legal-move counts, human think time, AI search stats, and result.
+      </div>
+    </div>
+  </div>
+
   <!-- PeerJS free cloud signaling for cross-device multiplayer (GitHub Pages safe) -->
   <!-- Cache-bust query so browsers always load latest AI after deploys -->
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-  <script src="engine.js?v=20260710f"></script>
-  <script src="genome.js?v=20260710f"></script>
-  <script src="search.js?v=20260710f"></script>
-  <script src="ai.js?v=20260710f"></script>
-  <script src="controller.js?v=20260710f"></script>
-  <script src="hand-order.js?v=20260710f"></script>
-  <script src="multiplayer.js?v=20260710f"></script>
-  <script src="ui.js?v=20260710f"></script>
+  <script>window.TIENLEN_SITE_BUILD = '20260710g';</script>
+  <script src="engine.js?v=20260710g"></script>
+  <script src="genome.js?v=20260710g"></script>
+  <script src="search.js?v=20260710g"></script>
+  <script src="ai.js?v=20260710g"></script>
+  <script src="play-log.js?v=20260710g"></script>
+  <script src="controller.js?v=20260710g"></script>
+  <script src="hand-order.js?v=20260710g"></script>
+  <script src="multiplayer.js?v=20260710g"></script>
+  <script src="ui.js?v=20260710g"></script>
   <script>
     // Thin loader: modules provide the game. index.html = markup + styles + glue.
     (function(){
@@ -660,6 +714,204 @@
         multiplayerFactory: window.TienLenMultiplayer && window.TienLenMultiplayer.createMultiplayer
       });
       window.TienLenUI = ui;
+
+      // ─── Play history UI (data collection) ───
+      function getPlayLog() {
+        if (window.controller && window.controller.getPlayLog) {
+          const pl = window.controller.getPlayLog();
+          if (pl) return pl;
+        }
+        return window.TienLenPlayLog && window.TienLenPlayLog.getDefault
+          ? window.TienLenPlayLog.getDefault()
+          : null;
+      }
+
+      function cardLabel(c) {
+        if (!c) return '?';
+        const ranks = eng.RANKS || ['3','4','5','6','7','8','9','10','J','Q','K','A','2'];
+        const suits = eng.SUITS || ['s','c','d','h'];
+        const sym = (eng.SUIT_SYMBOLS && eng.SUIT_SYMBOLS[suits[c.suit]]) || ['♠','♣','♦','♥'][c.suit] || '';
+        return (ranks[c.rank] || '?') + sym;
+      }
+
+      function cardsLabel(cards) {
+        if (!cards || !cards.length) return 'PASS';
+        return cards.map(cardLabel).join(' ');
+      }
+
+      function downloadText(filename, text) {
+        const blob = new Blob([text], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function () {
+          URL.revokeObjectURL(url);
+          a.remove();
+        }, 0);
+      }
+
+      function refreshHistorySummary() {
+        const pl = getPlayLog();
+        const el = document.getElementById('history-summary-count');
+        if (!el || !pl) return;
+        const st = pl.stats ? pl.stats() : { total: 0 };
+        el.textContent = String(st.total || 0);
+      }
+
+      function renderHistoryList() {
+        const pl = getPlayLog();
+        const list = document.getElementById('history-list');
+        const statsLine = document.getElementById('history-stats-line');
+        if (!list) return;
+        if (!pl) {
+          list.innerHTML = '<div class="text-red-400/80 text-xs p-3">Play log module not loaded.</div>';
+          return;
+        }
+        const games = pl.listGames();
+        const st = pl.stats();
+        if (statsLine) {
+          const rate = st.humanWinRate != null ? (st.humanWinRate * 100).toFixed(0) + '% human wins' : 'no completed games yet';
+          statsLine.textContent = st.total + ' stored • ' + st.complete + ' complete • ' + rate +
+            ' • AI ' + ((st.aiWins != null) ? st.aiWins : 0) + ' wins';
+        }
+        if (!games.length) {
+          list.innerHTML = '<div class="text-[#8b6f2e] text-xs p-3">No games yet — play vs Computer to start collecting.</div>';
+          return;
+        }
+        list.innerHTML = games.map(function (g) {
+          const when = g.startedAt ? new Date(g.startedAt).toLocaleString() : g.id;
+          const outcome = !g.complete ? 'in progress / abandoned'
+            : (g.humanWon === true ? 'You won' : (g.humanWon === false ? 'AI won' : 'complete'));
+          const color = g.humanWon === true ? 'text-emerald-400' : (g.humanWon === false ? 'text-red-300' : 'text-[#c9a227]');
+          const diff = g.aiDifficulty || '?';
+          const n = g.numPlayers || '?';
+          return '<button type="button" data-gid="' + g.id + '" class="history-item w-full text-left p-3 rounded-2xl border border-[#5c4630] hover:border-[#c9a227] bg-[#120806] transition-colors">' +
+            '<div class="flex justify-between gap-2"><span class="text-xs text-[#d2b48c]">' + when + '</span>' +
+            '<span class="text-[10px] ' + color + '">' + outcome + '</span></div>' +
+            '<div class="text-[11px] text-[#8b6f2e] mt-1">' + n + 'p • ' + (g.mode || 'vsAI') + ' • AI ' + diff +
+            ' • ' + (g.eventCount || 0) + ' events</div>' +
+            '<div class="text-[10px] text-[#6b5238] truncate mt-0.5">' + (g.aiBuildLabel || g.aiBuildId || '') + '</div>' +
+            '</button>';
+        }).join('');
+        list.querySelectorAll('.history-item').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            showHistoryDetail(btn.getAttribute('data-gid'));
+          });
+        });
+      }
+
+      function showHistoryDetail(id) {
+        const pl = getPlayLog();
+        const panel = document.getElementById('history-detail');
+        if (!pl || !panel) return;
+        const g = pl.getGame(id);
+        if (!g) {
+          panel.innerHTML = '<div class="text-red-300 text-sm">Game not found.</div>';
+          return;
+        }
+        const r = g.result || {};
+        const dealHands = (g.deal && g.deal.hands) || [];
+        const dealHtml = dealHands.map(function (hand, seat) {
+          const who = (g.humanSeats || []).indexOf(seat) >= 0 ? 'You' : 'AI';
+          return '<div class="mb-1"><span class="text-[#c9a227]">Seat ' + seat + ' (' + who + '):</span> ' +
+            (hand || []).map(cardLabel).join(' ') + '</div>';
+        }).join('');
+
+        const events = (g.events || []).filter(function (e) {
+          return e.type === 'play' || e.type === 'pass' || e.type === 'game_end' || e.type === 'game_start';
+        });
+        const movesHtml = events.map(function (e) {
+          if (e.type === 'game_start') {
+            return '<div class="text-[10px] text-[#6b5238] py-0.5">▶ start t=0</div>';
+          }
+          if (e.type === 'game_end') {
+            return '<div class="text-[10px] text-[#c9a227] py-1 border-t border-[#5c4630]/40 mt-1">■ end — ' +
+              JSON.stringify(e.result || r) + '</div>';
+          }
+          const actor = e.actor === 'human' ? 'YOU' : (e.actor === 'ai' ? 'AI' : e.actor);
+          const actColor = e.actor === 'human' ? 'text-emerald-300' : 'text-sky-300';
+          const move = e.type === 'pass' ? 'PASS' : cardsLabel(e.cards);
+          const think = e.humanThinkMs != null ? (' human ' + e.humanThinkMs + 'ms')
+            : (e.ai && e.ai.thinkMs != null ? (' AI ' + e.ai.thinkMs + 'ms') : '');
+          const mode = e.ai && e.ai.stats && e.ai.stats.mode ? (' [' + e.ai.stats.mode + ']') : '';
+          const fb = e.ai && e.ai.fallbackUsed ? ' fallback' : '';
+          const sizes = e.handSizesAfter ? (' hands[' + e.handSizesAfter.join(',') + ']') : '';
+          return '<div class="py-0.5 border-b border-[#3a1f1a]/50 font-mono text-[11px]">' +
+            '<span class="text-[#6b5238]">#' + e.i + ' +' + e.t + 'ms</span> ' +
+            '<span class="' + actColor + '">S' + e.seat + ' ' + actor + '</span> ' +
+            '<span class="text-white">' + move + '</span>' +
+            '<span class="text-[#8b6f2e]">' + think + mode + fb + sizes + '</span></div>';
+        }).join('');
+
+        panel.innerHTML =
+          '<div class="flex flex-wrap justify-between gap-2 mb-3">' +
+            '<div><div class="text-white font-semibold">Game ' + g.id + '</div>' +
+            '<div class="text-[11px] text-[#8b6f2e]">' + (g.startedAt || '') + ' → ' + (g.endedAt || '…') + '</div></div>' +
+            '<div class="flex gap-2">' +
+              '<button onclick="exportOnePlayLog(\'' + g.id + '\')" class="px-2 py-1 text-[10px] border border-[#5c4630] rounded-full text-[#c9a227]">Export</button>' +
+              '<button onclick="deleteOnePlayLog(\'' + g.id + '\')" class="px-2 py-1 text-[10px] border border-[#5c4630] rounded-full text-[#d2b48c]">Delete</button>' +
+            '</div></div>' +
+          '<div class="text-xs text-[#d2b48c] mb-2">' +
+            (g.numPlayers || '?') + 'p • ' + (g.mode || '') + ' • AI ' + (g.aiDifficulty || '') +
+            ' • seed ' + (g.seed != null ? g.seed : '?') +
+            (g.aiBuild ? (' • ' + (g.aiBuild.label || g.aiBuild.id)) : '') +
+          '</div>' +
+          '<div class="text-xs mb-2 ' + (r.humanWon === true ? 'text-emerald-400' : (r.humanWon === false ? 'text-red-300' : 'text-[#c9a227]')) + '">' +
+            (r.abandoned ? 'Abandoned' : (r.humanWon === true ? 'Human win' : (r.humanWon === false ? 'AI win' : 'Incomplete'))) +
+            (r.finishOrder ? (' • finish ' + JSON.stringify(r.finishOrder)) : '') +
+            (r.durationMs != null ? (' • ' + Math.round(r.durationMs / 1000) + 's') : '') +
+          '</div>' +
+          '<div class="text-[11px] text-[#c9a227] mb-1 font-semibold">Opening deal</div>' +
+          '<div class="text-[11px] text-[#d2b48c] mb-3 leading-relaxed">' + dealHtml + '</div>' +
+          '<div class="text-[11px] text-[#c9a227] mb-1 font-semibold">Move log (' + events.length + ')</div>' +
+          '<div class="space-y-0">' + movesHtml + '</div>';
+      }
+
+      window.showPlayHistory = function () {
+        const m = document.getElementById('history-modal');
+        if (m) m.classList.remove('hidden');
+        renderHistoryList();
+        refreshHistorySummary();
+      };
+      window.hidePlayHistory = function () {
+        const m = document.getElementById('history-modal');
+        if (m) m.classList.add('hidden');
+      };
+      window.exportAllPlayLogs = function () {
+        const pl = getPlayLog();
+        if (!pl) return;
+        const json = pl.exportAll();
+        downloadText('tienlen-playlogs-' + Date.now() + '.json', json);
+      };
+      window.exportOnePlayLog = function (id) {
+        const pl = getPlayLog();
+        if (!pl) return;
+        const json = pl.exportGame(id);
+        if (json) downloadText('tienlen-game-' + id + '.json', json);
+      };
+      window.deleteOnePlayLog = function (id) {
+        const pl = getPlayLog();
+        if (!pl) return;
+        if (!confirm('Delete this game log?')) return;
+        pl.deleteGame(id);
+        renderHistoryList();
+        refreshHistorySummary();
+        const panel = document.getElementById('history-detail');
+        if (panel) panel.innerHTML = '<div class="text-[#8b6f2e] text-sm">Deleted. Select another game.</div>';
+      };
+      window.clearAllPlayLogs = function () {
+        const pl = getPlayLog();
+        if (!pl) return;
+        if (!confirm('Delete ALL saved play logs from this browser?')) return;
+        pl.clearAll();
+        renderHistoryList();
+        refreshHistorySummary();
+        const panel = document.getElementById('history-detail');
+        if (panel) panel.innerHTML = '<div class="text-[#8b6f2e] text-sm">All logs cleared.</div>';
+      };
 
       window.startVsAI = function(n){ ui.startVsAI(n || 4); };
       window.startLive = function(n){ ui.startLive(n || 4); };
@@ -696,6 +948,7 @@
         if (mode) mode.classList.remove('hidden');
         if (game) game.classList.add('hidden');
         if (lobby) lobby.classList.add('hidden');
+        try { refreshHistorySummary(); } catch (_) {}
       };
       window.showRules = function(){
         const m = document.getElementById('rules-modal');
@@ -741,14 +994,16 @@
       };
 
       ui.boot();
+      try { refreshHistorySummary(); } catch (_) {}
 
       // Version badge on title screen (confirms which AI build is loaded)
       (function showAIVersion() {
         const badge = document.getElementById('ai-version-badge');
         const build = (window.TienLenAI && window.TienLenAI.AI_BUILD) || null;
         const searchOk = !!(window.TienLenSearch && window.TienLenSearch.enforcePolicyGuards);
+        const plOk = !!(window.TienLenPlayLog && window.TienLenPlayLog.getDefault);
         const text = build
-          ? (build.label || build.id) + ' • ' + (build.stamped || '') + (searchOk ? ' • search OK' : ' • SEARCH MISSING')
+          ? (build.label || build.id) + ' • ' + (build.stamped || '') + (searchOk ? ' • search OK' : ' • SEARCH MISSING') + (plOk ? ' • logs OK' : ' • LOGS MISSING')
           : 'AI build unknown — hard-refresh (Cmd+Shift+R)';
         if (badge) badge.textContent = 'AI: ' + text;
         try {
@@ -757,6 +1012,7 @@
             engine: !!window.TienLenEngine,
             search: !!window.TienLenSearch,
             ai: !!window.TienLenAI,
+            playLog: plOk,
             enforce: searchOk,
             build: build
           });
