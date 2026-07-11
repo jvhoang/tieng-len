@@ -27,8 +27,12 @@ ok('fixed position style', /position:\s*fixed/.test(html));
 ok('Play/Pass/Hint action buttons', /id="btn-play"/.test(html) && /id="btn-pass"/.test(html) && /id="btn-hint"/.test(html));
 ok('Clear replaced by Hint in action bar', !/id="btn-clear"/.test(html) && /requestHint\(\)/.test(html));
 ok('hand-fan markup', /hand-fan/.test(html));
-ok('fan overlap in ui.js', /marginLeft/.test(ui) && /overlapPx/.test(ui));
-ok('viewport-fit human fan', /needOverlap|avail - cardW/.test(ui));
+ok('fan overlap in ui.js', /marginLeft/.test(ui) && /rowOverlap|hand-row/.test(ui));
+ok('human hand max 2 rows', /hand-fan-2row/.test(ui) && /Math\.ceil\(n \/ 2\)/.test(ui));
+ok('force 2-row for large phone hands', /forceTwo|n >= 10/.test(ui));
+ok('larger human cards (not micro)', /#hand-0\.hand-fan \.card[\s\S]*?width:\s*5[0-6]px/.test(html) ||
+  /#hand-0\.hand-fan \.card\s*\{[^}]*width:\s*56px/.test(html));
+ok('no micro 38px human cards', !/#hand-0\.hand-fan \.card[^}]*width:\s*3[0-9]px/.test(html));
 ok('no human hand rotation (avoids edge clip)', /transform = 'none'/.test(ui) || /transform = \"none\"/.test(ui));
 ok('corner-tl rank+suit on card face', /corner-tl/.test(html) && /suit-tl/.test(html) && /corner-tl/.test(ui));
 ok('suit under rank in createCardEl', /suit-tl/.test(ui) && /rank/.test(ui));

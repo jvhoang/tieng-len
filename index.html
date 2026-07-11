@@ -131,7 +131,7 @@
       position: relative;
       z-index: 1;
     }
-    /* Fan-held hands — ultra-tight so portrait iPhone keeps 1st/last in view */
+    /* Fan-held hands — larger cards; human hand may use up to 2 rows */
     .hand-fan {
       display: flex;
       flex-wrap: nowrap;
@@ -145,14 +145,40 @@
       box-sizing: border-box;
     }
     .hand-fan .card {
-      margin-left: -22px;
+      margin-left: -18px;
     }
     .hand-fan .card:first-child { margin-left: 0; }
-    /* Human hand: slightly smaller base so 13 cards fit more easily */
-    #hand-0.hand-fan .card {
-      width: 52px;
-      height: 74px;
+    /* Human hand: full-size cards, stacked in row wrappers when needed */
+    #hand-0.hand-fan {
+      flex-direction: column;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      min-height: 96px;
+      padding: 10px 2px 8px;
     }
+    #hand-0.hand-fan.hand-fan-2row {
+      min-height: 168px;
+      gap: 8px;
+    }
+    #hand-0 .hand-row {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: center;
+      align-items: flex-end;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    #hand-0.hand-fan .card {
+      width: 56px;
+      height: 78px;
+    }
+    #hand-0.hand-fan .rank { font-size: 14px; }
+    #hand-0.hand-fan .suit-tl { font-size: 12px; }
+    #hand-0.hand-fan .suit { font-size: 13px; }
+    #hand-0.hand-fan .suit-center { font-size: 22px; }
     @media (max-width: 480px) {
       #table-area.viet-table {
         padding-left: 0.5rem !important;
@@ -163,31 +189,32 @@
         padding-left: 0;
         padding-right: 0;
       }
-      .hand-fan {
+      #hand-0.hand-fan {
         padding: 8px 0 6px;
-        min-height: 78px;
+        gap: 5px;
+        min-height: 90px;
       }
+      #hand-0.hand-fan.hand-fan-2row {
+        min-height: 158px;
+        gap: 6px;
+      }
+      /* Still large on phone — 2-row layout absorbs the width */
       #hand-0.hand-fan .card {
-        width: 42px;
-        height: 62px;
-        margin-left: -26px;
+        width: 50px;
+        height: 72px;
       }
-      #hand-0.hand-fan .card:first-child { margin-left: 0; }
-      #hand-0.hand-fan .rank { font-size: 11px; }
-      #hand-0.hand-fan .suit-tl { font-size: 10px; }
-      #hand-0.hand-fan .suit { font-size: 10px; }
-      #hand-0.hand-fan .suit-center { font-size: 16px; }
-      #hand-0.hand-fan .corner-tl { top: 2px; left: 2px; }
+      #hand-0.hand-fan .rank { font-size: 13px; }
+      #hand-0.hand-fan .suit-tl { font-size: 11px; }
+      #hand-0.hand-fan .suit { font-size: 12px; }
+      #hand-0.hand-fan .suit-center { font-size: 20px; }
     }
     @media (max-width: 380px) {
       #hand-0.hand-fan .card {
-        width: 38px;
-        height: 56px;
-        margin-left: -24px;
+        width: 48px;
+        height: 70px;
       }
-      #hand-0.hand-fan .card:first-child { margin-left: 0; }
-      #hand-0.hand-fan .rank { font-size: 10px; }
-      #hand-0.hand-fan .suit-tl { font-size: 9px; }
+      #hand-0.hand-fan .rank { font-size: 12px; }
+      #hand-0.hand-fan .suit-tl { font-size: 11px; }
     }
     .hand-fan-opp .card {
       width: 42px; height: 58px;
@@ -759,7 +786,7 @@
                 <div id="your-status" class="text-xs px-2 py-0.5 bg-[#121a2f] rounded"></div>
               </div>
             </div>
-            <div id="hand-0" class="hand-fan min-h-[84px] bg-[#0f3d3a]/60 rounded-2xl border border-[#1e293b]"></div>
+            <div id="hand-0" class="hand-fan min-h-[96px] bg-[#0f3d3a]/60 rounded-2xl border border-[#1e293b]"></div>
             <div class="text-[10px] text-[#64748b] mt-1 text-center">Drag cards to reorder · Sort low→high with the button · R key resets order</div>
           </div>
         </div>
@@ -889,15 +916,15 @@
   <!-- Cache-bust query so browsers always load latest AI after deploys -->
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <script>window.TIENLEN_SITE_BUILD = '20260711c';</script>
-  <script src="engine.js?v=20260711f"></script>
-  <script src="genome.js?v=20260711f"></script>
-  <script src="search.js?v=20260711f"></script>
-  <script src="ai.js?v=20260711f"></script>
-  <script src="play-log.js?v=20260711f"></script>
-  <script src="controller.js?v=20260711f"></script>
-  <script src="hand-order.js?v=20260711f"></script>
-  <script src="multiplayer.js?v=20260711f"></script>
-  <script src="ui.js?v=20260711f"></script>
+  <script src="engine.js?v=20260711g"></script>
+  <script src="genome.js?v=20260711g"></script>
+  <script src="search.js?v=20260711g"></script>
+  <script src="ai.js?v=20260711g"></script>
+  <script src="play-log.js?v=20260711g"></script>
+  <script src="controller.js?v=20260711g"></script>
+  <script src="hand-order.js?v=20260711g"></script>
+  <script src="multiplayer.js?v=20260711g"></script>
+  <script src="ui.js?v=20260711g"></script>
   <script>
     // Thin loader: modules provide the game. index.html = markup + styles + glue.
     (function(){

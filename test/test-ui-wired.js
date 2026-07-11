@@ -105,8 +105,9 @@ log('Current player=' + (st0 && st0.currentPlayer) + ' legals=' + (driven.legals
 // explicit render via shipped ui.renderHand
 ui.renderHand(0);
 const hand0 = document.getElementById('hand-0');
-const initialCount = (hand0 && hand0.children) ? hand0.children.length : 0;
-log('After renderHand(0): hand-0 children = ' + initialCount);
+const hand0Cards = hand0 && hand0.querySelectorAll ? hand0.querySelectorAll('.card') : [];
+const initialCount = hand0Cards.length || 0;
+log('After renderHand(0): hand-0 .card count = ' + initialCount);
 assert('renderHand produced real .card children from deal', initialCount > 0);
 
 // Re-render for turn state / selectable onclicks
@@ -117,12 +118,13 @@ let clicked = false;
 let usedDirect = false;
 let playedOk = false;
 const legals = driven.legals || ctrl.getLegalFor(0) || [];
+const handCardsAfter = hand0 && hand0.querySelectorAll ? hand0.querySelectorAll('.card') : [];
 
-if (legals.length > 0 && hand0 && hand0.children && hand0.children.length > 0) {
+if (legals.length > 0 && handCardsAfter.length > 0) {
   const playToMake = legals[0];
   const toSelectEls = [];
-  for (let i = 0; i < hand0.children.length; i++) {
-    const el = hand0.children[i];
+  for (let i = 0; i < handCardsAfter.length; i++) {
+    const el = handCardsAfter[i];
     if (typeof el.onclick !== 'function') continue;
     try {
       const c = JSON.parse(el.dataset.card || '{}');

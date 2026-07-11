@@ -197,89 +197,120 @@
       }
 
       const display = showCards ? getDisplayHand(playerIdx, p.hand) : (p.hand || []);
+      const n = display.length || 0;
 
-      display.forEach((c, idx) => {
-        const isBack = !showCards;
-        const el = createCardEl(c, isBack, selectableForHand && !isBack, {
-          draggable: showCards && isActiveHuman && !isBack
+      // Human face-up: larger cards, up to 2 fan rows (opening 13-card hands)
+      // Opponents / backs: single tight row (unchanged)
+      let rows = [display];
+      let cardW = 56;
+      let avail = 320;
+      if (showCards && isActiveHuman) {
+        try {
+          if (typeof window !== 'undefined' && window.innerWidth) {
+            if (window.innerWidth <= 380) cardW = 48;
+            else if (window.innerWidth <= 480) cardW = 50;
+            else cardW = 56;
+          }
+          const cw = container.clientWidth || 0;
+          avail = cw > 40 ? cw - 8 : 0;
+          if (!avail && typeof window !== 'undefined' && window.innerWidth) {
+            avail = Math.max(240, window.innerWidth - 24);
+          }
+        } catch (_) {
+          avail = 320;
+          cardW = 50;
+        }
+        // Prefer a roomy fan (larger cards, ~40% width visible step).
+        // If one roomy row can't hold the hand, use 2 rows max (13 → 7+6).
+        const roomyStep = Math.max(20, Math.round(cardW * 0.42));
+        const roomyPerRow = Math.max(1, Math.floor((avail - cardW) / roomyStep) + 1);
+        // Opening hands (and any large hand) on phone → always allow 2-row
+        const forceTwo = n >= 10 && avail < 520;
+        if (n > roomyPerRow || forceTwo) {
+          const top = Math.ceil(n / 2);
+          rows = [display.slice(0, top), display.slice(top)];
+          container.classList.add('hand-fan-2row');
+        } else {
+          container.classList.remove('hand-fan-2row');
+        }
+      } else {
+        container.classList.remove('hand-fan-2row');
+      }
+
+      function rowOverlap(count) {
+        if (count <= 1) return 0;
+        if (!(showCards && isActiveHuman)) {
+          return count >= 8 ? 22 : 18;
+        }
+        // Fit this row into avail with roomy cards
+        const step = (avail - cardW) / (count - 1);
+        const needOverlap = cardW - step;
+        const maxOverlap = cardW - 16; // ≥16px peek for rank+suit
+        const minOverlap = count >= 8 ? 14 : (count >= 5 ? 10 : 6);
+        return Math.ceil(Math.min(maxOverlap, Math.max(minOverlap, needOverlap + 1)));
+      }
+
+      let globalIdx = 0;
+      rows.forEach((rowCards, rowIdx) => {
+        const rowEl = (showCards && isActiveHuman)
+          ? doc.createElement('div')
+          : container;
+        if (showCards && isActiveHuman) {
+          rowEl.className = 'hand-row';
+          rowEl.dataset.row = String(rowIdx);
+        }
+        const ov = rowOverlap(rowCards.length || 1);
+        rowCards.forEach((c, idxInRow) => {
+          const isBack = !showCards;
+          const el = createCardEl(c, isBack, selectableForHand && !isBack, {
+            draggable: showCards && isActiveHuman && !isBack
+          });
+          if (isTurnSeat && isActiveHuman && !isBack) {
+            const isSel = selectedCards.some(sc => sc.rank === c.rank && sc.suit === c.suit);
+            if (isSel) el.classList.add('selected');
+          }
+          if (showCards && isActiveHuman && !isBack) {
+            // Global index keeps drag reorder correct across rows
+            wireDrag(el, globalIdx, container, playerIdx);
+          }
+          if (idxInRow > 0) el.style.marginLeft = (-ov) + 'px';
+          else el.style.marginLeft = '0';
+          el.style.zIndex = String(10 + globalIdx);
+          if (showCards && isActiveHuman) {
+            el.style.transformOrigin = 'bottom center';
+            if (!el.classList.contains('selected')) {
+              el.style.transform = 'none';
+            }
+          }
+          rowEl.appendChild(el);
+          globalIdx++;
         });
-        if (isTurnSeat && isActiveHuman && !isBack) {
-          const isSel = selectedCards.some(sc => sc.rank === c.rank && sc.suit === c.suit);
-          if (isSel) el.classList.add('selected');
+        if (showCards && isActiveHuman && rowEl !== container) {
+          container.appendChild(rowEl);
         }
-        if (showCards && isActiveHuman && !isBack) {
-          wireDrag(el, idx, container, playerIdx);
-        }
-        // Viewport-fit fan: compute overlap so the full hand fits (iPhone portrait)
-        const n = display.length || 1;
-        let overlapPx = showCards ? 18 : 22;
-        if (showCards && isActiveHuman) {
-          // Card width from CSS breakpoints (must match index.html #hand-0 rules)
-          let cardW = 52;
-          let avail = 0;
-          try {
-            if (typeof window !== 'undefined' && window.innerWidth) {
-              if (window.innerWidth <= 380) cardW = 38;
-              else if (window.innerWidth <= 480) cardW = 42;
-            }
-            // Prefer measured container width (accounts for table padding/border)
-            const cw = container.clientWidth || 0;
-            avail = cw > 20 ? cw - 8 : 0;
-            if (!avail && typeof window !== 'undefined' && window.innerWidth) {
-              avail = Math.max(180, window.innerWidth - 28);
-            }
-          } catch (_) {
-            avail = 300;
-          }
-          if (n <= 1) {
-            overlapPx = 0;
-          } else if (avail > 0) {
-            // total = cardW + (n-1)*(cardW - overlap) <= avail
-            // overlap >= cardW - (avail - cardW)/(n-1)
-            const step = (avail - cardW) / (n - 1);
-            const needOverlap = cardW - step;
-            // Keep a readable strip of the card (rank+suit corner) visible
-            const maxOverlap = cardW - 12; // ≥12px peek for rank+suit
-            const minOverlap = n >= 10 ? 18 : (n >= 6 ? 14 : 8);
-            // +2 safety so left/right edges never kiss the clip boundary
-            overlapPx = Math.ceil(Math.min(maxOverlap, Math.max(minOverlap, needOverlap + 2)));
-          } else {
-            overlapPx = n >= 12 ? 30 : (n >= 9 ? 28 : (n >= 6 ? 24 : 16));
-          }
-        }
-        if (idx > 0) el.style.marginLeft = (-overlapPx) + 'px';
-        el.style.zIndex = String(10 + idx);
-        // No rotation on human hand — arc clips 1st/last cards on narrow phones
-        if (showCards && isActiveHuman) {
-          el.style.transformOrigin = 'bottom center';
-          if (!el.classList.contains('selected')) {
-            el.style.transform = 'none';
-          }
-        }
-        container.appendChild(el);
       });
 
-      // Second pass: if rendered fan still overflows, tighten further
-      if (showCards && isActiveHuman && display.length > 1) {
+      // Second pass: tighten any row that still overflows slightly
+      if (showCards && isActiveHuman) {
         try {
-          const kids = container.children;
-          if (kids && kids.length > 1) {
+          const rowNodes = container.querySelectorAll('.hand-row');
+          rowNodes.forEach((rowNode) => {
+            const kids = rowNode.children;
+            if (!kids || kids.length < 2) return;
             const first = kids[0];
             const last = kids[kids.length - 1];
             const left = first.getBoundingClientRect();
             const right = last.getBoundingClientRect();
-            const box = container.getBoundingClientRect();
-            const overflowL = box.left - left.left;
-            const overflowR = right.right - box.right;
-            const overflow = Math.max(0, overflowL, overflowR);
+            const box = rowNode.getBoundingClientRect();
+            const overflow = Math.max(0, box.left - left.left, right.right - box.right);
             if (overflow > 1) {
-              const extra = Math.ceil(overflow / Math.max(1, display.length - 1)) + 1;
+              const extra = Math.ceil(overflow / (kids.length - 1)) + 1;
               for (let i = 1; i < kids.length; i++) {
                 const cur = parseFloat(String(kids[i].style.marginLeft || '0').replace('px', '')) || 0;
                 kids[i].style.marginLeft = (cur - extra) + 'px';
               }
             }
-          }
+          });
         } catch (_) { /* measure optional */ }
       }
     }

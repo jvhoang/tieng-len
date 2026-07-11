@@ -41,26 +41,30 @@ while(st && !st.roundOver && d<maxd){
 // real render + createCardEl(selectable when turn)
 ui.renderHand(0);
 const h0 = document.getElementById('hand-0');
-t('renderHand appends real cards from deal', h0 && h0.children && h0.children.length === 13);
+const h0Cards = h0 && h0.querySelectorAll ? h0.querySelectorAll('.card') : null;
+t('renderHand appends real cards from deal', h0Cards && h0Cards.length === 13);
 
 // find a selectable card el (has onclick from createCardEl when isTurn && human)
 let hasSelectable = false;
-for(let i=0; i<h0.children.length; i++){ if(typeof h0.children[i].onclick === 'function'){ hasSelectable=true; break; } }
+const cardsForClick = (h0 && h0.querySelectorAll) ? h0.querySelectorAll('.card') : [];
+for (let i = 0; i < cardsForClick.length; i++) {
+  if (typeof cardsForClick[i].onclick === 'function') { hasSelectable = true; break; }
+}
 t('createCardEl wires onclick (selectable) for turn human', hasSelectable);
 
 // toggle real els corresponding to a legal combo from controller (ensures valid for playSelected)
 const legsNow = (ctrl.getLegalFor ? ctrl.getLegalFor(0) : []) || [];
-if (legsNow.length > 0 && h0 && h0.children) {
+if (legsNow.length > 0 && cardsForClick.length) {
   const play = legsNow[0];
-  for(let i=0; i<h0.children.length; i++){
-    const el = h0.children[i];
-    if(typeof el.onclick !== 'function') continue;
+  for (let i = 0; i < cardsForClick.length; i++) {
+    const el = cardsForClick[i];
+    if (typeof el.onclick !== 'function') continue;
     try {
       const c = JSON.parse(el.dataset.card || '{}');
-      if (play.some(pc => pc.rank===c.rank && pc.suit===c.suit)) {
-        el.onclick.call(el, {target:el});
+      if (play.some(pc => pc.rank === c.rank && pc.suit === c.suit)) {
+        el.onclick.call(el, { target: el });
       }
-    } catch(_){}
+    } catch (_) {}
   }
 }
 const sel = ui._getSelected ? ui._getSelected().length : 0;

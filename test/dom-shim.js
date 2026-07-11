@@ -79,8 +79,34 @@ function makeEl(tagName = 'div') {
       if (name === 'class') return classList._toArray().join(' ');
       return this[name];
     },
-    querySelectorAll() { return []; },
-    querySelector() { return null; },
+    querySelectorAll(sel) {
+      // Minimal support for tests: .class and tag.class over descendants
+      const out = [];
+      const s = String(sel || '').trim();
+      function walk(node) {
+        if (!node || !node.children) return;
+        for (let i = 0; i < node.children.length; i++) {
+          const ch = node.children[i];
+          if (!ch) continue;
+          let match = false;
+          if (s.charAt(0) === '.') {
+            const cls = s.slice(1);
+            if (ch.classList && ch.classList.contains(cls)) match = true;
+            else if (String(ch.className || '').split(/\s+/).indexOf(cls) >= 0) match = true;
+          } else if (s && ch.tagName === s.toUpperCase()) {
+            match = true;
+          }
+          if (match) out.push(ch);
+          walk(ch);
+        }
+      }
+      walk(el);
+      return out;
+    },
+    querySelector(sel) {
+      const all = this.querySelectorAll(sel);
+      return all.length ? all[0] : null;
+    },
     focus() {},
     click() {
       if (this.onclick) this.onclick({ target: this });

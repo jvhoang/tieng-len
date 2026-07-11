@@ -107,8 +107,9 @@ captureLog('Drove ' + drv + ' real turns (AI+pass) to reach human turn with lega
 ui.renderHand(0);
 
 const hand0 = document.getElementById('hand-0');
-const initialChildren = (hand0 && hand0.children) ? hand0.children.length : 0;
-captureLog('Real renderHand(0) produced children: ' + initialChildren);
+const hand0Cards = hand0 && hand0.querySelectorAll ? hand0.querySelectorAll('.card') : [];
+const initialChildren = hand0Cards.length || 0;
+captureLog('Real renderHand(0) produced .card count: ' + initialChildren);
 
 const tableArea = document.getElementById('table-area');
 const surfaceW = (tableArea && tableArea.style && tableArea.style.width) || '0';
@@ -120,12 +121,12 @@ captureLog('Surface dims: ' + surfaceW + 'x' + surfaceH + ' filled=' + surfaceFi
 let clickedOk = false;
 let selectedBeforePlay = 0;
 const legals = ctrl.getLegalFor ? ctrl.getLegalFor(0) : [];
-if (hand0 && hand0.children && hand0.children.length > 0 && legals.length > 0) {
+if (hand0Cards.length > 0 && legals.length > 0) {
   const play = legals[0];
   // locate real els created by render for this legal
   const targets = [];
-  for (let i = 0; i < hand0.children.length; i++) {
-    const el = hand0.children[i];
+  for (let i = 0; i < hand0Cards.length; i++) {
+    const el = hand0Cards[i];
     if (typeof el.onclick !== 'function') continue;
     try {
       const c = JSON.parse(el.dataset.card || '{}');
