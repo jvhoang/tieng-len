@@ -129,10 +129,20 @@ function getMove(pol, state, seat, which) {
       return null;
     }
   }
+  // Deterministic search RNG from position key so continuous benches re-run identically
+  var key = _stateKey(state, seat) + '|v80';
+  var seed = _hashKey(key);
+  var savedRandom = Math.random;
+  Math.random = function () {
+    seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+    return seed / 4294967296;
+  };
   try {
     return pol.getAIMove(state, seat, v80Opts());
   } catch (e) {
     return null;
+  } finally {
+    Math.random = savedRandom;
   }
 }
 
