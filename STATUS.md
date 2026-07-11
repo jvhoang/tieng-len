@@ -9,7 +9,7 @@
 - Doc: `evolve/human-vs-v70-counterfactual-1-72.md`
 - Summary JSON: `evolve/counterfactual-1-72-summary.json`
 - Method: frozen **v7.0** `getAIMove` as human seat, **hiddenInfo only** (no AI-hand peek)
-- **445** human actions in **57** completed games; match rate **59.3%** (264 match / 181 differ)
+- **549** human actions in **69** completed games; match rate **60.1%** (330 match / 219 differ)
 - Themes: human spends 2s for tempo (24×), longer free-lead multi (67 free-lead differs), combat climbs (114)
 
 ### 2. Grandmaster v7.5 vs frozen v7.0
