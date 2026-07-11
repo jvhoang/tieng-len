@@ -14,17 +14,17 @@
 
 /** Shown on title screen — bump when shipping AI behavior changes. */
 const AI_BUILD = {
-  id: 'v5.1-shallow-self-vs-v4',
-  stamped: '2026-07-10T22:50:00-07:00',
-  label: 'Grandmaster v5.1'
+  id: 'v4.0-frozen-baseline',
+  stamped: '2026-07-10T18:30:00-07:00',
+  label: 'Grandmaster v4.0 (frozen)'
 };
 
-const engine = (typeof require === 'function') ? require('./engine.js') : (window.TienLenEngine || {});
+const engine = (typeof require === 'function') ? require('../engine.js') : (window.TienLenEngine || {});
 const genomeMod = (typeof require === 'function')
-  ? require('./genome.js')
+  ? require('../genome.js')
   : (typeof window !== 'undefined' ? window.TienLenGenome : null);
 const searchMod = (typeof require === 'function')
-  ? require('./search.js')
+  ? require('./v40-search.js')
   : (typeof window !== 'undefined' ? window.TienLenSearch : null);
 const {
   detectCombo, getLegalPlays, applyPlay, pass, cardCompare, cloneState: engineClone
@@ -877,9 +877,6 @@ function getAIMove(state, myIdx, opts = {}) {
         exploit: opts.exploit,
         exactExploit: opts.exactExploit,
         exactExploitMs: opts.exactExploitMs != null ? opts.exactExploitMs : opts.timeMs,
-        exploitTrials: opts.exploitTrials,
-        deepExact: opts.deepExact,
-        dualSelf: opts.dualSelf,
         bestResponse: opts.bestResponse,
         alphaBeta: opts.alphaBeta,
         brTrials: opts.brTrials
@@ -894,7 +891,6 @@ function getAIMove(state, myIdx, opts = {}) {
       let mv = result ? result.play : undefined;
       const exploitMode = _lastSearchStats && (
         _lastSearchStats.mode === 'exploit-v30' ||
-        _lastSearchStats.mode === 'exploit-v40' ||
         _lastSearchStats.mode === 'exact-exploit' ||
         _lastSearchStats.mode === 'exact-exploit-out' ||
         _lastSearchStats.mode === 'exact-exploit-soft' ||

@@ -1,17 +1,20 @@
-# PLAN — Live play log / history (data collection)
+# PLAN — v5.1: beat frozen v4.0 after human play-log analysis
 
-**Goal:** Record every live game on the GitHub site with analysis-grade detail, and provide a UI to browse/export logs so human-vs-AI deep dives can improve the AI.
+## Goal
+1. Extensive analysis of 9 public human-vs-v4 play-log games
+2. Newer AI that beats **frozen current v4.0** by **strictly >80%** over **≥1000** 2p single-deal games
 
-## Design
-- **Client-side first** (static Pages): `localStorage` via `play-log.js`
-- **Schema v1:** full deal hands + ordered events (play/pass) + AI search stats + outcome
-- **Controller hooks:** start on reconfigure/newRound; log each human/AI action; finalize on roundOver
-- **UI:** title-screen “Game History” card → panel list + detail + export JSON / clear
-- **No new remote backend** yet (export files for offline analysis); optional remote later
+## Checklist
+- [x] Parse 9 play-log issues → structured analysis
+- [x] Write `evolve/human-vs-v4-analysis.md` with evidence
+- [x] Freeze live AI as `policies/v40-ai.js` + `policies/v40-search.js`
+- [x] Implement v5 strength (no-gift, multi free-lead, shallowSelf exploit, det inject)
+- [x] Bench v5 vs frozen v4 ≥1000 games, rate **> 0.80**
+- [x] Unit tests green; STATUS + badge not v4-only
 
-## Deliverables
-1. `play-log.js`
-2. Controller integration
-3. History UI in `index.html` (+ glue)
-4. Tests for store/export/schema
-5. Cache-bust + STATUS
+## Gate result
+**PASS:** 803/1000 = **80.3%** (`evolve/v5-vs-v40-final.json`)
+
+## Non-goals
+- Replaying the 9 human deals as formal gate metric
+- Changing rules / engine legality

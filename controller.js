@@ -341,6 +341,16 @@
           // Free-lead fallback: never use legals[0] raw (singles listed first).
           // Prefer multi, else lowest non-2 single (trash-shed).
           function freeLeadFallback(list) {
+            // Prefer search hard free-lead when available (no-gift + multi bias)
+            try {
+              const S = (typeof window !== 'undefined' && window.TienLenSearch)
+                ? window.TienLenSearch
+                : (typeof require === 'function' ? require('./search.js') : null);
+              if (S && S.pickFreeLeadHard) {
+                const hard = S.pickFreeLeadHard(list, state, cp);
+                if (hard && hard.length) return hard;
+              }
+            } catch (_) { /* ignore */ }
             const multi = list.filter(function (pl) {
               if (pl.length < 2) return false;
               const hasTwo = pl.some(function (c) { return c.rank === 12; });
@@ -357,11 +367,28 @@
               });
               return multi[0];
             }
-            const singles = list.filter(function (pl) {
+            // No-gift: if any opp has 1 card, prefer high singles
+            const oneCardOpp = state.players.some(function (p, i) {
+              return i !== cp && !p.finished && p.hand.length === 1;
+            });
+            let singles = list.filter(function (pl) {
               return pl.length === 1 && pl[0].rank < 12;
             });
+            if (oneCardOpp) {
+              const highs = singles.filter(function (pl) { return pl[0].rank >= 10; });
+              if (highs.length) singles = highs;
+              else {
+                const twos = list.filter(function (pl) {
+                  return pl.length === 1 && pl[0].rank === 12;
+                });
+                if (twos.length) return twos[0];
+              }
+            }
             if (singles.length) {
-              singles.sort(function (a, b) { return a[0].rank - b[0].rank || a[0].suit - b[0].suit; });
+              singles.sort(function (a, b) {
+                if (oneCardOpp) return b[0].rank - a[0].rank || b[0].suit - a[0].suit;
+                return a[0].rank - b[0].rank || a[0].suit - b[0].suit;
+              });
               return singles[0];
             }
             return list[0];

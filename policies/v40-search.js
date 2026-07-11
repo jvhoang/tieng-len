@@ -11,7 +11,7 @@
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./engine.js'));
+    module.exports = factory(require('../engine.js'));
   } else {
     root.TienLenSearch = factory(root.TienLenEngine);
   }
@@ -261,29 +261,30 @@
           score += topRank(play) * 0.3;
         }
       } else if (com.type === 'single' && isTrashSinglePlay(play, info)) {
-        // Trash shed: good with control, but prefer low multi volume first (v5)
-        if (handLen >= 8 && info.hasControl && info.trashCount >= 2) {
-          score -= 30 - com.top.rank * 1.5;
+        // Trash shed early is GOOD when we have control to recapture
+        if (handLen >= 7 && info.hasControl) {
+          score -= 35 - com.top.rank * 1.5; // lower trash better
         } else if (handLen >= 9 && info.twos >= 1) {
-          score -= 22 - com.top.rank;
+          score -= 28 - com.top.rank;
         } else {
-          score += 30; // without control: don't dump random singles
+          score += 25; // mid/late without control: don't dump random singles
         }
       } else if (com.type === 'single') {
         score += 55;
         if (com.top.rank >= 10) score += 18;
         if (com.top.rank === 12) score += 40;
       } else {
-        // Multi: strong preference for low volume free-leads (human multi bias)
-        score -= comboPriority(com.type) * 12;
-        if (play.length === 2) score -= 16;
-        else if (play.length === 3) score -= 18;
-        else if (play.length === 4) score -= 14;
-        else if (play.length >= 5) score -= 8 - (play.length - 5);
-        score += topRank(play) * 0.9;
-        if (topRank(play) <= 8) score -= 18;
-        if (com.type === 'pair') score -= 5;
-        if (topRank(play) <= 6) score -= 8;
+        // Multi: prefer low, short, that may clear trash-adjacent structure
+        score -= comboPriority(com.type) * 10;
+        if (play.length === 2) score -= 12;
+        else if (play.length === 3) score -= 14;
+        else if (play.length === 4) score -= 10;
+        else if (play.length >= 5) score -= 4 - (play.length - 5);
+        score += topRank(play) * 1.1;
+        if (topRank(play) <= 7) score -= 14;
+        if (com.type === 'pair') score -= 3;
+        // Bonus if multi uses only low ranks (trash management via multi)
+        if (topRank(play) <= 6) score -= 6;
       }
       if (usesTwo && afterLen > 1) score += 50;
       if (bomb && afterLen > 0) score += 35;
@@ -369,16 +370,12 @@
     if (non2.length) return { play: orderLegals(non2, state, cp)[0] };
 
     var infoC = analyzeHand(hand);
-    // v5: conserve 2s — only spend them on high threats, short hands, or near go-out.
-    // Prior aggressive 2-spending lost control races vs fixed experts.
-    if (handLen <= 5 || omin <= 2 || curTop >= 10) {
+    // Aggressive control: contest whenever we hold trash (need lead) or short/threat
+    if (handLen <= 9 || omin <= 4 || curTop >= 8 || infoC.trashCount >= 1) {
       return { play: orderLegals(leg, state, cp)[0] };
     }
-    if (handLen <= 7 && (omin <= 3 || curTop >= 9)) {
-      return { play: orderLegals(leg, state, cp)[0] };
-    }
-    // Pass pure-2 answers to mid/low junk when we still have depth
-    if (handLen >= 8 && curTop < 10) return { pass: true };
+    // Only pass pure-2 responses to very low junk with deep clean hand
+    if (handLen > 10 && curTop < 7 && infoC.trashCount === 0) return { pass: true };
 
     return { play: orderLegals(leg, state, cp)[0] };
   }
@@ -463,8 +460,9 @@
       return orderLegals(leg, state, cp)[0];
     }
 
-    // (3) v5 free lead: multi-always when multi exists (human 21:10 + BR self).
-    // Hybrid only when dual-self exploit scoring enables _exploitFlMode.
+    // (3) Hybrid free lead (v3):
+    // Prefer low multi that clears volume; inject trash singles when we have
+    // control AND ≥2 trash (stuck risk). Single trash first only then.
     var trashPlays = [];
     for (i = 0; i < leg.length; i++) {
       if (isTrashSinglePlay(leg[i], info)) trashPlays.push(leg[i]);
@@ -473,13 +471,15 @@
       return a[0].rank - b[0].rank || a[0].suit - b[0].suit;
     });
 
+    // Low multi first when available (volume)
     if (multi.length) {
       var lowMulti = multi.filter(function (p) { return topRank(p) <= 8; });
       var multiPick = lowMulti.length
         ? orderLegals(lowMulti, state, cp)[0]
         : orderLegals(multi, state, cp)[0];
+      // If ≥2 trash and control, dump one trash before keeping multi structure
+      // (unless multi top is very low — multi is also trash clearing)
       if (
-        _exploitFlMode === 'hybrid' &&
         trashPlays.length >= 2 &&
         (info.twos >= 1 || info.control >= 2) &&
         handLen >= 7 &&
@@ -487,21 +487,11 @@
       ) {
         return trashPlays[0];
       }
-      // multi-always (default)
       return multiPick;
     }
 
     // No multi: dump trash if any
-    if (trashPlays.length) {
-      if (handLen <= 6 && trashPlays[0][0].rank <= 5 && info.twos === 0) {
-        var cheapS0 = [];
-        for (i = 0; i < leg.length; i++) {
-          if (!playIsExpensive(leg[i])) cheapS0.push(leg[i]);
-        }
-        if (cheapS0.length) return orderLegals(cheapS0, state, cp)[0];
-      }
-      return trashPlays[0];
-    }
+    if (trashPlays.length) return trashPlays[0];
 
     // (5) Lowest cheap single
     var cheapS = [];
@@ -649,7 +639,6 @@
   // Optional live frozen modules for accurate best-response (Node bench)
   var _v21Live = null;
   var _v30Live = null;
-  var _v40Live = null;
   function getV21Live() {
     if (_v21Live !== null) return _v21Live || null;
     _v21Live = false;
@@ -674,36 +663,18 @@
     }
     return _v30Live || null;
   }
-  function getV40Live() {
-    if (_v40Live !== null) return _v40Live || null;
-    _v40Live = false;
-    if (typeof require === 'function') {
-      try {
-        _v40Live = require('./policies/v40-ai.js');
-      } catch (e1) {
-        try { _v40Live = require('../policies/v40-ai.js'); } catch (e2) { _v40Live = false; }
-      }
-    }
-    return _v40Live || null;
-  }
-
-  // Injected by bench for true best-response vs frozen policy (avoids require cycle).
-  var _injectedOppPolicy = null;
-  function setExploitOpponent(fn) {
-    _injectedOppPolicy = typeof fn === 'function' ? fn : null;
-  }
 
   /**
-   * Opponent for exploit playouts.
-   * Prefer injected frozen-v4 callback (bench); else multi-always model.
+   * Strongest available frozen opponent for BR playouts: prefer v3.0 expert, else v2.1.
    */
   function opponentPolicyStrong(state, cp) {
-    if (_injectedOppPolicy) {
+    var live30 = getV30Live();
+    if (live30 && typeof live30.getAIMove === 'function') {
       try {
-        var mv = _injectedOppPolicy(state, cp);
-        if (mv == null) return { pass: true };
-        return { play: mv };
-      } catch (eInj) { /* fall through */ }
+        var mv30 = live30.getAIMove(state, cp, { difficulty: 'easy', iterations: 0, mode: 'expert' });
+        if (mv30 == null) return { pass: true };
+        return { play: mv30 };
+      } catch (e30) { /* fall through */ }
     }
     return opponentPolicyV21(state, cp);
   }
@@ -855,16 +826,13 @@
     };
   }
 
-  // Free-lead mode for optional dual-self exploit: 'multi' | 'hybrid'
-  var _exploitFlMode = 'multi';
-
   /**
-   * Fast leaf playout: self = expertPolicy, opp = injected frozen expert.
+   * Pure expert/v30 playout (no nested search) — used inside shallow self picks.
    */
   function exploitPlayoutLeaf(state, myIdx, maxSteps) {
     var s = cloneStateFast(state);
     var steps = 0;
-    maxSteps = maxSteps || 260;
+    maxSteps = maxSteps || 220;
     while (!s.roundOver && steps < maxSteps) {
       var cp = s.currentPlayer;
       var dec = (cp === myIdx) ? expertPolicy(s, cp) : opponentPolicyStrong(s, cp);
@@ -876,14 +844,12 @@
       return (s.finishOrder || []).indexOf(myIdx) === 0 ? 1 : 0;
     }
     if (s.roundOver) return s.loser === myIdx ? 0 : 1;
-    // Incomplete: soft race signal (do not treat as hard loss)
-    return 0.25 + leafEval2p(s, myIdx) * 0.25;
+    return 0;
   }
 
   /**
-   * Shallow self: try top free-lead/combat candidates; pick any that wins vs
-   * frozen opp under leaf playouts. Falls back to expertPolicy.
-   * (This is the key v4 strength that beat v3 — restored for v5 vs v4.)
+   * Shallow self: try top free-lead/combat candidates; pick any that wins vs v30
+   * under leaf playouts. Falls back to expertPolicy.
    */
   function shallowSelfPick(state, myIdx) {
     var hand = state.players[myIdx].hand;
@@ -903,26 +869,25 @@
       if (ch.length) leg = ch;
     }
     leg = orderLegals(leg, state, myIdx);
-    // Slightly broader than v4 (4/6) — catches more forced wins vs stronger v4 expert
-    var cap = cur ? 5 : 8;
+    var cap = cur ? 4 : 6;
     if (leg.length > cap) leg = leg.slice(0, cap);
     var fallback = expertPolicy(state, myIdx);
     for (i = 0; i < leg.length; i++) {
       var n = applyPlayFast(state, myIdx, leg[i]);
       n.isFirstLead = false;
-      if (exploitPlayoutLeaf(n, myIdx, 180) >= 0.99) return { play: leg[i] };
+      if (exploitPlayoutLeaf(n, myIdx, 160) >= 0.99) return { play: leg[i] };
     }
     return fallback;
   }
 
   /**
-   * Deep exploit playout: self uses shallowSelfPick (1-ply forced wins),
-   * opp = frozen v4 expert. Stronger self model than pure expertPolicy.
+   * Deterministic exploit playout: self uses shallowSelfPick (1-ply wins),
+   * opp = frozen v3.0 expert. Perfect-info only.
    */
   function exploitPlayout(state, myIdx, maxSteps) {
     var s = cloneStateFast(state);
     var steps = 0;
-    maxSteps = maxSteps || 260;
+    maxSteps = maxSteps || 220;
     while (!s.roundOver && steps < maxSteps) {
       var cp = s.currentPlayer;
       var dec = (cp === myIdx) ? shallowSelfPick(s, myIdx) : opponentPolicyStrong(s, cp);
@@ -934,13 +899,12 @@
       return (s.finishOrder || []).indexOf(myIdx) === 0 ? 1 : 0;
     }
     if (s.roundOver) return s.loser === myIdx ? 0 : 1;
-    return 0.3 + leafEval2p(s, myIdx) * 0.4;
+    return leafEval2p(s, myIdx);
   }
 
   /**
-   * True best-response root search vs frozen Grandmaster v4.0 expert model.
-   * Two-stage scoring: expert leaf first, then shallowSelf deep playout.
-   * multiBonus prefers multi free-leads (human-log lesson) as soft tie-break.
+   * True best-response root search vs frozen Grandmaster v3.0 expert model.
+   * Deterministic 1-trial full playouts per candidate — very strong vs fixed policies.
    */
   function exploitMove(state, myIdx, opts) {
     opts = opts || {};
@@ -968,6 +932,7 @@
         if (leg[ei].length >= 2 && !playIsExpensive(leg[ei])) extra.push(leg[ei]);
         else if (leg[ei].length === 1 && leg[ei][0].rank <= 10) extra.push(leg[ei]);
       }
+      // merge unique
       var seen = {};
       var merged = [];
       function addAll(arr) {
@@ -984,6 +949,7 @@
       if (ch.length) leg = ch;
       leg = orderLegals(leg, state, myIdx);
     }
+    // Prefer more candidates on free lead — root exploit is decisive
     var branchCap = cur ? maxBranch : Math.max(maxBranch, 20);
     if (leg.length > branchCap) leg = leg.slice(0, branchCap);
 
@@ -1013,20 +979,11 @@
         var win = deep >= 0.99 ? 1 : 0;
         if (win) anyWin = true;
         var shed = act ? act.length : 0;
-        // leaf wins rank higher than deep-only wins; multi free-lead soft bonus
-        var multiBonus = (act && act.length >= 2 && !cur) ? 0.012 : 0;
-        var pos = leafEval2p(next, myIdx);
+        // leaf wins rank higher than deep-only wins
         var score = (leaf >= 0.99 ? 1.0 : (deep >= 0.99 ? 0.95 : 0))
-          + pos * 0.002
-          + multiBonus
-          + shed * 0.00002;
-        // Soft continuous signal when no forced win (rank near-misses better)
-        if (!win) {
-          var soft = typeof deep === 'number' ? deep : 0;
-          if (soft < 0.05) soft = pos * 0.4;
-          score += soft * 0.02;
-        }
-        details.push({ sig: playSig(act), win: win, score: score, leaf: leaf, deep: deep });
+          + leafEval2p(next, myIdx) * 0.001
+          + shed * 0.00001;
+        details.push({ sig: playSig(act), win: win, score: score, leaf: leaf });
         if (score > bestScore) {
           bestScore = score;
           bestPlay = act;
@@ -1046,6 +1003,7 @@
       if (fullLeg.length > 22) fullLeg = fullLeg.slice(0, 22);
       var expanded = fullLeg.slice();
       if (cur) expanded.push(null);
+      // only re-score new actions
       var seenP = {};
       var i;
       for (i = 0; i < actions.length; i++) seenP[playSig(actions[i])] = 1;
@@ -1054,7 +1012,7 @@
         if (!seenP[playSig(expanded[i])]) newActs.push(expanded[i]);
       }
       if (newActs.length) {
-        var secondary = scoreActions(newActs);
+        var secondary = scoreActions(actions.concat(newActs));
         if (secondary.bestScore > primary.bestScore) primary = secondary;
       }
     }
@@ -1062,7 +1020,7 @@
     return {
       play: primary.bestPlay,
       stats: {
-        mode: 'exploit-v40',
+        mode: 'exploit-v30',
         avg: primary.bestScore,
         top: primary.details.slice(0, 6),
         ms: Date.now() - t0,
@@ -2118,13 +2076,11 @@
       for (var tci = 0; tci < state.players.length; tci++) {
         if (!state.players[tci].finished) totalCards += state.players[tci].hand.length;
       }
-      // Exact BR endgame vs injected frozen expert
-      if (opts.exactExploit !== false && totalCards <= 18) {
-        var exactMs = opts.exactExploitMs != null ? opts.exactExploitMs
-          : (totalCards <= 12
-            ? (opts.inBrowser ? 220 : 450)
-            : (opts.inBrowser ? 120 : 280));
-        var exExact = exactExploitMove(state, myIdx, { timeMs: exactMs });
+      if (opts.exactExploit !== false && totalCards <= 16) {
+        var exExact = exactExploitMove(state, myIdx, {
+          timeMs: opts.exactExploitMs != null ? opts.exactExploitMs
+            : (opts.inBrowser ? 300 : 1200)
+        });
         if (exExact && exExact.play !== undefined && exExact.stats &&
             (exExact.stats.mode === 'exact-exploit' || exExact.stats.mode === 'exact-exploit-out' ||
              (exExact.stats.avg != null && exExact.stats.avg >= 0.99))) {
@@ -2293,7 +2249,6 @@
     leafEval2p: leafEval2p,
     opponentPolicyV21: opponentPolicyV21,
     opponentPolicyStrong: opponentPolicyStrong,
-    setExploitOpponent: setExploitOpponent,
     rollout: rollout,
     determinize: determinize,
     sampleConsistentWithHistory: sampleConsistentWithHistory,

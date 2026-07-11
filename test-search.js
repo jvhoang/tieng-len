@@ -368,6 +368,24 @@ console.log('=== Adversarial opponent nodes (go-out preferred) ===');
     'uctSelect at opponent node prefers low myIdx-utility child (go-out)');
 }
 
+console.log('=== v5 no-gift free lead vs 1-card opp ===');
+{
+  const st = engine.createGameState(2, 7);
+  st.isFirstLead = false;
+  st.currentCombo = null;
+  st.currentPlayer = 0;
+  st.players[0].hand = [
+    { rank: 3, suit: 0 }, { rank: 5, suit: 1 }, { rank: 7, suit: 0 },
+    { rank: 10, suit: 0 }, { rank: 12, suit: 0 }
+  ];
+  st.players[1].hand = [{ rank: 8, suit: 0 }]; // 1 card
+  const leg = engine.getLegalPlays(st.players[0].hand, null, false, false, null);
+  const pick = search.pickFreeLeadHard(leg, st, 0);
+  ok(pick && !(pick.length === 1 && pick[0].rank < 10),
+    'no-gift: free lead not low single vs 1-card (got ' +
+    (pick ? pick.map(function (c) { return c.rank; }).join(',') : 'null') + ')');
+}
+
 console.log('=== User-reported bug guards ===');
 {
   // Free lead: never gift low single when opp has 1 card

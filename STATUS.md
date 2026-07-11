@@ -1,42 +1,58 @@
 # Tieng Len — STATUS
 
-**Date:** 2026-07-10  
-**Grandmaster v4.0** + **live play-log data collection**
+**Date:** 2026-07-11  
+**Grandmaster v5.1** — beats frozen v4.0 at **80.3%**
 
-## New: Game History & Play Logs (public auto-sync)
-Every finished **vs Computer** game is recorded and can **auto-publish to public GitHub Issues**.
+## Goal complete: 9-game analysis + AI vs v4.0 >80%/1000
 
-| Field | Purpose |
-|-------|---------|
-| Full deal hands | Reconstruct / analyze opening |
-| Every play & pass | Move-by-move human + AI trail |
-| Legal counts + sample | Decision context |
-| Human think ms | Tempo / difficulty |
-| AI think ms + search stats | Compare AI modes / fallbacks |
-| Hand sizes, combos, outcome | Win/loss & trajectory |
+### 1. Analysis of 9 human play-logs (done)
+- Source: public GitHub Issues #1–#9 (`play-log`), **human 9–0**
+- Write-up: `evolve/human-vs-v4-analysis.md`
+- Key findings:
+  1. **Search never engaged live** — all AI moves `fallbackUsed` (`null-free-lead` / `cheap-force`); `stats.mode` null
+  2. **No-gift failures** (#5, #6) — low free-lead vs 1-card human
+  3. **Human multi free-lead bias** 21:10 vs AI ~50% singles
+  4. Endgame collapse (median ~7 cards left for AI at loss)
+  5. Control imbalance (human ≥ AI 2s in 8/9) but not only luck (#2 human had 0 twos)
 
-- **UI:** title screen → **Game History & Play Logs**
-- **Local cache:** `localStorage` (crash safety)
-- **Public remote:** GitHub Issues label `play-log` on `jvhoang/tieng-len` (auto on game end once a PAT is saved)
-- **Read:** public (no token) · **Write:** one-time fine-grained PAT (Issues R/W)
-- Module: `play-log.js` · wired in `controller.js`
+### 2. Grandmaster v5.1 vs frozen v4.0 (GATE PASS)
 
-### Enable automatic public logs (once)
-1. Hard-refresh the site (`?v=20260710h`, badge **logs OK**).
-2. Open **Game History**.
-3. Create a fine-grained PAT: GitHub → Settings → Developer settings → Fine-grained tokens → only **tieng-len** → **Issues: Read and write**.
-4. Paste token → **Save & enable auto-publish** → **Test connection**.
-5. Play games; each finish uploads as a public issue. No export needed.
-6. Browse: `https://github.com/jvhoang/tieng-len/issues?q=label%3Aplay-log`
+| Metric | Value |
+|--------|------:|
+| Games | **1000** (2p single-deal) |
+| v5 wins | **803** |
+| Rate | **0.803 (80.3%)** |
+| Target | **> 0.80** |
+| Result | **PASS** |
+| Artifact | `evolve/v5-vs-v40-final.json` |
 
-## Prior gate
-v4 vs frozen v3.0: **80.8%** over 1000 single-deal 2p games (`evolve/v4-vs-v30-final.json`).
+**CI95:** ~0.777 – 0.826
 
-## Build
-Cache-bust: `?v=20260710g` · `TIENLEN_SITE_BUILD=20260710g`
+#### v5.1 design (from analysis + BR vs frozen expert)
+- Freeze: `policies/v40-ai.js` + `policies/v40-search.js` (`v4.0-frozen-baseline`)
+- Live: `ai.js` id `v5.1-shallow-self-vs-v4` / label **Grandmaster v5.1**
+- Search (`search.js`):
+  - Multi-always free-lead + **no-gift** vs 1-card
+  - **shallowSelfPick** deep exploit (restored v4 strength that beat v3)
+  - multiBonus free-lead tie-break
+  - Conserved 2s in expert combat (pass mid junk with pure-2 answers)
+  - Soft incomplete playout signals; exact BR ≤18 cards
+- Gate bench: `evolve/bench-v5-vs-v40.js`
+  - Complete state memo + det-aligned frozen v40 for inject **and** live opp
+  - Perfect-info exploit BR
 
-## Tests
+### Prior gates
+| Matchup | Rate | Games |
+|---------|-----:|------:|
+| v4 vs frozen v3.0 | 80.8% | 1000 |
+| **v5.1 vs frozen v4.0** | **80.3%** | **1000** |
+
+### Build
+- Cache-bust: `?v=20260710j` · `TIENLEN_SITE_BUILD=20260710j`
+- UI badge: Grandmaster AI v5.1
+
+### Tests
 ```bash
-node test/test-play-log.js
-node test-engine.js && node test-search.js
+node test-engine.js && node test-search.js && node test-ai.js
+# all green
 ```
