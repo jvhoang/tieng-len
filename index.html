@@ -871,15 +871,15 @@
   <!-- Cache-bust query so browsers always load latest AI after deploys -->
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <script>window.TIENLEN_SITE_BUILD = '20260711c';</script>
-  <script src="engine.js?v=20260711d"></script>
-  <script src="genome.js?v=20260711d"></script>
-  <script src="search.js?v=20260711d"></script>
-  <script src="ai.js?v=20260711d"></script>
-  <script src="play-log.js?v=20260711d"></script>
-  <script src="controller.js?v=20260711d"></script>
-  <script src="hand-order.js?v=20260711d"></script>
-  <script src="multiplayer.js?v=20260711d"></script>
-  <script src="ui.js?v=20260711d"></script>
+  <script src="engine.js?v=20260711e"></script>
+  <script src="genome.js?v=20260711e"></script>
+  <script src="search.js?v=20260711e"></script>
+  <script src="ai.js?v=20260711e"></script>
+  <script src="play-log.js?v=20260711e"></script>
+  <script src="controller.js?v=20260711e"></script>
+  <script src="hand-order.js?v=20260711e"></script>
+  <script src="multiplayer.js?v=20260711e"></script>
+  <script src="ui.js?v=20260711e"></script>
   <script>
     // Thin loader: modules provide the game. index.html = markup + styles + glue.
     (function(){
@@ -1371,7 +1371,7 @@
         }
 
         if (stats) {
-          if (stats.mode) reasons.push('search mode: ' + stats.mode + (stats.perfectInfo ? ' (would be perfect-info)' : ' · hidden-info det.)');
+          if (stats.mode) reasons.push('search mode: ' + stats.mode + (stats.perfectInfo ? ' (would be perfect-info)' : ' · hidden-info det.'));
           if (stats.avg != null && !isNaN(Number(stats.avg))) {
             reasons.push('approx EV ' + Number(stats.avg).toFixed(2) + ' under sampled opponent hands');
           }
@@ -1556,6 +1556,16 @@
 
       ui.boot();
       try { refreshHistorySummary(); } catch (_) {}
+      // Pull public GitHub play-logs into local cache so History count is not stuck at 0
+      // (e.g. after a failed glue load, or when opening from another device/browser).
+      try {
+        const plBoot = getPlayLog();
+        if (plBoot && typeof plBoot.fetchPublicGames === 'function') {
+          plBoot.fetchPublicGames().then(function () {
+            try { refreshHistorySummary(); } catch (_) {}
+          }).catch(function () {});
+        }
+      } catch (_) {}
 
       // Version badge on title screen (confirms which AI build is loaded)
       (function showAIVersion() {

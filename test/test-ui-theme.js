@@ -40,6 +40,22 @@ ok('hint explains why', /explainHintWhy|Why.*hidden-info/.test(html));
 ok('v7.5 branding', /v7\.5/.test(html));
 ok('old maroon lacquer not primary', !/linear-gradient\(145deg, #2c0f0a/.test(html));
 
+// Critical: broken inline glue kills startVsAI + history (regression from hint rewrite)
+(function checkInlineGlueSyntax() {
+  const idx = html.lastIndexOf('<script>');
+  const end = html.indexOf('</script>', idx);
+  ok('has main inline glue script', idx >= 0 && end > idx);
+  if (idx < 0 || end <= idx) return;
+  const code = html.slice(idx + 8, end);
+  try {
+    // eslint-disable-next-line no-new-func
+    new Function(code);
+    ok('inline glue script parses (start game + history wiring)', true);
+  } catch (e) {
+    ok('inline glue script parses (start game + history wiring)', false, e && e.message);
+  }
+})();
+
 console.log('Passed:', passed, 'Failed:', failed);
 if (failed) process.exit(1);
 console.log('ALL UI THEME TESTS PASSED');
