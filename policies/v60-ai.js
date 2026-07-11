@@ -14,17 +14,17 @@
 
 /** Shown on title screen — bump when shipping AI behavior changes. */
 const AI_BUILD = {
-  id: 'v7.5-human-counterfactual',
-  stamped: '2026-07-11T12:00:00-07:00',
-  label: 'Grandmaster v7.5'
+  id: 'v6.0-frozen-baseline',
+  stamped: '2026-07-11T01:00:00-07:00',
+  label: 'Grandmaster v6.0 (frozen)'
 };
 
-const engine = (typeof require === 'function') ? require('./engine.js') : (window.TienLenEngine || {});
+const engine = (typeof require === 'function') ? require('../engine.js') : (window.TienLenEngine || {});
 const genomeMod = (typeof require === 'function')
-  ? require('./genome.js')
+  ? require('../genome.js')
   : (typeof window !== 'undefined' ? window.TienLenGenome : null);
 const searchMod = (typeof require === 'function')
-  ? require('./search.js')
+  ? require('./v60-search.js')
   : (typeof window !== 'undefined' ? window.TienLenSearch : null);
 const {
   detectCombo, getLegalPlays, applyPlay, pass, cardCompare, cloneState: engineClone
@@ -841,17 +841,13 @@ function getAIMove(state, myIdx, opts = {}) {
         mv = searchMod.enforcePolicyGuards(state, myIdx, mv);
       }
     }
-    // Endgame solvers can override — re-apply combat guards (Ace+2, never pass vs Ace)
     if (searchMod && searchMod.exactEndgameMove) {
       const ex = searchMod.exactEndgameMove(state, myIdx);
-      if (ex) mv = ex;
+      if (ex) return ex;
     }
     if (searchMod && searchMod.endgamePick) {
       const eg = searchMod.endgamePick(state, myIdx);
       if (eg) mv = eg;
-    }
-    if (cur && searchMod && searchMod.enforcePolicyGuards) {
-      mv = searchMod.enforcePolicyGuards(state, myIdx, mv);
     }
     return mv == null ? null : mv;
   }
@@ -900,8 +896,6 @@ function getAIMove(state, myIdx, opts = {}) {
         _lastSearchStats.mode === 'exploit-v30' ||
         _lastSearchStats.mode === 'exploit-v40' ||
         _lastSearchStats.mode === 'exploit-v51' ||
-        _lastSearchStats.mode === 'exploit-v60' ||
-        _lastSearchStats.mode === 'exploit-v70' ||
         _lastSearchStats.mode === 'exact-exploit' ||
         _lastSearchStats.mode === 'exact-exploit-out' ||
         _lastSearchStats.mode === 'exact-exploit-soft' ||
@@ -912,12 +906,10 @@ function getAIMove(state, myIdx, opts = {}) {
       );
 
       if (searchMod.enforcePolicyGuards) {
-        // Free lead + exploit: only hard no-gift (keep search free-lead choice).
-        // Combat: ALWAYS full guards — Ace+2 / never pass vs Ace (human-log #43–#72).
-        // exact-endgame/exploit previously skipped combat guards → Ace-climb regression.
-        if (exploitMode && !cur) {
+        // Exploit/exact already searched; only apply hard safety (no-gift), not multi overrides
+        if (exploitMode) {
           const omin = oppMinHand(state, myIdx);
-          if (mv && mv.length === 1 && omin === 1 && mv[0].rank < 10) {
+          if (!cur && mv && mv.length === 1 && omin === 1 && mv[0].rank < 10) {
             mv = searchMod.pickFreeLeadHard
               ? searchMod.pickFreeLeadHard(legals, state, myIdx)
               : mv;

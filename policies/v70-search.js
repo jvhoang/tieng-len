@@ -11,7 +11,7 @@
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./engine.js'));
+    module.exports = factory(require('../engine.js'));
   } else {
     root.TienLenSearch = factory(root.TienLenEngine);
   }
@@ -1078,11 +1078,7 @@
         if (win) anyWin = true;
         var shed = act ? act.length : 0;
         // leaf wins rank higher than deep-only wins; multi free-lead soft bonus
-        // v7.5: stronger multi free-lead bonus (human counterfactual #1–#72 multi volume)
-        var multiBonus = 0;
-        if (act && act.length >= 2 && !cur) {
-          multiBonus = 0.014 + Math.min(0.006, (act.length - 2) * 0.0015);
-        }
+        var multiBonus = (act && act.length >= 2 && !cur) ? 0.012 : 0;
         var pos = leafEval2p(next, myIdx);
         var score = (leaf >= 0.99 ? 1.0 : (deep >= 0.99 ? 0.95 : 0))
           + pos * 0.002
@@ -1130,7 +1126,7 @@
     return {
       play: primary.bestPlay,
       stats: {
-        mode: 'exploit-v70',
+        mode: 'exploit-v60',
         avg: primary.bestScore,
         top: primary.details.slice(0, 6),
         ms: Date.now() - t0,

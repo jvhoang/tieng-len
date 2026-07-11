@@ -1,19 +1,17 @@
-# PLAN — v6.0: analyze #14–#42, beat frozen v5.1 >70%/≥300
+# PLAN — v7.5 + counterfactual #1–#72 + UI theme
 
 ## Goal
-1. Deep analysis of public play-logs **#14–#42**
-2. Newer AI that beats **frozen v5.1** by **strictly >70%** over **≥300 continuous** 2p single-deal games
+1. Counterfactual analysis of completed #1–#72 (hidden-info v7.0 vs human)
+2. Grandmaster **v7.5** beats frozen **v7.0** at **>70%** over **≥200** continuous 2p games
+3. UI: red red-suits, finalworth palette, poker backs, fixed action bar, fan hands
+4. Commit + push to GitHub
 
 ## Checklist
-- [x] Fetch/parse #14–#42; write `evolve/human-vs-v51-analysis-14-42.md`
-- [x] Freeze v5.1 as `policies/v51-ai.js` + `policies/v51-search.js`
-- [x] Implement v6 (human-log lessons + exploit vs frozen v5.1)
-- [x] Continuous ≥300-game bench vs frozen v5.1, target **> 0.70**
-- [x] Unit tests green; STATUS + badge not v5.1-only
+- [x] Counterfactual runner + analysis markdown + JSON
+- [x] Freeze v7.0 as `policies/v70-*`; live v7.5
+- [x] Bench ≥200 vs frozen v7.0 target >0.70
+- [x] Visual theme + fixed bar + fan hands + cache-bust
+- [x] Unit tests + UI structural; push to GitHub
 
-## Gate result
-**PASS:** 240/300 = **80.0%** (`evolve/v6-vs-v51-final.json`)
-
-## Non-goals
-- Replaying human deals as formal strength metric
-- 1000-game / 80% bar (this objective is >70% / ≥300)
+## Gate
+See `evolve/v75-vs-v70-final.json`

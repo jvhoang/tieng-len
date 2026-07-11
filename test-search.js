@@ -438,6 +438,33 @@ console.log('=== User-reported bug guards ===');
   const out = search.enforcePolicyGuards(st, 1, null);
   ok(out != null && out.length > 0, 'never pass vs Ace when 2 in hand');
   ok(out.some(c => c.rank === 12), 'contests Ace with a 2');
+
+  // Facing Ace with higher Ace + 2: prefer 2 (human-log #43–#72 Ace-climb exploit)
+  const stA = engine.createGameState(2, 9);
+  stA.currentCombo = engine.detectCombo([{ rank: 11, suit: 0 }]); // Ace spades
+  stA.currentPlayer = 0;
+  stA.lastPlayBy = 1;
+  stA.isFirstLead = false;
+  stA.players[0].passed = false;
+  stA.players[0].hand = [
+    { rank: 11, suit: 3 }, // Ace hearts (beats Ace spades by suit)
+    { rank: 12, suit: 1 }, // 2 clubs
+    { rank: 3, suit: 0 }, { rank: 4, suit: 1 }, { rank: 5, suit: 2 },
+    { rank: 6, suit: 0 }, { rank: 7, suit: 1 }
+  ];
+  stA.players[1].hand = [{ rank: 8, suit: 0 }, { rank: 9, suit: 1 }];
+  const aceClimb = [{ rank: 11, suit: 3 }];
+  const out2 = search.enforcePolicyGuards(stA, 0, aceClimb);
+  ok(out2 && out2.length === 1 && out2[0].rank === 12,
+    'prefer 2 over Ace-climb vs Ace (got rank=' + (out2 && out2[0] && out2[0].rank) + ')');
+  const exp = search.expertPolicy ? search.expertPolicy(stA, 0)
+    : (function () {
+      // expertPolicy may be internal; use enforce on null as policy path
+      return { play: search.enforcePolicyGuards(stA, 0, null) };
+    })();
+  const expPlay = exp && (exp.play || exp);
+  ok(expPlay && expPlay.length === 1 && expPlay[0].rank === 12,
+    'expert/guards path uses 2 vs Ace when Ace+2 held');
 }
 
 console.log('\n=== SEARCH TEST SUMMARY ===');

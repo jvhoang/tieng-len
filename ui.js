@@ -146,8 +146,10 @@
         const SUIT_SYMBOLS = engine.SUIT_SYMBOLS || { s: '♠', c: '♣', d: '♦', h: '♥' };
         const r = RANKS[card.rank] || '?';
         const s = SUIT_SYMBOLS[SUITS[card.suit]] || '?';
+        // suit: 0s 1c 2d 3h — diamonds & hearts red
         const isRed = card.suit === 2 || card.suit === 3;
-        el.innerHTML = `<div class="rank ${isRed ? 'red' : ''}">${r}</div><div class="suit ${isRed ? 'red' : ''}">${s}</div>`;
+        el.classList.add(isRed ? 'red' : 'black');
+        el.innerHTML = `<div class="rank ${isRed ? 'red' : 'black'}">${r}</div><div class="suit ${isRed ? 'red' : 'black'}">${s}</div>`;
         el.dataset.card = JSON.stringify(card);
         el.dataset.cardKey = String(card.rank * 4 + card.suit);
         if (selectable) {
@@ -200,10 +202,20 @@
         if (showCards && isActiveHuman && !isBack) {
           wireDrag(el, idx, container, playerIdx);
         }
-        // Fan spacing for human hand
+        // Fan / overlap like a held hand (all seats)
+        if (idx > 0) {
+          el.style.marginLeft = showCards ? '-16px' : '-20px';
+        }
+        el.style.zIndex = String(10 + idx);
         if (showCards && isActiveHuman) {
-          el.style.marginLeft = idx === 0 ? '0' : '-6px';
-          el.style.zIndex = String(10 + idx);
+          // slight arc rotation for human fan
+          const n = display.length || 1;
+          const mid = (n - 1) / 2;
+          const rot = (idx - mid) * 2.2;
+          el.style.transform = el.classList.contains('selected')
+            ? el.style.transform
+            : `rotate(${rot}deg)`;
+          el.style.transformOrigin = 'bottom center';
         }
         container.appendChild(el);
       });
@@ -335,7 +347,10 @@
         if (el && el.classList) el.classList.add('selected');
       }
       const info = doc.getElementById('selection-info');
-      if (info) info.innerHTML = selectedCards.length ? `${selectedCards.length} cards selected` : '';
+      const selText = selectedCards.length ? `${selectedCards.length} cards selected` : '';
+      if (info) info.innerHTML = selText;
+      const barSt = doc.getElementById('action-bar-status');
+      if (barSt) barSt.textContent = selText || 'Select cards, then PLAY / PASS';
       const bp = doc.getElementById('btn-play');
       if (bp) bp.disabled = !isValidPlaySelection(currentHumanSeat);
     }
@@ -1355,6 +1370,13 @@
       if (mode) mode.classList.add('hidden');
       if (lobby) lobby.classList.add('hidden');
       if (game) game.classList.remove('hidden');
+      try {
+        if (typeof document !== 'undefined' && document.body) {
+          document.body.classList.add('playing-active');
+        }
+        const bar = doc.getElementById('action-bar');
+        if (bar) bar.classList.remove('hidden');
+      } catch (_) { /* ignore */ }
     }
 
     function updatePlayerLabels() {
@@ -1369,7 +1391,7 @@
       for (let i = 0; i < 4; i++) {
         const zone = doc.getElementById('player-' + i);
         if (!zone) continue;
-        const title = zone.querySelector('.text-xs.text-\\[\\#c9a227\\], .player-title, [data-player-title]');
+        const title = zone.querySelector('.player-title, [data-player-title], .text-xs');
         // Set data attribute for CSS/tests
         zone.dataset.seat = String(i);
         const firstLabel = zone.querySelector('[data-player-title]') || zone.querySelector('.text-xs');

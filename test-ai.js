@@ -406,6 +406,66 @@ log('\n--- Prefer low beat over overkill 2 ---');
   assert('Prefers 7 over 2 to beat 6', mv && mv.length === 1 && mv[0].rank === 4, JSON.stringify(mv));
 }
 
+// Human-log #43–#72: getAIMove entry path must play 2 vs Ace when Ace+2 held
+// (not Ace-climb). Covers expert path (endgame override) and hard/search path.
+log('\n--- getAIMove Ace+2 combat (shipped entry path) ---');
+function makeAceTwoFixture() {
+  let g = createGameState(2, 9);
+  g.isFirstLead = false;
+  g.firstLeadCard = null;
+  g.currentPlayer = 0;
+  g.lastPlayBy = 1;
+  g.currentCombo = detectCombo([{ rank: 11, suit: 0 }]); // Ace spades
+  g.players[0].passed = false;
+  g.players[0].finished = false;
+  g.players[0].hand = [
+    { rank: 11, suit: 3 }, // Ace hearts (suit-climb)
+    { rank: 12, suit: 1 }, // 2 clubs
+    { rank: 3, suit: 0 }, { rank: 4, suit: 1 }, { rank: 5, suit: 2 },
+    { rank: 6, suit: 0 }, { rank: 7, suit: 1 }
+  ];
+  g.players[1].hand = [{ rank: 8, suit: 0 }, { rank: 9, suit: 1 }, { rank: 10, suit: 2 }];
+  g.players[1].passed = false;
+  g.players[1].finished = false;
+  return g;
+}
+{
+  const gE = makeAceTwoFixture();
+  const mvE = getAIMove(gE, 0, { difficulty: 'easy', iterations: 0, mode: 'expert' });
+  assert('getAIMove expert: 2 vs Ace when Ace+2 held',
+    mvE && mvE.length === 1 && mvE[0].rank === 12,
+    JSON.stringify(mvE));
+}
+{
+  const gH = makeAceTwoFixture();
+  const mvH = getAIMove(gH, 0, {
+    difficulty: 'hard',
+    useSearch: true,
+    perfectInfo: true,
+    hiddenInfo: false,
+    timeMs: 80,
+    iterations: 40
+  });
+  assert('getAIMove hard perfectInfo: 2 vs Ace when Ace+2 held',
+    mvH && mvH.length === 1 && mvH[0].rank === 12,
+    JSON.stringify(mvH));
+}
+{
+  // Also browser-like hard (hidden) must not Ace-climb
+  const gB = makeAceTwoFixture();
+  const mvB = getAIMove(gB, 0, {
+    difficulty: 'hard',
+    useSearch: true,
+    perfectInfo: false,
+    hiddenInfo: true,
+    timeMs: 80,
+    iterations: 40
+  });
+  assert('getAIMove hard hiddenInfo: 2 vs Ace when Ace+2 held',
+    mvB && mvB.length === 1 && mvB[0].rank === 12,
+    JSON.stringify(mvB));
+}
+
 log('\n=== AI TEST SUMMARY ===');
 log(`Passed: ${passed}  Failed: ${failed}`);
 if (failed > 0) process.exit(1);

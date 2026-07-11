@@ -11,7 +11,7 @@
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./engine.js'));
+    module.exports = factory(require('../engine.js'));
   } else {
     root.TienLenSearch = factory(root.TienLenEngine);
   }
@@ -347,29 +347,6 @@
       return { play: pickFreeLeadHard(leg, state, cp) };
     }
 
-    var omin = oppMinHand(state, cp);
-    var handLen = hand.length;
-    var curTop = cur.top ? cur.top.rank : 0;
-    var infoC = analyzeHand(hand);
-
-    // Legal single-2 answers
-    var twoSingles = [];
-    for (var ti = 0; ti < leg.length; ti++) {
-      if (leg[ti].length === 1 && leg[ti][0].rank === 12) twoSingles.push(leg[ti]);
-    }
-
-    // v7 FIRST: facing Ace + hold 2 + remaining hand → play 2 (before cheap path)
-    // human-log #43–#72: Ace-climb let humans reclaim with 2s
-    if (
-      cur.type === 'single' &&
-      curTop >= 11 &&
-      twoSingles.length &&
-      (handLen >= 3 || omin <= 3)
-    ) {
-      twoSingles.sort(function (a, b) { return a[0].suit - b[0].suit; });
-      return { play: twoSingles[0] };
-    }
-
     var cheap = cheapLegals(leg);
     if (cheap.length) return { play: orderLegals(cheap, state, cp)[0] };
 
@@ -380,41 +357,27 @@
       if (bombs.length) return { play: orderLegals(bombs, state, cp)[0] };
     }
 
-    // Prefer non-2 answers; optional 2 vs K when only high answers remain
+    var omin = oppMinHand(state, cp);
+    var handLen = hand.length;
+    var curTop = cur.top ? cur.top.rank : 0;
+
+    // Prefer non-2 answers; contest highs; rarely pass (folders exploit pass)
     var non2 = [];
     for (var ni = 0; ni < leg.length; ni++) {
       if (!playHasTwo(leg[ni]) && !playIsBomb(leg[ni])) non2.push(leg[ni]);
     }
-    if (non2.length) {
-      if (
-        cur.type === 'single' &&
-        curTop >= 10 &&
-        twoSingles.length &&
-        handLen >= 6 &&
-        (infoC.trashCount >= 1 || infoC.twos >= 1)
-      ) {
-        var onlyHighNon2 = non2.every(function (p) {
-          return p.length === 1 && p[0].rank >= 10;
-        });
-        if (onlyHighNon2) {
-          twoSingles.sort(function (a, b) { return a[0].suit - b[0].suit; });
-          return { play: twoSingles[0] };
-        }
-      }
-      return { play: orderLegals(non2, state, cp)[0] };
-    }
+    if (non2.length) return { play: orderLegals(non2, state, cp)[0] };
 
-    // Pure 2 / bomb answers only — never pass vs Ace
-    if (curTop >= 11 && twoSingles.length) {
-      twoSingles.sort(function (a, b) { return a[0].suit - b[0].suit; });
-      return { play: twoSingles[0] };
-    }
+    var infoC = analyzeHand(hand);
+    // v5: conserve 2s — only spend them on high threats, short hands, or near go-out.
+    // Prior aggressive 2-spending lost control races vs fixed experts.
     if (handLen <= 5 || omin <= 2 || curTop >= 10) {
       return { play: orderLegals(leg, state, cp)[0] };
     }
     if (handLen <= 7 && (omin <= 3 || curTop >= 9)) {
       return { play: orderLegals(leg, state, cp)[0] };
     }
+    // Pass pure-2 answers to mid/low junk when we still have depth
     if (handLen >= 8 && curTop < 10) return { pass: true };
 
     return { play: orderLegals(leg, state, cp)[0] };
@@ -654,27 +617,6 @@
       return hard;
     }
 
-    var curTopG = cur.top ? cur.top.rank : 0;
-    // Facing Ace: prefer 2 over Ace-climb BEFORE cheap-path (human-log #43–#72)
-    // Must run before cheapLegals returns a higher-suit Ace.
-    if (curTopG >= 11 && leg.length) {
-      var twoAns = [];
-      for (var t2 = 0; t2 < leg.length; t2++) {
-        if (leg[t2].length === 1 && leg[t2][0].rank === 12) twoAns.push(leg[t2]);
-      }
-      if (twoAns.length && hand.length >= 3) {
-        if (proposed && proposed.length === 1 && proposed[0].rank === 12 && isLegalPlay(proposed)) {
-          return proposed;
-        }
-        if (!proposed || !proposed.length || !playHasTwo(proposed)) {
-          twoAns.sort(function (a, b) { return a[0].suit - b[0].suit; });
-          return twoAns[0];
-        }
-      }
-      if (proposed && proposed.length && isLegalPlay(proposed)) return proposed;
-      return orderLegals(leg, state, myIdx)[0];
-    }
-
     var cheap = cheapLegals(leg);
     if (cheap.length) {
       if (proposed && proposed.length && isLegalPlay(proposed) && !playIsExpensive(proposed)) {
@@ -683,7 +625,7 @@
       return orderLegals(cheap, state, myIdx)[0];
     }
 
-    var curTop = curTopG;
+    var curTop = cur.top ? cur.top.rank : 0;
     if (curTop >= 11 && leg.length) {
       if (proposed && proposed.length && isLegalPlay(proposed)) return proposed;
       return orderLegals(leg, state, myIdx)[0];
@@ -1078,11 +1020,7 @@
         if (win) anyWin = true;
         var shed = act ? act.length : 0;
         // leaf wins rank higher than deep-only wins; multi free-lead soft bonus
-        // v7.5: stronger multi free-lead bonus (human counterfactual #1–#72 multi volume)
-        var multiBonus = 0;
-        if (act && act.length >= 2 && !cur) {
-          multiBonus = 0.014 + Math.min(0.006, (act.length - 2) * 0.0015);
-        }
+        var multiBonus = (act && act.length >= 2 && !cur) ? 0.012 : 0;
         var pos = leafEval2p(next, myIdx);
         var score = (leaf >= 0.99 ? 1.0 : (deep >= 0.99 ? 0.95 : 0))
           + pos * 0.002
@@ -1130,7 +1068,7 @@
     return {
       play: primary.bestPlay,
       stats: {
-        mode: 'exploit-v70',
+        mode: 'exploit-v51',
         avg: primary.bestScore,
         top: primary.details.slice(0, 6),
         ms: Date.now() - t0,
