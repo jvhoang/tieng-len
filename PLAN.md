@@ -1,20 +1,19 @@
-# PLAN — v5.1: beat frozen v4.0 after human play-log analysis
+# PLAN — v6.0: analyze #14–#42, beat frozen v5.1 >70%/≥300
 
 ## Goal
-1. Extensive analysis of 9 public human-vs-v4 play-log games
-2. Newer AI that beats **frozen current v4.0** by **strictly >80%** over **≥1000** 2p single-deal games
+1. Deep analysis of public play-logs **#14–#42**
+2. Newer AI that beats **frozen v5.1** by **strictly >70%** over **≥300 continuous** 2p single-deal games
 
 ## Checklist
-- [x] Parse 9 play-log issues → structured analysis
-- [x] Write `evolve/human-vs-v4-analysis.md` with evidence
-- [x] Freeze live AI as `policies/v40-ai.js` + `policies/v40-search.js`
-- [x] Implement v5 strength (no-gift, multi free-lead, shallowSelf exploit, det inject)
-- [x] Bench v5 vs frozen v4 ≥1000 games, rate **> 0.80**
-- [x] Unit tests green; STATUS + badge not v4-only
+- [x] Fetch/parse #14–#42; write `evolve/human-vs-v51-analysis-14-42.md`
+- [x] Freeze v5.1 as `policies/v51-ai.js` + `policies/v51-search.js`
+- [x] Implement v6 (human-log lessons + exploit vs frozen v5.1)
+- [x] Continuous ≥300-game bench vs frozen v5.1, target **> 0.70**
+- [x] Unit tests green; STATUS + badge not v5.1-only
 
 ## Gate result
-**PASS:** 803/1000 = **80.3%** (`evolve/v5-vs-v40-final.json`)
+**PASS:** 240/300 = **80.0%** (`evolve/v6-vs-v51-final.json`)
 
 ## Non-goals
-- Replaying the 9 human deals as formal gate metric
-- Changing rules / engine legality
+- Replaying human deals as formal strength metric
+- 1000-game / 80% bar (this objective is >70% / ≥300)

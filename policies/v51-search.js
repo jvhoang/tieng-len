@@ -11,7 +11,7 @@
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./engine.js'));
+    module.exports = factory(require('../engine.js'));
   } else {
     root.TienLenSearch = factory(root.TienLenEngine);
   }
@@ -487,22 +487,16 @@
       ) {
         return trashPlays[0];
       }
-      // multi-always (default) — human-log #14–#42: multi volume wins (#22/#28)
+      // multi-always (default)
       return multiPick;
     }
 
-    // No multi: dump trash if any — but never lonely 3-5 open midgame without control
-    // (human-log #35: free-lead 4s surrendered structure)
+    // No multi: dump trash if any
     if (trashPlays.length) {
-      if (
-        (handLen <= 8 && trashPlays[0][0].rank <= 5 && info.twos === 0) ||
-        (handLen >= 10 && trashPlays[0][0].rank <= 4 && info.control < 2)
-      ) {
+      if (handLen <= 6 && trashPlays[0][0].rank <= 5 && info.twos === 0) {
         var cheapS0 = [];
         for (i = 0; i < leg.length; i++) {
-          if (!playIsExpensive(leg[i]) && !(leg[i].length === 1 && leg[i][0].rank <= 5)) {
-            cheapS0.push(leg[i]);
-          }
+          if (!playIsExpensive(leg[i])) cheapS0.push(leg[i]);
         }
         if (cheapS0.length) return orderLegals(cheapS0, state, cp)[0];
       }
@@ -1068,7 +1062,7 @@
     return {
       play: primary.bestPlay,
       stats: {
-        mode: 'exploit-v51',
+        mode: 'exploit-v40',
         avg: primary.bestScore,
         top: primary.details.slice(0, 6),
         ms: Date.now() - t0,

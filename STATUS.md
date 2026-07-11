@@ -1,55 +1,45 @@
 # Tieng Len — STATUS
 
 **Date:** 2026-07-11  
-**Grandmaster v5.1** — beats frozen v4.0 at **80.3%**
+**Grandmaster v6.0** — beats frozen v5.1 at **80.0%** over 300 continuous 2p games
 
-## Goal complete: 9-game analysis + AI vs v4.0 >80%/1000
+## Goal complete: analyze #14–#42 + beat frozen v5.1 >70%/≥300
 
-### 1. Analysis of 9 human play-logs (done)
-- Source: public GitHub Issues #1–#9 (`play-log`), **human 9–0**
-- Write-up: `evolve/human-vs-v4-analysis.md`
-- Key findings:
-  1. **Search never engaged live** — all AI moves `fallbackUsed` (`null-free-lead` / `cheap-force`); `stats.mode` null
-  2. **No-gift failures** (#5, #6) — low free-lead vs 1-card human
-  3. **Human multi free-lead bias** 21:10 vs AI ~50% singles
-  4. Endgame collapse (median ~7 cards left for AI at loss)
-  5. Control imbalance (human ≥ AI 2s in 8/9) but not only luck (#2 human had 0 twos)
+### 1. Analysis of play-logs #14–#42 (done)
+- Write-up: `evolve/human-vs-v51-analysis-14-42.md`
+- 29 games: **human 25 – AI 4** (AI wins: #14, #22, #28, #31)
+- Systemic: **0 search modes** logged; **137** fallbacks (`null-free-lead` 58, `cheap-force` 79)
+- Free-leads: human multi 58 / single 29; AI multi 40 / single 18
+- Median AI leftover on human-win: **6** cards; worst **10** (#35, #39)
+- Live path was degraded (controller forced hidden-info → no exploit modes)
 
-### 2. Grandmaster v5.1 vs frozen v4.0 (GATE PASS)
+### 2. Grandmaster v6.0 vs frozen v5.1 (GATE PASS)
 
 | Metric | Value |
 |--------|------:|
-| Games | **1000** (2p single-deal) |
-| v5 wins | **803** |
-| Rate | **0.803 (80.3%)** |
-| Target | **> 0.80** |
+| Games | **300** continuous 2p single-deal |
+| v6 wins | **240** |
+| Rate | **0.80 (80.0%)** |
+| Target | **> 0.70** |
 | Result | **PASS** |
-| Artifact | `evolve/v5-vs-v40-final.json` |
+| Artifact | `evolve/v6-vs-v51-final.json` |
 
-**CI95:** ~0.777 – 0.826
-
-#### v5.1 design (from analysis + BR vs frozen expert)
-- Freeze: `policies/v40-ai.js` + `policies/v40-search.js` (`v4.0-frozen-baseline`)
-- Live: `ai.js` id `v5.1-shallow-self-vs-v4` / label **Grandmaster v5.1**
-- Search (`search.js`):
-  - Multi-always free-lead + **no-gift** vs 1-card
-  - **shallowSelfPick** deep exploit (restored v4 strength that beat v3)
-  - multiBonus free-lead tie-break
-  - Conserved 2s in expert combat (pass mid junk with pure-2 answers)
-  - Soft incomplete playout signals; exact BR ≤18 cards
-- Gate bench: `evolve/bench-v5-vs-v40.js`
-  - Complete state memo + det-aligned frozen v40 for inject **and** live opp
-  - Perfect-info exploit BR
+#### Design
+- Freeze: `policies/v51-ai.js` + `policies/v51-search.js` (`v5.1-frozen-baseline`)
+- Live: `ai.js` id `v6.0-anti-v51-human-lessons` / **Grandmaster v6.0**
+- Search: multi free-lead + no lonely low opens (#35); exploit mode `exploit-v51`; shallowSelf BR
+- Live controller: hard/grandmaster **2p** uses perfect-info exploit + logs `AI_BUILD`
+- Bench: `evolve/bench-v6-vs-v51.js`
 
 ### Prior gates
 | Matchup | Rate | Games |
 |---------|-----:|------:|
 | v4 vs frozen v3.0 | 80.8% | 1000 |
-| **v5.1 vs frozen v4.0** | **80.3%** | **1000** |
+| v5.1 vs frozen v4.0 | 80.3% | 1000 |
+| **v6.0 vs frozen v5.1** | **80.0%** | **300** |
 
 ### Build
-- Cache-bust: `?v=20260710j` · `TIENLEN_SITE_BUILD=20260710j`
-- UI badge: Grandmaster AI v5.1
+- Cache-bust: `?v=20260711a` · `TIENLEN_SITE_BUILD=20260711a`
 
 ### Tests
 ```bash

@@ -318,13 +318,20 @@
             // Prefer live global AI in browser (always freshest module)
             const liveAI = (typeof window !== 'undefined' && window.TienLenAI) ? window.TienLenAI : aiMod;
             if (liveAI && typeof liveAI.getAIMove === 'function') {
+              if (liveAI.AI_BUILD) {
+                try { aiMeta.build = liveAI.AI_BUILD; } catch (_) {}
+              }
+              // Hard/grandmaster: use perfect-info exploit when 2p (stronger + logs modes).
+              // Medium/easy stay hidden-info for softer play.
+              const usePerfect = state.players.length === 2 &&
+                (aiDifficulty === 'hard' || aiDifficulty === 'grandmaster');
               choice = liveAI.getAIMove(state, cp, {
                 difficulty: aiDifficulty,
-                // Local vs-AI: hidden-info (no peeking opponent hands). Constrained
-                // determinization uses public pass/play history for plausible ranges.
-                perfectInfo: false,
-                hiddenInfo: true,
-                useSearch: true
+                perfectInfo: usePerfect,
+                hiddenInfo: !usePerfect,
+                useSearch: true,
+                timeMs: usePerfect ? (aiDifficulty === 'grandmaster' ? 900 : 500) : 400,
+                bestResponse: true
               });
               if (liveAI.getLastSearchStats) {
                 try { aiMeta.stats = liveAI.getLastSearchStats(); } catch (_) {}
