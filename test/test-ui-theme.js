@@ -43,7 +43,7 @@ ok('game-screen default grandmaster', /id="ai-difficulty"[\s\S]*?<option value="
 ok('hint uses hiddenInfo', /hiddenInfo:\s*true/.test(html) && /perfectInfo:\s*false/.test(html));
 ok('hint free-lead fallback', /pickFreeLeadHard/.test(html));
 ok('hint explains why', /explainHintWhy|Why.*hidden-info/.test(html));
-ok('v7.5 branding', /v7\.5/.test(html));
+ok('v8 branding', /v8\.|Grandmaster AI v8/.test(html));
 ok('old maroon lacquer not primary', !/linear-gradient\(145deg, #2c0f0a/.test(html));
 
 // Critical: broken inline glue kills startVsAI + history (regression from hint rewrite)

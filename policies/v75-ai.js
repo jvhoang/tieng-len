@@ -14,17 +14,17 @@
 
 /** Shown on title screen — bump when shipping AI behavior changes. */
 const AI_BUILD = {
-  id: 'v8.4-hybrid-tempo',
-  stamped: '2026-07-11T23:00:00-07:00',
-  label: 'Grandmaster v8.4'
+  id: 'v7.5-human-counterfactual',
+  stamped: '2026-07-11T12:00:00-07:00',
+  label: 'Grandmaster v7.5'
 };
 
-const engine = (typeof require === 'function') ? require('./engine.js') : (window.TienLenEngine || {});
+const engine = (typeof require === 'function') ? require('../engine.js') : (window.TienLenEngine || {});
 const genomeMod = (typeof require === 'function')
-  ? require('./genome.js')
+  ? require('../genome.js')
   : (typeof window !== 'undefined' ? window.TienLenGenome : null);
 const searchMod = (typeof require === 'function')
-  ? require('./search.js')
+  ? require('./v75-search.js')
   : (typeof window !== 'undefined' ? window.TienLenSearch : null);
 const {
   detectCombo, getLegalPlays, applyPlay, pass, cardCompare, cloneState: engineClone
@@ -902,8 +902,6 @@ function getAIMove(state, myIdx, opts = {}) {
         _lastSearchStats.mode === 'exploit-v51' ||
         _lastSearchStats.mode === 'exploit-v60' ||
         _lastSearchStats.mode === 'exploit-v70' ||
-        _lastSearchStats.mode === 'exploit-v80' ||
-        _lastSearchStats.mode === 'exploit-v80-soft' ||
         _lastSearchStats.mode === 'exact-exploit' ||
         _lastSearchStats.mode === 'exact-exploit-out' ||
         _lastSearchStats.mode === 'exact-exploit-soft' ||
