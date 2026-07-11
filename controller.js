@@ -26,7 +26,7 @@
   function createController(opts = {}) {
     let numPlayers = opts.numPlayers || 4;
     let vsAI = opts.vsAI !== false; // default true
-    let aiDifficulty = opts.aiDifficulty || 'hard'; // easy | medium | hard | grandmaster
+    let aiDifficulty = opts.aiDifficulty || 'grandmaster'; // easy | medium | hard | grandmaster
     let humanSeats = Array.isArray(opts.humanSeats) ? opts.humanSeats.slice() : [0];
     let currentHumanSeat = (typeof opts.currentHumanSeat === 'number')
       ? opts.currentHumanSeat

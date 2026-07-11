@@ -148,8 +148,16 @@
         const s = SUIT_SYMBOLS[SUITS[card.suit]] || '?';
         // suit: 0s 1c 2d 3h — diamonds & hearts red
         const isRed = card.suit === 2 || card.suit === 3;
-        el.classList.add(isRed ? 'red' : 'black');
-        el.innerHTML = `<div class="rank ${isRed ? 'red' : 'black'}">${r}</div><div class="suit ${isRed ? 'red' : 'black'}">${s}</div>`;
+        const rc = isRed ? 'red' : 'black';
+        el.classList.add(rc);
+        // Top-left: rank over suit so fanned cards still show full identity
+        el.innerHTML =
+          `<div class="corner-tl">` +
+            `<div class="rank ${rc}">${r}</div>` +
+            `<div class="suit-tl ${rc}">${s}</div>` +
+          `</div>` +
+          `<div class="suit-center ${rc}">${s}</div>` +
+          `<div class="suit ${rc}">${s}</div>`;
         el.dataset.card = JSON.stringify(card);
         el.dataset.cardKey = String(card.rank * 4 + card.suit);
         if (selectable) {
@@ -202,19 +210,27 @@
         if (showCards && isActiveHuman && !isBack) {
           wireDrag(el, idx, container, playerIdx);
         }
-        // Fan / overlap like a held hand (all seats)
-        if (idx > 0) {
-          el.style.marginLeft = showCards ? '-16px' : '-20px';
+        // Tight fan so first/last cards stay on-screen (esp. iPhone portrait)
+        const n = display.length || 1;
+        let overlapPx = showCards ? 16 : 20;
+        if (showCards && isActiveHuman) {
+          if (n >= 12) overlapPx = 20;
+          else if (n >= 9) overlapPx = 18;
+          else if (n >= 6) overlapPx = 16;
+          else overlapPx = 12;
+          // Extra squeeze on narrow viewports
+          if (typeof window !== 'undefined' && window.innerWidth && window.innerWidth <= 420) {
+            overlapPx += 3;
+          }
         }
+        if (idx > 0) el.style.marginLeft = (-overlapPx) + 'px';
         el.style.zIndex = String(10 + idx);
         if (showCards && isActiveHuman) {
-          // slight arc rotation for human fan
-          const n = display.length || 1;
           const mid = (n - 1) / 2;
-          const rot = (idx - mid) * 2.2;
-          el.style.transform = el.classList.contains('selected')
-            ? el.style.transform
-            : `rotate(${rot}deg)`;
+          const rot = (idx - mid) * 0.65; // mild arc — less side clipping
+          if (!el.classList.contains('selected')) {
+            el.style.transform = `rotate(${rot}deg)`;
+          }
           el.style.transformOrigin = 'bottom center';
         }
         container.appendChild(el);
@@ -378,6 +394,30 @@
       }
       const bp = doc.getElementById('btn-play');
       if (bp) bp.disabled = true;
+    }
+
+    /** Select cards by rank*4+suit keys (used by Hint to preview AI move). */
+    function selectCardsByKeys(keys) {
+      const keySet = {};
+      (keys || []).forEach(k => { keySet[k] = true; });
+      selectedCards = [];
+      const st = getState();
+      if (!st) return;
+      const hand = (st.players[currentHumanSeat] && st.players[currentHumanSeat].hand) || [];
+      hand.forEach(c => {
+        const k = c.rank * 4 + c.suit;
+        if (keySet[k]) selectedCards.push(c);
+      });
+      renderHand(currentHumanSeat);
+      const info = doc.getElementById('selection-info');
+      const selText = selectedCards.length ? `${selectedCards.length} cards selected (hint)` : '';
+      if (info && selText) {
+        // Hint writer may overwrite with full explanation after this call
+      }
+      const barSt = doc.getElementById('action-bar-status');
+      if (barSt) barSt.textContent = selText || 'Select cards, then PLAY / PASS';
+      const bp = doc.getElementById('btn-play');
+      if (bp) bp.disabled = !isValidPlaySelection(currentHumanSeat);
     }
 
     // ---------- Notifications ----------
@@ -754,6 +794,17 @@
       onlineRole = null;
       if (mp) { try { mp.disconnect(); } catch (_) {} mp = null; }
 
+      // Prefer title-screen difficulty, then in-game select, default grandmaster
+      let diff = 'grandmaster';
+      try {
+        const titleSel = doc.getElementById('title-ai-difficulty');
+        const gameSel = doc.getElementById('ai-difficulty');
+        if (titleSel && titleSel.value) diff = titleSel.value;
+        else if (gameSel && gameSel.value) diff = gameSel.value;
+        if (gameSel) gameSel.value = diff;
+        if (titleSel) titleSel.value = diff;
+      } catch (_) {}
+
       // ALWAYS recreate so 2/3/4 seats are correct (never reuse stale 4p)
       recreateController({
         vsAI: true,
@@ -763,12 +814,14 @@
         seed: Date.now(),
         beginGame: true,
         mode: 'vsAI',
+        aiDifficulty: diff,
         siteBuild: (typeof window !== 'undefined' && window.TIENLEN_SITE_BUILD) || null
       });
 
       showGameScreen();
       const sub = doc.getElementById('game-subtitle');
-      if (sub) sub.innerHTML = `Round 1 • ${numPlayers} Players • vs Smart AI`;
+      const diffLabel = diff.charAt(0).toUpperCase() + diff.slice(1);
+      if (sub) sub.innerHTML = `Round 1 • ${numPlayers} Players • vs AI (${diffLabel})`;
 
       updatePlayerLabels();
       updateUIFromController();
@@ -1496,7 +1549,7 @@
       if (typeof window !== 'undefined') {
         window.TienLenUI = {
           updateUI, startVsAI, startLive, startHotseat, playSelected, doPass,
-          clearSelection, ensureSeatSwitcher, resetHandOrder, showFriendsLobby
+          clearSelection, selectCardsByKeys, ensureSeatSwitcher, resetHandOrder, showFriendsLobby
         };
       }
     }
@@ -1528,6 +1581,7 @@
       playSelected,
       doPass,
       clearSelection,
+      selectCardsByKeys,
       updateUI,
       updateUIFromController,
       startVsAI,

@@ -77,10 +77,29 @@
       z-index: 10;
     }
     /* Hearts (h) & diamonds (d) — red ranks + suit glyphs */
-    .card.red, .card .rank.red, .card .suit.red { color: #dc2626 !important; }
-    .card.black, .card .rank.black, .card .suit.black { color: #0f172a; }
-    .card .rank { position: absolute; top: 3px; left: 4px; font-size: 15px; line-height: 1; }
-    .card .suit { position: absolute; bottom: 2px; right: 4px; font-size: 18px; }
+    .card.red, .card .rank.red, .card .suit.red, .card .suit-tl.red { color: #dc2626 !important; }
+    .card.black, .card .rank.black, .card .suit.black, .card .suit-tl.black { color: #0f172a; }
+    /* Corner stack: rank then suit under it (visible when fanned) */
+    .card .corner-tl {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      line-height: 1;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .card .rank { font-size: 14px; line-height: 1; font-weight: 800; }
+    .card .suit-tl { font-size: 12px; line-height: 1; margin-top: 1px; }
+    /* Keep a small bottom-right suit for face-up clarity when not overlapped */
+    .card .suit { position: absolute; bottom: 2px; right: 3px; font-size: 14px; opacity: 0.9; }
+    .card .suit-center {
+      font-size: 22px;
+      opacity: 0.35;
+      line-height: 1;
+    }
     /* Poker-style card back (no Chinese glyph) */
     .card-back {
       background:
@@ -112,26 +131,54 @@
       position: relative;
       z-index: 1;
     }
-    /* Fan-held hands */
+    /* Fan-held hands — tight overlap so portrait iPhone keeps 1st/last in view */
     .hand-fan {
       display: flex;
       flex-wrap: nowrap;
       justify-content: center;
       align-items: flex-end;
       min-height: 88px;
-      padding: 10px 16px 6px;
+      padding: 12px 4px 8px;
       overflow: visible;
+      max-width: 100%;
+      width: 100%;
+      box-sizing: border-box;
     }
     .hand-fan .card {
-      margin-left: -18px;
+      margin-left: -16px;
     }
     .hand-fan .card:first-child { margin-left: 0; }
+    @media (max-width: 420px) {
+      .hand-fan {
+        padding: 10px 2px 6px;
+      }
+      .hand-fan .card {
+        width: 46px;
+        height: 66px;
+        margin-left: -18px;
+      }
+      .hand-fan .card:first-child { margin-left: 0; }
+      .hand-fan .rank { font-size: 12px; }
+      .hand-fan .suit-tl { font-size: 11px; }
+      .hand-fan .suit { font-size: 11px; }
+    }
+    @media (max-width: 380px) {
+      .hand-fan .card {
+        width: 44px;
+        height: 64px;
+        margin-left: -20px;
+      }
+      .hand-fan .card:first-child { margin-left: 0; }
+    }
     .hand-fan-opp .card {
       width: 42px; height: 58px;
-      margin-left: -22px;
+      margin-left: -20px;
       font-size: 11px;
     }
     .hand-fan-opp .card:first-child { margin-left: 0; }
+    .hand-fan-opp .rank { font-size: 11px; }
+    .hand-fan-opp .suit-tl { font-size: 10px; }
+    .hand-fan-opp .suit { font-size: 10px; }
     .player-zone.active {
       box-shadow: 0 0 0 3px #2dd4bf !important;
       background: rgba(45,212,191,0.08) !important;
@@ -273,12 +320,19 @@
     }
     .friends-lobby { margin-top: 1rem; }
     #free-lead-hint {
-      text-align: center;
+      text-align: left;
       color: #e8d48b;
-      font-size: 0.8rem;
-      margin: 0.25rem 0;
+      font-size: 0.78rem;
+      margin: 0.35rem auto;
       min-height: 1.1rem;
+      max-width: 28rem;
+      line-height: 1.35;
+      padding: 0.35rem 0.6rem;
+      background: rgba(15, 23, 42, 0.55);
+      border-radius: 0.75rem;
+      border: 1px solid rgba(45, 212, 191, 0.25);
     }
+    #selection-info strong { color: #99f6e4; }
 
     .ornate-header {
       background: linear-gradient(to bottom, #1a2438, #0b1224);
@@ -555,12 +609,24 @@
               <div class="text-sm text-[#2dd4bf]">Grandmaster AI v7.5 — human lessons · beat v7</div>
             </div>
           </div>
-          <div class="flex gap-2 mt-6">
+          <div class="mt-4" onclick="event.stopImmediatePropagation()">
+            <label class="flex flex-col gap-1.5 text-left">
+              <span class="text-[10px] uppercase tracking-widest text-[#64748b]">AI difficulty</span>
+              <select id="title-ai-difficulty" onchange="setAIDifficulty(this.value)"
+                class="w-full bg-[#0f172a] border border-[#334155] rounded-2xl px-3 py-2.5 text-sm text-[#2dd4bf] outline-none focus:border-[#2dd4bf]">
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard (search)</option>
+                <option value="grandmaster" selected>Grandmaster</option>
+              </select>
+            </label>
+          </div>
+          <div class="flex gap-2 mt-4">
             <div onclick="event.stopImmediatePropagation(); choosePlayers(2, true)" class="flex-1 text-center py-2 bg-[#0f172a] hover:bg-[#1a2438] rounded-2xl border border-[#334155] text-sm">2 Players</div>
             <div onclick="event.stopImmediatePropagation(); choosePlayers(3, true)" class="flex-1 text-center py-2 bg-[#0f172a] hover:bg-[#1a2438] rounded-2xl border border-[#334155] text-sm">3 Players</div>
             <div onclick="event.stopImmediatePropagation(); choosePlayers(4, true)" class="flex-1 text-center py-2 bg-[#0f172a] hover:bg-[#1a2438] rounded-2xl border border-[#334155] text-sm font-semibold">4 Players</div>
           </div>
-          <div class="text-[10px] text-[#64748b] mt-4">The AI is exceptionally strong. Good luck.</div>
+          <div class="text-[10px] text-[#64748b] mt-4">Default: Grandmaster. Change difficulty before you start.</div>
         </div>
 
         <!-- Live Players -->
@@ -625,8 +691,8 @@
               class="bg-[#121a2f] border border-[#334155] rounded-full px-2 py-1 text-xs text-[#2dd4bf] outline-none">
               <option value="easy">Easy</option>
               <option value="medium">Medium</option>
-              <option value="hard" selected>Hard (search)</option>
-              <option value="grandmaster">Grandmaster</option>
+              <option value="hard">Hard (search)</option>
+              <option value="grandmaster" selected>Grandmaster</option>
             </select>
           </label>
           <button onclick="requestHint()" class="px-3 py-1.5 text-xs border border-[#334155] rounded-full hover:border-[#2dd4bf]">Hint</button>
@@ -684,7 +750,7 @@
       <!-- Selection hint (Play/Pass/Clear live in fixed bar) -->
       <div class="mt-4 px-1">
         <div class="text-xs text-[#64748b] mb-1">SELECT CARDS TO FORM A COMBO (single, pair, triple, quad, sequence, double sequence)</div>
-        <div id="selection-info" class="text-sm min-h-[22px] text-[#94a3b8]"></div>
+        <div id="selection-info" class="text-sm min-h-[22px] text-[#94a3b8] max-w-xl mx-auto leading-snug"></div>
         <div class="mt-2 text-[10px] text-[#64748b] flex justify-between">
           <div>Click cards to select. Legal plays only. Bombs work even after passing.</div>
           <div id="turn-indicator" class="font-semibold text-[#2dd4bf]"></div>
@@ -805,15 +871,15 @@
   <!-- Cache-bust query so browsers always load latest AI after deploys -->
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <script>window.TIENLEN_SITE_BUILD = '20260711c';</script>
-  <script src="engine.js?v=20260711c"></script>
-  <script src="genome.js?v=20260711c"></script>
-  <script src="search.js?v=20260711c"></script>
-  <script src="ai.js?v=20260711c"></script>
-  <script src="play-log.js?v=20260711c"></script>
-  <script src="controller.js?v=20260711c"></script>
-  <script src="hand-order.js?v=20260711c"></script>
-  <script src="multiplayer.js?v=20260711c"></script>
-  <script src="ui.js?v=20260711c"></script>
+  <script src="engine.js?v=20260711d"></script>
+  <script src="genome.js?v=20260711d"></script>
+  <script src="search.js?v=20260711d"></script>
+  <script src="ai.js?v=20260711d"></script>
+  <script src="play-log.js?v=20260711d"></script>
+  <script src="controller.js?v=20260711d"></script>
+  <script src="hand-order.js?v=20260711d"></script>
+  <script src="multiplayer.js?v=20260711d"></script>
+  <script src="ui.js?v=20260711d"></script>
   <script>
     // Thin loader: modules provide the game. index.html = markup + styles + glue.
     (function(){
@@ -1202,37 +1268,289 @@
         if (m) m.classList.add('hidden');
       };
       window.setAIDifficulty = function(d){
+        const allowed = { easy:1, medium:1, hard:1, grandmaster:1 };
+        if (!allowed[d]) d = 'grandmaster';
         const c = window.controller;
         if (c && c.setAIDifficulty) c.setAIDifficulty(d);
+        // Keep title + in-game selects in sync
+        const titleSel = document.getElementById('title-ai-difficulty');
+        const gameSel = document.getElementById('ai-difficulty');
+        if (titleSel && titleSel.value !== d) titleSel.value = d;
+        if (gameSel && gameSel.value !== d) gameSel.value = d;
         const info = document.getElementById('selection-info');
         if (info) info.innerHTML = 'AI strength: ' + d;
       };
+
+      /** Format a card for hint text, e.g. "A♠" */
+      function formatHintCard(card) {
+        const r = (eng.RANKS || [])[card.rank] || '?';
+        const s = (eng.SUIT_SYMBOLS || {})[(eng.SUITS || [])[card.suit]] || '';
+        return r + s;
+      }
+      function formatHintPlay(cards) {
+        return (cards || []).map(formatHintCard).join(' ');
+      }
+      function describeComboShape(cards) {
+        if (!cards || !cards.length) return 'empty';
+        const n = cards.length;
+        if (n === 1) return 'single';
+        if (n === 2) return 'pair';
+        if (n === 3) return 'triple';
+        if (n === 4) return 'quad / bomb';
+        // Straight-ish multi
+        const ranks = cards.map(c => c.rank).sort((a, b) => a - b);
+        let consecutive = true;
+        for (let i = 1; i < ranks.length; i++) {
+          if (ranks[i] !== ranks[i - 1] + 1) { consecutive = false; break; }
+        }
+        if (consecutive) return n + '-card sequence';
+        return n + '-card combo';
+      }
+      /**
+       * Explain why the AI chose this move (hidden-info policy — no peeking at opp hands).
+       * Public info only: opp hand counts, current combo, own cards played/kept.
+       */
+      function explainHintWhy(st, seat, mv, stats) {
+        const reasons = [];
+        const cur = st.currentCombo;
+        const hand = (st.players[seat] && st.players[seat].hand) || [];
+        const handLen = hand.length;
+        const oppCounts = (st.players || [])
+          .map((p, i) => (i === seat || !p || p.finished) ? null : (p.hand ? p.hand.length : 0))
+          .filter(x => x != null);
+        const oppMin = oppCounts.length ? Math.min.apply(null, oppCounts) : 13;
+
+        if (mv == null) {
+          reasons.push('PASS — save high/control cards rather than beat this cheaply');
+          if (cur && cur.length === 1 && cur[0].rank >= 11) {
+            reasons.push('current lead is high (A/2 territory); holding out often wins endgame');
+          }
+          reasons.push('AI did not peek at opponent hole cards — same hidden-info policy it uses vs you');
+          return reasons;
+        }
+
+        const shape = describeComboShape(mv);
+        const top = mv.reduce((m, c) => Math.max(m, c.rank), -1);
+        const topLabel = (eng.RANKS || [])[top] || '?';
+        const isExpensive = mv.some(c => c.rank >= 11); // A or 2
+        const hasTwo = mv.some(c => c.rank === 12);
+
+        if (!cur) {
+          // Free lead
+          if (mv.length === handLen) {
+            reasons.push('free-lead go-out — empty the hand in one play');
+          } else if (mv.length >= 2) {
+            reasons.push('free-lead ' + shape + ' (top ' + topLabel + ') — multi-card open keeps structure and sheds volume');
+            if (top <= 8) reasons.push('low multi preferred: dump mid cards without burning A/2 control');
+          } else if (mv.length === 1) {
+            if (top <= 6) {
+              reasons.push('free-lead trash single ' + topLabel + ' — no safe multi; shed low deadwood');
+            } else if (top >= 10) {
+              reasons.push('free-lead high single ' + topLabel + ' — often force control when multi is unavailable');
+            } else {
+              reasons.push('free-lead single ' + topLabel);
+            }
+          }
+          if (oppMin === 1) {
+            reasons.push('opponent has 1 card — avoid gifting a low beatable single if possible');
+          }
+        } else {
+          // Combat
+          if (mv.length === handLen) {
+            reasons.push('beat and go out — exact empty');
+          } else if (hasTwo) {
+            reasons.push('use 2 only when needed to seize the trick or deny opp go-out');
+          } else if (isExpensive) {
+            reasons.push('spend ' + topLabel + ' carefully to take control of the trick');
+          } else {
+            reasons.push('cheapest legal beat with ' + shape + ' (top ' + topLabel + ') — conserve bombs/A/2');
+          }
+          if (oppMin <= 2) {
+            reasons.push('short opponent (' + oppMin + ' card' + (oppMin === 1 ? '' : 's') + ') — contest rather than soft-pass when cheap');
+          }
+        }
+
+        if (stats) {
+          if (stats.mode) reasons.push('search mode: ' + stats.mode + (stats.perfectInfo ? ' (would be perfect-info)' : ' · hidden-info det.)');
+          if (stats.avg != null && !isNaN(Number(stats.avg))) {
+            reasons.push('approx EV ' + Number(stats.avg).toFixed(2) + ' under sampled opponent hands');
+          }
+          if (stats.determinizations) {
+            reasons.push(stats.determinizations + ' opponent-hand samples (no peek at real hole cards)');
+          }
+        } else {
+          reasons.push('policy / expert path (hidden-info) — no peeking at opponent hands');
+        }
+        if (handLen - mv.length <= 2 && handLen > mv.length) {
+          reasons.push('leaves ' + (handLen - mv.length) + ' card(s) — near endgame shape');
+        }
+        return reasons;
+      }
+
+      /**
+       * Hint = exact move the live AI would make sitting in YOUR seat, WITHOUT
+       * peeking at opponent hands (hiddenInfo). Free-lead always returns a play.
+       */
       window.requestHint = function(){
         const c = window.controller;
         const st = c && c.getState ? c.getState() : null;
-        if (!st) return;
-        const seat = st.currentPlayer;
-        const ai = window.TienLenAI;
-        const diff = (c && c.getAIDifficulty) ? c.getAIDifficulty() : 'hard';
-        const mv = (ai && ai.getAIMove) ? ai.getAIMove(st, seat, {
-          difficulty: diff === 'easy' ? 'medium' : diff,
-          timeMs: 400,
-          useSearch: true
-        }) : null;
+        // Primary surface: selection-info (free-lead-hint is reserved for static free-lead tip)
         const info = document.getElementById('selection-info');
-        const stats = ai && ai.getLastSearchStats ? ai.getLastSearchStats() : null;
-        if (info) {
-          if (mv && mv.length) {
-            let msg = 'Hint: play ' + mv.map(card =>
-              (eng.RANKS||[])[card.rank] + ((eng.SUIT_SYMBOLS||{})[(eng.SUITS||[])[card.suit]] || '')
-            ).join(' ');
-            if (stats && stats.avg != null) msg += ' <span class="opacity-60">(EV≈' + Number(stats.avg).toFixed(2) + ')</span>';
-            info.innerHTML = msg;
-          } else if (mv == null && st.currentCombo) {
-            info.innerHTML = 'Hint: PASS (save your high cards)';
-          } else {
-            info.innerHTML = 'No hint available';
+        const barSt = document.getElementById('action-bar-status');
+        function show(msg) {
+          if (info) info.innerHTML = msg;
+          if (barSt) {
+            // Short line on the fixed bar
+            const plain = String(msg).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+            barSt.textContent = plain.length > 90 ? plain.slice(0, 87) + '…' : plain;
           }
+        }
+        if (!st || st.roundOver) {
+          show('Hint: no active hand to analyze.');
+          return;
+        }
+        let humanSeat = 0;
+        try {
+          if (c && typeof c._getInternals === 'function') {
+            const meta = c._getInternals();
+            if (meta && typeof meta.currentHumanSeat === 'number') humanSeat = meta.currentHumanSeat;
+          }
+        } catch (_) {}
+        const seat = humanSeat;
+        if (st.players[seat] && st.players[seat].finished) {
+          show('Hint: you are already out.');
+          return;
+        }
+        if (st.currentPlayer !== humanSeat) {
+          show('Hint: wait for your turn — then Hint shows the exact hidden-info AI move for your seat.');
+          return;
+        }
+
+        const ai = window.TienLenAI;
+        const search = window.TienLenSearch;
+        let diff = (c && c.getAIDifficulty) ? c.getAIDifficulty() : 'grandmaster';
+        if (diff === 'easy') diff = 'medium'; // hints should still be thoughtful
+
+        const hand = st.players[seat].hand;
+        const engLocal = eng;
+        const legalFn = engLocal.getLegalPlays;
+        const legals = legalFn
+          ? legalFn(hand, st.currentCombo, st.players[seat].passed, st.isFirstLead, st.firstLeadCard)
+          : [];
+
+        if (!legals.length) {
+          show('Hint: <strong>PASS</strong> — no legal beat. <span class="opacity-70">Why: zero legal plays from your hand against the current combo.</span>');
+          return;
+        }
+
+        // Always hidden-info: do NOT peek at opponent hole cards (matches training signal)
+        let mv = null;
+        let stats = null;
+        try {
+          if (ai && ai.getAIMove) {
+            mv = ai.getAIMove(st, seat, {
+              difficulty: diff,
+              timeMs: diff === 'grandmaster' ? 700 : 450,
+              useSearch: true,
+              perfectInfo: false,
+              hiddenInfo: true,
+              bestResponse: false // pure policy path, not exploit peek
+            });
+            if (ai.getLastSearchStats) stats = ai.getLastSearchStats();
+          }
+        } catch (eHint) {
+          try { console.warn('[TiengLen] hint search failed', eHint); } catch (_) {}
+        }
+
+        // Free-lead hard fallbacks — never leave empty "No hint available"
+        if ((!mv || !mv.length) && !st.currentCombo) {
+          try {
+            if (search && search.pickFreeLeadHard) {
+              mv = search.pickFreeLeadHard(legals, st, seat);
+            }
+          } catch (_) {}
+          if ((!mv || !mv.length) && ai && ai.pickFreeLead) {
+            try { mv = ai.pickFreeLead(st, seat, legals); } catch (_) {}
+          }
+          if ((!mv || !mv.length) && ai && ai.preferNonSingleLegal) {
+            try { mv = ai.preferNonSingleLegal(legals); } catch (_) {}
+          }
+          if (!mv || !mv.length) {
+            // Lowest multi, else lowest single
+            const multi = legals.filter(p => p.length >= 2);
+            if (multi.length) {
+              multi.sort((a, b) => {
+                const ta = Math.max.apply(null, a.map(c => c.rank));
+                const tb = Math.max.apply(null, b.map(c => c.rank));
+                return ta - tb || a.length - b.length;
+              });
+              mv = multi[0];
+            } else {
+              const singles = legals.filter(p => p.length === 1).slice().sort((a, b) =>
+                a[0].rank - b[0].rank || a[0].suit - b[0].suit);
+              mv = singles[0] || legals[0];
+            }
+          }
+        }
+
+        // Combat: null means intentional PASS; if no pass allowed? always can pass when combo exists
+        if ((!mv || !mv.length) && st.currentCombo) {
+          // Distinguish intentional pass vs failure
+          const cheap = (ai && ai.cheapLegals) ? ai.cheapLegals(legals) : legals;
+          if (!cheap.length && ai && ai.shouldPassStrategically) {
+            // keep pass
+            mv = null;
+          } else if (!stats) {
+            // Search failed — prefer cheapest legal over silent empty
+            try {
+              if (ai && ai.getLowestLegalMove) mv = ai.getLowestLegalMove(st, seat);
+              else mv = legals.slice().sort((a, b) => {
+                const ta = Math.max.apply(null, a.map(c => c.rank));
+                const tb = Math.max.apply(null, b.map(c => c.rank));
+                return ta - tb || a.length - b.length;
+              })[0];
+            } catch (_) {
+              mv = legals[0];
+            }
+          }
+        }
+
+        const reasons = explainHintWhy(st, seat, mv, stats);
+        const whyHtml = reasons.map(r => '· ' + r).join('<br>');
+
+        if (mv && mv.length) {
+          // Pre-select the cards so user can see/act on them
+          try {
+            if (window.TienLenUI && window.TienLenUI.selectCardsByKeys) {
+              window.TienLenUI.selectCardsByKeys(mv.map(c => c.rank * 4 + c.suit));
+            }
+          } catch (_) {}
+          show(
+            '<div class="text-left leading-snug">' +
+              '<div><strong>AI would play:</strong> ' + formatHintPlay(mv) +
+              ' <span class="opacity-70">(' + describeComboShape(mv) + ')</span></div>' +
+              '<div class="mt-1 text-[11px] text-[#94a3b8]"><strong>Why</strong> (hidden-info, no peek at opp hands):</div>' +
+              '<div class="text-[11px] text-[#94a3b8]">' + whyHtml + '</div>' +
+            '</div>'
+          );
+        } else if (st.currentCombo) {
+          show(
+            '<div class="text-left leading-snug">' +
+              '<div><strong>AI would:</strong> PASS</div>' +
+              '<div class="mt-1 text-[11px] text-[#94a3b8]"><strong>Why</strong> (hidden-info, no peek):</div>' +
+              '<div class="text-[11px] text-[#94a3b8]">' + whyHtml + '</div>' +
+            '</div>'
+          );
+        } else {
+          // Absolute last resort free-lead
+          const last = legals[0];
+          show(
+            '<div class="text-left leading-snug">' +
+              '<div><strong>AI would play:</strong> ' + formatHintPlay(last) +
+              ' <span class="opacity-70">(fallback legal)</span></div>' +
+              '<div class="mt-1 text-[11px] text-[#94a3b8]"><strong>Why:</strong> free-lead must open; chose first legal after policy fallbacks.</div>' +
+            '</div>'
+          );
         }
       };
 
