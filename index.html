@@ -131,44 +131,63 @@
       position: relative;
       z-index: 1;
     }
-    /* Fan-held hands — tight overlap so portrait iPhone keeps 1st/last in view */
+    /* Fan-held hands — ultra-tight so portrait iPhone keeps 1st/last in view */
     .hand-fan {
       display: flex;
       flex-wrap: nowrap;
       justify-content: center;
       align-items: flex-end;
       min-height: 88px;
-      padding: 12px 4px 8px;
+      padding: 10px 0 8px;
       overflow: visible;
       max-width: 100%;
       width: 100%;
       box-sizing: border-box;
     }
     .hand-fan .card {
-      margin-left: -16px;
+      margin-left: -22px;
     }
     .hand-fan .card:first-child { margin-left: 0; }
-    @media (max-width: 420px) {
+    /* Human hand: slightly smaller base so 13 cards fit more easily */
+    #hand-0.hand-fan .card {
+      width: 52px;
+      height: 74px;
+    }
+    @media (max-width: 480px) {
+      #table-area.viet-table {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+      }
+      #player-0 {
+        max-width: 100% !important;
+        padding-left: 0;
+        padding-right: 0;
+      }
       .hand-fan {
-        padding: 10px 2px 6px;
+        padding: 8px 0 6px;
+        min-height: 78px;
       }
-      .hand-fan .card {
-        width: 46px;
-        height: 66px;
-        margin-left: -18px;
+      #hand-0.hand-fan .card {
+        width: 42px;
+        height: 62px;
+        margin-left: -26px;
       }
-      .hand-fan .card:first-child { margin-left: 0; }
-      .hand-fan .rank { font-size: 12px; }
-      .hand-fan .suit-tl { font-size: 11px; }
-      .hand-fan .suit { font-size: 11px; }
+      #hand-0.hand-fan .card:first-child { margin-left: 0; }
+      #hand-0.hand-fan .rank { font-size: 11px; }
+      #hand-0.hand-fan .suit-tl { font-size: 10px; }
+      #hand-0.hand-fan .suit { font-size: 10px; }
+      #hand-0.hand-fan .suit-center { font-size: 16px; }
+      #hand-0.hand-fan .corner-tl { top: 2px; left: 2px; }
     }
     @media (max-width: 380px) {
-      .hand-fan .card {
-        width: 44px;
-        height: 64px;
-        margin-left: -20px;
+      #hand-0.hand-fan .card {
+        width: 38px;
+        height: 56px;
+        margin-left: -24px;
       }
-      .hand-fan .card:first-child { margin-left: 0; }
+      #hand-0.hand-fan .card:first-child { margin-left: 0; }
+      #hand-0.hand-fan .rank { font-size: 10px; }
+      #hand-0.hand-fan .suit-tl { font-size: 9px; }
     }
     .hand-fan-opp .card {
       width: 42px; height: 58px;
@@ -695,7 +714,6 @@
               <option value="grandmaster" selected>Grandmaster</option>
             </select>
           </label>
-          <button onclick="requestHint()" class="px-3 py-1.5 text-xs border border-[#334155] rounded-full hover:border-[#2dd4bf]">Hint</button>
           <button onclick="newRound()" class="px-3 py-1.5 text-xs border border-[#334155] rounded-full hover:border-[#2dd4bf]">New Round</button>
           <button onclick="exitToMenu()" class="px-3 py-1.5 text-xs bg-[#1a2438] rounded-full">Exit</button>
         </div>
@@ -733,8 +751,8 @@
         </div>
 
         <!-- YOU -->
-        <div class="flex items-end justify-center px-4">
-          <div id="player-0" class="player-zone flex-1 max-w-[560px] mx-auto">
+        <div class="flex items-end justify-center px-0 sm:px-2">
+          <div id="player-0" class="player-zone flex-1 max-w-[640px] mx-auto w-full">
             <div class="flex justify-between items-center mb-1 px-1">
               <div class="text-xs text-[#2dd4bf] font-semibold tracking-[1.5px]" data-player-title>YOU <span class="opacity-60">(South)</span></div>
               <div class="flex items-center gap-2">
@@ -747,7 +765,7 @@
         </div>
       </div>
 
-      <!-- Selection hint (Play/Pass/Clear live in fixed bar) -->
+      <!-- Selection hint (Play/Pass/Hint live in fixed bar) -->
       <div class="mt-4 px-1">
         <div class="text-xs text-[#64748b] mb-1">SELECT CARDS TO FORM A COMBO (single, pair, triple, quad, sequence, double sequence)</div>
         <div id="selection-info" class="text-sm min-h-[22px] text-[#94a3b8] max-w-xl mx-auto leading-snug"></div>
@@ -759,17 +777,17 @@
     </div>
   </div>
 
-  <!-- Fixed Play / Pass / Clear bar (viewport-sticky) -->
+  <!-- Fixed Play / Pass / Hint bar (viewport-sticky) -->
   <div id="action-bar" class="action-bar-fixed hidden">
     <div class="inner">
-      <div id="action-bar-status" class="text-xs text-[#94a3b8] flex-1 min-w-[120px]"></div>
-      <div class="flex gap-x-2">
+      <div id="action-bar-status" class="text-xs text-[#94a3b8] flex-1 min-w-[100px]"></div>
+      <div class="flex gap-x-2 flex-wrap justify-end">
         <button type="button" onclick="playSelected()" id="btn-play"
-                class="viet-btn px-9 py-3 rounded-2xl text-lg disabled:opacity-40 disabled:cursor-not-allowed shadow">PLAY</button>
+                class="viet-btn px-7 sm:px-9 py-3 rounded-2xl text-lg disabled:opacity-40 disabled:cursor-not-allowed shadow">PLAY</button>
         <button type="button" onclick="doPass()" id="btn-pass"
-                class="px-6 py-3 rounded-2xl border border-[#334155] hover:bg-[#1a2438] text-sm bg-[#121a2f]">PASS</button>
-        <button type="button" onclick="clearSelection()" id="btn-clear"
-                class="px-5 py-3 text-sm border border-[#334155] rounded-2xl bg-[#121a2f]">CLEAR</button>
+                class="px-5 sm:px-6 py-3 rounded-2xl border border-[#334155] hover:bg-[#1a2438] text-sm bg-[#121a2f]">PASS</button>
+        <button type="button" onclick="requestHint()" id="btn-hint"
+                class="px-5 py-3 text-sm border border-[#2dd4bf]/50 rounded-2xl bg-[#121a2f] text-[#99f6e4] hover:border-[#2dd4bf] hover:bg-[#0f3d3a]">HINT</button>
       </div>
     </div>
   </div>
@@ -871,15 +889,15 @@
   <!-- Cache-bust query so browsers always load latest AI after deploys -->
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <script>window.TIENLEN_SITE_BUILD = '20260711c';</script>
-  <script src="engine.js?v=20260711e"></script>
-  <script src="genome.js?v=20260711e"></script>
-  <script src="search.js?v=20260711e"></script>
-  <script src="ai.js?v=20260711e"></script>
-  <script src="play-log.js?v=20260711e"></script>
-  <script src="controller.js?v=20260711e"></script>
-  <script src="hand-order.js?v=20260711e"></script>
-  <script src="multiplayer.js?v=20260711e"></script>
-  <script src="ui.js?v=20260711e"></script>
+  <script src="engine.js?v=20260711f"></script>
+  <script src="genome.js?v=20260711f"></script>
+  <script src="search.js?v=20260711f"></script>
+  <script src="ai.js?v=20260711f"></script>
+  <script src="play-log.js?v=20260711f"></script>
+  <script src="controller.js?v=20260711f"></script>
+  <script src="hand-order.js?v=20260711f"></script>
+  <script src="multiplayer.js?v=20260711f"></script>
+  <script src="ui.js?v=20260711f"></script>
   <script>
     // Thin loader: modules provide the game. index.html = markup + styles + glue.
     (function(){

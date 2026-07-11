@@ -49,9 +49,9 @@ See [RULES.md](./RULES.md) — Pagat + Wikipedia core:
 | Select cards | Click |
 | Play | **PLAY** or `P` / `Enter` |
 | Pass | **PASS** or `S` / `Space` (only when beating a pile) |
-| Clear selection | **CLEAR** or `C` / `Esc` |
+| Hint (AI move + why) | **HINT** in action bar, or `H` / `C` |
+| Clear selection | `Esc` |
 | Re-sort hand | Sort button or `R` |
-| Hint | Hint button or `H` |
 
 ## Tech
 

@@ -210,31 +210,78 @@
         if (showCards && isActiveHuman && !isBack) {
           wireDrag(el, idx, container, playerIdx);
         }
-        // Tight fan so first/last cards stay on-screen (esp. iPhone portrait)
+        // Viewport-fit fan: compute overlap so the full hand fits (iPhone portrait)
         const n = display.length || 1;
-        let overlapPx = showCards ? 16 : 20;
+        let overlapPx = showCards ? 18 : 22;
         if (showCards && isActiveHuman) {
-          if (n >= 12) overlapPx = 20;
-          else if (n >= 9) overlapPx = 18;
-          else if (n >= 6) overlapPx = 16;
-          else overlapPx = 12;
-          // Extra squeeze on narrow viewports
-          if (typeof window !== 'undefined' && window.innerWidth && window.innerWidth <= 420) {
-            overlapPx += 3;
+          // Card width from CSS breakpoints (must match index.html #hand-0 rules)
+          let cardW = 52;
+          let avail = 0;
+          try {
+            if (typeof window !== 'undefined' && window.innerWidth) {
+              if (window.innerWidth <= 380) cardW = 38;
+              else if (window.innerWidth <= 480) cardW = 42;
+            }
+            // Prefer measured container width (accounts for table padding/border)
+            const cw = container.clientWidth || 0;
+            avail = cw > 20 ? cw - 8 : 0;
+            if (!avail && typeof window !== 'undefined' && window.innerWidth) {
+              avail = Math.max(180, window.innerWidth - 28);
+            }
+          } catch (_) {
+            avail = 300;
+          }
+          if (n <= 1) {
+            overlapPx = 0;
+          } else if (avail > 0) {
+            // total = cardW + (n-1)*(cardW - overlap) <= avail
+            // overlap >= cardW - (avail - cardW)/(n-1)
+            const step = (avail - cardW) / (n - 1);
+            const needOverlap = cardW - step;
+            // Keep a readable strip of the card (rank+suit corner) visible
+            const maxOverlap = cardW - 12; // ≥12px peek for rank+suit
+            const minOverlap = n >= 10 ? 18 : (n >= 6 ? 14 : 8);
+            // +2 safety so left/right edges never kiss the clip boundary
+            overlapPx = Math.ceil(Math.min(maxOverlap, Math.max(minOverlap, needOverlap + 2)));
+          } else {
+            overlapPx = n >= 12 ? 30 : (n >= 9 ? 28 : (n >= 6 ? 24 : 16));
           }
         }
         if (idx > 0) el.style.marginLeft = (-overlapPx) + 'px';
         el.style.zIndex = String(10 + idx);
+        // No rotation on human hand — arc clips 1st/last cards on narrow phones
         if (showCards && isActiveHuman) {
-          const mid = (n - 1) / 2;
-          const rot = (idx - mid) * 0.65; // mild arc — less side clipping
-          if (!el.classList.contains('selected')) {
-            el.style.transform = `rotate(${rot}deg)`;
-          }
           el.style.transformOrigin = 'bottom center';
+          if (!el.classList.contains('selected')) {
+            el.style.transform = 'none';
+          }
         }
         container.appendChild(el);
       });
+
+      // Second pass: if rendered fan still overflows, tighten further
+      if (showCards && isActiveHuman && display.length > 1) {
+        try {
+          const kids = container.children;
+          if (kids && kids.length > 1) {
+            const first = kids[0];
+            const last = kids[kids.length - 1];
+            const left = first.getBoundingClientRect();
+            const right = last.getBoundingClientRect();
+            const box = container.getBoundingClientRect();
+            const overflowL = box.left - left.left;
+            const overflowR = right.right - box.right;
+            const overflow = Math.max(0, overflowL, overflowR);
+            if (overflow > 1) {
+              const extra = Math.ceil(overflow / Math.max(1, display.length - 1)) + 1;
+              for (let i = 1; i < kids.length; i++) {
+                const cur = parseFloat(String(kids[i].style.marginLeft || '0').replace('px', '')) || 0;
+                kids[i].style.marginLeft = (cur - extra) + 'px';
+              }
+            }
+          }
+        } catch (_) { /* measure optional */ }
+      }
     }
 
     // ---------- Drag reorder ----------
@@ -1520,12 +1567,13 @@
           } else if (k === 's' || k === ' ') {
             e.preventDefault();
             doPass();
-          } else if (k === 'c' || k === 'escape') {
-            e.preventDefault();
-            clearSelection();
-          } else if (k === 'h') {
+          } else if (k === 'h' || k === 'c') {
+            // H / C → Hint (Clear removed from UI; Escape still clears selection)
             e.preventDefault();
             if (typeof window !== 'undefined' && window.requestHint) window.requestHint();
+          } else if (k === 'escape') {
+            e.preventDefault();
+            clearSelection();
           } else if (k === 'n') {
             e.preventDefault();
             if (typeof window !== 'undefined' && window.newRound) window.newRound();
