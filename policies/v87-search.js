@@ -11,7 +11,7 @@
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./engine.js'));
+    module.exports = factory(require('../engine.js'));
   } else {
     root.TienLenSearch = factory(root.TienLenEngine);
   }
@@ -1261,7 +1261,7 @@
           + shed * 0.00003;
         // Among forced wins, prefer multi (structure) then shorter residual hand
         if (win && act && act.length >= 2 && !cur) {
-          score += 0.018 + Math.min(0.014, act.length * 0.002); // v8.8 multi win
+          score += 0.012 + Math.min(0.01, act.length * 0.0015);
         }
         if (!win) {
           var soft = typeof deep === 'number' ? deep : 0;

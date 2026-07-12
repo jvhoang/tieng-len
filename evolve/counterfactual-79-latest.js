@@ -1,8 +1,13 @@
 /**
- * Counterfactual: all completed 2p play-logs vs LIVE latest AI
+ * Counterfactual: ALL completed 1v1 (2p) human play-logs vs LIVE latest AI
  * sitting in the human seat with HIDDEN INFO only.
  *
+ * Uses playlog-index.json built by evolve/refresh-playlogs-all.js (all play-log
+ * issues, not a fixed 79). Output filenames keep "79" aliases for compatibility
+ * plus counterfactual-all-latest* names.
+ *
  *   TIENLEN_CF_ISSUES_DIR=... TIENLEN_SCRATCH=... node evolve/counterfactual-79-latest.js
+ *   # prefer: node evolve/refresh-playlogs-all.js first
  */
 'use strict';
 
@@ -14,8 +19,10 @@ const ai = require('../ai.js'); // LIVE latest
 const SCRATCH = process.env.TIENLEN_SCRATCH || path.join(__dirname);
 const ISSUES_DIR = process.env.TIENLEN_CF_ISSUES_DIR || path.join(SCRATCH, 'issues');
 const INDEX = path.join(SCRATCH, 'playlog-index.json');
-const OUT_FULL = path.join(SCRATCH, 'counterfactual-79-latest.json');
-const OUT_SUMMARY = path.join(__dirname, 'counterfactual-79-latest-summary.json');
+const OUT_FULL = path.join(SCRATCH, 'counterfactual-all-latest.json');
+const OUT_FULL_LEGACY = path.join(SCRATCH, 'counterfactual-79-latest.json');
+const OUT_SUMMARY = path.join(__dirname, 'counterfactual-all-latest-summary.json');
+const OUT_SUMMARY_LEGACY = path.join(__dirname, 'counterfactual-79-latest-summary.json');
 const OUT_FEATURES = path.join(SCRATCH, 'human-action-features.jsonl');
 
 function parseIssueFile(fp, n) {
@@ -287,14 +294,24 @@ function main() {
     issueNums = idx.completed2p || null;
   }
   if (!issueNums || !issueNums.length) {
+    // Scan ALL issue files present (no fixed upper bound)
     issueNums = [];
-    for (let n = 1; n <= 100; n++) {
-      if (fs.existsSync(path.join(ISSUES_DIR, 'raw-' + n + '.json')) ||
-          fs.existsSync(path.join(ISSUES_DIR, 'issue-' + n + '.json'))) {
-        issueNums.push(n);
+    try {
+      const files = fs.readdirSync(ISSUES_DIR);
+      const seen = Object.create(null);
+      for (let fi = 0; fi < files.length; fi++) {
+        const m = files[fi].match(/^(?:raw|issue)-(\d+)\.json$/);
+        if (!m) continue;
+        const n = parseInt(m[1], 10);
+        if (!seen[n]) {
+          seen[n] = 1;
+          issueNums.push(n);
+        }
       }
-    }
+      issueNums.sort(function (a, b) { return a - b; });
+    } catch (e) { /* empty */ }
   }
+  console.log('CF issue count (completed2p index or scan)', issueNums.length);
 
   const results = [];
   let completed = 0;
@@ -378,8 +395,10 @@ function main() {
 
   const summary = {
     aiBuild: ai.AI_BUILD,
+    corpus: 'all-completed-1v1-playlogs',
     method: 'getAIMove human-seat hiddenInfo=true perfectInfo=false',
     issueList: issueNums,
+    issueListCount: issueNums.length,
     completedGames: completed,
     totalHumanActions: totalHuman,
     matchCount: totalMatch,
@@ -404,13 +423,19 @@ function main() {
     differSample: differs.slice(0, 100)
   };
 
-  fs.writeFileSync(OUT_FULL, JSON.stringify({ summary: summary, results: results }, null, 2));
-  fs.writeFileSync(OUT_SUMMARY, JSON.stringify(summary, null, 2));
+  const payload = JSON.stringify({ summary: summary, results: results }, null, 2);
+  fs.writeFileSync(OUT_FULL, payload);
+  fs.writeFileSync(OUT_FULL_LEGACY, payload);
+  const sumStr = JSON.stringify(summary, null, 2);
+  fs.writeFileSync(OUT_SUMMARY, sumStr);
+  fs.writeFileSync(OUT_SUMMARY_LEGACY, sumStr);
   fs.writeFileSync(OUT_FEATURES, allFeatures.map(function (f) { return JSON.stringify(f); }).join('\n') + '\n');
 
   console.log('=== SUMMARY ===');
   console.log(JSON.stringify({
+    corpus: summary.corpus,
     completedGames: completed,
+    issueListCount: issueNums.length,
     totalHumanActions: totalHuman,
     matchRate: summary.matchRate,
     differPatterns: byPattern,

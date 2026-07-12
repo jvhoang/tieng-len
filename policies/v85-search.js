@@ -11,7 +11,7 @@
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./engine.js'));
+    module.exports = factory(require('../engine.js'));
   } else {
     root.TienLenSearch = factory(root.TienLenEngine);
   }
@@ -448,7 +448,7 @@
       return { play: orderLegals(leg, state, cp)[0] };
     }
     // v8.5: only soft-pass when opp is not short (short opp → contest expensive answers)
-    if (handLen >= 9 && curTop < 10 && omin >= 6) return { pass: true }; // v8.7 contest more
+    if (handLen >= 8 && curTop < 10 && omin >= 5) return { pass: true };
     if (handLen >= 8 && curTop < 10 && omin <= 3 && leg.length) {
       return { play: orderLegals(leg, state, cp)[0] };
     }
@@ -1228,10 +1228,10 @@
               next.players[opp].hand, next.currentCombo, false, false, null
             );
             if (!oppLeg.length) {
-              lockBonus = 0.11; // unanswerable lead — free control v8.7
+              lockBonus = 0.08; // unanswerable lead — free control
             } else {
               var oppCheap = cheapLegals(oppLeg);
-              if (!oppCheap.length) lockBonus = 0.07; // forces 2/bomb v8.7
+              if (!oppCheap.length) lockBonus = 0.05; // forces 2/bomb
               else {
                 var minTop = 99;
                 var oi2;
@@ -1261,7 +1261,7 @@
           + shed * 0.00003;
         // Among forced wins, prefer multi (structure) then shorter residual hand
         if (win && act && act.length >= 2 && !cur) {
-          score += 0.018 + Math.min(0.014, act.length * 0.002); // v8.8 multi win
+          score += 0.012 + Math.min(0.01, act.length * 0.0015);
         }
         if (!win) {
           var soft = typeof deep === 'number' ? deep : 0;
@@ -1751,7 +1751,7 @@
       if (!state.players[i].finished) total += state.players[i].hand.length;
     }
     // ladder v8.6: deeper exact endgame (20 cards) for late midgame
-    if (total > 18) return null; // v8.6 keep 18 — 20 hung some deals
+    if (total > 20) return null;
 
     var memo = {};
     function key(st) {
@@ -2467,14 +2467,14 @@
       if (opts.exactExploit !== false) {
         var exactMs = opts.exactExploitMs != null ? opts.exactExploitMs
           : (totalCards <= 12
-            ? (opts.inBrowser ? 200 : 400)
+            ? (opts.inBrowser ? 280 : 900)
             : (totalCards <= 16
-              ? (opts.inBrowser ? 140 : 280)
+              ? (opts.inBrowser ? 200 : 600)
               : (totalCards <= 20
-                ? (opts.inBrowser ? 80 : 160)
+                ? (opts.inBrowser ? 140 : 400)
                 : (totalCards <= 24
-                  ? (opts.inBrowser ? 50 : 100)
-                  : (opts.inBrowser ? 30 : 60)))));
+                  ? (opts.inBrowser ? 100 : 280)
+                  : (opts.inBrowser ? 60 : 180)))));
         // Free lead gets a bit more time to prove unanswerable multi opens
         if (!cur && !opts.inBrowser) exactMs = Math.max(exactMs, 220);
         var exExact = exactExploitMove(state, myIdx, { timeMs: exactMs });
@@ -2495,10 +2495,8 @@
       var savedFlRoot = _exploitFlMode;
       var exMulti = null;
       var exHybrid = null;
-      var softNRoot = opts.softSamples != null
-        ? opts.softSamples
-        : (opts.inBrowser ? 2 : 3);
-      var exploitBudget = opts.inBrowser ? 400 : 900;
+      var softNRoot = opts.inBrowser ? 2 : 5;
+      var exploitBudget = opts.inBrowser ? 400 : 2200;
       try {
         _exploitFlMode = 'multi';
         exMulti = exploitMove(state, myIdx, {
@@ -2507,14 +2505,13 @@
           softSamples: softNRoot,
           timeMs: exploitBudget
         });
-        // hybrid dual only when dualSelf enabled
-        if (!cur && opts.dualSelf !== false) {
+        if (!cur) {
           _exploitFlMode = 'hybrid';
           exHybrid = exploitMove(state, myIdx, {
             maxBranch: opts.maxBranch || 22,
             dualSelf: false,
             softSamples: softNRoot,
-            timeMs: Math.max(400, exploitBudget * 0.55)
+            timeMs: Math.max(800, exploitBudget * 0.55)
           });
         }
       } finally {
@@ -2631,7 +2628,7 @@
       var flHandLen = state.players[myIdx].hand.length;
       var flInfo = analyzeHand(state.players[myIdx].hand);
       for (var fla = 0; fla < flActs.length; fla++) {
-        if (Date.now() - flT0 > 900) break; // ladder speed
+        if (Date.now() - flT0 > 4000) break;
         var fact = flActs[fla];
         var fn = applyPlayFast(state, myIdx, fact);
         fn.isFirstLead = false;
@@ -2765,7 +2762,7 @@
       var cHandLen = state.players[myIdx].hand.length;
       var cOmin = oppMinHand(state, myIdx);
       for (var ca = 0; ca < cActs.length; ca++) {
-        if (Date.now() - cT0 > 700) break; // ladder speed
+        if (Date.now() - cT0 > 2500) break;
         var cact = cActs[ca];
         var cn;
         if (cact == null) cn = passFast(state, myIdx);

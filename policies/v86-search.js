@@ -11,7 +11,7 @@
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./engine.js'));
+    module.exports = factory(require('../engine.js'));
   } else {
     root.TienLenSearch = factory(root.TienLenEngine);
   }
@@ -448,7 +448,7 @@
       return { play: orderLegals(leg, state, cp)[0] };
     }
     // v8.5: only soft-pass when opp is not short (short opp → contest expensive answers)
-    if (handLen >= 9 && curTop < 10 && omin >= 6) return { pass: true }; // v8.7 contest more
+    if (handLen >= 8 && curTop < 10 && omin >= 5) return { pass: true };
     if (handLen >= 8 && curTop < 10 && omin <= 3 && leg.length) {
       return { play: orderLegals(leg, state, cp)[0] };
     }
@@ -1228,10 +1228,10 @@
               next.players[opp].hand, next.currentCombo, false, false, null
             );
             if (!oppLeg.length) {
-              lockBonus = 0.11; // unanswerable lead — free control v8.7
+              lockBonus = 0.08; // unanswerable lead — free control
             } else {
               var oppCheap = cheapLegals(oppLeg);
-              if (!oppCheap.length) lockBonus = 0.07; // forces 2/bomb v8.7
+              if (!oppCheap.length) lockBonus = 0.05; // forces 2/bomb
               else {
                 var minTop = 99;
                 var oi2;
@@ -1261,7 +1261,7 @@
           + shed * 0.00003;
         // Among forced wins, prefer multi (structure) then shorter residual hand
         if (win && act && act.length >= 2 && !cur) {
-          score += 0.018 + Math.min(0.014, act.length * 0.002); // v8.8 multi win
+          score += 0.012 + Math.min(0.01, act.length * 0.0015);
         }
         if (!win) {
           var soft = typeof deep === 'number' ? deep : 0;

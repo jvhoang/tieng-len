@@ -14,17 +14,17 @@
 
 /** Shown on title screen — bump when shipping AI behavior changes. */
 const AI_BUILD = {
-  id: "v8.8",
-  stamped: "2026-07-12T17:52:04Z",
-  label: "Grandmaster v8.8"
+  id: 'v8.5',
+  stamped: '2026-07-12T12:00:00-07:00',
+  label: 'Grandmaster v8.5 (ladder freeze)'
 };
 
-const engine = (typeof require === 'function') ? require('./engine.js') : (window.TienLenEngine || {});
+const engine = (typeof require === 'function') ? require('../engine.js') : (window.TienLenEngine || {});
 const genomeMod = (typeof require === 'function')
-  ? require('./genome.js')
+  ? require('../genome.js')
   : (typeof window !== 'undefined' ? window.TienLenGenome : null);
 const searchMod = (typeof require === 'function')
-  ? require('./search.js')
+  ? require('./v85-search.js')
   : (typeof window !== 'undefined' ? window.TienLenSearch : null);
 const {
   detectCombo, getLegalPlays, applyPlay, pass, cardCompare, cloneState: engineClone

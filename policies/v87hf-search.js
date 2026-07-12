@@ -11,7 +11,7 @@
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./engine.js'));
+    module.exports = factory(require('../engine.js'));
   } else {
     root.TienLenSearch = factory(root.TienLenEngine);
   }
@@ -448,7 +448,7 @@
       return { play: orderLegals(leg, state, cp)[0] };
     }
     // v8.5: only soft-pass when opp is not short (short opp → contest expensive answers)
-    if (handLen >= 9 && curTop < 10 && omin >= 6) return { pass: true }; // v8.7 contest more
+    if (handLen >= 8 && curTop < 10 && omin >= 5) return { pass: true };
     if (handLen >= 8 && curTop < 10 && omin <= 3 && leg.length) {
       return { play: orderLegals(leg, state, cp)[0] };
     }
@@ -1228,10 +1228,10 @@
               next.players[opp].hand, next.currentCombo, false, false, null
             );
             if (!oppLeg.length) {
-              lockBonus = 0.11; // unanswerable lead — free control v8.7
+              lockBonus = 0.08; // unanswerable lead — free control
             } else {
               var oppCheap = cheapLegals(oppLeg);
-              if (!oppCheap.length) lockBonus = 0.07; // forces 2/bomb v8.7
+              if (!oppCheap.length) lockBonus = 0.05; // forces 2/bomb
               else {
                 var minTop = 99;
                 var oi2;
@@ -1261,7 +1261,7 @@
           + shed * 0.00003;
         // Among forced wins, prefer multi (structure) then shorter residual hand
         if (win && act && act.length >= 2 && !cur) {
-          score += 0.018 + Math.min(0.014, act.length * 0.002); // v8.8 multi win
+          score += 0.012 + Math.min(0.01, act.length * 0.0015);
         }
         if (!win) {
           var soft = typeof deep === 'number' ? deep : 0;
@@ -1750,8 +1750,8 @@
     for (var i = 0; i < 2; i++) {
       if (!state.players[i].finished) total += state.players[i].hand.length;
     }
-    // ladder v8.6: deeper exact endgame (20 cards) for late midgame
-    if (total > 18) return null; // v8.6 keep 18 — 20 hung some deals
+    // v8.6: slightly deeper endgame (18 cards) — many 2p late positions sit at 9+9
+    if (total > 18) return null;
 
     var memo = {};
     function key(st) {
@@ -2467,14 +2467,14 @@
       if (opts.exactExploit !== false) {
         var exactMs = opts.exactExploitMs != null ? opts.exactExploitMs
           : (totalCards <= 12
-            ? (opts.inBrowser ? 200 : 400)
+            ? (opts.inBrowser ? 280 : 900)
             : (totalCards <= 16
-              ? (opts.inBrowser ? 140 : 280)
+              ? (opts.inBrowser ? 200 : 600)
               : (totalCards <= 20
-                ? (opts.inBrowser ? 80 : 160)
+                ? (opts.inBrowser ? 140 : 400)
                 : (totalCards <= 24
-                  ? (opts.inBrowser ? 50 : 100)
-                  : (opts.inBrowser ? 30 : 60)))));
+                  ? (opts.inBrowser ? 100 : 280)
+                  : (opts.inBrowser ? 60 : 180)))));
         // Free lead gets a bit more time to prove unanswerable multi opens
         if (!cur && !opts.inBrowser) exactMs = Math.max(exactMs, 220);
         var exExact = exactExploitMove(state, myIdx, { timeMs: exactMs });
@@ -2495,10 +2495,8 @@
       var savedFlRoot = _exploitFlMode;
       var exMulti = null;
       var exHybrid = null;
-      var softNRoot = opts.softSamples != null
-        ? opts.softSamples
-        : (opts.inBrowser ? 2 : 3);
-      var exploitBudget = opts.inBrowser ? 400 : 900;
+      var softNRoot = opts.inBrowser ? 2 : 5;
+      var exploitBudget = opts.inBrowser ? 400 : 2200;
       try {
         _exploitFlMode = 'multi';
         exMulti = exploitMove(state, myIdx, {
@@ -2507,14 +2505,13 @@
           softSamples: softNRoot,
           timeMs: exploitBudget
         });
-        // hybrid dual only when dualSelf enabled
-        if (!cur && opts.dualSelf !== false) {
+        if (!cur) {
           _exploitFlMode = 'hybrid';
           exHybrid = exploitMove(state, myIdx, {
             maxBranch: opts.maxBranch || 22,
             dualSelf: false,
             softSamples: softNRoot,
-            timeMs: Math.max(400, exploitBudget * 0.55)
+            timeMs: Math.max(800, exploitBudget * 0.55)
           });
         }
       } finally {
@@ -2631,7 +2628,7 @@
       var flHandLen = state.players[myIdx].hand.length;
       var flInfo = analyzeHand(state.players[myIdx].hand);
       for (var fla = 0; fla < flActs.length; fla++) {
-        if (Date.now() - flT0 > 900) break; // ladder speed
+        if (Date.now() - flT0 > 4000) break;
         var fact = flActs[fla];
         var fn = applyPlayFast(state, myIdx, fact);
         fn.isFirstLead = false;
@@ -2722,102 +2719,6 @@
             ms: Date.now() - flT0,
             perfectInfo: true,
             via: 'fl-soft-root-v2'
-          }
-        };
-      }
-    }
-
-    // v8.5 ladder: combat soft root — rank cheap answers + pass with expert leaf
-    // + 1-ply frozen opp (mirrors free-lead soft root for mid-trick decisions).
-    if (
-      cur &&
-      perfectInfo &&
-      state.players.length === 2 &&
-      difficulty !== 'easy' &&
-      opts._softExploit &&
-      opts.combatRoot !== false &&
-      !opts.inBrowser
-    ) {
-      var cActs = [];
-      var cSeen = {};
-      function cAdd(arr) {
-        for (var ci = 0; ci < arr.length; ci++) {
-          var csg = playSig(arr[ci]);
-          if (!cSeen[csg]) { cSeen[csg] = 1; cActs.push(arr[ci]); }
-        }
-      }
-      var cCheap = cheapLegals(legals);
-      if (cCheap.length) cAdd(cCheap);
-      else cAdd(legals);
-      // Allow pass when no cheap answers or hand long
-      var cAllowPass = cCheap.length === 0 ||
-        (state.players[myIdx].hand.length >= 9 && oppMinHand(state, myIdx) >= 5);
-      if (cAllowPass) cActs.push(null);
-      if (cActs.length > 16) {
-        cActs = orderLegals(cActs.filter(function (a) { return a != null; }), state, myIdx).slice(0, 15);
-        if (cAllowPass) cActs.push(null);
-      }
-      var cBest = undefined;
-      var cBestScore = -1;
-      var cDetails = [];
-      var cT0 = Date.now();
-      var cOpp = myIdx === 0 ? 1 : 0;
-      var cHandLen = state.players[myIdx].hand.length;
-      var cOmin = oppMinHand(state, myIdx);
-      for (var ca = 0; ca < cActs.length; ca++) {
-        if (Date.now() - cT0 > 700) break; // ladder speed
-        var cact = cActs[ca];
-        var cn;
-        if (cact == null) cn = passFast(state, myIdx);
-        else cn = applyPlayFast(state, myIdx, cact);
-        cn.isFirstLead = false;
-        var cleaf = exploitPlayoutLeaf(cn, myIdx, 200);
-        var cone = cleaf;
-        if (cleaf < 0.99 && !cn.roundOver && cn.currentPlayer === cOpp) {
-          var cod = opponentPolicyStrong(cn, cOpp);
-          var cn2 = applyDecision(cn, cOpp, cod);
-          cn2.isFirstLead = false;
-          cone = exploitPlayoutLeaf(cn2, myIdx, 200);
-        }
-        var cdeep = cleaf >= 0.99 ? 1 : exploitPlayout(cn, myIdx, 180);
-        var chard = 0;
-        if (cleaf >= 0.99) chard = 1.0;
-        else if (cone >= 0.99) chard = 0.95;
-        else if (cdeep >= 0.99 && cleaf >= 0.35) chard = 0.85;
-        var csoft = 0;
-        if (!chard) {
-          csoft = Math.max(cleaf, cone * 0.9, cdeep * 0.45) * 0.4
-            + leafEval2p(cn, myIdx) * 0.08;
-          // Prefer cheap non-2 answers; pass only when not short race
-          if (cact == null) {
-            csoft += (cOmin >= 5 && cHandLen >= 9) ? 0.02 : -0.04;
-          } else {
-            csoft += cact.length * 0.001;
-            if (!playIsExpensive(cact)) csoft += 0.012;
-            else if (cOmin <= 2 || cHandLen <= 5) csoft += 0.008;
-            else csoft -= 0.015;
-          }
-        }
-        var cscore = chard + csoft;
-        cDetails.push({
-          sig: playSig(cact), leaf: cleaf, onePly: cone, deep: cdeep, score: cscore
-        });
-        if (cscore > cBestScore) {
-          cBestScore = cscore;
-          cBest = cact;
-        }
-      }
-      cDetails.sort(function (a, b) { return b.score - a.score; });
-      if (cBest !== undefined && cBestScore >= 0) {
-        return {
-          play: cBest,
-          stats: {
-            mode: 'combat-root',
-            avg: cBestScore,
-            top: cDetails.slice(0, 6),
-            ms: Date.now() - cT0,
-            perfectInfo: true,
-            via: 'combat-soft-root-v85'
           }
         };
       }
