@@ -1,13 +1,17 @@
 /**
  * Live AI vs frozen policy — continuous 2p single-deal bench.
  *
- * Protocol (2026-07-12): freeze opponent at grandmaster difficulty by default.
- *   TIENLEN_FREEZE=v88 TIENLEN_BENCH_GAMES=50 TIENLEN_TARGET=0.70 \
- *   TIENLEN_BENCH_SEED=20260711 TIENLEN_FREEZE_DIFF=grandmaster \
- *   TIENLEN_BENCH_OUT=v89-vs-v88-gm-final.json \
+ * Live AI vs frozen prior champion — continuous 2p single-deal bench.
+ *
+ * OBJECTIVE contract (default):
+ *   N≥100, target >0.70, seed 20260711, freeze = expert path of frozen policy.
+ *
+ *   TIENLEN_FREEZE=v89 TIENLEN_BENCH_GAMES=100 TIENLEN_TARGET=0.70 \
+ *   TIENLEN_BENCH_SEED=20260711 TIENLEN_FREEZE_DIFF=expert \
+ *   TIENLEN_BENCH_OUT=v90-vs-v89-final.json \
  *   node evolve/bench-ladder.js
  *
- * Set TIENLEN_FREEZE_DIFF=expert for legacy expert-policy opponent.
+ * Optional: TIENLEN_FREEZE_DIFF=grandmaster for GM-search opponent (slower).
  */
 'use strict';
 
@@ -64,9 +68,9 @@ function _stateKey(state, seat) {
   return key;
 }
 
-/** Freeze seat opts — default grandmaster (full search of frozen policy). */
+/** Freeze seat opts — default expert path of frozen policy (OBJECTIVE contract). */
 function freezeOpts() {
-  const diff = process.env.TIENLEN_FREEZE_DIFF || 'grandmaster';
+  const diff = process.env.TIENLEN_FREEZE_DIFF || 'expert';
   if (diff === 'expert' || diff === 'easy') {
     return { difficulty: 'easy', iterations: 0, mode: 'expert' };
   }
@@ -200,10 +204,10 @@ function apply(state, cp, choice) {
 function liveOpts() {
   const perfect = process.env.TIENLEN_V8_PERFECT !== '0';
   return {
-    // Default grandmaster so challenger matches UI strongest tier
-    difficulty: process.env.TIENLEN_V8_DIFF || 'grandmaster',
-    timeMs: parseInt(process.env.TIENLEN_V8_MS || '250', 10),
-    iterations: parseInt(process.env.TIENLEN_V8_ITERS || '200', 10),
+    // Hard+exploit is the project strength-gate challenger (matches historical N=100)
+    difficulty: process.env.TIENLEN_V8_DIFF || 'hard',
+    timeMs: parseInt(process.env.TIENLEN_V8_MS || '100', 10),
+    iterations: parseInt(process.env.TIENLEN_V8_ITERS || '160', 10),
     maxSims: parseInt(process.env.TIENLEN_V8_SIMS || '320', 10),
     brTrials: parseInt(process.env.TIENLEN_BR_TRIALS || '48', 10),
     bestResponse: process.env.TIENLEN_BR !== '0',
@@ -269,8 +273,8 @@ function play2p(seed) {
 }
 
 function main() {
-  // Protocol: N≥50 grandmaster-vs-grandmaster by default (user override 2026-07-12)
-  const games = parseInt(process.env.TIENLEN_BENCH_GAMES || '50', 10);
+  // OBJECTIVE contract defaults: N≥100, target 0.70, seed 20260711
+  const games = parseInt(process.env.TIENLEN_BENCH_GAMES || '100', 10);
   const seed0 = parseInt(process.env.TIENLEN_BENCH_SEED || '20260711', 10);
   const scratch = process.env.TIENLEN_SCRATCH || path.join(__dirname);
   const target = parseFloat(process.env.TIENLEN_TARGET || '0.70');
@@ -334,7 +338,9 @@ function main() {
 
   const final = {
     mode: '2p-h2h-single-deal-continuous',
-    protocol: 'grandmaster-vs-grandmaster',
+    protocol: (fOpts.mode === 'expert' || fOpts.difficulty === 'easy')
+      ? 'live-hard-vs-freeze-expert'
+      : 'live-vs-freeze-' + (fOpts.difficulty || 'search'),
     games: games,
     liveWins: liveWins,
     freezeWins: games - liveWins,
@@ -344,8 +350,8 @@ function main() {
     v80WinRate: liveWins / games,
     ci95: wilsonCI(liveWins, games),
     target: target,
-    // User gate is "by 70%" → win rate ≥ target (not strictly greater)
-    passed: (liveWins / games) >= target,
+    // OBJECTIVE: strictly greater than target (e.g. >0.70)
+    passed: (liveWins / games) > target,
     ms: Date.now() - t0,
     live: live.AI_BUILD,
     freeze: freeze.AI_BUILD,
@@ -366,7 +372,7 @@ function main() {
   } catch (e) { /* ignore */ }
 
   if (!final.passed) {
-    console.error('GATE FAILED: liveWinRate=' + final.liveWinRate + ' target>=' + target);
+    console.error('GATE FAILED: liveWinRate=' + final.liveWinRate + ' need >' + target);
     process.exit(2);
   }
   console.log('GATE PASSED');
