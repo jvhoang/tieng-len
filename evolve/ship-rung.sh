@@ -69,4 +69,7 @@ git commit -m "$MSG" || {
   exit 0
 }
 git push origin HEAD
-echo "SHIPPED ${RID} → origin (live testing can pull/refresh)"
+# GitHub Pages serves the gh-pages branch (not main). Keep them aligned.
+git branch -f gh-pages HEAD 2>/dev/null || true
+git push origin gh-pages --force 2>/dev/null || true
+echo "SHIPPED ${RID} → origin main + gh-pages (live testing: hard-refresh site)"
