@@ -916,20 +916,44 @@
   </div>
 
   <!-- PeerJS free cloud signaling for cross-device multiplayer (GitHub Pages safe) -->
-  <!-- Cache-bust query so browsers always load latest AI after deploys -->
+  <!--
+    IMPORTANT: file:// cannot load "foo.js?v=123" (query string breaks local paths).
+    Load scripts without query on file://; use ?v= only on http(s) for cache-bust.
+  -->
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-  <script>window.TIENLEN_SITE_BUILD = '20260712d';</script>
-  <script src="engine.js?v=20260712d"></script>
-  <script src="genome.js?v=20260712d"></script>
-  <script src="search.js?v=20260712d"></script>
-  <script src="ai.js?v=20260712d"></script>
-  <script src="play-log.js?v=20260712d"></script>
-  <script src="controller.js?v=20260712d"></script>
-  <script src="hand-order.js?v=20260712d"></script>
-  <script src="multiplayer.js?v=20260712d"></script>
-  <script src="ui.js?v=20260712d"></script>
   <script>
-    // Title-screen AI version — runs even if controller/UI bootstrap fails later.
+    window.TIENLEN_SITE_BUILD = '20260712e';
+    // Inline fallback so title always has a version even if scripts fail to load
+    window.TIENLEN_AI_BUILD = window.TIENLEN_AI_BUILD || {
+      id: 'v8.9',
+      stamped: '2026-07-12T18:25:34Z',
+      label: 'Grandmaster v8.9'
+    };
+  </script>
+  <script>
+    (function loadGameScripts() {
+      var isFile = (location.protocol === 'file:');
+      var bust = isFile ? '' : ('?v=' + (window.TIENLEN_SITE_BUILD || 'dev'));
+      var files = [
+        'ai-build.js', // zero-dep version stamp FIRST
+        'engine.js',
+        'genome.js',
+        'search.js',
+        'ai.js',
+        'play-log.js',
+        'controller.js',
+        'hand-order.js',
+        'multiplayer.js',
+        'ui.js'
+      ];
+      // document.write keeps load order synchronous during initial parse
+      for (var i = 0; i < files.length; i++) {
+        document.write('<script src="' + files[i] + bust + '"><\/script>');
+      }
+    })();
+  </script>
+  <script>
+    // Title-screen AI version — works for file:// and http(s)
     (function showAIVersionBadge() {
       function formatStamp(iso) {
         if (!iso) return null;
@@ -943,7 +967,6 @@
         } catch (e) { return String(iso); }
       }
       function resolveBuild() {
-        // Prefer early stamp (set at top of ai.js), then full module export
         if (window.TIENLEN_AI_BUILD && window.TIENLEN_AI_BUILD.id) return window.TIENLEN_AI_BUILD;
         if (window.TienLenAI && window.TienLenAI.AI_BUILD) return window.TienLenAI.AI_BUILD;
         return null;
@@ -957,18 +980,19 @@
         var plOk = !!(window.TienLenPlayLog && window.TienLenPlayLog.getDefault);
         var when = build ? formatStamp(build.stamped) : null;
         var version = build ? (build.label || build.id || null) : null;
+        var proto = location.protocol;
 
         if (badge) {
           badge.textContent = version
-            ? ('AI: ' + version + (searchOk ? '' : ' • search?') + (plOk ? '' : ' • logs?'))
-            : 'AI: build unknown — hard-refresh (Cmd+Shift+R)';
+            ? ('AI: ' + version)
+            : 'AI: build unknown — open via local server or hard-refresh';
         }
         if (timeEl) {
           if (when) {
             timeEl.textContent = 'Updated: ' + when + (build.stamped ? '  (' + build.stamped + ')' : '');
             timeEl.title = build.stamped || when;
           } else {
-            timeEl.textContent = 'Updated: unknown — hard-refresh (Cmd+Shift+R)';
+            timeEl.textContent = 'Updated: unknown' + (proto === 'file:' ? ' (file:// script load issue?)' : '');
           }
         }
         if (cardLine) {
@@ -977,13 +1001,14 @@
             : 'Grandmaster AI — build unknown';
         }
         try {
-          console.log('%c[TiengLen] AI ' + (version || 'MISSING') + (when ? ' @ ' + when : ''),
+          console.log('%c[TiengLen] AI ' + (version || 'MISSING') + (when ? ' @ ' + when : '') + ' via ' + proto,
             'color:#c9a227;font-weight:bold');
           console.log('[TiengLen] modules', {
+            protocol: proto,
             engine: !!window.TienLenEngine,
             search: !!window.TienLenSearch,
             ai: !!window.TienLenAI,
-            aiBuildEarly: !!(window.TIENLEN_AI_BUILD && window.TIENLEN_AI_BUILD.id),
+            aiBuild: !!(window.TIENLEN_AI_BUILD && window.TIENLEN_AI_BUILD.id),
             playLog: plOk,
             build: build,
             siteBuild: window.TIENLEN_SITE_BUILD
@@ -991,12 +1016,10 @@
         } catch (eLog) { /* ignore */ }
         return !!build;
       }
-      // Paint now, then retry (covers slow/cached script edge cases)
-      if (!paint()) {
-        setTimeout(paint, 50);
-        setTimeout(paint, 250);
-        setTimeout(paint, 1000);
-      }
+      paint();
+      setTimeout(paint, 0);
+      setTimeout(paint, 100);
+      setTimeout(paint, 500);
       window.__tienlenPaintAIVersion = paint;
     })();
   </script>

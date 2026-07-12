@@ -32,27 +32,78 @@ Path("policies/${TAG}-ai.js").write_text(t)
 print("freeze stamped", "${RID}")
 PY
 
-# Ensure live AI_BUILD matches rung
+# Ensure live AI_BUILD matches rung + sync ai-build.js + index inline fallback
 python3 - <<PY
 from pathlib import Path
 import re
 from datetime import datetime, timezone
+stamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+rid = "${RID}"
+build = f'''const AI_BUILD = {{
+  id: "{rid}",
+  stamped: "{stamp}",
+  label: "Grandmaster {rid}"
+}};'''
 ai = Path("ai.js").read_text()
-ai = re.sub(
-    r"const AI_BUILD = \{[\s\S]*?\n\};",
-    '''const AI_BUILD = {
-  id: "${RID}",
-  stamped: "''' + datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ") + '''",
-  label: "Grandmaster ${RID}"
-};''',
-    ai,
+ai = re.sub(r"const AI_BUILD = \{[\s\S]*?\n\};", build, ai, count=1)
+# keep early window publish if present
+if "TIENLEN_AI_BUILD" not in ai[:800]:
+    ai = ai.replace(
+        build,
+        build + '''
+
+if (typeof window !== 'undefined') {
+  window.TIENLEN_AI_BUILD = AI_BUILD;
+  window.TienLenAI = window.TienLenAI || {};
+  window.TienLenAI.AI_BUILD = AI_BUILD;
+}
+''',
+        1,
+    )
+Path("ai.js").write_text(ai)
+
+# Zero-dep stamp file for title screen (file:// safe)
+Path("ai-build.js").write_text(f'''/**
+ * ai-build.js — zero-dependency build identity for the title screen.
+ * Auto-synced by evolve/ship-rung.sh from AI_BUILD.
+ */
+(function (root) {{
+  var BUILD = {{
+    id: '{rid}',
+    stamped: '{stamp}',
+    label: 'Grandmaster {rid}'
+  }};
+  root.TIENLEN_AI_BUILD = BUILD;
+  root.TienLenAI = root.TienLenAI || {{}};
+  root.TienLenAI.AI_BUILD = BUILD;
+  if (typeof module === 'object' && module.exports) module.exports = BUILD;
+}}(typeof window !== 'undefined' ? window : (typeof global !== 'undefined' ? global : this)));
+''')
+
+# Inline fallback in index.html
+idx = Path("index.html").read_text()
+idx = re.sub(
+    r"window\.TIENLEN_AI_BUILD = window\.TIENLEN_AI_BUILD \|\| \{[\s\S]*?\};",
+    f"""window.TIENLEN_AI_BUILD = window.TIENLEN_AI_BUILD || {{
+      id: '{rid}',
+      stamped: '{stamp}',
+      label: 'Grandmaster {rid}'
+    }};""",
+    idx,
     count=1,
 )
-Path("ai.js").write_text(ai)
-print("live stamped", "${RID}")
+# bump site build token for http(s) cache bust
+idx = re.sub(
+    r"window\.TIENLEN_SITE_BUILD = '[^']*';",
+    f"window.TIENLEN_SITE_BUILD = '{stamp[:10].replace('-', '')}{stamp[11:13]}{stamp[14:16]}';",
+    idx,
+    count=1,
+)
+Path("index.html").write_text(idx)
+print("live stamped", rid, stamp)
 PY
 
-git add ai.js search.js \
+git add ai.js search.js ai-build.js index.html \
   "policies/${TAG}-ai.js" "policies/${TAG}-search.js" \
   evolve/LADDER-STATUS.md evolve/bench-ladder.js \
   evolve/refresh-playlogs-all.js evolve/counterfactual-79-latest.js \
