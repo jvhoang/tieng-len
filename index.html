@@ -641,6 +641,9 @@
         <p id="ai-version-badge" class="mt-4 inline-block px-4 py-1.5 rounded-full bg-[#1a2438] border border-[#2dd4bf]/60 text-xs tracking-wide text-[#99f6e4]">
           AI: loading…
         </p>
+        <p id="ai-update-time" class="mt-2 text-[11px] text-[#64748b] tracking-wide">
+          Updated: …
+        </p>
       </div>
 
       <!-- Mode Cards -->
@@ -652,7 +655,7 @@
             <div class="text-4xl"><i class="fa-solid fa-robot text-[#2dd4bf]"></i></div>
             <div>
               <div class="text-2xl font-semibold tracking-tight">Play vs Computer</div>
-              <div class="text-sm text-[#2dd4bf]">Grandmaster AI v8.4 — CF#79 · beat v7.5</div>
+              <div id="title-ai-card-line" class="text-sm text-[#2dd4bf]">Grandmaster AI — loading…</div>
             </div>
           </div>
           <div class="mt-4" onclick="event.stopImmediatePropagation()">
@@ -1612,18 +1615,58 @@
         }
       } catch (_) {}
 
-      // Version badge on title screen (confirms which AI build is loaded)
+      // Version badge on title screen (confirms which AI build is loaded + when)
       (function showAIVersion() {
+        function formatStamp(iso) {
+          if (!iso) return null;
+          try {
+            const d = new Date(iso);
+            if (isNaN(d.getTime())) return String(iso);
+            // Local date + time, e.g. "Jul 12, 2026, 11:02:47 AM"
+            return d.toLocaleString(undefined, {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+              hour: 'numeric',
+              minute: '2-digit',
+              second: '2-digit'
+            });
+          } catch (_) {
+            return String(iso);
+          }
+        }
+
         const badge = document.getElementById('ai-version-badge');
+        const timeEl = document.getElementById('ai-update-time');
+        const cardLine = document.getElementById('title-ai-card-line');
         const build = (window.TienLenAI && window.TienLenAI.AI_BUILD) || null;
         const searchOk = !!(window.TienLenSearch && window.TienLenSearch.enforcePolicyGuards);
         const plOk = !!(window.TienLenPlayLog && window.TienLenPlayLog.getDefault);
-        const text = build
-          ? (build.label || build.id) + ' • ' + (build.stamped || '') + (searchOk ? ' • search OK' : ' • SEARCH MISSING') + (plOk ? ' • logs OK' : ' • LOGS MISSING')
-          : 'AI build unknown — hard-refresh (Cmd+Shift+R)';
-        if (badge) badge.textContent = 'AI: ' + text;
+        const when = build ? formatStamp(build.stamped) : null;
+        const version = build ? (build.label || build.id || 'unknown') : null;
+
+        if (badge) {
+          badge.textContent = version
+            ? ('AI: ' + version + (searchOk ? '' : ' • SEARCH MISSING') + (plOk ? '' : ' • LOGS MISSING'))
+            : 'AI build unknown — hard-refresh (Cmd+Shift+R)';
+        }
+        if (timeEl) {
+          if (when) {
+            timeEl.textContent = 'Updated: ' + when + (build.stamped ? '  (' + build.stamped + ')' : '');
+            timeEl.title = build.stamped || when;
+          } else {
+            timeEl.textContent = 'Updated: unknown — hard-refresh (Cmd+Shift+R)';
+          }
+        }
+        if (cardLine) {
+          cardLine.textContent = version
+            ? (version + (when ? ' · updated ' + when : ''))
+            : 'Grandmaster AI — build unknown';
+        }
+
         try {
-          console.log('%c[TiengLen] ' + text, 'color:#c9a227;font-weight:bold');
+          console.log('%c[TiengLen] ' + (version || 'no build') + (when ? ' updated ' + when : ''),
+            'color:#c9a227;font-weight:bold');
           console.log('[TiengLen] modules', {
             engine: !!window.TienLenEngine,
             search: !!window.TienLenSearch,
