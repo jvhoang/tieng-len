@@ -5,7 +5,7 @@
 (function (root) {
   var BUILD = {
     id: 'v8.9',
-    stamped: '2026-07-12T18:25:34Z',
+    stamped: '2026-07-12T18:32:28Z',
     label: 'Grandmaster v8.9'
   };
   root.TIENLEN_AI_BUILD = BUILD;
