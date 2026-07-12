@@ -14,16 +14,30 @@
 
 /** Shown on title screen — bump when shipping AI behavior changes. */
 const AI_BUILD = {
-  id: "v8.8",
-  stamped: "2026-07-12T17:52:04Z",
-  label: "Grandmaster v8.8"
+  id: "v8.9",
+  stamped: "2026-07-12T18:25:34Z",
+  label: "Grandmaster v8.9"
 };
 
-const engine = (typeof require === 'function') ? require('./engine.js') : (window.TienLenEngine || {});
-const genomeMod = (typeof require === 'function')
+// Publish build identity IMMEDIATELY (before any later init that might throw).
+// Title screen reads these even if the rest of the AI module fails to finish loading.
+if (typeof window !== 'undefined') {
+  window.TIENLEN_AI_BUILD = AI_BUILD;
+  window.TienLenAI = window.TienLenAI || {};
+  window.TienLenAI.AI_BUILD = AI_BUILD;
+}
+
+// Prefer Node only when real CommonJS is present. Do NOT use bare
+// `typeof require === 'function'` — some browsers/extensions define a stub
+// `require` that throws on './engine.js' and would abort this script before
+// `window.TienLenAI` is fully assigned.
+const _isNodeCjs = (typeof module === 'object' && module && module.exports &&
+  typeof require === 'function');
+const engine = _isNodeCjs ? require('./engine.js') : ((typeof window !== 'undefined' && window.TienLenEngine) || {});
+const genomeMod = _isNodeCjs
   ? require('./genome.js')
   : (typeof window !== 'undefined' ? window.TienLenGenome : null);
-const searchMod = (typeof require === 'function')
+const searchMod = _isNodeCjs
   ? require('./search.js')
   : (typeof window !== 'undefined' ? window.TienLenSearch : null);
 const {
