@@ -370,23 +370,16 @@
       return { play: twoSingles[0] };
     }
 
-    // v8.4: 2-tempo vs mid singles when opp short (human CF 29×) — seize for multi free-lead
-    var hasPairStruct = false;
-    if (infoC.byRank) {
-      var rk;
-      for (rk in infoC.byRank) {
-        if (infoC.byRank[rk] >= 2 && Number(rk) < 12) { hasPairStruct = true; break; }
-      }
-    }
+    // Tight 2-tempo vs critically short opp only (broader burn cost ~1/25 on default seed).
     if (
       cur.type === 'single' &&
-      curTop >= 7 &&
+      curTop >= 8 &&
       curTop <= 10 &&
       twoSingles.length &&
-      omin <= 3 &&
-      handLen >= 4 &&
-      handLen <= 9 &&
-      (hasPairStruct || infoC.trashCount >= 1 || infoC.control >= 2)
+      omin <= 2 &&
+      handLen >= 5 &&
+      handLen <= 8 &&
+      infoC.trashCount >= 1
     ) {
       twoSingles.sort(function (a, b) { return a[0].suit - b[0].suit; });
       return { play: twoSingles[0] };
@@ -423,12 +416,11 @@
           return { play: twoSingles[0] };
         }
       }
-      // v8.3: when opp is short, prefer climbing higher singles (force 2s) over
-      // minimal beat — human CF ladder-climb theme vs conserving experts.
+      // v8.5: mild climb only vs 1-card opp (force out), not general midgame waste
       if (
         cur.type === 'single' &&
-        omin <= 3 &&
-        handLen <= 8 &&
+        omin === 1 &&
+        handLen <= 7 &&
         curTop <= 9
       ) {
         var climbs = non2.filter(function (p) {
@@ -455,7 +447,11 @@
     if (handLen <= 7 && (omin <= 3 || curTop >= 9)) {
       return { play: orderLegals(leg, state, cp)[0] };
     }
-    if (handLen >= 8 && curTop < 10) return { pass: true };
+    // v8.5: only soft-pass when opp is not short (short opp → contest expensive answers)
+    if (handLen >= 8 && curTop < 10 && omin >= 5) return { pass: true };
+    if (handLen >= 8 && curTop < 10 && omin <= 3 && leg.length) {
+      return { play: orderLegals(leg, state, cp)[0] };
+    }
 
     return { play: orderLegals(leg, state, cp)[0] };
   }
@@ -551,44 +547,57 @@
     });
 
     if (multi.length) {
-      // v8.1: volume-aware multi — prefer longer low multi, but do not force
-      // max-length high-top sequences that expert opponents punish.
-      function multiVolumeScore(p) {
-        var tr = topRank(p);
-        var len = p.length;
-        // sweet spot: length 3–5 low multi; soft bonus for longer if top stays low
-        var lenScore = len >= 6 ? 5.5 + (len - 5) * 0.35 : len;
-        return lenScore * 40 - tr * 6 - expertScore(p, state, cp) * 0.02;
+      // v8.5 free-lead: if 2p and we can see opp hand, prefer unanswerable multi first
+      if (state.players.length === 2) {
+        var oppI = cp === 0 ? 1 : 0;
+        var oppHand = state.players[oppI] && state.players[oppI].hand;
+        if (oppHand && oppHand.length) {
+          var unans = [];
+          var forceExp = [];
+          var mi;
+          for (mi = 0; mi < multi.length; mi++) {
+            var mp = multi[mi];
+            var com = detectCombo(mp);
+            if (!com) continue;
+            var oleg = getLegalPlays(oppHand, com, false, false, null);
+            if (!oleg.length) unans.push(mp);
+            else if (!cheapLegals(oleg).length) forceExp.push(mp);
+          }
+          if (unans.length) {
+            // Prefer longer unanswerable multi (shed more under free control)
+            unans.sort(function (a, b) {
+              if (a.length !== b.length) return b.length - a.length;
+              return topRank(a) - topRank(b);
+            });
+            return unans[0];
+          }
+          if (forceExp.length && handLen <= 11) {
+            forceExp.sort(function (a, b) {
+              if (a.length !== b.length) return b.length - a.length;
+              return topRank(a) - topRank(b);
+            });
+            return forceExp[0];
+          }
+        }
       }
+      // v7.5 multi-always core + mild length preference among low multi
       var lowMulti = multi.filter(function (p) { return topRank(p) <= 8; });
       var pool = lowMulti.length ? lowMulti : multi;
       pool = pool.slice().sort(function (a, b) {
-        return multiVolumeScore(b) - multiVolumeScore(a);
+        var la = a.length, lb = b.length;
+        var ta = topRank(a), tb = topRank(b);
+        if (la !== lb && Math.abs(ta - tb) <= 1) return lb - la;
+        return expertScore(a, state, cp) - expertScore(b, state, cp);
       });
       var multiPick = pool[0];
-      // Extend by at most +2 cards if top does not rise more than +1
-      var longer = multi.filter(function (p) {
-        return p.length >= multiPick.length + 1 &&
-          p.length <= multiPick.length + 2 &&
-          topRank(p) <= topRank(multiPick) + 1 &&
-          !playIsExpensive(p);
-      });
-      if (longer.length) {
-        longer.sort(function (a, b) {
-          if (b.length !== a.length) return b.length - a.length;
-          return topRank(a) - topRank(b);
-        });
-        multiPick = longer[0];
-      }
       if (
-        (_exploitFlMode === 'hybrid' || (handLen >= 9 && info.control >= 2 && trashPlays.length >= 2)) &&
-        trashPlays.length >= 1 &&
+        _exploitFlMode === 'hybrid' &&
+        trashPlays.length >= 2 &&
         (info.twos >= 1 || info.control >= 2) &&
         handLen >= 7 &&
         multiPick &&
         topRank(multiPick) > 6
       ) {
-        // v8.4: midgame control hands — shed trash before mid multi (human hybrid)
         return trashPlays[0];
       }
       return multiPick;
@@ -906,6 +915,7 @@
     var timeMs = opts.timeMs || 0;
     var perfectInfo = opts.perfectInfo === true;
     var rng = opts.rng || Math.random;
+    var strongSelf = opts.strongSelf !== false; // v8.6: shallowSelf for self by default
     var t0 = Date.now();
 
     var hand = state.players[myIdx].hand;
@@ -920,12 +930,36 @@
       }
     }
 
-    if (!cur) leg = freeLeadCandidates(leg, state, myIdx);
-    else {
+    if (!cur) {
+      // v8.6: free-lead candidates + lock/unanswerable multis + mid singles
+      var fl = freeLeadCandidates(leg, state, myIdx);
+      var extraBR = [];
+      var ebi;
+      for (ebi = 0; ebi < leg.length; ebi++) {
+        if (leg[ebi].length >= 2 && !playIsExpensive(leg[ebi])) extraBR.push(leg[ebi]);
+        else if (leg[ebi].length === 1 && leg[ebi][0].rank <= 11) extraBR.push(leg[ebi]);
+      }
+      var seenBR = {};
+      var mergedBR = [];
+      function addBR(arr) {
+        for (var i = 0; i < arr.length; i++) {
+          var sg = playSig(arr[i]);
+          if (!seenBR[sg]) { seenBR[sg] = 1; mergedBR.push(arr[i]); }
+        }
+      }
+      addBR(fl);
+      addBR(extraBR);
+      // Prefer multi first (human-log / lock-bonus lessons)
+      mergedBR.sort(function (a, b) {
+        if (a.length !== b.length) return b.length - a.length;
+        return topRank(a) - topRank(b);
+      });
+      leg = mergedBR;
+    } else {
       var ch = cheapLegals(leg);
       if (ch.length) leg = ch;
+      leg = orderLegals(leg, state, myIdx);
     }
-    leg = orderLegals(leg, state, myIdx);
     if (leg.length > maxBranch) leg = leg.slice(0, maxBranch);
 
     var allowPass = !!cur && cheapLegals(
@@ -953,12 +987,13 @@
         var steps = 0;
         while (!s.roundOver && steps < 200) {
           var cp = s.currentPlayer;
-          // Self: expert. Opp: injected frozen expert when bench sets setExploitOpponent
-          // (v8.2: was defaulting to v2.1 which mis-scored BR vs real frozen v7.5).
+          // Self: shallowSelf (v8.6) or expert. Opp: injected frozen when set.
           var oppPol = (_injectedOppPolicy || opts.oppModel === 'strong')
             ? opponentPolicyStrong(s, cp)
             : opponentPolicyV21(s, cp);
-          var dec = (cp === myIdx) ? expertPolicy(s, cp) : oppPol;
+          var dec = (cp === myIdx)
+            ? (strongSelf ? shallowSelfPick(s, myIdx) : expertPolicy(s, cp))
+            : oppPol;
           s = applyDecision(s, cp, dec);
           s.isFirstLead = false;
           steps++;
@@ -967,22 +1002,27 @@
         if (u >= 0.99) wins++;
       }
       var rate = wins / nTry;
-      details.push({ sig: playSig(act), rate: rate, n: nTry });
-      if (rate > bestRate) {
-        bestRate = rate;
+      // Soft multi free-lead tie-break among equal rates
+      var multiTie = 0;
+      if (act && act.length >= 2 && !cur) multiTie = 0.001 * Math.min(6, act.length);
+      var score = rate + multiTie;
+      details.push({ sig: playSig(act), rate: rate, n: nTry, score: score });
+      if (score > bestRate) {
+        bestRate = score;
         bestPlay = act;
       }
     }
-    details.sort(function (a, b) { return b.rate - a.rate; });
+    details.sort(function (a, b) { return (b.score != null ? b.score : b.rate) - (a.score != null ? a.score : a.rate); });
     return {
       play: bestPlay,
       stats: {
         mode: perfectInfo ? 'best-response' : 'best-response-det',
-        avg: bestRate,
+        avg: details.length ? details[0].rate : bestRate,
         top: details.slice(0, 5),
         ms: Date.now() - t0,
         trials: trials,
-        perfectInfo: perfectInfo
+        perfectInfo: perfectInfo,
+        strongSelf: strongSelf
       }
     };
   }
@@ -1035,14 +1075,24 @@
       if (ch.length) leg = ch;
     }
     leg = orderLegals(leg, state, myIdx);
-    // v8.1: broader shallow nest vs stronger frozen experts
-    var cap = cur ? 7 : 12;
+    // v8.5: broader shallow nest; also try expensive answers when short/opp short
+    var cap = cur ? 10 : 14;
+    if (!cur) {
+      // free lead already ordered
+    } else if (hand.length <= 7 || oppMinHand(state, myIdx) <= 3) {
+      // include expensive when racing
+      leg = orderLegals(
+        getLegalPlays(hand, cur, state.players[myIdx].passed, state.isFirstLead, state.firstLeadCard),
+        state, myIdx
+      );
+      cap = 12;
+    }
     if (leg.length > cap) leg = leg.slice(0, cap);
     var fallback = expertPolicy(state, myIdx);
     for (i = 0; i < leg.length; i++) {
       var n = applyPlayFast(state, myIdx, leg[i]);
       n.isFirstLead = false;
-      if (exploitPlayoutLeaf(n, myIdx, 180) >= 0.99) return { play: leg[i] };
+      if (exploitPlayoutLeaf(n, myIdx, 200) >= 0.99) return { play: leg[i] };
     }
     return fallback;
   }
@@ -1077,6 +1127,7 @@
   function exploitMove(state, myIdx, opts) {
     opts = opts || {};
     var maxBranch = opts.maxBranch || 16;
+    var timeMs = opts.timeMs != null ? opts.timeMs : 0;
     var t0 = Date.now();
     var hand = state.players[myIdx].hand;
     var cur = state.currentCombo;
@@ -1091,14 +1142,14 @@
       }
     }
 
-    // Broad candidate set: free-lead candidates + all cheap multi + trash + medium singles
+    // Broad candidate set: free-lead candidates + all non-expensive multi + trash/mid singles
     if (!cur) {
       var fl = freeLeadCandidates(leg, state, myIdx);
       var extra = [];
       var ei;
       for (ei = 0; ei < leg.length; ei++) {
         if (leg[ei].length >= 2 && !playIsExpensive(leg[ei])) extra.push(leg[ei]);
-        else if (leg[ei].length === 1 && leg[ei][0].rank <= 10) extra.push(leg[ei]);
+        else if (leg[ei].length === 1 && leg[ei][0].rank <= 11) extra.push(leg[ei]);
       }
       var seen = {};
       var merged = [];
@@ -1110,13 +1161,18 @@
       }
       addAll(fl);
       addAll(extra);
-      leg = orderLegals(merged, state, myIdx);
+      // Prefer multi first so lock-bonus multi opens get scored early
+      merged.sort(function (a, b) {
+        if (a.length !== b.length) return b.length - a.length;
+        return topRank(a) - topRank(b);
+      });
+      leg = merged;
     } else {
       var ch = cheapLegals(leg);
       if (ch.length) leg = ch;
       leg = orderLegals(leg, state, myIdx);
     }
-    var branchCap = cur ? maxBranch : Math.max(maxBranch, 20);
+    var branchCap = cur ? maxBranch : Math.max(maxBranch, 24);
     if (leg.length > branchCap) leg = leg.slice(0, branchCap);
 
     var actions = leg.slice();
@@ -1142,7 +1198,7 @@
         var leaf = exploitPlayoutLeaf(next, myIdx, 220);
         var deep = leaf;
         if (leaf < 0.99) deep = exploitPlayout(next, myIdx, 220);
-        // v8.3: dual free-lead self model — also try hybrid trash-shed playouts
+        // dual free-lead self model — also try hybrid trash-shed playouts
         if (!cur && leaf < 0.99) {
           var savedM = _exploitFlMode;
           _exploitFlMode = 'hybrid';
@@ -1156,26 +1212,63 @@
         var win = deep >= 0.99 ? 1 : 0;
         if (win) anyWin = true;
         var shed = act ? act.length : 0;
-        // multi free-lead soft bonus (CF multi volume + low-top preference)
+        // multi free-lead soft bonus — prefer multi wins; mild length, not max-length
         var multiBonus = 0;
         if (act && act.length >= 2 && !cur) {
           var trM = topRank(act);
-          multiBonus = 0.015 + Math.min(0.008, (act.length - 2) * 0.0018);
-          if (trM <= 7 && act.length >= 3) multiBonus += 0.003;
+          multiBonus = 0.016 + Math.min(0.008, (act.length - 2) * 0.0015);
+          if (trM <= 7 && act.length >= 2 && act.length <= 5) multiBonus += 0.004;
+        }
+        // v8.5 perfect-info free-lead: strong bonus if real opp cannot answer cleanly
+        var lockBonus = 0;
+        if (!cur && act && act.length && state.players.length === 2) {
+          var opp = myIdx === 0 ? 1 : 0;
+          if (next.players[opp] && next.players[opp].hand && next.currentCombo) {
+            var oppLeg = getLegalPlays(
+              next.players[opp].hand, next.currentCombo, false, false, null
+            );
+            if (!oppLeg.length) {
+              lockBonus = 0.08; // unanswerable lead — free control
+            } else {
+              var oppCheap = cheapLegals(oppLeg);
+              if (!oppCheap.length) lockBonus = 0.05; // forces 2/bomb
+              else {
+                var minTop = 99;
+                var oi2;
+                for (oi2 = 0; oi2 < oppCheap.length; oi2++) {
+                  var tq = topRank(oppCheap[oi2]);
+                  if (tq < minTop) minTop = tq;
+                }
+                if (minTop >= 10) lockBonus = 0.03;
+                else if (minTop >= 8) lockBonus = 0.018;
+                else if (minTop >= 6) lockBonus = 0.008;
+              }
+              // Extra: if opp residual after cheapest answer is still long, less urgency
+              // Prefer leads that leave opp with fewer cards after answering
+              var bestOppShed = 0;
+              for (oi2 = 0; oi2 < oppCheap.length; oi2++) {
+                if (oppCheap[oi2].length > bestOppShed) bestOppShed = oppCheap[oi2].length;
+              }
+              if (bestOppShed >= 3) lockBonus += 0.01; // forces multi from opp
+            }
+          }
         }
         var pos = leafEval2p(next, myIdx);
         var score = (leaf >= 0.99 ? 1.0 : (deep >= 0.99 ? 0.95 : 0))
-          + pos * 0.002
+          + pos * 0.0025
           + multiBonus
-          + shed * 0.00002;
-        // Among forced wins, strongly prefer multi volume (human CF free-lead)
+          + lockBonus
+          + shed * 0.00003;
+        // Among forced wins, prefer multi (structure) then shorter residual hand
         if (win && act && act.length >= 2 && !cur) {
-          score += 0.01 + Math.min(0.02, act.length * 0.002);
+          score += 0.012 + Math.min(0.01, act.length * 0.0015);
         }
         if (!win) {
           var soft = typeof deep === 'number' ? deep : 0;
-          if (soft < 0.05) soft = pos * 0.4;
-          score += soft * 0.02;
+          if (soft < 0.05) soft = pos * 0.45;
+          score += soft * 0.03;
+          // Prefer lines that leave fewer cards when both lose
+          score += shed * 0.0005;
         }
         details.push({ sig: playSig(act), win: win, score: score, leaf: leaf, deep: deep });
         if (score > bestScore) {
@@ -1228,6 +1321,78 @@
       }
     }
 
+    // v8.6: when no forced win, multi-sample soft win-rate over top candidates
+    // (single playout is high-variance; N samples ranks soft lines more reliably)
+    if (!primary.anyWin && state.players.length === 2 && opts.softSamples !== 0) {
+      var softN = opts.softSamples != null ? opts.softSamples : 6;
+      if (opts.inBrowser) softN = Math.min(softN, 3);
+      var topSoft = primary.details.slice(0, Math.min(10, primary.details.length));
+      var softBest = primary.bestPlay;
+      var softBestRate = -1;
+      var softDetails = [];
+      var fullForSoft = getLegalPlays(hand, cur, state.players[myIdx].passed,
+        state.isFirstLead, state.firstLeadCard);
+      var softPool = fullForSoft.slice();
+      if (cur) softPool.push(null);
+      var si;
+      for (si = 0; si < topSoft.length; si++) {
+        if (timeMs > 0 && (Date.now() - t0) >= timeMs * 0.95) break;
+        var row = topSoft[si];
+        var actS = null;
+        var foundAct = false;
+        if (row.sig === 'PASS') {
+          actS = null;
+          foundAct = true;
+        } else {
+          var li2;
+          for (li2 = 0; li2 < softPool.length; li2++) {
+            if (playSig(softPool[li2]) === row.sig) {
+              actS = softPool[li2];
+              foundAct = true;
+              break;
+            }
+          }
+          // Also try actions array (may include free-lead subset)
+          if (!foundAct) {
+            for (li2 = 0; li2 < actions.length; li2++) {
+              if (playSig(actions[li2]) === row.sig) {
+                actS = actions[li2];
+                foundAct = true;
+                break;
+              }
+            }
+          }
+        }
+        if (!foundAct) continue;
+        var w = 0;
+        var tiS;
+        for (tiS = 0; tiS < softN; tiS++) {
+          var nS;
+          if (actS == null) nS = passFast(state, myIdx);
+          else nS = applyPlayFast(state, myIdx, actS);
+          nS.isFirstLead = false;
+          if (exploitPlayout(nS, myIdx, 200) >= 0.99) w++;
+        }
+        var rateS = w / softN;
+        // keep lock/multi bonuses as tiny tie-breaks
+        var bonusS = 0;
+        if (actS && actS.length >= 2 && !cur) bonusS = 0.002 + Math.min(0.004, actS.length * 0.0005);
+        var scoreS = rateS + bonusS;
+        softDetails.push({ sig: row.sig, rate: rateS, score: scoreS, n: softN });
+        if (scoreS > softBestRate) {
+          softBestRate = scoreS;
+          softBest = actS;
+        }
+      }
+      if (softBestRate >= 0) {
+        primary.bestPlay = softBest;
+        // Map soft rate into comparable soft score space used by callers
+        primary.bestScore = softBestRate;
+        primary.details = softDetails.sort(function (a, b) { return b.score - a.score; });
+        primary._softSampled = true;
+      }
+    }
+
     return {
       play: primary.bestPlay,
       stats: {
@@ -1236,7 +1401,8 @@
         top: primary.details.slice(0, 6),
         ms: Date.now() - t0,
         candidates: primary.details.length,
-        anyWin: primary.anyWin
+        anyWin: primary.anyWin,
+        softSampled: !!primary._softSampled
       }
     };
   }
@@ -1584,8 +1750,8 @@
     for (var i = 0; i < 2; i++) {
       if (!state.players[i].finished) total += state.players[i].hand.length;
     }
-    // Deep enough for strength; >16 explodes branching and can stall moves
-    if (total > 16) return null;
+    // v8.6: slightly deeper endgame (18 cards) — many 2p late positions sit at 9+9
+    if (total > 18) return null;
 
     var memo = {};
     function key(st) {
@@ -1639,24 +1805,32 @@
           }
         }
       } else {
-        // opponent minimizes our value (adversarial)
-        best = 2;
-        if (!leg.length) {
-          best = value(passFast(st, cp));
+        // v8.6: when bench injects frozen expert, model opp with that policy
+        // (single deterministic line) rather than pure adversarial multi-always.
+        if (_injectedOppPolicy) {
+          var odec = opponentPolicyStrong(st, cp);
+          var onx = applyDecision(st, cp, odec);
+          onx.isFirstLead = false;
+          best = value(onx);
         } else {
-          if (!st.currentCombo) {
-            // model v2.1 multi-always
-            var multi = leg.filter(function (p) { return p.length >= 2 && !playIsExpensive(p); });
-            if (multi.length) leg = multi;
-          }
-          if (leg.length > 14) leg = orderLegals(leg, st, cp).slice(0, 14);
-          for (var b = 0; b < leg.length; b++) {
-            var v2 = value(applyPlayFast(st, cp, leg[b]));
-            if (v2 < best) best = v2;
-          }
-          if (st.currentCombo) {
-            var vp2 = value(passFast(st, cp));
-            if (vp2 < best) best = vp2;
+          // opponent minimizes our value (adversarial fallback)
+          best = 2;
+          if (!leg.length) {
+            best = value(passFast(st, cp));
+          } else {
+            if (!st.currentCombo) {
+              var multi = leg.filter(function (p) { return p.length >= 2 && !playIsExpensive(p); });
+              if (multi.length) leg = multi;
+            }
+            if (leg.length > 14) leg = orderLegals(leg, st, cp).slice(0, 14);
+            for (var b = 0; b < leg.length; b++) {
+              var v2 = value(applyPlayFast(st, cp, leg[b]));
+              if (v2 < best) best = v2;
+            }
+            if (st.currentCombo) {
+              var vp2 = value(passFast(st, cp));
+              if (vp2 < best) best = vp2;
+            }
           }
         }
       }
@@ -2289,14 +2463,20 @@
         if (!state.players[tci].finished) totalCards += state.players[tci].hand.length;
       }
       // Exact BR endgame vs injected frozen expert
-      // v8.4: aggressive exact BR window vs frozen experts
-      if (opts.exactExploit !== false && totalCards <= 26) {
+      // v8.5: exact BR always in 2p perfect-info (budget scales with card count)
+      if (opts.exactExploit !== false) {
         var exactMs = opts.exactExploitMs != null ? opts.exactExploitMs
           : (totalCards <= 12
-            ? (opts.inBrowser ? 280 : 700)
-            : (totalCards <= 18
-              ? (opts.inBrowser ? 180 : 450)
-              : (opts.inBrowser ? 120 : 300)));
+            ? (opts.inBrowser ? 280 : 900)
+            : (totalCards <= 16
+              ? (opts.inBrowser ? 200 : 600)
+              : (totalCards <= 20
+                ? (opts.inBrowser ? 140 : 400)
+                : (totalCards <= 24
+                  ? (opts.inBrowser ? 100 : 280)
+                  : (opts.inBrowser ? 60 : 180)))));
+        // Free lead gets a bit more time to prove unanswerable multi opens
+        if (!cur && !opts.inBrowser) exactMs = Math.max(exactMs, 220);
         var exExact = exactExploitMove(state, myIdx, { timeMs: exactMs });
         if (exExact && exExact.play !== undefined && exExact.stats &&
             (exExact.stats.mode === 'exact-exploit' || exExact.stats.mode === 'exact-exploit-out' ||
@@ -2311,10 +2491,41 @@
           return exExact;
         }
       }
-      var ex = exploitMove(state, myIdx, {
-        maxBranch: opts.maxBranch || (!cur ? 20 : 14),
-        dualSelf: opts.dualSelf !== false
-      });
+      // v8.6 dual free-lead mode root: max of multi-always vs hybrid exploit scores
+      var savedFlRoot = _exploitFlMode;
+      var exMulti = null;
+      var exHybrid = null;
+      var softNRoot = opts.inBrowser ? 2 : 5;
+      var exploitBudget = opts.inBrowser ? 400 : 2200;
+      try {
+        _exploitFlMode = 'multi';
+        exMulti = exploitMove(state, myIdx, {
+          maxBranch: opts.maxBranch || (!cur ? 22 : 16),
+          dualSelf: false,
+          softSamples: softNRoot,
+          timeMs: exploitBudget
+        });
+        if (!cur) {
+          _exploitFlMode = 'hybrid';
+          exHybrid = exploitMove(state, myIdx, {
+            maxBranch: opts.maxBranch || 22,
+            dualSelf: false,
+            softSamples: softNRoot,
+            timeMs: Math.max(800, exploitBudget * 0.55)
+          });
+        }
+      } finally {
+        _exploitFlMode = savedFlRoot;
+      }
+      // Pick better of multi vs hybrid
+      var ex = exMulti;
+      function exScore(e) {
+        if (!e || e.play === undefined) return -1;
+        if (e.stats && e.stats.anyWin) return 2 + (e.stats.avg || 0);
+        if (e.stats && e.stats.mode === 'exploit-out') return 3;
+        return e.stats && e.stats.avg != null ? e.stats.avg : 0;
+      }
+      if (exHybrid && exScore(exHybrid) > exScore(exMulti)) ex = exHybrid;
       if (ex && ex.play !== undefined) {
         if (ex.play == null && !cur) {
           ex.play = pickFreeLeadHard(legals, state, myIdx);
@@ -2322,7 +2533,7 @@
         if (!cur && ex.play && ex.play.length === 1 && ominEx === 1 && ex.play[0].rank < 10) {
           ex.play = pickFreeLeadHard(legals, state, myIdx);
         }
-        // v8.3: among free-lead forced wins, re-pick max multi volume (CF long multi)
+        // Prefer multi among free-lead forced wins
         if (!cur && ex.stats && ex.stats.anyWin && ex.stats.top && ex.stats.top.length) {
           var bestSig = null;
           var bestL = -1;
@@ -2334,31 +2545,293 @@
             if (ln > bestL) { bestL = ln; bestSig = row.sig; }
           }
           if (bestSig && bestSig !== 'PASS' && bestL >= 2) {
-            var want = bestSig.split(',').map(Number);
             for (var li = 0; li < legals.length; li++) {
-              var s2 = playSig(legals[li]);
-              if (s2 === bestSig) { ex.play = legals[li]; break; }
+              if (playSig(legals[li]) === bestSig) { ex.play = legals[li]; break; }
             }
           }
         }
         ex.stats = ex.stats || {};
         ex.stats.perfectInfo = true;
-        return ex;
+        if (ex.play == null && !cur) {
+          ex.play = pickFreeLeadHard(legals, state, myIdx);
+        }
+        // Commit hard forced wins — but free-lead single-playout "wins" are noisy
+        // (false positives skip soft fl-root and lose games like seed 20799253).
+        if (ex.stats.mode === 'exploit-out') {
+          return ex;
+        }
+        if (ex.stats.anyWin || (ex.stats.avg != null && ex.stats.avg >= 0.93)) {
+          if (!cur && !opts.inBrowser && ex.play) {
+            // Verify free-lead forced win with multi-sample before committing
+            var verN = 6;
+            var verW = 0;
+            var vi;
+            for (vi = 0; vi < verN; vi++) {
+              var vn = applyPlayFast(state, myIdx, ex.play);
+              vn.isFirstLead = false;
+              if (exploitPlayout(vn, myIdx, 220) >= 0.99) verW++;
+            }
+            ex.stats.verify = { n: verN, wins: verW };
+            if (verW < verN) {
+              // Unstable forced win — fall through to free-lead soft root
+              ex.stats.anyWin = false;
+              ex.stats.avg = verW / verN;
+              ex.stats.mode = 'exploit-v80-soft-unverified';
+              opts._softExploit = ex;
+            } else {
+              return ex;
+            }
+          } else {
+            return ex;
+          }
+        } else {
+          opts._softExploit = ex;
+        }
+      }
+    }
+    // v8.7 free-lead soft root: rank free-lead candidates by robust score.
+    // ShallowSelf playouts false-positive multi wins; use expert leaf + 1-ply
+    // opp response + lock bonus (seed 20799253 trash-single flip).
+    if (
+      !cur &&
+      perfectInfo &&
+      state.players.length === 2 &&
+      difficulty !== 'easy' &&
+      opts._softExploit &&
+      opts.flRoot !== false &&
+      !opts.inBrowser
+    ) {
+
+      var flActs = [];
+      var flSeen = {};
+      function flAdd(arr) {
+        for (var fi = 0; fi < arr.length; fi++) {
+          var fsg = playSig(arr[fi]);
+          if (!flSeen[fsg]) { flSeen[fsg] = 1; flActs.push(arr[fi]); }
+        }
+      }
+      flAdd(freeLeadCandidates(legals, state, myIdx));
+      for (var fli = 0; fli < legals.length; fli++) {
+        if (legals[fli].length >= 2 && !playIsExpensive(legals[fli])) flAdd([legals[fli]]);
+        else if (legals[fli].length === 1 && legals[fli][0].rank <= 10) flAdd([legals[fli]]);
+      }
+      flActs.sort(function (a, b) {
+        if (a.length !== b.length) return b.length - a.length;
+        return topRank(a) - topRank(b);
+      });
+      if (flActs.length > 20) flActs = flActs.slice(0, 20);
+      var flBest = null;
+      var flBestScore = -1;
+      var flDetails = [];
+      var flT0 = Date.now();
+      var flOpp = myIdx === 0 ? 1 : 0;
+      var flHandLen = state.players[myIdx].hand.length;
+      var flInfo = analyzeHand(state.players[myIdx].hand);
+      for (var fla = 0; fla < flActs.length; fla++) {
+        if (Date.now() - flT0 > 4000) break;
+        var fact = flActs[fla];
+        var fn = applyPlayFast(state, myIdx, fact);
+        fn.isFirstLead = false;
+        // Lock / unanswerable bonus (perfect-info)
+        var lockB = 0;
+        if (fn.players[flOpp] && fn.currentCombo) {
+          var oleg = getLegalPlays(fn.players[flOpp].hand, fn.currentCombo, false, false, null);
+          if (!oleg.length) lockB = 0.12;
+          else if (!cheapLegals(oleg).length) lockB = 0.06;
+        }
+        // Expert-only leaf (no shallowSelf optimism)
+        var leafR = exploitPlayoutLeaf(fn, myIdx, 220);
+        // 1-ply: let frozen opp answer, then expert leaf
+        var onePlyR = leafR;
+        if (leafR < 0.99 && !fn.roundOver && fn.currentPlayer === flOpp) {
+          var odec = opponentPolicyStrong(fn, flOpp);
+          var fn2 = applyDecision(fn, flOpp, odec);
+          fn2.isFirstLead = false;
+          onePlyR = exploitPlayoutLeaf(fn2, myIdx, 220);
+        }
+        // Deep shallowSelf as secondary signal (discounted)
+        var deepR = leafR >= 0.99 ? 1 : exploitPlayout(fn, myIdx, 200);
+        // Composite: trust expert leaf hardest; require deep agree for multi forced-win claims
+        var hard = 0;
+        if (leafR >= 0.99) hard = 1.0;
+        else if (onePlyR >= 0.99) hard = 0.95;
+        else if (deepR >= 0.99 && leafR >= 0.4) hard = 0.85; // deep alone not enough
+        var soft = 0;
+        if (!hard) {
+          // Residual structure after lead — trash shed can preserve pairs/control
+          var resInfo = analyzeHand(fn.players[myIdx].hand);
+          function pairCount(info) {
+            var n = 0;
+            var keys = Object.keys(info.byRank || {});
+            for (var pi = 0; pi < keys.length; pi++) {
+              if (info.byRank[keys[pi]] >= 2) n++;
+            }
+            return n;
+          }
+          var structGain = (pairCount(resInfo) - pairCount(flInfo)) * 0.01
+            + (resInfo.control - flInfo.control) * 0.008
+            + (flInfo.trashCount - resInfo.trashCount) * 0.015;
+          // Hybrid free-lead when no hard win: prefer trash/low singles early
+          // (seed 20799253: 0♦ wins, long multi loses under full AI follow-up)
+          var hybridB = 0;
+          if (fact.length === 1) {
+            var rnk = fact[0].rank;
+            if (rnk <= 4 && flHandLen >= 10) hybridB = 0.055 - rnk * 0.004;
+            else if (rnk <= 6 && flHandLen >= 11) hybridB = 0.03;
+            else if (rnk <= 8) hybridB = 0.01;
+          } else if (fact.length === 2) {
+            hybridB = 0.025; // pair shed
+          } else if (fact.length === 3) {
+            hybridB = flHandLen <= 9 ? 0.03 : 0.012;
+          } else {
+            // long multi early dumps structure — only good when short or lock
+            hybridB = flHandLen <= 8 ? 0.02 : (0.005 - (fact.length - 3) * 0.004);
+          }
+          soft = Math.max(leafR, onePlyR * 0.9, deepR * 0.5) * 0.4
+            + leafEval2p(fn, myIdx) * 0.08
+            + lockB
+            + structGain
+            + hybridB;
+        }
+        var fscore = hard + soft;
+        flDetails.push({
+          sig: playSig(fact), leaf: leafR, onePly: onePlyR, deep: deepR,
+          lock: lockB, score: fscore, len: fact.length
+        });
+        if (fscore > flBestScore) {
+          flBestScore = fscore;
+          flBest = fact;
+        }
+      }
+      flDetails.sort(function (a, b) { return b.score - a.score; });
+
+      if (flBest) {
+        var ominFL = oppMinHand(state, myIdx);
+        if (flBest.length === 1 && ominFL === 1 && flBest[0].rank < 10) {
+          flBest = pickFreeLeadHard(legals, state, myIdx);
+        }
+        return {
+          play: flBest,
+          stats: {
+            mode: 'free-lead-root',
+            avg: flBestScore,
+            top: flDetails.slice(0, 6),
+            ms: Date.now() - flT0,
+            perfectInfo: true,
+            via: 'fl-soft-root-v2'
+          }
+        };
       }
     }
 
-    // Optional perfect-info alpha-beta (secondary; leaf-eval limited)
+    // Best-response MC FIRST on soft path (v8.6): models frozen expert, not
+    // adversarial minimax. Alpha-beta early-return in v8.5 skipped BR and cost ~1%.
+    if (opts.bestResponse || (state.players.length === 2 && difficulty !== 'easy' && difficulty !== 'medium') || opts._softExploit) {
+      var ominBR = oppMinHand(state, myIdx);
+      var freeBR = !cur;
+      var brTrials = opts.brTrials;
+      if (brTrials == null) {
+        if (opts.inBrowser) brTrials = freeBR || ominBR <= 2 ? 18 : 10;
+        else brTrials = freeBR || ominBR <= 2 ? 96 : 56;
+      }
+      // Extra trials when recovering from soft exploit — BR vs frozen is the soft solver
+      if (opts._softExploit && !opts.inBrowser) {
+        brTrials = Math.max(brTrials, freeBR ? 140 : 90);
+      }
+      var brTime = timeMs != null ? timeMs : (opts.inBrowser ? 800 : 2500);
+      if (!opts.inBrowser && (freeBR || ominBR <= 2 || opts._softExploit)) {
+        brTime = Math.max(brTime, opts._softExploit ? 1800 : 1100);
+      }
+      var br = bestResponseMove(state, myIdx, {
+        trials: brTrials,
+        timeMs: brTime,
+        maxBranch: freeBR ? 22 : 16,
+        perfectInfo: perfectInfo,
+        oppModel: 'strong',
+        strongSelf: true,
+        rng: rng
+      });
+      if (br && br.play !== undefined) {
+        if (br.play == null && !cur) {
+          br.play = pickFreeLeadHard(legals, state, myIdx);
+        }
+        // Guard: no gift
+        if (!cur && br.play && br.play.length === 1 && ominBR === 1 && br.play[0].rank < 10) {
+          br.play = pickFreeLeadHard(legals, state, myIdx);
+        }
+        br.stats = br.stats || {};
+        br.stats.perfectInfo = perfectInfo;
+        if (opts._softExploit) {
+          br.stats.via = 'soft-exploit-then-br';
+          // v8.6 dual-root ensemble: when soft and BR disagree, re-score both with
+          // deep exploit playouts vs frozen expert and keep higher empirical win rate.
+          var softExE = opts._softExploit;
+          if (softExE.play == null && !cur) softExE.play = pickFreeLeadHard(legals, state, myIdx);
+          var sigBr = playSig(br.play);
+          var sigSoft = playSig(softExE.play);
+          if (sigBr !== sigSoft) {
+            var ensN = opts.inBrowser ? 4 : 12;
+            function ensRate(act) {
+              var w = 0;
+              var ti;
+              for (ti = 0; ti < ensN; ti++) {
+                var n0;
+                if (act == null) n0 = passFast(state, myIdx);
+                else n0 = applyPlayFast(state, myIdx, act);
+                n0.isFirstLead = false;
+                if (exploitPlayout(n0, myIdx, 220) >= 0.99) w++;
+              }
+              return w / ensN;
+            }
+            var rBr = ensRate(br.play);
+            var rSoft = ensRate(softExE.play);
+            br.stats.ensemble = { n: ensN, br: rBr, soft: rSoft, brSig: sigBr, softSig: sigSoft };
+            // Prefer multi free-lead on exact ties
+            if (rSoft > rBr + 0.04) {
+              softExE.stats = softExE.stats || {};
+              softExE.stats.via = 'ensemble-soft';
+              softExE.stats.ensemble = br.stats.ensemble;
+              return softExE;
+            }
+            if (Math.abs(rSoft - rBr) <= 0.04 && !cur) {
+              var softMulti = softExE.play && softExE.play.length >= 2;
+              var brMulti = br.play && br.play.length >= 2;
+              if (softMulti && !brMulti) {
+                softExE.stats = softExE.stats || {};
+                softExE.stats.via = 'ensemble-soft-multi-tie';
+                softExE.stats.ensemble = br.stats.ensemble;
+                return softExE;
+              }
+              if (softMulti && brMulti && softExE.play.length > br.play.length) {
+                softExE.stats = softExE.stats || {};
+                softExE.stats.via = 'ensemble-soft-longer-multi';
+                softExE.stats.ensemble = br.stats.ensemble;
+                return softExE;
+              }
+            }
+            br.stats.via = 'ensemble-br';
+            br.stats.avg = rBr; // empirical
+          } else {
+            // Same play — use max of reported soft rate / BR rate as confidence
+            br.stats.via = 'soft-br-agree';
+          }
+        }
+        return br;
+      }
+    }
+
+    // Perfect-info alpha-beta only if BR unavailable (tertiary, not soft-primary)
     if (
       perfectInfo &&
       state.players.length === 2 &&
       difficulty !== 'easy' &&
       opts.alphaBeta === true
     ) {
-      var abTime = timeMs != null ? timeMs : (opts.inBrowser ? 600 : 1200);
+      var abTime = timeMs != null ? Math.max(timeMs, opts.inBrowser ? 200 : 400) : (opts.inBrowser ? 600 : 900);
       var ab = alphaBetaMove(state, myIdx, {
         timeMs: abTime,
-        maxDepth: opts.abDepth != null ? opts.abDepth : (opts.inBrowser ? 6 : 10),
-        maxBranch: !cur ? 14 : 12
+        maxDepth: opts.abDepth != null ? opts.abDepth : (opts.inBrowser ? 6 : 12),
+        maxBranch: !cur ? 16 : 14
       });
       if (ab && ab.play !== undefined) {
         var ominAB = oppMinHand(state, myIdx);
@@ -2370,45 +2843,18 @@
         }
         ab.stats = ab.stats || {};
         ab.stats.perfectInfo = true;
+        ab.stats.via = 'ab-tertiary';
         return ab;
       }
     }
 
-    // Best-response MC (2p hard+, or when alpha-beta off / hidden info)
-    // Also used as primary soft path when exploit finds no forced win (v8.2).
-    if (opts.bestResponse || (state.players.length === 2 && difficulty !== 'easy' && difficulty !== 'medium') || opts._softExploit) {
-      var ominBR = oppMinHand(state, myIdx);
-      var freeBR = !cur;
-      var brTrials = opts.brTrials;
-      if (brTrials == null) {
-        if (opts.inBrowser) brTrials = freeBR || ominBR <= 2 ? 18 : 10;
-        else brTrials = freeBR || ominBR <= 2 ? 70 : 36;
-      }
-      // Extra trials when recovering from soft exploit
-      if (opts._softExploit && !opts.inBrowser) brTrials = Math.max(brTrials, freeBR ? 90 : 48);
-      var brTime = timeMs != null ? timeMs : (opts.inBrowser ? 800 : 2500);
-      if (!opts.inBrowser && (freeBR || ominBR <= 2 || opts._softExploit)) brTime = Math.max(brTime, 900);
-      var br = bestResponseMove(state, myIdx, {
-        trials: brTrials,
-        timeMs: brTime,
-        maxBranch: freeBR ? 18 : 14,
-        perfectInfo: perfectInfo,
-        rng: rng
-      });
-      if (br && br.play !== undefined) {
-        if (br.play == null && !cur) {
-          br.play = pickFreeLeadHard(legals, state, myIdx);
-        }
-        // Guard: no gift
-        if (!cur && br.play && br.play.length === 1 && ominBR === 1 && br.play[0].rank < 10) {
-          br.play = pickFreeLeadHard(legals, state, myIdx);
-        }
-        // If BR finds nothing better than soft exploit forced-ish, keep BR
-        br.stats = br.stats || {};
-        br.stats.perfectInfo = perfectInfo;
-        if (opts._softExploit) br.stats.via = 'soft-exploit-then-br';
-        return br;
-      }
+    // Soft exploit fallback if BR failed entirely
+    if (opts._softExploit && opts._softExploit.play !== undefined) {
+      var softFb = opts._softExploit;
+      if (softFb.play == null && !cur) softFb.play = pickFreeLeadHard(legals, state, myIdx);
+      softFb.stats = softFb.stats || {};
+      softFb.stats.via = 'soft-exploit-fallback';
+      return softFb;
     }
 
     var mode = opts.mode || 'auto';

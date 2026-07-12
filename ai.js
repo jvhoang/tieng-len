@@ -14,9 +14,9 @@
 
 /** Shown on title screen — bump when shipping AI behavior changes. */
 const AI_BUILD = {
-  id: 'v8.4-hybrid-tempo',
-  stamped: '2026-07-11T23:00:00-07:00',
-  label: 'Grandmaster v8.4'
+  id: 'v8.7-hybrid-fl',
+  stamped: '2026-07-12T11:00:00-07:00',
+  label: 'Grandmaster v8.7'
 };
 
 const engine = (typeof require === 'function') ? require('./engine.js') : (window.TienLenEngine || {});
