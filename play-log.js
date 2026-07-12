@@ -26,8 +26,13 @@
   var INDEX_KEY = 'tienlen_playlog_v1_index';
   var GAME_PREFIX = 'tienlen_playlog_v1_game_';
   var REMOTE_CFG_KEY = 'tienlen_playlog_v1_remote_cfg';
-  var MAX_GAMES = 80; // localStorage quota safety
+  // Local cache cap. Was 80 — that silently dropped newest GitHub issues when
+  // fetch mirrored into localStorage (see fetchPublicGames rebuild). Keep high
+  // enough for full public history; still bounds quota.
+  var MAX_GAMES = 500;
   var MAX_LEGALS_STORED = 24;
+  var REMOTE_PAGE_SIZE = 100;
+  var REMOTE_MAX_PAGES = 30;
   var ISSUE_MARKER = '<!-- TIENLEN_PLAYLOG_V1 -->';
   var DEFAULT_REMOTE = {
     provider: 'github',
@@ -142,16 +147,76 @@
       return GAME_PREFIX + id;
     }
 
+    function gameSortKey(s) {
+      // Prefer endedAt, then startedAt; newest first when sorting desc
+      return s.endedAt || s.startedAt || '';
+    }
+
+    function sortIndexNewestFirst(idx) {
+      idx.sort(function (a, b) {
+        var ka = gameSortKey(a);
+        var kb = gameSortKey(b);
+        if (ka === kb) {
+          var na = a.remoteIssueNumber || 0;
+          var nb = b.remoteIssueNumber || 0;
+          return nb - na;
+        }
+        return ka < kb ? 1 : (ka > kb ? -1 : 0);
+      });
+      return idx;
+    }
+
+    /**
+     * Cap index by dropping OLDEST (not arbitrary end-of-array).
+     * Fixes bug where reverse-order unshift + pop() deleted the newest games.
+     */
+    function trimIndexKeepNewest(idx) {
+      sortIndexNewestFirst(idx);
+      while (idx.length > maxGames) {
+        var drop = idx.pop(); // oldest at end after sort
+        if (drop && drop.id) {
+          try { storage.removeItem(gameKey(drop.id)); } catch (e2) { /* ignore */ }
+        }
+      }
+      return idx;
+    }
+
     function saveGame(rec) {
       storage.setItem(gameKey(rec.id), JSON.stringify(rec));
       var idx = readIndex().filter(function (e) { return e.id !== rec.id; });
       idx.unshift(summarize(rec));
-      while (idx.length > maxGames) {
-        var drop = idx.pop();
-        try { storage.removeItem(gameKey(drop.id)); } catch (e2) { /* ignore */ }
-      }
+      trimIndexKeepNewest(idx);
       writeIndex(idx);
       return rec.id;
+    }
+
+    /**
+     * Bulk-merge full game records into local cache without reverse-order bug.
+     * Rebuilds index sorted newest-first and keeps up to maxGames.
+     */
+    function mergeGamesIntoIndex(recs) {
+      if (!recs || !recs.length) return readIndex();
+      var byId = Object.create(null);
+      var idx = readIndex();
+      var i;
+      for (i = 0; i < idx.length; i++) {
+        if (idx[i] && idx[i].id) byId[idx[i].id] = idx[i];
+      }
+      for (i = 0; i < recs.length; i++) {
+        var rec = recs[i];
+        if (!rec || !rec.id) continue;
+        try {
+          storage.setItem(gameKey(rec.id), JSON.stringify(rec));
+        } catch (eQ) { /* quota — still keep summary if possible */ }
+        byId[rec.id] = summarize(rec);
+      }
+      var merged = [];
+      for (var id in byId) {
+        if (Object.prototype.hasOwnProperty.call(byId, id)) merged.push(byId[id]);
+      }
+      trimIndexKeepNewest(merged);
+      writeIndex(merged);
+      return merged;
     }
 
     function summarize(rec) {
@@ -312,21 +377,37 @@
     }
 
     /**
-     * Pull public play-log issues (no token required for public repos).
-     * Returns array of full game records; also caches them and merges into local index.
+     * Pull ALL public play-log issues (paginated; no token required for public repos).
+     * Returns array of full game records; merges into local index newest-first
+     * without dropping recent games (previous bug: MAX_GAMES=80 + reverse unshift).
      */
     function fetchPublicGames() {
       var cfg = getRemoteConfig();
       if (!fetchFn) return Promise.resolve([]);
-      // list issues by label (public)
-      var url = 'https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo +
-        '/issues?labels=' + encodeURIComponent(cfg.label) +
-        '&state=all&per_page=100&sort=created&direction=desc';
-      return fetchFn(url, { headers: githubHeaders(cfg, !!cfg.token) }).then(function (res) {
-        if (!res.ok) throw new Error('GitHub list failed HTTP ' + res.status);
-        return res.json();
-      }).then(function (issues) {
-        if (!Array.isArray(issues)) return [];
+
+      function fetchPage(page) {
+        var url = 'https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo +
+          '/issues?labels=' + encodeURIComponent(cfg.label) +
+          '&state=all&per_page=' + REMOTE_PAGE_SIZE +
+          '&page=' + page +
+          '&sort=created&direction=desc';
+        return fetchFn(url, { headers: githubHeaders(cfg, !!cfg.token) }).then(function (res) {
+          if (!res.ok) throw new Error('GitHub list failed HTTP ' + res.status);
+          return res.json();
+        });
+      }
+
+      function fetchAllPages(page, acc) {
+        if (page > REMOTE_MAX_PAGES) return Promise.resolve(acc);
+        return fetchPage(page).then(function (issues) {
+          if (!Array.isArray(issues) || !issues.length) return acc;
+          for (var i = 0; i < issues.length; i++) acc.push(issues[i]);
+          if (issues.length < REMOTE_PAGE_SIZE) return acc;
+          return fetchAllPages(page + 1, acc);
+        });
+      }
+
+      return fetchAllPages(1, []).then(function (issues) {
         var games = [];
         for (var i = 0; i < issues.length; i++) {
           var iss = issues[i];
@@ -337,11 +418,20 @@
           rec._source = 'github';
           rec._remoteIssueNumber = iss.number;
           rec._remoteIssueUrl = iss.html_url;
+          // Prefer GitHub issue timestamps when body times are missing
+          if (!rec.endedAt && iss.created_at) rec.endedAt = iss.created_at;
+          if (!rec.startedAt && iss.created_at) rec.startedAt = iss.created_at;
           remoteCache[rec.id] = rec;
-          // Mirror into local cache so offline detail works
-          try { saveGame(rec); } catch (eM) { /* quota */ }
           games.push(rec);
         }
+        // Bulk merge (keeps newest); do NOT call saveGame per-issue (old reverse+pop bug)
+        try { mergeGamesIntoIndex(games); } catch (eM) { /* quota */ }
+        lastPublishStatus = {
+          ok: true,
+          at: nowIso(),
+          message: 'Synced ' + games.length + ' public play-logs from GitHub',
+          gameId: null
+        };
         return games;
       }).catch(function (err) {
         lastPublishStatus = {
@@ -355,15 +445,17 @@
     }
 
     function listGamesMerged() {
-      // Prefer freshest by startedAt; mark public when known
-      var idx = readIndex();
+      // Newest first; mark public when known from remoteCache
+      var idx = sortIndexNewestFirst(readIndex().slice());
       return idx.map(function (s) {
-        if (remoteCache[s.id]) {
-          s.public = true;
-          s.source = 'github';
-          s.remoteIssueUrl = remoteCache[s.id]._remoteIssueUrl || s.remoteIssueUrl;
+        var copy = Object.assign({}, s);
+        if (remoteCache[copy.id]) {
+          copy.public = true;
+          copy.source = 'github';
+          copy.remoteIssueUrl = remoteCache[copy.id]._remoteIssueUrl || copy.remoteIssueUrl;
+          copy.remoteIssueNumber = remoteCache[copy.id]._remoteIssueNumber || copy.remoteIssueNumber;
         }
-        return s;
+        return copy;
       });
     }
 
@@ -621,7 +713,7 @@
     }
 
     function listGames() {
-      return readIndex();
+      return sortIndexNewestFirst(readIndex().slice());
     }
 
     function getGame(id) {
@@ -729,9 +821,11 @@
       encodeIssueBody: encodeIssueBody,
       decodeIssueBody: decodeIssueBody,
       issueTitle: issueTitle,
+      mergeGamesIntoIndex: mergeGamesIntoIndex,
       // test helpers
       _createMemoryStorage: createMemoryStorage,
-      _readIndex: readIndex
+      _readIndex: readIndex,
+      _maxGames: maxGames
     };
   }
 

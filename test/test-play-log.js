@@ -144,6 +144,96 @@ console.log('=== controller logs a mini vs-AI game ===');
   ok(hasAi, 'ai actions logged');
 }
 
+console.log('=== history cap keeps NEWEST (not oldest) ===');
+{
+  // Regression: old MAX_GAMES=80 + reverse unshift dropped newest GitHub games.
+  const mem = playLogMod.createMemoryStorage();
+  const pl = playLogMod.createPlayLog({ storage: mem, maxGames: 5 });
+  const recs = [];
+  for (let i = 1; i <= 12; i++) {
+    const day = 10 + Math.floor(i / 3);
+    const hour = String(i).padStart(2, '0');
+    recs.push({
+      schemaVersion: 1,
+      id: 'g_hist_' + i,
+      startedAt: '2026-07-' + day + 'T' + hour + ':00:00.000Z',
+      endedAt: '2026-07-' + day + 'T' + hour + ':05:00.000Z',
+      mode: 'vsAI',
+      numPlayers: 2,
+      events: [],
+      result: { humanWon: i % 2 === 0 },
+      _public: true,
+      _source: 'github',
+      _remoteIssueNumber: i
+    });
+  }
+  // Simulate fetch order: newest first (as GitHub API returns)
+  const newestFirst = recs.slice().reverse();
+  pl.mergeGamesIntoIndex(newestFirst);
+  const listed = pl.listGamesMerged();
+  ok(listed.length === 5, 'capped at maxGames=5 (got ' + listed.length + ')');
+  const ids = listed.map(function (g) { return g.id; });
+  ok(ids.indexOf('g_hist_12') >= 0, 'keeps newest game g_hist_12');
+  ok(ids.indexOf('g_hist_11') >= 0, 'keeps g_hist_11');
+  ok(ids.indexOf('g_hist_1') < 0, 'drops oldest g_hist_1');
+  ok(listed[0].id === 'g_hist_12', 'list sorted newest-first first item is g_hist_12');
+}
+
+console.log('=== fetchPublicGames pagination + no newest-drop ===');
+{
+  const mem = playLogMod.createMemoryStorage();
+  // Mock fetch: page1 = 100 issues newest, page2 = 3 older
+  const issues = [];
+  for (let n = 103; n >= 1; n--) {
+    // Monotonic timestamps so issue 103 is strictly newest
+    const started = new Date(Date.UTC(2026, 6, 1) + n * 3600 * 1000).toISOString();
+    const rec = {
+      schemaVersion: 1,
+      id: 'g_issue_' + n,
+      startedAt: started,
+      endedAt: started,
+      mode: 'vsAI',
+      numPlayers: 2,
+      events: [{ i: 0, type: 'game_start' }],
+      result: { humanWon: true, winner: 0 }
+    };
+    const body = playLogMod.encodeIssueBody(rec);
+    issues.push({
+      number: n,
+      html_url: 'https://github.com/jvhoang/tieng-len/issues/' + n,
+      body: body,
+      created_at: started
+    });
+  }
+  const fetchMock = function (url) {
+    const m = String(url).match(/[?&]page=(\d+)/);
+    const page = m ? parseInt(m[1], 10) : 1;
+    const start = (page - 1) * 100;
+    const slice = issues.slice(start, start + 100);
+    return Promise.resolve({
+      ok: true,
+      status: 200,
+      json: function () { return Promise.resolve(slice); }
+    });
+  };
+  const pl = playLogMod.createPlayLog({
+    storage: mem,
+    maxGames: 500,
+    fetch: fetchMock
+  });
+  pl.setRemoteConfig({ owner: 'jvhoang', repo: 'tieng-len', label: 'play-log', token: '' });
+  // Synchronous wait via deasync-free: chain into existing async test below
+  global.__playLogFetchTest = pl.fetchPublicGames().then(function (games) {
+    ok(games.length === 103, 'fetched all 103 paginated issues (got ' + games.length + ')');
+    const listed = pl.listGamesMerged();
+    ok(listed.length === 103, 'index has all 103 (got ' + listed.length + ')');
+    ok(listed[0].id === 'g_issue_103' || listed[0].remoteIssueNumber === 103,
+      'newest issue first in list');
+    const has103 = listed.some(function (g) { return g.id === 'g_issue_103'; });
+    ok(has103, 'includes issue 103 (post-7/11 games)');
+  });
+}
+
 console.log('=== GitHub issue encode/decode ===');
 {
   const pl = playLogMod.createPlayLog({ storage: playLogMod.createMemoryStorage() });
@@ -167,14 +257,18 @@ console.log('=== GitHub issue encode/decode ===');
   ok(pl.issueTitle(sample).indexOf('human-win') >= 0, 'issue title encodes outcome');
   // publish without token → needsAuth
   pl.setRemoteConfig({ token: '', autoPublish: true, owner: 'jvhoang', repo: 'tieng-len' });
-  pl.publishGame(sample).then(function (res) {
+  var chain = Promise.resolve();
+  if (global.__playLogFetchTest) chain = global.__playLogFetchTest;
+  chain.then(function () {
+    return pl.publishGame(sample);
+  }).then(function (res) {
     ok(res && res.needsAuth === true, 'publish without token reports needsAuth');
     console.log('=== SUMMARY ===');
     console.log('Passed:', passed, 'Failed:', failed);
     if (failed) process.exit(1);
     console.log('ALL PLAY-LOG TESTS PASSED');
   }).catch(function (e) {
-    console.log('FAIL: publish promise', e);
+    console.log('FAIL: async play-log tests', e);
     process.exit(1);
   });
 }
