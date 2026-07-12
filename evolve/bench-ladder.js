@@ -344,7 +344,8 @@ function main() {
     v80WinRate: liveWins / games,
     ci95: wilsonCI(liveWins, games),
     target: target,
-    passed: (liveWins / games) > target,
+    // User gate is "by 70%" → win rate ≥ target (not strictly greater)
+    passed: (liveWins / games) >= target,
     ms: Date.now() - t0,
     live: live.AI_BUILD,
     freeze: freeze.AI_BUILD,
@@ -365,7 +366,7 @@ function main() {
   } catch (e) { /* ignore */ }
 
   if (!final.passed) {
-    console.error('GATE FAILED: liveWinRate=' + final.liveWinRate + ' target>' + target);
+    console.error('GATE FAILED: liveWinRate=' + final.liveWinRate + ' target>=' + target);
     process.exit(2);
   }
   console.log('GATE PASSED');

@@ -123,103 +123,103 @@
   },
   "classDisagreeTop": [
     {
-      "pair": "triple→triple",
+      "pair": "triple\u2192triple",
       "n": 28
     },
     {
-      "pair": "single_mid→single_mid",
+      "pair": "single_mid\u2192single_mid",
       "n": 24
     },
     {
-      "pair": "pair→pair",
+      "pair": "pair\u2192pair",
       "n": 23
     },
     {
-      "pair": "pass→pair",
+      "pair": "pass\u2192pair",
       "n": 22
     },
     {
-      "pair": "single_trash→pair",
+      "pair": "single_trash\u2192pair",
       "n": 20
     },
     {
-      "pair": "single_two→single_mid",
+      "pair": "single_two\u2192single_mid",
       "n": 17
     },
     {
-      "pair": "single_trash→single_mid",
+      "pair": "single_trash\u2192single_mid",
       "n": 16
     },
     {
-      "pair": "single_trash→single_trash",
+      "pair": "single_trash\u2192single_trash",
       "n": 15
     },
     {
-      "pair": "single_mid→single_trash",
+      "pair": "single_mid\u2192single_trash",
       "n": 14
     },
     {
-      "pair": "bomb_or_long→triple",
+      "pair": "bomb_or_long\u2192triple",
       "n": 12
     },
     {
-      "pair": "triple→pair",
+      "pair": "triple\u2192pair",
       "n": 10
     },
     {
-      "pair": "bomb_or_long→bomb_or_long",
+      "pair": "bomb_or_long\u2192bomb_or_long",
       "n": 10
     },
     {
-      "pair": "single_high→single_mid",
+      "pair": "single_high\u2192single_mid",
       "n": 10
     },
     {
-      "pair": "single_trash→triple",
+      "pair": "single_trash\u2192triple",
       "n": 8
     },
     {
-      "pair": "pair→bomb_or_long",
+      "pair": "pair\u2192bomb_or_long",
       "n": 7
     },
     {
-      "pair": "pass→triple",
+      "pair": "pass\u2192triple",
       "n": 7
     },
     {
-      "pair": "single_mid→single_high",
+      "pair": "single_mid\u2192single_high",
       "n": 7
     },
     {
-      "pair": "single_two→single_high",
+      "pair": "single_two\u2192single_high",
       "n": 7
     },
     {
-      "pair": "bomb_or_long→pair",
+      "pair": "bomb_or_long\u2192pair",
       "n": 6
     },
     {
-      "pair": "pair→triple",
+      "pair": "pair\u2192triple",
       "n": 6
     },
     {
-      "pair": "single_mid→pair",
+      "pair": "single_mid\u2192pair",
       "n": 5
     },
     {
-      "pair": "triple→bomb_or_long",
+      "pair": "triple\u2192bomb_or_long",
       "n": 5
     },
     {
-      "pair": "single_trash→single_high",
+      "pair": "single_trash\u2192single_high",
       "n": 4
     },
     {
-      "pair": "single_two→single_trash",
+      "pair": "single_two\u2192single_trash",
       "n": 3
     },
     {
-      "pair": "single_high→pair",
+      "pair": "single_high\u2192pair",
       "n": 2
     }
   ],

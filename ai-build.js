@@ -1,12 +1,11 @@
 /**
  * ai-build.js — zero-dependency build identity for the title screen.
- * Keep in sync with AI_BUILD in ai.js (ship-rung regenerates this file).
  */
 (function (root) {
   var BUILD = {
-    id: 'v8.9',
-    stamped: '2026-07-12T18:32:28Z',
-    label: 'Grandmaster v8.9'
+    id: 'v9.0',
+    stamped: '2026-07-12T20:10:01Z',
+    label: 'Grandmaster v9.0'
   };
   root.TIENLEN_AI_BUILD = BUILD;
   root.TienLenAI = root.TienLenAI || {};
