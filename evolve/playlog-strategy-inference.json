@@ -1,0 +1,61 @@
+{
+  "agree": 789,
+  "disagree": 429,
+  "byCls": {
+    "H_play_E_pass": 76,
+    "H_2_E_non2": 53,
+    "H_longer_multi": 15,
+    "E_longer_multi_H_shorter": 47,
+    "H_single_E_multi": 38,
+    "H_overkill_E_minimal": 59,
+    "H_pass_E_play": 30,
+    "H_minimal_beat_E_overkill": 42,
+    "H_trash_first_E_high_multi": 13,
+    "H_diff_multi": 26,
+    "H_higher_multi_take_control": 8,
+    "E_2_H_non2": 6,
+    "H_lower_single_save_high": 9,
+    "H_multi_E_single": 2,
+    "H_better_residual_pairs": 1,
+    "H_lower_multi_keep_high": 2,
+    "H_higher_single": 2
+  },
+  "residualScore": {
+    "hBetterRes": 186,
+    "eBetterRes": 48,
+    "tie": 89
+  },
+  "decisions": {
+    "total": 1218,
+    "exact": 789,
+    "rank": 817,
+    "exactRate": 0.6477832512315271,
+    "rankRate": 0.6707717569786535,
+    "free": {
+      "n": 504,
+      "exact": 334,
+      "rank": 351,
+      "exactRate": 0.6626984126984127,
+      "rankRate": 0.6964285714285714
+    },
+    "combat": {
+      "n": 714,
+      "exact": 455,
+      "rank": 466,
+      "exactRate": 0.6372549019607843,
+      "rankRate": 0.6526610644257703
+    }
+  },
+  "recentWindow": {
+    "cutoff": "2026-07-13T07:00:00.000Z",
+    "games": 5,
+    "decisions": 32,
+    "exact": 22,
+    "rank": 22,
+    "exactRate": 0.6875,
+    "rankRate": 0.6875
+  },
+  "policy": "search.js expertPolicy pure v9.1 (d7f053a / ladder restart baseline)",
+  "source": "/Users/johnhoang/Downloads/tienlen-playlogs-1783931122937.json",
+  "exportedAt": "2026-07-13T08:25:22.916Z"
+}

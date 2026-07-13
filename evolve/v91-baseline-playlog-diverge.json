@@ -1,0 +1,69 @@
+{
+  "source": "/Users/johnhoang/Downloads/tienlen-playlogs-1783931122937.json",
+  "exportedAt": "2026-07-13T08:25:22.916Z",
+  "liveBuild": {
+    "id": "v9.1",
+    "stamped": "2026-07-13T02:50:38Z",
+    "label": "Grandmaster v9.1"
+  },
+  "humanDecisions": 1218,
+  "exactMatch": 342,
+  "rankMatch": 349,
+  "exactRate": 0.2808,
+  "rankRate": 0.2865,
+  "skipped": 0,
+  "byCls": [
+    [
+      "rank_tie_suit",
+      349
+    ],
+    [
+      "E_longer_multi",
+      272
+    ],
+    [
+      "H_pass_E_play",
+      198
+    ],
+    [
+      "H_single_E_multi",
+      115
+    ],
+    [
+      "H_2_E_non2",
+      86
+    ],
+    [
+      "H_lower_multi_keep_high",
+      84
+    ],
+    [
+      "H_higher_multi",
+      44
+    ],
+    [
+      "H_longer_multi",
+      27
+    ],
+    [
+      "other",
+      24
+    ],
+    [
+      "H_minimal_beat_E_overkill",
+      8
+    ],
+    [
+      "H_overkill_E_minimal",
+      6
+    ],
+    [
+      "E_2_H_non2",
+      3
+    ],
+    [
+      "H_multi_E_single",
+      2
+    ]
+  ]
+}

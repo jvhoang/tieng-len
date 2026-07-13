@@ -1,0 +1,8157 @@
+{
+  "agree": 789,
+  "disagree": 429,
+  "divs": [
+    {
+      "game": "g_mriwwj6w_26fce1tp",
+      "started": "2026-07-13T07:39:49.928Z",
+      "build": "v9.2:2026-07-13T07:15:52",
+      "i": 2,
+      "free": false,
+      "human": "5S 3D 4H 6D",
+      "expert": "PASS",
+      "facing": "6C 5D 4D 3S",
+      "hand": "6S QD 7H 5S 7C 9S 3D 2D 4H QS 8C 2C 6D",
+      "handSizes": [
+        13,
+        9
+      ],
+      "thinkMs": 13756,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mriwwj6w_26fce1tp",
+      "started": "2026-07-13T07:39:49.928Z",
+      "build": "v9.2:2026-07-13T07:15:52",
+      "i": 8,
+      "free": false,
+      "human": "2D",
+      "expert": "6S",
+      "facing": "5H",
+      "hand": "6S QD 7H 7C 9S 2D QS 8C 2C",
+      "handSizes": [
+        9,
+        1
+      ],
+      "thinkMs": 39338,
+      "matchRank": false,
+      "omin": 1,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mriwwj6w_26fce1tp",
+      "started": "2026-07-13T07:39:49.928Z",
+      "build": "v9.2:2026-07-13T07:15:52",
+      "i": 12,
+      "free": true,
+      "human": "7H 6S 8C 9S",
+      "expert": "7H 7C",
+      "facing": "PASS",
+      "hand": "6S 7H 7C 9S 8C 2C",
+      "handSizes": [
+        6,
+        1
+      ],
+      "thinkMs": 17283,
+      "matchRank": false,
+      "omin": 1,
+      "cls": "H_longer_multi"
+    },
+    {
+      "game": "g_mriwt9t9_r6o1gcsp",
+      "started": "2026-07-13T07:37:17.805Z",
+      "build": "v9.2:2026-07-13T07:15:52",
+      "i": 2,
+      "free": false,
+      "human": "6H 8D 7S",
+      "expert": "PASS",
+      "facing": "6D 5C 4C",
+      "hand": "10H 6H 9C 6C 4H 6S 8D KH QC KD 9D 7S JC",
+      "handSizes": [
+        13,
+        10
+      ],
+      "thinkMs": 51777,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mriwqrjo_6lz7mni3",
+      "started": "2026-07-13T07:35:20.820Z",
+      "build": "v9.2:2026-07-13T07:15:52",
+      "i": 2,
+      "free": false,
+      "human": "6D 3H 4D 5D",
+      "expert": "PASS",
+      "facing": "6C 5C 4S 3C",
+      "hand": "6D 9C 9H 3H 2H 10H JH 4D 2C KC QS 7D 5D",
+      "handSizes": [
+        13,
+        9
+      ],
+      "thinkMs": 67086,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mriwqrjo_6lz7mni3",
+      "started": "2026-07-13T07:35:20.820Z",
+      "build": "v9.2:2026-07-13T07:15:52",
+      "i": 4,
+      "free": true,
+      "human": "10H JH KC QS",
+      "expert": "9C 10H JH QS KC",
+      "facing": "PASS",
+      "hand": "9C 9H 2H 10H JH 2C KC QS 7D",
+      "handSizes": [
+        9,
+        9
+      ],
+      "thinkMs": 24099,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mriwqrjo_6lz7mni3",
+      "started": "2026-07-13T07:35:20.820Z",
+      "build": "v9.2:2026-07-13T07:15:52",
+      "i": 8,
+      "free": true,
+      "human": "2C 2H",
+      "expert": "7D",
+      "facing": "PASS",
+      "hand": "2H 2C 7D",
+      "handSizes": [
+        3,
+        9
+      ],
+      "thinkMs": 16558,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mriwjwji_8pgetxhk",
+      "started": "2026-07-13T07:30:00.702Z",
+      "build": "v9.2:2026-07-13T07:15:52",
+      "i": 5,
+      "free": true,
+      "human": "5D",
+      "expert": "9D 10D JH",
+      "facing": "PASS",
+      "hand": "10D KS AC 9D AD 5D JH 10C 2S",
+      "handSizes": [
+        9,
+        11
+      ],
+      "thinkMs": 51148,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mriwjwji_8pgetxhk",
+      "started": "2026-07-13T07:30:00.702Z",
+      "build": "v9.2:2026-07-13T07:15:52",
+      "i": 7,
+      "free": false,
+      "human": "10C",
+      "expert": "9D",
+      "facing": "6H",
+      "hand": "10D KS AC 9D AD JH 10C 2S",
+      "handSizes": [
+        8,
+        10
+      ],
+      "thinkMs": 49211,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mriwjwji_8pgetxhk",
+      "started": "2026-07-13T07:30:00.702Z",
+      "build": "v9.2:2026-07-13T07:15:52",
+      "i": 11,
+      "free": false,
+      "human": "2S",
+      "expert": "AC",
+      "facing": "KD",
+      "hand": "10D AC 9D AD JH 2S",
+      "handSizes": [
+        6,
+        8
+      ],
+      "thinkMs": 37467,
+      "matchRank": false,
+      "omin": 8,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mristoft_0g8u55v6",
+      "started": "2026-07-13T05:45:38.297Z",
+      "build": "v9.2:2026-07-13T05:15:38",
+      "i": 6,
+      "free": false,
+      "human": "PASS",
+      "expert": "2D 2H",
+      "facing": "AH AS",
+      "hand": "6D 7D AC 7H 10H KH 4H 6H KC QH 2D QS 2H",
+      "handSizes": [
+        13,
+        5
+      ],
+      "thinkMs": 20863,
+      "matchRank": false,
+      "omin": 5,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mristoft_0g8u55v6",
+      "started": "2026-07-13T05:45:38.297Z",
+      "build": "v9.2:2026-07-13T05:15:38",
+      "i": 20,
+      "free": true,
+      "human": "2D 2H",
+      "expert": "4H",
+      "facing": "PASS",
+      "hand": "4H 2D 2H",
+      "handSizes": [
+        3,
+        3
+      ],
+      "thinkMs": 14135,
+      "matchRank": false,
+      "omin": 3,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrisnsxb_dnwjgvmv",
+      "started": "2026-07-13T05:41:04.175Z",
+      "build": "v9.2:2026-07-13T05:15:38",
+      "i": 1,
+      "free": true,
+      "human": "3C 3S 4D 4H 5S 5H",
+      "expert": "3S 4H 5H",
+      "facing": "PASS",
+      "hand": "3C 5H 8H 4H JD AC 7S 3S 10D 4D KD 5S 9D",
+      "handSizes": [
+        13,
+        13
+      ],
+      "thinkMs": 249269,
+      "matchRank": false,
+      "omin": 13,
+      "cls": "H_longer_multi"
+    },
+    {
+      "game": "g_mriskcf3_hqwezsqg",
+      "started": "2026-07-13T05:38:22.815Z",
+      "build": "v9.2:2026-07-13T05:15:38",
+      "i": 2,
+      "free": false,
+      "human": "7H 7D",
+      "expert": "PASS",
+      "facing": "3H 3S",
+      "hand": "6S 9S 4S QD 7H 7D AD KS AH 8S JH 10D 9C",
+      "handSizes": [
+        13,
+        11
+      ],
+      "thinkMs": 31364,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mriskcf3_hqwezsqg",
+      "started": "2026-07-13T05:38:22.815Z",
+      "build": "v9.2:2026-07-13T05:15:38",
+      "i": 6,
+      "free": false,
+      "human": "PASS",
+      "expert": "AD AH",
+      "facing": "AC AS",
+      "hand": "6S 9S 4S QD AD KS AH 8S JH 10D 9C",
+      "handSizes": [
+        11,
+        7
+      ],
+      "thinkMs": 2152,
+      "matchRank": false,
+      "omin": 7,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mriskcf3_hqwezsqg",
+      "started": "2026-07-13T05:38:22.815Z",
+      "build": "v9.2:2026-07-13T05:15:38",
+      "i": 10,
+      "free": false,
+      "human": "9S",
+      "expert": "10D",
+      "facing": "8C",
+      "hand": "9S 4S QD AD KS AH 8S JH 10D 9C",
+      "handSizes": [
+        10,
+        5
+      ],
+      "thinkMs": 18071,
+      "matchRank": false,
+      "omin": 5,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mriskcf3_hqwezsqg",
+      "started": "2026-07-13T05:38:22.815Z",
+      "build": "v9.2:2026-07-13T05:15:38",
+      "i": 18,
+      "free": true,
+      "human": "4S",
+      "expert": "AD AH",
+      "facing": "PASS",
+      "hand": "4S QD AD AH",
+      "handSizes": [
+        4,
+        3
+      ],
+      "thinkMs": 11015,
+      "matchRank": false,
+      "omin": 3,
+      "cls": "H_trash_first_E_high_multi"
+    },
+    {
+      "game": "g_mriskcf3_hqwezsqg",
+      "started": "2026-07-13T05:38:22.815Z",
+      "build": "v9.2:2026-07-13T05:15:38",
+      "i": 22,
+      "free": true,
+      "human": "AD",
+      "expert": "AD AH",
+      "facing": "PASS",
+      "hand": "AD AH",
+      "handSizes": [
+        2,
+        2
+      ],
+      "thinkMs": 4203,
+      "matchRank": false,
+      "omin": 2,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrisjk9r_kuv9zv92",
+      "started": "2026-07-13T05:37:46.335Z",
+      "build": "v9.2:2026-07-13T05:15:38",
+      "i": 2,
+      "free": false,
+      "human": "4C 4H",
+      "expert": "PASS",
+      "facing": "3H 3C",
+      "hand": "9C 6D 7C 2D 4C 5S 2C 4H 10H QH JH 8H 5D",
+      "handSizes": [
+        13,
+        11
+      ],
+      "thinkMs": 10088,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrisjk9r_kuv9zv92",
+      "started": "2026-07-13T05:37:46.335Z",
+      "build": "v9.2:2026-07-13T05:15:38",
+      "i": 4,
+      "free": false,
+      "human": "2D 2C",
+      "expert": "PASS",
+      "facing": "9H 9S",
+      "hand": "9C 6D 7C 2D 5S 2C 10H QH JH 8H 5D",
+      "handSizes": [
+        11,
+        9
+      ],
+      "thinkMs": 9641,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrisjk9r_kuv9zv92",
+      "started": "2026-07-13T05:37:46.335Z",
+      "build": "v9.2:2026-07-13T05:15:38",
+      "i": 6,
+      "free": true,
+      "human": "9C 6D 7C 5S 10H QH JH 8H",
+      "expert": "5D 6D 7C 8H 9C 10H JH QH",
+      "facing": "PASS",
+      "hand": "9C 6D 7C 5S 10H QH JH 8H 5D",
+      "handSizes": [
+        9,
+        9
+      ],
+      "thinkMs": 10031,
+      "matchRank": true,
+      "omin": 9,
+      "cls": "H_diff_multi"
+    },
+    {
+      "game": "g_mrishski_4hr2e88u",
+      "started": "2026-07-13T05:36:23.778Z",
+      "build": "v9.2:2026-07-13T05:15:38",
+      "i": 8,
+      "free": true,
+      "human": "5C",
+      "expert": "6S 6C",
+      "facing": "PASS",
+      "hand": "10C QC 2S 5C 2D 6S AS 6C",
+      "handSizes": [
+        8,
+        5
+      ],
+      "thinkMs": 11060,
+      "matchRank": false,
+      "omin": 5,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrishski_4hr2e88u",
+      "started": "2026-07-13T05:36:23.778Z",
+      "build": "v9.2:2026-07-13T05:15:38",
+      "i": 16,
+      "free": true,
+      "human": "AS",
+      "expert": "6S 6C",
+      "facing": "PASS",
+      "hand": "2D 6S AS 6C",
+      "handSizes": [
+        4,
+        2
+      ],
+      "thinkMs": 17873,
+      "matchRank": false,
+      "omin": 2,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrishski_4hr2e88u",
+      "started": "2026-07-13T05:36:23.778Z",
+      "build": "v9.2:2026-07-13T05:15:38",
+      "i": 18,
+      "free": true,
+      "human": "2D",
+      "expert": "6S 6C",
+      "facing": "PASS",
+      "hand": "2D 6S 6C",
+      "handSizes": [
+        3,
+        2
+      ],
+      "thinkMs": 4384,
+      "matchRank": false,
+      "omin": 2,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrise2c0_jen8dtan",
+      "started": "2026-07-13T05:33:29.808Z",
+      "build": "v9.2:2026-07-13T05:15:38",
+      "i": 1,
+      "free": true,
+      "human": "3S",
+      "expert": "3S 4H 5C 6D 7D 8C",
+      "facing": "PASS",
+      "hand": "8S 4H 3S 5C 7H 7D 3C 2H 6D 6S 8C 8D 4C",
+      "handSizes": [
+        13,
+        13
+      ],
+      "thinkMs": 65003,
+      "matchRank": false,
+      "omin": 13,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrise2c0_jen8dtan",
+      "started": "2026-07-13T05:33:29.808Z",
+      "build": "v9.2:2026-07-13T05:15:38",
+      "i": 3,
+      "free": false,
+      "human": "4C",
+      "expert": "5C",
+      "facing": "3D",
+      "hand": "8S 4H 5C 7H 7D 3C 2H 6D 6S 8C 8D 4C",
+      "handSizes": [
+        12,
+        12
+      ],
+      "thinkMs": 9450,
+      "matchRank": false,
+      "omin": 12,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrise2c0_jen8dtan",
+      "started": "2026-07-13T05:33:29.808Z",
+      "build": "v9.2:2026-07-13T05:15:38",
+      "i": 5,
+      "free": false,
+      "human": "8D",
+      "expert": "4H",
+      "facing": "4D",
+      "hand": "8S 4H 5C 7H 7D 3C 2H 6D 6S 8C 8D",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 43605,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrise2c0_jen8dtan",
+      "started": "2026-07-13T05:33:29.808Z",
+      "build": "v9.2:2026-07-13T05:15:38",
+      "i": 7,
+      "free": false,
+      "human": "2H",
+      "expert": "PASS",
+      "facing": "9H",
+      "hand": "8S 4H 5C 7H 7D 3C 2H 6D 6S 8C",
+      "handSizes": [
+        10,
+        10
+      ],
+      "thinkMs": 5134,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrise2c0_jen8dtan",
+      "started": "2026-07-13T05:33:29.808Z",
+      "build": "v9.2:2026-07-13T05:15:38",
+      "i": 9,
+      "free": true,
+      "human": "8S 7H 6D 6S 7D 8C",
+      "expert": "3C 4H 5C 6S 7D 8C",
+      "facing": "PASS",
+      "hand": "8S 4H 5C 7H 7D 3C 6D 6S 8C",
+      "handSizes": [
+        9,
+        10
+      ],
+      "thinkMs": 41068,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_diff_multi"
+    },
+    {
+      "game": "g_mriq4rpc_bmqupn3g",
+      "started": "2026-07-13T04:30:16.896Z",
+      "build": "v9.1:2026-07-13T02:50:38",
+      "i": 2,
+      "free": false,
+      "human": "9H 10D JS QH",
+      "expert": "PASS",
+      "facing": "6S 5H 4C 3D",
+      "hand": "2S 2D 9D 7S JS 10D 8C AD JD 2C QH 9H 5D",
+      "handSizes": [
+        13,
+        9
+      ],
+      "thinkMs": 69975,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mriq4rpc_bmqupn3g",
+      "started": "2026-07-13T04:30:16.896Z",
+      "build": "v9.1:2026-07-13T02:50:38",
+      "i": 4,
+      "free": true,
+      "human": "5D",
+      "expert": "7S 8C 9D",
+      "facing": "PASS",
+      "hand": "2S 2D 9D 7S 8C AD JD 2C 5D",
+      "handSizes": [
+        9,
+        9
+      ],
+      "thinkMs": 14392,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mriq4rpc_bmqupn3g",
+      "started": "2026-07-13T04:30:16.896Z",
+      "build": "v9.1:2026-07-13T02:50:38",
+      "i": 10,
+      "free": true,
+      "human": "2S 2C 2D",
+      "expert": "7S 8C 9D",
+      "facing": "PASS",
+      "hand": "2S 2D 9D 7S 8C 2C",
+      "handSizes": [
+        6,
+        7
+      ],
+      "thinkMs": 10448,
+      "matchRank": false,
+      "omin": 7,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mriq3613_4layyy3h",
+      "started": "2026-07-13T04:29:02.151Z",
+      "build": "v9.1:2026-07-13T02:50:38",
+      "i": 2,
+      "free": false,
+      "human": "4S 4D",
+      "expert": "PASS",
+      "facing": "3H 3D",
+      "hand": "KC 9H AD 4S 7S 6D 7H 4D 10S 2D 7C 5C 8H",
+      "handSizes": [
+        13,
+        11
+      ],
+      "thinkMs": 18244,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mriq3613_4layyy3h",
+      "started": "2026-07-13T04:29:02.151Z",
+      "build": "v9.1:2026-07-13T02:50:38",
+      "i": 4,
+      "free": false,
+      "human": "7S 7H",
+      "expert": "PASS",
+      "facing": "6C 6S",
+      "hand": "KC 9H AD 7S 6D 7H 10S 2D 7C 5C 8H",
+      "handSizes": [
+        11,
+        9
+      ],
+      "thinkMs": 7542,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mriq3613_4layyy3h",
+      "started": "2026-07-13T04:29:02.151Z",
+      "build": "v9.1:2026-07-13T02:50:38",
+      "i": 8,
+      "free": false,
+      "human": "KC",
+      "expert": "10S",
+      "facing": "5D",
+      "hand": "KC 9H AD 6D 10S 2D 7C 5C 8H",
+      "handSizes": [
+        9,
+        6
+      ],
+      "thinkMs": 28196,
+      "matchRank": false,
+      "omin": 6,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mriq0riy_ykzhyefa",
+      "started": "2026-07-13T04:27:10.042Z",
+      "build": "v9.1:2026-07-13T02:50:38",
+      "i": 2,
+      "free": false,
+      "human": "4H 4S",
+      "expert": "PASS",
+      "facing": "3H 3S",
+      "hand": "9C 2H KS AS 8D 3C 2S 6C 4H JC QH 4S QC",
+      "handSizes": [
+        13,
+        11
+      ],
+      "thinkMs": 5406,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mriq0riy_ykzhyefa",
+      "started": "2026-07-13T04:27:10.042Z",
+      "build": "v9.1:2026-07-13T02:50:38",
+      "i": 6,
+      "free": false,
+      "human": "KS JC QC",
+      "expert": "JC QH KS",
+      "facing": "6H 5H 4C",
+      "hand": "9C 2H KS AS 8D 3C 2S 6C JC QH QC",
+      "handSizes": [
+        11,
+        6
+      ],
+      "thinkMs": 30718,
+      "matchRank": true,
+      "omin": 6,
+      "cls": "H_diff_multi"
+    },
+    {
+      "game": "g_mripysae_f0hxf9ec",
+      "started": "2026-07-13T04:25:37.718Z",
+      "build": "v9.1:2026-07-13T02:50:38",
+      "i": 2,
+      "free": false,
+      "human": "4D 4H",
+      "expert": "PASS",
+      "facing": "3D 3C",
+      "hand": "2C 7H QH 3H 8H 4D 6H 7C 4H 8C KD 7D JC",
+      "handSizes": [
+        13,
+        11
+      ],
+      "thinkMs": 9922,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mripysae_f0hxf9ec",
+      "started": "2026-07-13T04:25:37.718Z",
+      "build": "v9.1:2026-07-13T02:50:38",
+      "i": 10,
+      "free": false,
+      "human": "2C",
+      "expert": "KD",
+      "facing": "QC",
+      "hand": "2C 7H QH 3H 8H 7C 8C KD 7D JC",
+      "handSizes": [
+        10,
+        3
+      ],
+      "thinkMs": 47893,
+      "matchRank": false,
+      "omin": 3,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mripun6j_gjpbmp04",
+      "started": "2026-07-13T04:22:24.475Z",
+      "build": "v9.1:2026-07-13T02:50:38",
+      "i": 2,
+      "free": false,
+      "human": "8S",
+      "expert": "JS",
+      "facing": "3D",
+      "hand": "10S 9D 6S JS 2H 2C 8S 4C 4S KD 6D AD 8D",
+      "handSizes": [
+        13,
+        12
+      ],
+      "thinkMs": 37726,
+      "matchRank": false,
+      "omin": 12,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mripun6j_gjpbmp04",
+      "started": "2026-07-13T04:22:24.475Z",
+      "build": "v9.1:2026-07-13T02:50:38",
+      "i": 4,
+      "free": false,
+      "human": "KD",
+      "expert": "8D",
+      "facing": "8C",
+      "hand": "10S 9D 6S JS 2H 2C 4C 4S KD 6D AD 8D",
+      "handSizes": [
+        12,
+        11
+      ],
+      "thinkMs": 5659,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mripun6j_gjpbmp04",
+      "started": "2026-07-13T04:22:24.475Z",
+      "build": "v9.1:2026-07-13T02:50:38",
+      "i": 8,
+      "free": true,
+      "human": "4C 4S",
+      "expert": "8D 9D 10S JS",
+      "facing": "PASS",
+      "hand": "10S 9D 6S JS 2H 4C 4S 6D AD 8D",
+      "handSizes": [
+        10,
+        10
+      ],
+      "thinkMs": 5318,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mripun6j_gjpbmp04",
+      "started": "2026-07-13T04:22:24.475Z",
+      "build": "v9.1:2026-07-13T02:50:38",
+      "i": 14,
+      "free": false,
+      "human": "AD",
+      "expert": "8D",
+      "facing": "4D",
+      "hand": "10S 9D 6S JS 2H 6D AD 8D",
+      "handSizes": [
+        8,
+        2
+      ],
+      "thinkMs": 75502,
+      "matchRank": false,
+      "omin": 2,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mripun6j_gjpbmp04",
+      "started": "2026-07-13T04:22:24.475Z",
+      "build": "v9.1:2026-07-13T02:50:38",
+      "i": 18,
+      "free": true,
+      "human": "2H",
+      "expert": "6S 6D",
+      "facing": "PASS",
+      "hand": "6S 2H 6D",
+      "handSizes": [
+        3,
+        2
+      ],
+      "thinkMs": 31560,
+      "matchRank": false,
+      "omin": 2,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mript160_s053k34i",
+      "started": "2026-07-13T04:21:09.288Z",
+      "build": "v9.1:2026-07-13T02:50:38",
+      "i": 2,
+      "free": false,
+      "human": "4S 4H",
+      "expert": "PASS",
+      "facing": "3C 3S",
+      "hand": "KH JS KC 4S 2S AD 5D 8D 7C QS 4H 5H 7H",
+      "handSizes": [
+        13,
+        11
+      ],
+      "thinkMs": 3913,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mript160_s053k34i",
+      "started": "2026-07-13T04:21:09.288Z",
+      "build": "v9.1:2026-07-13T02:50:38",
+      "i": 4,
+      "free": false,
+      "human": "5D 5H",
+      "expert": "PASS",
+      "facing": "5C 5S",
+      "hand": "KH JS KC 2S AD 5D 8D 7C QS 5H 7H",
+      "handSizes": [
+        11,
+        9
+      ],
+      "thinkMs": 2290,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mript160_s053k34i",
+      "started": "2026-07-13T04:21:09.288Z",
+      "build": "v9.1:2026-07-13T02:50:38",
+      "i": 6,
+      "free": false,
+      "human": "PASS",
+      "expert": "KH KC",
+      "facing": "QH QC",
+      "hand": "KH JS KC 2S AD 8D 7C QS 7H",
+      "handSizes": [
+        9,
+        7
+      ],
+      "thinkMs": 15650,
+      "matchRank": false,
+      "omin": 7,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mript160_s053k34i",
+      "started": "2026-07-13T04:21:09.288Z",
+      "build": "v9.1:2026-07-13T02:50:38",
+      "i": 10,
+      "free": true,
+      "human": "8D",
+      "expert": "7C 7H",
+      "facing": "PASS",
+      "hand": "KC 2S 8D 7C 7H",
+      "handSizes": [
+        5,
+        3
+      ],
+      "thinkMs": 15515,
+      "matchRank": false,
+      "omin": 3,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mripql82_qmtc1u00",
+      "started": "2026-07-13T04:19:15.314Z",
+      "build": "v9.1:2026-07-13T02:50:38",
+      "i": 5,
+      "free": false,
+      "human": "AH",
+      "expert": "8D",
+      "facing": "7C",
+      "hand": "KD 10C AD 2D 9S 8D 10S JS AH 9C QS",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 81187,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mripql82_qmtc1u00",
+      "started": "2026-07-13T04:19:15.314Z",
+      "build": "v9.1:2026-07-13T02:50:38",
+      "i": 7,
+      "free": true,
+      "human": "8D 9S 10S",
+      "expert": "8D 9C 10S JS QS KD AD",
+      "facing": "PASS",
+      "hand": "KD 10C AD 2D 9S 8D 10S JS 9C QS",
+      "handSizes": [
+        10,
+        11
+      ],
+      "thinkMs": 8902,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mripql82_qmtc1u00",
+      "started": "2026-07-13T04:19:15.314Z",
+      "build": "v9.1:2026-07-13T02:50:38",
+      "i": 9,
+      "free": false,
+      "human": "QS KD AD",
+      "expert": "JS QS KD",
+      "facing": "KC QD JC",
+      "hand": "KD 10C AD 2D JS 9C QS",
+      "handSizes": [
+        7,
+        8
+      ],
+      "thinkMs": 6555,
+      "matchRank": false,
+      "omin": 8,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mripp2xk_izyzph34",
+      "started": "2026-07-13T04:18:04.952Z",
+      "build": "v9.1:2026-07-13T02:50:38",
+      "i": 5,
+      "free": false,
+      "human": "PASS",
+      "expert": "KH AH 2C",
+      "facing": "KC QC JC",
+      "hand": "2C 10H 10D KH AH AD JD",
+      "handSizes": [
+        7,
+        7
+      ],
+      "thinkMs": 18342,
+      "matchRank": false,
+      "omin": 7,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mripmy69_alk72537",
+      "started": "2026-07-13T04:16:25.473Z",
+      "build": "v9.1:2026-07-13T02:50:38",
+      "i": 8,
+      "free": true,
+      "human": "10S QD 8S 7C JD 6C 9D",
+      "expert": "6C 7S 8S 9D 10C JD QD",
+      "facing": "PASS",
+      "hand": "10S QD 2D 8S 10C 7C 7S JD 2H 6C 9D",
+      "handSizes": [
+        11,
+        5
+      ],
+      "thinkMs": 23044,
+      "matchRank": true,
+      "omin": 5,
+      "cls": "H_diff_multi"
+    },
+    {
+      "game": "g_mri9f0k7_0svoxdnb",
+      "started": "2026-07-12T20:42:21.463Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 2,
+      "free": false,
+      "human": "3H 3D",
+      "expert": "PASS",
+      "facing": "3C 3S",
+      "hand": "3H 4S AD 2D AC AS 6C 3D 8C 8D 8H 5H 10S",
+      "handSizes": [
+        13,
+        11
+      ],
+      "thinkMs": 14205,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mri9f0k7_0svoxdnb",
+      "started": "2026-07-12T20:42:21.463Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 4,
+      "free": false,
+      "human": "AS AC",
+      "expert": "PASS",
+      "facing": "7D 7C",
+      "hand": "4S AD 2D AC AS 6C 8C 8D 8H 5H 10S",
+      "handSizes": [
+        11,
+        9
+      ],
+      "thinkMs": 15374,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mri9f0k7_0svoxdnb",
+      "started": "2026-07-12T20:42:21.463Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 6,
+      "free": true,
+      "human": "8C 8D 8H",
+      "expert": "4S 5H 6C",
+      "facing": "PASS",
+      "hand": "4S AD 2D 6C 8C 8D 8H 5H 10S",
+      "handSizes": [
+        9,
+        9
+      ],
+      "thinkMs": 14545,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_higher_multi_take_control"
+    },
+    {
+      "game": "g_mri9drlf_s674h4qy",
+      "started": "2026-07-12T20:41:23.187Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 5,
+      "free": false,
+      "human": "2D",
+      "expert": "QS",
+      "facing": "9D",
+      "hand": "2D JD JC 4C KH 8C 4H AS 2H 8S QS",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 15223,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mri9drlf_s674h4qy",
+      "started": "2026-07-12T20:41:23.187Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 7,
+      "free": true,
+      "human": "4C 4H",
+      "expert": "JD QS KH AS",
+      "facing": "PASS",
+      "hand": "JD JC 4C KH 8C 4H AS 2H 8S QS",
+      "handSizes": [
+        10,
+        11
+      ],
+      "thinkMs": 9000,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mri9drlf_s674h4qy",
+      "started": "2026-07-12T20:41:23.187Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 11,
+      "free": true,
+      "human": "JC JD",
+      "expert": "JD QS KH AS",
+      "facing": "PASS",
+      "hand": "JD JC KH AS 2H QS",
+      "handSizes": [
+        6,
+        9
+      ],
+      "thinkMs": 7457,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mri9c3t6_5x8bzd3r",
+      "started": "2026-07-12T20:40:05.706Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 1,
+      "free": true,
+      "human": "3D 3S",
+      "expert": "3S 4C 5D",
+      "facing": "PASS",
+      "hand": "5D AC QS AS 3D 3S JS 8S 5H AH 9S 8C 4C",
+      "handSizes": [
+        13,
+        13
+      ],
+      "thinkMs": 7853,
+      "matchRank": false,
+      "omin": 13,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mri9c3t6_5x8bzd3r",
+      "started": "2026-07-12T20:40:05.706Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 3,
+      "free": false,
+      "human": "5D 5H",
+      "expert": "PASS",
+      "facing": "4H 4S",
+      "hand": "5D AC QS AS JS 8S 5H AH 9S 8C 4C",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 2918,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mri9c3t6_5x8bzd3r",
+      "started": "2026-07-12T20:40:05.706Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 5,
+      "free": false,
+      "human": "PASS",
+      "expert": "AC AS",
+      "facing": "9D 9C",
+      "hand": "AC QS AS JS 8S AH 9S 8C 4C",
+      "handSizes": [
+        9,
+        9
+      ],
+      "thinkMs": 15923,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mri9bahh_2j5gxj8d",
+      "started": "2026-07-12T20:39:27.701Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 1,
+      "free": true,
+      "human": "5S 6C 3H 4D 8D 7S",
+      "expert": "3H 4S 5S 6H 7S 8D",
+      "facing": "PASS",
+      "hand": "10D 5S 6C 2D 6H 3H 4D JS 8D JD 4S 7S AH",
+      "handSizes": [
+        13,
+        13
+      ],
+      "thinkMs": 15412,
+      "matchRank": true,
+      "omin": 13,
+      "cls": "H_diff_multi"
+    },
+    {
+      "game": "g_mri9bahh_2j5gxj8d",
+      "started": "2026-07-12T20:39:27.701Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 3,
+      "free": true,
+      "human": "4S",
+      "expert": "JS JD",
+      "facing": "PASS",
+      "hand": "10D 2D 6H JS JD 4S AH",
+      "handSizes": [
+        7,
+        13
+      ],
+      "thinkMs": 2079,
+      "matchRank": false,
+      "omin": 13,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mri9bahh_2j5gxj8d",
+      "started": "2026-07-12T20:39:27.701Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 11,
+      "free": true,
+      "human": "2D",
+      "expert": "JS JD",
+      "facing": "PASS",
+      "hand": "2D JS JD",
+      "handSizes": [
+        3,
+        10
+      ],
+      "thinkMs": 2701,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mri99w0j_ly16028e",
+      "started": "2026-07-12T20:38:22.291Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 2,
+      "free": false,
+      "human": "6H 6C",
+      "expert": "PASS",
+      "facing": "3H 3D",
+      "hand": "JS 9C 6H 10H JH AH 2H 2C 5S 8D AC 6C AD",
+      "handSizes": [
+        13,
+        11
+      ],
+      "thinkMs": 4349,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mri99w0j_ly16028e",
+      "started": "2026-07-12T20:38:22.291Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 4,
+      "free": false,
+      "human": "AC AD",
+      "expert": "PASS",
+      "facing": "7H 7S",
+      "hand": "JS 9C 10H JH AH 2H 2C 5S 8D AC AD",
+      "handSizes": [
+        11,
+        9
+      ],
+      "thinkMs": 15907,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mri99w0j_ly16028e",
+      "started": "2026-07-12T20:38:22.291Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 6,
+      "free": true,
+      "human": "5S",
+      "expert": "8D 9C 10H JS",
+      "facing": "PASS",
+      "hand": "JS 9C 10H JH AH 2H 2C 5S 8D",
+      "handSizes": [
+        9,
+        9
+      ],
+      "thinkMs": 13034,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mri99w0j_ly16028e",
+      "started": "2026-07-12T20:38:22.291Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 8,
+      "free": false,
+      "human": "JS",
+      "expert": "8D",
+      "facing": "5H",
+      "hand": "JS 9C 10H JH AH 2H 2C 8D",
+      "handSizes": [
+        8,
+        8
+      ],
+      "thinkMs": 11566,
+      "matchRank": false,
+      "omin": 8,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mri99w0j_ly16028e",
+      "started": "2026-07-12T20:38:22.291Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 10,
+      "free": false,
+      "human": "AH",
+      "expert": "JH",
+      "facing": "JC",
+      "hand": "9C 10H JH AH 2H 2C 8D",
+      "handSizes": [
+        7,
+        7
+      ],
+      "thinkMs": 4298,
+      "matchRank": false,
+      "omin": 7,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mri99w0j_ly16028e",
+      "started": "2026-07-12T20:38:22.291Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 12,
+      "free": true,
+      "human": "2C 2H",
+      "expert": "8D 9C 10H JH",
+      "facing": "PASS",
+      "hand": "9C 10H JH 2H 2C 8D",
+      "handSizes": [
+        6,
+        7
+      ],
+      "thinkMs": 5685,
+      "matchRank": false,
+      "omin": 7,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mri93uhu_9pa5jro0",
+      "started": "2026-07-12T20:33:40.386Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 9,
+      "free": false,
+      "human": "10D",
+      "expert": "8S",
+      "facing": "7D",
+      "hand": "7C 5D 6D JD 10D 2S 5H 6C 2D 5C 8S",
+      "handSizes": [
+        11,
+        2
+      ],
+      "thinkMs": 16437,
+      "matchRank": false,
+      "omin": 2,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mri93uhu_9pa5jro0",
+      "started": "2026-07-12T20:33:40.386Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 13,
+      "free": true,
+      "human": "6C 7C 8S",
+      "expert": "5D 5H 5C",
+      "facing": "PASS",
+      "hand": "7C 5D 6D JD 5H 6C 2D 5C 8S",
+      "handSizes": [
+        9,
+        1
+      ],
+      "thinkMs": 19105,
+      "matchRank": false,
+      "omin": 1,
+      "cls": "H_higher_multi_take_control"
+    },
+    {
+      "game": "g_mri90ux9_b13rf1x6",
+      "started": "2026-07-12T20:31:20.973Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 1,
+      "free": true,
+      "human": "3S 3D 3C",
+      "expert": "3S 4H 5H 6D",
+      "facing": "PASS",
+      "hand": "3C QH 3D 3S 6D 8D 4H 6H 4C 5H AD 2H 2C",
+      "handSizes": [
+        13,
+        13
+      ],
+      "thinkMs": 40114,
+      "matchRank": false,
+      "omin": 13,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mri90ux9_b13rf1x6",
+      "started": "2026-07-12T20:31:20.973Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 9,
+      "free": false,
+      "human": "AD",
+      "expert": "2C",
+      "facing": "AS",
+      "hand": "QH 6D 8D 4H 6H 4C 5H AD 2H 2C",
+      "handSizes": [
+        10,
+        2
+      ],
+      "thinkMs": 6858,
+      "matchRank": false,
+      "omin": 2,
+      "cls": "E_2_H_non2"
+    },
+    {
+      "game": "g_mri90ux9_b13rf1x6",
+      "started": "2026-07-12T20:31:20.973Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 11,
+      "free": true,
+      "human": "4C 4H",
+      "expert": "4H 5H 6D",
+      "facing": "PASS",
+      "hand": "QH 6D 8D 4H 6H 4C 5H 2H 2C",
+      "handSizes": [
+        9,
+        2
+      ],
+      "thinkMs": 11886,
+      "matchRank": false,
+      "omin": 2,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mri90ux9_b13rf1x6",
+      "started": "2026-07-12T20:31:20.973Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 17,
+      "free": false,
+      "human": "2H",
+      "expert": "8D",
+      "facing": "6S",
+      "hand": "QH 8D 2H 2C",
+      "handSizes": [
+        4,
+        1
+      ],
+      "thinkMs": 8955,
+      "matchRank": false,
+      "omin": 1,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mri8z5lv_kuuzzf04",
+      "started": "2026-07-12T20:30:01.507Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 8,
+      "free": true,
+      "human": "8H 6S 7D 9S",
+      "expert": "6S 7S 8D 9S",
+      "facing": "PASS",
+      "hand": "8H 6S 8C 7D 3D AH 8D QD 7S QS 9S",
+      "handSizes": [
+        11,
+        3
+      ],
+      "thinkMs": 21658,
+      "matchRank": true,
+      "omin": 3,
+      "cls": "H_diff_multi"
+    },
+    {
+      "game": "g_mri8z5lv_kuuzzf04",
+      "started": "2026-07-12T20:30:01.507Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 14,
+      "free": true,
+      "human": "3D",
+      "expert": "AH",
+      "facing": "PASS",
+      "hand": "3D AH 7S",
+      "handSizes": [
+        3,
+        3
+      ],
+      "thinkMs": 7639,
+      "matchRank": false,
+      "omin": 3,
+      "cls": "H_lower_single_save_high"
+    },
+    {
+      "game": "g_mri8xhut_o3hn3nyf",
+      "started": "2026-07-12T20:28:44.069Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 9,
+      "free": true,
+      "human": "2H",
+      "expert": "4D 4H 4S",
+      "facing": "PASS",
+      "hand": "7D 4D 2H AS 7S 4H 4S AD 4C",
+      "handSizes": [
+        9,
+        10
+      ],
+      "thinkMs": 16824,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mri8xhut_o3hn3nyf",
+      "started": "2026-07-12T20:28:44.069Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 11,
+      "free": true,
+      "human": "4S 4C 4H 4D",
+      "expert": "4D 4H 4S",
+      "facing": "PASS",
+      "hand": "7D 4D AS 7S 4H 4S AD 4C",
+      "handSizes": [
+        8,
+        10
+      ],
+      "thinkMs": 4715,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_longer_multi"
+    },
+    {
+      "game": "g_mri8o103_q1z81zgx",
+      "started": "2026-07-12T20:21:22.323Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 6,
+      "free": false,
+      "human": "10H",
+      "expert": "9H",
+      "facing": "9S",
+      "hand": "9H KD 10H 7S 5C 3C 10C 3D JD 8D 7D KC JH",
+      "handSizes": [
+        13,
+        3
+      ],
+      "thinkMs": 65252,
+      "matchRank": false,
+      "omin": 3,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mri8mpoa_fjpjx5vh",
+      "started": "2026-07-12T20:20:20.986Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 9,
+      "free": false,
+      "human": "9H",
+      "expert": "JC",
+      "facing": "9C",
+      "hand": "KS JC AC QC 9S 10D 2S 10S 9H",
+      "handSizes": [
+        9,
+        9
+      ],
+      "thinkMs": 10990,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mri8mpoa_fjpjx5vh",
+      "started": "2026-07-12T20:20:20.986Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 11,
+      "free": false,
+      "human": "2S",
+      "expert": "QC",
+      "facing": "JD",
+      "hand": "KS JC AC QC 9S 10D 2S 10S",
+      "handSizes": [
+        8,
+        8
+      ],
+      "thinkMs": 23040,
+      "matchRank": false,
+      "omin": 8,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mri8mpoa_fjpjx5vh",
+      "started": "2026-07-12T20:20:20.986Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 13,
+      "free": true,
+      "human": "KS JC AC QC 9S 10D",
+      "expert": "9S 10S JC QC KS AC",
+      "facing": "PASS",
+      "hand": "KS JC AC QC 9S 10D 10S",
+      "handSizes": [
+        7,
+        8
+      ],
+      "thinkMs": 4629,
+      "matchRank": true,
+      "omin": 8,
+      "cls": "H_diff_multi"
+    },
+    {
+      "game": "g_mri8ky47_xg3w6dcf",
+      "started": "2026-07-12T20:18:58.615Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 2,
+      "free": false,
+      "human": "8H 7H 9S",
+      "expert": "PASS",
+      "facing": "5C 4C 3S",
+      "hand": "9D JC 9H 10S 4S JH 9C 8H 4D 9S JS 7H 2D",
+      "handSizes": [
+        13,
+        10
+      ],
+      "thinkMs": 48286,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mri8ky47_xg3w6dcf",
+      "started": "2026-07-12T20:18:58.615Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 4,
+      "free": true,
+      "human": "9H 10S JS",
+      "expert": "9D 9H 9C",
+      "facing": "PASS",
+      "hand": "9D JC 9H 10S 4S JH 9C 4D JS 2D",
+      "handSizes": [
+        10,
+        10
+      ],
+      "thinkMs": 15787,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_higher_multi_take_control"
+    },
+    {
+      "game": "g_mri8ivd0_091t9iuz",
+      "started": "2026-07-12T20:17:21.732Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 1,
+      "free": true,
+      "human": "3S 3D 3H",
+      "expert": "3S 4S 5D 6C 7D",
+      "facing": "PASS",
+      "hand": "6C 4S 2C 3H JH QC 3S 7D QS 5D 3D 5H AC",
+      "handSizes": [
+        13,
+        13
+      ],
+      "thinkMs": 62783,
+      "matchRank": false,
+      "omin": 13,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mri8ivd0_091t9iuz",
+      "started": "2026-07-12T20:17:21.732Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 5,
+      "free": true,
+      "human": "5H",
+      "expert": "QC QS",
+      "facing": "PASS",
+      "hand": "2C JH QC QS 5H AC",
+      "handSizes": [
+        6,
+        13
+      ],
+      "thinkMs": 6808,
+      "matchRank": false,
+      "omin": 13,
+      "cls": "H_trash_first_E_high_multi"
+    },
+    {
+      "game": "g_mri8ivd0_091t9iuz",
+      "started": "2026-07-12T20:17:21.732Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 11,
+      "free": true,
+      "human": "2C",
+      "expert": "QC QS",
+      "facing": "PASS",
+      "hand": "2C QC QS",
+      "handSizes": [
+        3,
+        11
+      ],
+      "thinkMs": 9419,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mri8gvll_dgeiak8q",
+      "started": "2026-07-12T20:15:48.729Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 2,
+      "free": false,
+      "human": "6D 6C",
+      "expert": "PASS",
+      "facing": "3H 3C",
+      "hand": "QD JS JH 5C KS 10D 9D 10H 3D QH 6D QC 6C",
+      "handSizes": [
+        13,
+        11
+      ],
+      "thinkMs": 6186,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mri8gvll_dgeiak8q",
+      "started": "2026-07-12T20:15:48.729Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 4,
+      "free": false,
+      "human": "QD QH",
+      "expert": "PASS",
+      "facing": "7H 7S",
+      "hand": "QD JS JH 5C KS 10D 9D 10H 3D QH QC",
+      "handSizes": [
+        11,
+        9
+      ],
+      "thinkMs": 25416,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mri8gvll_dgeiak8q",
+      "started": "2026-07-12T20:15:48.729Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 6,
+      "free": true,
+      "human": "9D 10D JS",
+      "expert": "9D 10H JH QC KS",
+      "facing": "PASS",
+      "hand": "JS JH 5C KS 10D 9D 10H 3D QC",
+      "handSizes": [
+        9,
+        9
+      ],
+      "thinkMs": 21759,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mri8gvll_dgeiak8q",
+      "started": "2026-07-12T20:15:48.729Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 8,
+      "free": true,
+      "human": "3D",
+      "expert": "10H JH QC KS",
+      "facing": "PASS",
+      "hand": "JH 5C KS 10H 3D QC",
+      "handSizes": [
+        6,
+        9
+      ],
+      "thinkMs": 13514,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_trash_first_E_high_multi"
+    },
+    {
+      "game": "g_mri8gvll_dgeiak8q",
+      "started": "2026-07-12T20:15:48.729Z",
+      "build": "v9.0:2026-07-12T20:10:01",
+      "i": 12,
+      "free": false,
+      "human": "KS",
+      "expert": "10H",
+      "facing": "6S",
+      "hand": "JH KS 10H QC",
+      "handSizes": [
+        4,
+        7
+      ],
+      "thinkMs": 4057,
+      "matchRank": false,
+      "omin": 7,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mri64iec_z1e6zay8",
+      "started": "2026-07-12T19:10:12.516Z",
+      "build": "v8.9:2026-07-12T18:32:28",
+      "i": 11,
+      "free": false,
+      "human": "AD",
+      "expert": "2S",
+      "facing": "JH",
+      "hand": "QH 2H 2S 7C 7H AD",
+      "handSizes": [
+        6,
+        1
+      ],
+      "thinkMs": 32475,
+      "matchRank": false,
+      "omin": 1,
+      "cls": "E_2_H_non2"
+    },
+    {
+      "game": "g_mri64iec_z1e6zay8",
+      "started": "2026-07-12T19:10:12.516Z",
+      "build": "v8.9:2026-07-12T18:32:28",
+      "i": 15,
+      "free": true,
+      "human": "2H 2S",
+      "expert": "2H",
+      "facing": "PASS",
+      "hand": "QH 2H 2S",
+      "handSizes": [
+        3,
+        1
+      ],
+      "thinkMs": 2977,
+      "matchRank": false,
+      "omin": 1,
+      "cls": "H_multi_E_single"
+    },
+    {
+      "game": "g_mri62fge_v64znzmz",
+      "started": "2026-07-12T19:08:35.391Z",
+      "build": "v8.9:2026-07-12T18:32:28",
+      "i": 2,
+      "free": false,
+      "human": "3D",
+      "expert": "JS",
+      "facing": "3C",
+      "hand": "KD 2H 5S 4D JS 5C 3D AH AC 6D 5D 7S 3H",
+      "handSizes": [
+        13,
+        12
+      ],
+      "thinkMs": 17983,
+      "matchRank": false,
+      "omin": 12,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mri62fge_v64znzmz",
+      "started": "2026-07-12T19:08:35.391Z",
+      "build": "v8.9:2026-07-12T18:32:28",
+      "i": 8,
+      "free": true,
+      "human": "3H 4D 5S 6D 7S",
+      "expert": "3H 4D 5D 6D 7S",
+      "facing": "PASS",
+      "hand": "2H 5S 4D 5C AH AC 6D 5D 7S 3H",
+      "handSizes": [
+        10,
+        10
+      ],
+      "thinkMs": 14220,
+      "matchRank": true,
+      "omin": 10,
+      "cls": "H_diff_multi"
+    },
+    {
+      "game": "g_mri62fge_v64znzmz",
+      "started": "2026-07-12T19:08:35.391Z",
+      "build": "v8.9:2026-07-12T18:32:28",
+      "i": 12,
+      "free": false,
+      "human": "2H",
+      "expert": "AH",
+      "facing": "6H",
+      "hand": "2H 5C AH AC 5D",
+      "handSizes": [
+        5,
+        4
+      ],
+      "thinkMs": 16981,
+      "matchRank": false,
+      "omin": 4,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mri4xwnc_8kkc1u9r",
+      "started": "2026-07-12T18:37:04.776Z",
+      "build": "v8.9:2026-07-12T18:25:34",
+      "i": 12,
+      "free": true,
+      "human": "4H 3D 5S",
+      "expert": "3D 4C 5S 6H",
+      "facing": "PASS",
+      "hand": "JC KC 6H 4H 5D 3D 4C QH 5S",
+      "handSizes": [
+        9,
+        6
+      ],
+      "thinkMs": 20774,
+      "matchRank": false,
+      "omin": 6,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mri4vknx_mzbns8kw",
+      "started": "2026-07-12T18:35:15.933Z",
+      "build": "v8.9:2026-07-12T18:25:34",
+      "i": 8,
+      "free": true,
+      "human": "7S 6D 3C 4C 5C",
+      "expert": "3C 4D 5C 6D 7S 8S",
+      "facing": "PASS",
+      "hand": "7S 8C 6D 3C 4C 8S 5C 4D AH",
+      "handSizes": [
+        9,
+        4
+      ],
+      "thinkMs": 49682,
+      "matchRank": false,
+      "omin": 4,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mri4vknx_mzbns8kw",
+      "started": "2026-07-12T18:35:15.933Z",
+      "build": "v8.9:2026-07-12T18:25:34",
+      "i": 10,
+      "free": true,
+      "human": "4D",
+      "expert": "8C 8S",
+      "facing": "PASS",
+      "hand": "8C 8S 4D AH",
+      "handSizes": [
+        4,
+        4
+      ],
+      "thinkMs": 17586,
+      "matchRank": false,
+      "omin": 4,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mri4d3jv_5x1bb5bj",
+      "started": "2026-07-12T18:20:53.947Z",
+      "build": "?:",
+      "i": 3,
+      "free": false,
+      "human": "9S 9C",
+      "expert": "PASS",
+      "facing": "6C 6S",
+      "hand": "5D KD JS QS 8C 8D 5C 8H 9C 5S 9S",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 9375,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mri0115v_jrkjy0hz",
+      "started": "2026-07-12T16:19:32.515Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "8S",
+      "expert": "6D",
+      "facing": "5S",
+      "hand": "KS QC 8S QD JC 6D 8D 10H 7C KD 2H AD",
+      "handSizes": [
+        12,
+        11
+      ],
+      "thinkMs": 25354,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mri0115v_jrkjy0hz",
+      "started": "2026-07-12T16:19:32.515Z",
+      "build": "?:",
+      "i": 6,
+      "free": false,
+      "human": "KD",
+      "expert": "10H",
+      "facing": "10S",
+      "hand": "KS QC QD JC 6D 8D 10H 7C KD 2H AD",
+      "handSizes": [
+        11,
+        10
+      ],
+      "thinkMs": 23117,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mri0115v_jrkjy0hz",
+      "started": "2026-07-12T16:19:32.515Z",
+      "build": "?:",
+      "i": 10,
+      "free": true,
+      "human": "6D 7C 8D",
+      "expert": "10H JC QD KS AD",
+      "facing": "PASS",
+      "hand": "KS QC QD JC 6D 8D 10H 7C AD",
+      "handSizes": [
+        9,
+        9
+      ],
+      "thinkMs": 13034,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrhzzpo4_pkh19jk5",
+      "started": "2026-07-12T16:18:30.964Z",
+      "build": "?:",
+      "i": 5,
+      "free": false,
+      "human": "2S",
+      "expert": "KD",
+      "facing": "9D",
+      "hand": "KD 2H 2S KS 8S 6C KH 8D 7H 7C 6D",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 12648,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrhzzpo4_pkh19jk5",
+      "started": "2026-07-12T16:18:30.964Z",
+      "build": "?:",
+      "i": 7,
+      "free": true,
+      "human": "2H",
+      "expert": "6C 7H 8S",
+      "facing": "PASS",
+      "hand": "KD 2H KS 8S 6C KH 8D 7H 7C 6D",
+      "handSizes": [
+        10,
+        11
+      ],
+      "thinkMs": 12567,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrhzzpo4_pkh19jk5",
+      "started": "2026-07-12T16:18:30.964Z",
+      "build": "?:",
+      "i": 9,
+      "free": true,
+      "human": "8S 6C 7H 6D 7C 8D",
+      "expert": "6C 7H 8S",
+      "facing": "PASS",
+      "hand": "KD KS 8S 6C KH 8D 7H 7C 6D",
+      "handSizes": [
+        9,
+        11
+      ],
+      "thinkMs": 6035,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_longer_multi"
+    },
+    {
+      "game": "g_mrhzx1ax_1501xo37",
+      "started": "2026-07-12T16:16:26.073Z",
+      "build": "?:",
+      "i": 8,
+      "free": false,
+      "human": "PASS",
+      "expert": "2S",
+      "facing": "AH",
+      "hand": "QC JD 10C 4H 10H QS 8C 4D JH 2S",
+      "handSizes": [
+        10,
+        9
+      ],
+      "thinkMs": 42636,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mrhzx1ax_1501xo37",
+      "started": "2026-07-12T16:16:26.073Z",
+      "build": "?:",
+      "i": 10,
+      "free": false,
+      "human": "PASS",
+      "expert": "10C 10H",
+      "facing": "5H 5C",
+      "hand": "QC JD 10C 4H 10H QS 8C 4D JH 2S",
+      "handSizes": [
+        10,
+        7
+      ],
+      "thinkMs": 12984,
+      "matchRank": false,
+      "omin": 7,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mrhzx1ax_1501xo37",
+      "started": "2026-07-12T16:16:26.073Z",
+      "build": "?:",
+      "i": 14,
+      "free": false,
+      "human": "2S",
+      "expert": "10C",
+      "facing": "9H",
+      "hand": "QC JD 10C 4H 10H QS 4D JH 2S",
+      "handSizes": [
+        9,
+        5
+      ],
+      "thinkMs": 10601,
+      "matchRank": false,
+      "omin": 5,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrhzx1ax_1501xo37",
+      "started": "2026-07-12T16:16:26.073Z",
+      "build": "?:",
+      "i": 16,
+      "free": true,
+      "human": "QC JD 10C 10H JH QS",
+      "expert": "10C JH QC",
+      "facing": "PASS",
+      "hand": "QC JD 10C 4H 10H QS 4D JH",
+      "handSizes": [
+        8,
+        5
+      ],
+      "thinkMs": 8653,
+      "matchRank": false,
+      "omin": 5,
+      "cls": "H_longer_multi"
+    },
+    {
+      "game": "g_mrhzuu9e_wxwhc0xi",
+      "started": "2026-07-12T16:14:43.634Z",
+      "build": "?:",
+      "i": 3,
+      "free": false,
+      "human": "9D",
+      "expert": "QH",
+      "facing": "3H",
+      "hand": "7D 9D 8D 9H 2C 7S QH 2D 7H 10S AS AH",
+      "handSizes": [
+        12,
+        12
+      ],
+      "thinkMs": 47224,
+      "matchRank": false,
+      "omin": 12,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrhzuu9e_wxwhc0xi",
+      "started": "2026-07-12T16:14:43.634Z",
+      "build": "?:",
+      "i": 9,
+      "free": true,
+      "human": "7D 8D 9H 10S",
+      "expert": "7H 8D 9H 10S",
+      "facing": "PASS",
+      "hand": "7D 8D 9H 7S 2D 7H 10S AS AH",
+      "handSizes": [
+        9,
+        10
+      ],
+      "thinkMs": 10232,
+      "matchRank": true,
+      "omin": 10,
+      "cls": "H_diff_multi"
+    },
+    {
+      "game": "g_mrhzsib1_cvervhjp",
+      "started": "2026-07-12T16:12:54.829Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "4S",
+      "expert": "3D",
+      "facing": "3S",
+      "hand": "QC 7S 3D KD 10H 10D 4D 6D 5S 4S 8H 5C 7H",
+      "handSizes": [
+        13,
+        12
+      ],
+      "thinkMs": 59335,
+      "matchRank": false,
+      "omin": 12,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrhzsib1_cvervhjp",
+      "started": "2026-07-12T16:12:54.829Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "5S",
+      "expert": "8H",
+      "facing": "4C",
+      "hand": "QC 7S 3D KD 10H 10D 4D 6D 5S 8H 5C 7H",
+      "handSizes": [
+        12,
+        11
+      ],
+      "thinkMs": 8733,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrhzsib1_cvervhjp",
+      "started": "2026-07-12T16:12:54.829Z",
+      "build": "?:",
+      "i": 6,
+      "free": false,
+      "human": "7H",
+      "expert": "8H",
+      "facing": "7D",
+      "hand": "QC 7S 3D KD 10H 10D 4D 6D 8H 5C 7H",
+      "handSizes": [
+        11,
+        10
+      ],
+      "thinkMs": 6547,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrhzoiq8_s4yo6k3k",
+      "started": "2026-07-12T16:09:48.752Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "AC AD",
+      "expert": "PASS",
+      "facing": "4H 4C",
+      "hand": "9S AD KD 10H QH AC 7S 2H QD QS JS 8D JC",
+      "handSizes": [
+        13,
+        11
+      ],
+      "thinkMs": 38486,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrhzoiq8_s4yo6k3k",
+      "started": "2026-07-12T16:09:48.752Z",
+      "build": "?:",
+      "i": 4,
+      "free": true,
+      "human": "9S 10H QH 7S JS 8D",
+      "expert": "7S 8D 9S 10H JC QS KD",
+      "facing": "PASS",
+      "hand": "9S KD 10H QH 7S 2H QD QS JS 8D JC",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 128788,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrhzln58_gptm4ogo",
+      "started": "2026-07-12T16:07:34.508Z",
+      "build": "?:",
+      "i": 6,
+      "free": false,
+      "human": "QS",
+      "expert": "5H",
+      "facing": "4S",
+      "hand": "4D JH JC 8D JS 9D 5H 3H 10H JD QS AH 2D",
+      "handSizes": [
+        13,
+        7
+      ],
+      "thinkMs": 29091,
+      "matchRank": false,
+      "omin": 7,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrhzln58_gptm4ogo",
+      "started": "2026-07-12T16:07:34.508Z",
+      "build": "?:",
+      "i": 10,
+      "free": true,
+      "human": "3H 4D 5H",
+      "expert": "8D 9D 10H JD",
+      "facing": "PASS",
+      "hand": "4D JH JC 8D JS 9D 5H 3H 10H JD 2D",
+      "handSizes": [
+        11,
+        6
+      ],
+      "thinkMs": 12166,
+      "matchRank": false,
+      "omin": 6,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrhzln58_gptm4ogo",
+      "started": "2026-07-12T16:07:34.508Z",
+      "build": "?:",
+      "i": 12,
+      "free": true,
+      "human": "8D 9D 10H",
+      "expert": "8D 9D 10H JD",
+      "facing": "PASS",
+      "hand": "JH JC 8D JS 9D 10H JD 2D",
+      "handSizes": [
+        8,
+        6
+      ],
+      "thinkMs": 8117,
+      "matchRank": false,
+      "omin": 6,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrhzln58_gptm4ogo",
+      "started": "2026-07-12T16:07:34.508Z",
+      "build": "?:",
+      "i": 14,
+      "free": true,
+      "human": "JH JC JS JD",
+      "expert": "JH JC JS",
+      "facing": "PASS",
+      "hand": "JH JC JS JD 2D",
+      "handSizes": [
+        5,
+        6
+      ],
+      "thinkMs": 7848,
+      "matchRank": false,
+      "omin": 6,
+      "cls": "H_longer_multi"
+    },
+    {
+      "game": "g_mrhzi2lm_y15subdq",
+      "started": "2026-07-12T16:04:47.914Z",
+      "build": "?:",
+      "i": 9,
+      "free": true,
+      "human": "5C",
+      "expert": "QD",
+      "facing": "PASS",
+      "hand": "QD 7H 5C",
+      "handSizes": [
+        3,
+        10
+      ],
+      "thinkMs": 4122,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_lower_single_save_high"
+    },
+    {
+      "game": "g_mrhzf58c_4kezgrx4",
+      "started": "2026-07-12T16:02:31.356Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "7D 7H",
+      "expert": "PASS",
+      "facing": "5H 5D",
+      "hand": "9D AC JH 9H QS AH QH 7D 7H 9S 6C QC 10S",
+      "handSizes": [
+        13,
+        11
+      ],
+      "thinkMs": 12857,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrhzf58c_4kezgrx4",
+      "started": "2026-07-12T16:02:31.356Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "9D 9H",
+      "expert": "PASS",
+      "facing": "8D 8S",
+      "hand": "9D AC JH 9H QS AH QH 9S 6C QC 10S",
+      "handSizes": [
+        11,
+        9
+      ],
+      "thinkMs": 15868,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrhzf58c_4kezgrx4",
+      "started": "2026-07-12T16:02:31.356Z",
+      "build": "?:",
+      "i": 6,
+      "free": true,
+      "human": "QS QC",
+      "expert": "9S 10S JH QC",
+      "facing": "PASS",
+      "hand": "AC JH QS AH QH 9S 6C QC 10S",
+      "handSizes": [
+        9,
+        9
+      ],
+      "thinkMs": 79014,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrhzdlwv_c1ealt7m",
+      "started": "2026-07-12T16:01:19.663Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "4H 4S",
+      "expert": "PASS",
+      "facing": "3D 3C",
+      "hand": "KD 4H 5S 4S 10H 8S KS 5C 6H 5H 2S 8H JH",
+      "handSizes": [
+        13,
+        11
+      ],
+      "thinkMs": 38992,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrhzdlwv_c1ealt7m",
+      "started": "2026-07-12T16:01:19.663Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "8S 8H",
+      "expert": "PASS",
+      "facing": "6C 6S",
+      "hand": "KD 5S 10H 8S KS 5C 6H 5H 2S 8H JH",
+      "handSizes": [
+        11,
+        9
+      ],
+      "thinkMs": 7575,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrhzbj4o_u211fi7z",
+      "started": "2026-07-12T15:59:42.744Z",
+      "build": "?:",
+      "i": 10,
+      "free": false,
+      "human": "2S",
+      "expert": "KH",
+      "facing": "QH",
+      "hand": "KH KC AD AC 9H 4C 2S 9C 4H",
+      "handSizes": [
+        9,
+        8
+      ],
+      "thinkMs": 15460,
+      "matchRank": false,
+      "omin": 8,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrhz8dnu_bzm45qjc",
+      "started": "2026-07-12T15:57:15.690Z",
+      "build": "?:",
+      "i": 1,
+      "free": true,
+      "human": "3S 4S 5D 6H 7H 8H",
+      "expert": "3S 4S 5D 6H 7H 8H 9C",
+      "facing": "PASS",
+      "hand": "8H KC JS 4H 6H 3H 3D 3S 5D 9S 4S 7H 9C",
+      "handSizes": [
+        13,
+        13
+      ],
+      "thinkMs": 94684,
+      "matchRank": false,
+      "omin": 13,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrhz8dnu_bzm45qjc",
+      "started": "2026-07-12T15:57:15.690Z",
+      "build": "?:",
+      "i": 9,
+      "free": true,
+      "human": "4H",
+      "expert": "JS",
+      "facing": "PASS",
+      "hand": "KC JS 4H",
+      "handSizes": [
+        3,
+        5
+      ],
+      "thinkMs": 7518,
+      "matchRank": false,
+      "omin": 5,
+      "cls": "H_lower_single_save_high"
+    },
+    {
+      "game": "g_mrhz47mc_f0o7a9v7",
+      "started": "2026-07-12T15:54:01.236Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "6D 6H",
+      "expert": "PASS",
+      "facing": "3C 3S",
+      "hand": "7D 9D 4D 6D 6H JS 8S AH QS QH 7H AS KH",
+      "handSizes": [
+        13,
+        11
+      ],
+      "thinkMs": 40885,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrhz47mc_f0o7a9v7",
+      "started": "2026-07-12T15:54:01.236Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "AS AH",
+      "expert": "PASS",
+      "facing": "7C 7S",
+      "hand": "7D 9D 4D JS 8S AH QS QH 7H AS KH",
+      "handSizes": [
+        11,
+        9
+      ],
+      "thinkMs": 84666,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrhz47mc_f0o7a9v7",
+      "started": "2026-07-12T15:54:01.236Z",
+      "build": "?:",
+      "i": 10,
+      "free": true,
+      "human": "4D",
+      "expert": "QH",
+      "facing": "PASS",
+      "hand": "4D QH 7H",
+      "handSizes": [
+        3,
+        9
+      ],
+      "thinkMs": 22767,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_lower_single_save_high"
+    },
+    {
+      "game": "g_mrhyzg8r_w617va40",
+      "started": "2026-07-12T15:50:19.131Z",
+      "build": "?:",
+      "i": 5,
+      "free": false,
+      "human": "2C",
+      "expert": "JH",
+      "facing": "10H",
+      "hand": "8D 4C 10S 2H 8S 9C 8H 4D JH 8C 2C",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 26589,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrhyzg8r_w617va40",
+      "started": "2026-07-12T15:50:19.131Z",
+      "build": "?:",
+      "i": 7,
+      "free": true,
+      "human": "9C 10S JH",
+      "expert": "8C 9C 10S JH",
+      "facing": "PASS",
+      "hand": "8D 4C 10S 2H 8S 9C 8H 4D JH 8C",
+      "handSizes": [
+        10,
+        11
+      ],
+      "thinkMs": 61316,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrhyzg8r_w617va40",
+      "started": "2026-07-12T15:50:19.131Z",
+      "build": "?:",
+      "i": 9,
+      "free": true,
+      "human": "2H",
+      "expert": "8S 8H 8C",
+      "facing": "PASS",
+      "hand": "8D 4C 2H 8S 8H 4D 8C",
+      "handSizes": [
+        7,
+        11
+      ],
+      "thinkMs": 10242,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrhyzg8r_w617va40",
+      "started": "2026-07-12T15:50:19.131Z",
+      "build": "?:",
+      "i": 11,
+      "free": true,
+      "human": "8D 8S 8H 8C",
+      "expert": "8S 8H 8C",
+      "facing": "PASS",
+      "hand": "8D 4C 8S 8H 4D 8C",
+      "handSizes": [
+        6,
+        11
+      ],
+      "thinkMs": 21437,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_longer_multi"
+    },
+    {
+      "game": "g_mrhyunw6_82o73es6",
+      "started": "2026-07-12T15:46:35.766Z",
+      "build": "?:",
+      "i": 1,
+      "free": true,
+      "human": "3S 4H 5D",
+      "expert": "3S 3C 3H",
+      "facing": "PASS",
+      "hand": "3S 3C QS QD 8H QH JH 9S KD 4H 3H 5D 7S",
+      "handSizes": [
+        13,
+        13
+      ],
+      "thinkMs": 157791,
+      "matchRank": false,
+      "omin": 13,
+      "cls": "H_higher_multi_take_control"
+    },
+    {
+      "game": "g_mrhyunw6_82o73es6",
+      "started": "2026-07-12T15:46:35.766Z",
+      "build": "?:",
+      "i": 5,
+      "free": true,
+      "human": "QS JH KD",
+      "expert": "QS QD QH",
+      "facing": "PASS",
+      "hand": "3C QS QD QH JH KD 3H",
+      "handSizes": [
+        7,
+        10
+      ],
+      "thinkMs": 41706,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_higher_multi_take_control"
+    },
+    {
+      "game": "g_mrhjjqdo_lpgsnzvb",
+      "started": "2026-07-12T08:38:11.532Z",
+      "build": "?:",
+      "i": 3,
+      "free": false,
+      "human": "9D 9H",
+      "expert": "PASS",
+      "facing": "5D 5S",
+      "hand": "QD 10S AD QS KS AS 4S 6D KC 9D 9H",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 8369,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrhjjqdo_lpgsnzvb",
+      "started": "2026-07-12T08:38:11.532Z",
+      "build": "?:",
+      "i": 11,
+      "free": true,
+      "human": "4S",
+      "expert": "KS KC",
+      "facing": "PASS",
+      "hand": "10S AD KS AS 4S 6D KC",
+      "handSizes": [
+        7,
+        4
+      ],
+      "thinkMs": 15401,
+      "matchRank": false,
+      "omin": 4,
+      "cls": "H_trash_first_E_high_multi"
+    },
+    {
+      "game": "g_mrhjjqdo_lpgsnzvb",
+      "started": "2026-07-12T08:38:11.532Z",
+      "build": "?:",
+      "i": 17,
+      "free": true,
+      "human": "AD",
+      "expert": "KS KC",
+      "facing": "PASS",
+      "hand": "AD KS AS KC",
+      "handSizes": [
+        4,
+        2
+      ],
+      "thinkMs": 7991,
+      "matchRank": false,
+      "omin": 2,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrhjis69_ji8m3s52",
+      "started": "2026-07-12T08:37:27.201Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "2H",
+      "expert": "4D",
+      "facing": "4S",
+      "hand": "2H 4D 2S 7H JC 9C QD 5S 8S 6C KC 2D 10D",
+      "handSizes": [
+        13,
+        12
+      ],
+      "thinkMs": 24706,
+      "matchRank": false,
+      "omin": 12,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrhjh14r_2fsk0qq2",
+      "started": "2026-07-12T08:36:05.499Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "5H 5S",
+      "expert": "PASS",
+      "facing": "3H 3D",
+      "hand": "7D 8D KC QC JC 9C 2H 5H 2S 7C JD KD 5S",
+      "handSizes": [
+        13,
+        11
+      ],
+      "thinkMs": 6947,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrhjh14r_2fsk0qq2",
+      "started": "2026-07-12T08:36:05.499Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "7D 7C",
+      "expert": "PASS",
+      "facing": "6H 6D",
+      "hand": "7D 8D KC QC JC 9C 2H 2S 7C JD KD",
+      "handSizes": [
+        11,
+        9
+      ],
+      "thinkMs": 19473,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrhjh14r_2fsk0qq2",
+      "started": "2026-07-12T08:36:05.499Z",
+      "build": "?:",
+      "i": 8,
+      "free": false,
+      "human": "PASS",
+      "expert": "2H 2S",
+      "facing": "AC AS",
+      "hand": "8D KC QC 9C 2H 2S KD",
+      "handSizes": [
+        7,
+        5
+      ],
+      "thinkMs": 12810,
+      "matchRank": false,
+      "omin": 5,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mrhjh14r_2fsk0qq2",
+      "started": "2026-07-12T08:36:05.499Z",
+      "build": "?:",
+      "i": 12,
+      "free": false,
+      "human": "QC",
+      "expert": "8D",
+      "facing": "5C",
+      "hand": "8D KC QC 9C 2H 2S KD",
+      "handSizes": [
+        7,
+        1
+      ],
+      "thinkMs": 15899,
+      "matchRank": false,
+      "omin": 1,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrhjh14r_2fsk0qq2",
+      "started": "2026-07-12T08:36:05.499Z",
+      "build": "?:",
+      "i": 14,
+      "free": true,
+      "human": "2H 2S",
+      "expert": "KC KD",
+      "facing": "PASS",
+      "hand": "8D KC 9C 2H 2S KD",
+      "handSizes": [
+        6,
+        1
+      ],
+      "thinkMs": 4628,
+      "matchRank": false,
+      "omin": 1,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrhjeikw_qinb1pxb",
+      "started": "2026-07-12T08:34:08.144Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "5S",
+      "expert": "4C",
+      "facing": "3D",
+      "hand": "10D JS JD 5H KH 5S QC 8S 9S 4C 7C 6H QS",
+      "handSizes": [
+        13,
+        12
+      ],
+      "thinkMs": 51842,
+      "matchRank": false,
+      "omin": 12,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrhjeikw_qinb1pxb",
+      "started": "2026-07-12T08:34:08.144Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "JD",
+      "expert": "KH",
+      "facing": "6D",
+      "hand": "10D JS JD 5H KH QC 8S 9S 4C 7C 6H QS",
+      "handSizes": [
+        12,
+        11
+      ],
+      "thinkMs": 16464,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrhjeikw_qinb1pxb",
+      "started": "2026-07-12T08:34:08.144Z",
+      "build": "?:",
+      "i": 6,
+      "free": false,
+      "human": "QS",
+      "expert": "KH",
+      "facing": "JH",
+      "hand": "10D JS 5H KH QC 8S 9S 4C 7C 6H QS",
+      "handSizes": [
+        11,
+        10
+      ],
+      "thinkMs": 4974,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrhiaaa8_31lf5vrv",
+      "started": "2026-07-12T08:02:51.152Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "KC QD AC JD",
+      "expert": "PASS",
+      "facing": "6C 5S 4H 3S",
+      "hand": "7D KC 2C 2H KS QD 7S AC 9H 7C AH 6H JD",
+      "handSizes": [
+        13,
+        9
+      ],
+      "thinkMs": 31265,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrhiaaa8_31lf5vrv",
+      "started": "2026-07-12T08:02:51.152Z",
+      "build": "?:",
+      "i": 4,
+      "free": true,
+      "human": "6H",
+      "expert": "7D 7S 7C",
+      "facing": "PASS",
+      "hand": "7D 2C 2H KS 7S 9H 7C AH 6H",
+      "handSizes": [
+        9,
+        9
+      ],
+      "thinkMs": 21600,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrhiaaa8_31lf5vrv",
+      "started": "2026-07-12T08:02:51.152Z",
+      "build": "?:",
+      "i": 12,
+      "free": true,
+      "human": "2C 2H",
+      "expert": "7D 7S 7C",
+      "facing": "PASS",
+      "hand": "7D 2C 2H 7S 7C",
+      "handSizes": [
+        5,
+        6
+      ],
+      "thinkMs": 20483,
+      "matchRank": false,
+      "omin": 6,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrhi6rkc_puib7wdm",
+      "started": "2026-07-12T08:00:06.924Z",
+      "build": "?:",
+      "i": 6,
+      "free": false,
+      "human": "PASS",
+      "expert": "AS AH",
+      "facing": "KC KS",
+      "hand": "6S 5C AS JC 4S AH 9D 6D 5S 7H JH 7S 7D",
+      "handSizes": [
+        13,
+        5
+      ],
+      "thinkMs": 10051,
+      "matchRank": false,
+      "omin": 5,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mrhi6rkc_puib7wdm",
+      "started": "2026-07-12T08:00:06.924Z",
+      "build": "?:",
+      "i": 10,
+      "free": false,
+      "human": "AS",
+      "expert": "JC",
+      "facing": "10S",
+      "hand": "6S 5C AS JC 4S AH 6D 5S 7H JH 7S 7D",
+      "handSizes": [
+        12,
+        3
+      ],
+      "thinkMs": 33875,
+      "matchRank": false,
+      "omin": 3,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrhi6rkc_puib7wdm",
+      "started": "2026-07-12T08:00:06.924Z",
+      "build": "?:",
+      "i": 12,
+      "free": true,
+      "human": "4S 5S 6S",
+      "expert": "4S 5S 6D 7D",
+      "facing": "PASS",
+      "hand": "6S 5C JC 4S AH 6D 5S 7H JH 7S 7D",
+      "handSizes": [
+        11,
+        3
+      ],
+      "thinkMs": 58779,
+      "matchRank": false,
+      "omin": 3,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrhi6rkc_puib7wdm",
+      "started": "2026-07-12T08:00:06.924Z",
+      "build": "?:",
+      "i": 14,
+      "free": true,
+      "human": "5C 6D 7S",
+      "expert": "7H 7S 7D",
+      "facing": "PASS",
+      "hand": "5C JC AH 6D 7H JH 7S 7D",
+      "handSizes": [
+        8,
+        3
+      ],
+      "thinkMs": 5062,
+      "matchRank": false,
+      "omin": 3,
+      "cls": "H_better_residual_pairs"
+    },
+    {
+      "game": "g_mrhi6rkc_puib7wdm",
+      "started": "2026-07-12T08:00:06.924Z",
+      "build": "?:",
+      "i": 18,
+      "free": true,
+      "human": "JC",
+      "expert": "JC JH",
+      "facing": "PASS",
+      "hand": "JC AH JH",
+      "handSizes": [
+        3,
+        3
+      ],
+      "thinkMs": 2188,
+      "matchRank": false,
+      "omin": 3,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrhg6nck_rzfe2hkw",
+      "started": "2026-07-12T07:04:02.228Z",
+      "build": "?:",
+      "i": 1,
+      "free": true,
+      "human": "6D 3D 5D 4H",
+      "expert": "3D 4H 5D 6D 7S",
+      "facing": "PASS",
+      "hand": "9S 6D 3D 5D 5H 7S QH AH 2C 4H KD 9C 6S",
+      "handSizes": [
+        13,
+        13
+      ],
+      "thinkMs": 41900,
+      "matchRank": false,
+      "omin": 13,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrhg0kd1_6v9k0x1g",
+      "started": "2026-07-12T06:59:18.421Z",
+      "build": "?:",
+      "i": 1,
+      "free": true,
+      "human": "3S 3C",
+      "expert": "3S 4H 5C 6H",
+      "facing": "PASS",
+      "hand": "4H AH AC 8S 5C 4S 8H 3S 2H 6H 2S 9S 3C",
+      "handSizes": [
+        13,
+        13
+      ],
+      "thinkMs": 16334,
+      "matchRank": false,
+      "omin": 13,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrhg0kd1_6v9k0x1g",
+      "started": "2026-07-12T06:59:18.421Z",
+      "build": "?:",
+      "i": 3,
+      "free": false,
+      "human": "8S 8H",
+      "expert": "PASS",
+      "facing": "6D 6S",
+      "hand": "4H AH AC 8S 5C 4S 8H 2H 6H 2S 9S",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 3968,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrhg0kd1_6v9k0x1g",
+      "started": "2026-07-12T06:59:18.421Z",
+      "build": "?:",
+      "i": 7,
+      "free": true,
+      "human": "5C",
+      "expert": "4H 5C 6H",
+      "facing": "PASS",
+      "hand": "4H 5C 4S 2H 6H 2S 9S",
+      "handSizes": [
+        7,
+        9
+      ],
+      "thinkMs": 15563,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrhg0kd1_6v9k0x1g",
+      "started": "2026-07-12T06:59:18.421Z",
+      "build": "?:",
+      "i": 13,
+      "free": true,
+      "human": "6H",
+      "expert": "4H 4S",
+      "facing": "PASS",
+      "hand": "4H 4S 6H 2S",
+      "handSizes": [
+        4,
+        7
+      ],
+      "thinkMs": 9681,
+      "matchRank": false,
+      "omin": 7,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrhfyoo0_4m9d77q3",
+      "started": "2026-07-12T06:57:50.688Z",
+      "build": "?:",
+      "i": 3,
+      "free": false,
+      "human": "7S",
+      "expert": "5D",
+      "facing": "4D",
+      "hand": "AS QD JH 7S 7D KS 5D 6S JD 8H 9H 9S",
+      "handSizes": [
+        12,
+        12
+      ],
+      "thinkMs": 32237,
+      "matchRank": false,
+      "omin": 12,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrhfyoo0_4m9d77q3",
+      "started": "2026-07-12T06:57:50.688Z",
+      "build": "?:",
+      "i": 5,
+      "free": false,
+      "human": "9S",
+      "expert": "AS",
+      "facing": "7C",
+      "hand": "AS QD JH 7D KS 5D 6S JD 8H 9H 9S",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 24953,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrhfyoo0_4m9d77q3",
+      "started": "2026-07-12T06:57:50.688Z",
+      "build": "?:",
+      "i": 7,
+      "free": false,
+      "human": "JD",
+      "expert": "9H",
+      "facing": "9D",
+      "hand": "AS QD JH 7D KS 5D 6S JD 8H 9H",
+      "handSizes": [
+        10,
+        10
+      ],
+      "thinkMs": 10216,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrhfx6j5_15x16oxz",
+      "started": "2026-07-12T06:56:40.529Z",
+      "build": "?:",
+      "i": 8,
+      "free": false,
+      "human": "9S 9D",
+      "expert": "7C 7D",
+      "facing": "6C 6S",
+      "hand": "7C 9S 5S 10H 9D 7D 5C 6D 10C KS AH 6H QD",
+      "handSizes": [
+        13,
+        4
+      ],
+      "thinkMs": 22084,
+      "matchRank": false,
+      "omin": 4,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrhfx6j5_15x16oxz",
+      "started": "2026-07-12T06:56:40.529Z",
+      "build": "?:",
+      "i": 10,
+      "free": true,
+      "human": "10C 10H",
+      "expert": "5S 6H 7C",
+      "facing": "PASS",
+      "hand": "7C 5S 10H 7D 5C 6D 10C KS AH 6H QD",
+      "handSizes": [
+        11,
+        4
+      ],
+      "thinkMs": 8816,
+      "matchRank": false,
+      "omin": 4,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrhfx6j5_15x16oxz",
+      "started": "2026-07-12T06:56:40.529Z",
+      "build": "?:",
+      "i": 12,
+      "free": true,
+      "human": "QD KS AH",
+      "expert": "5S 6H 7D",
+      "facing": "PASS",
+      "hand": "7C 5S 7D 5C 6D KS AH 6H QD",
+      "handSizes": [
+        9,
+        4
+      ],
+      "thinkMs": 12184,
+      "matchRank": false,
+      "omin": 4,
+      "cls": "H_higher_multi_take_control"
+    },
+    {
+      "game": "g_mrhfu8bk_e0ab5nyl",
+      "started": "2026-07-12T06:54:22.880Z",
+      "build": "?:",
+      "i": 6,
+      "free": false,
+      "human": "KC",
+      "expert": "10S",
+      "facing": "8D",
+      "hand": "5C KH QS 10S QD KC 10H 5S 5H 6C 10C",
+      "handSizes": [
+        11,
+        10
+      ],
+      "thinkMs": 49007,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrhfu8bk_e0ab5nyl",
+      "started": "2026-07-12T06:54:22.880Z",
+      "build": "?:",
+      "i": 8,
+      "free": false,
+      "human": "PASS",
+      "expert": "KH",
+      "facing": "KD",
+      "hand": "5C KH QS 10S QD 10H 5S 5H 6C 10C",
+      "handSizes": [
+        10,
+        9
+      ],
+      "thinkMs": 17037,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mrhfu8bk_e0ab5nyl",
+      "started": "2026-07-12T06:54:22.880Z",
+      "build": "?:",
+      "i": 18,
+      "free": true,
+      "human": "6C",
+      "expert": "KH",
+      "facing": "PASS",
+      "hand": "KH 6C",
+      "handSizes": [
+        2,
+        4
+      ],
+      "thinkMs": 17759,
+      "matchRank": false,
+      "omin": 4,
+      "cls": "H_lower_single_save_high"
+    },
+    {
+      "game": "g_mrhfrg64_sfok0myo",
+      "started": "2026-07-12T06:52:13.085Z",
+      "build": "?:",
+      "i": 13,
+      "free": true,
+      "human": "10S 10H JS JD QC QD",
+      "expert": "10S JS QD",
+      "facing": "PASS",
+      "hand": "JD QD 10S JS 6D QC 10H",
+      "handSizes": [
+        7,
+        8
+      ],
+      "thinkMs": 18185,
+      "matchRank": false,
+      "omin": 8,
+      "cls": "H_longer_multi"
+    },
+    {
+      "game": "g_mrhfnc2x_euypwwuu",
+      "started": "2026-07-12T06:49:01.161Z",
+      "build": "?:",
+      "i": 5,
+      "free": false,
+      "human": "JS JC",
+      "expert": "KC KD",
+      "facing": "4D 4C",
+      "hand": "8H 5S KC JC KD 9D 2S 10H JS 9S",
+      "handSizes": [
+        10,
+        8
+      ],
+      "thinkMs": 51849,
+      "matchRank": false,
+      "omin": 8,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrhfnc2x_euypwwuu",
+      "started": "2026-07-12T06:49:01.161Z",
+      "build": "?:",
+      "i": 9,
+      "free": true,
+      "human": "5S",
+      "expert": "8H 9D 10H",
+      "facing": "PASS",
+      "hand": "8H 5S 9D 2S 10H 9S",
+      "handSizes": [
+        6,
+        6
+      ],
+      "thinkMs": 39913,
+      "matchRank": false,
+      "omin": 6,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrhfnc2x_euypwwuu",
+      "started": "2026-07-12T06:49:01.161Z",
+      "build": "?:",
+      "i": 11,
+      "free": false,
+      "human": "9S",
+      "expert": "8H",
+      "facing": "6S",
+      "hand": "8H 9D 2S 10H 9S",
+      "handSizes": [
+        5,
+        5
+      ],
+      "thinkMs": 17119,
+      "matchRank": false,
+      "omin": 5,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrhfjay2_v2c4xzks",
+      "started": "2026-07-12T06:45:53.066Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "JD JC",
+      "expert": "PASS",
+      "facing": "3C 3S",
+      "hand": "JD AC KD KH JC QC KS 4S 9S 5C 7D JH 6C",
+      "handSizes": [
+        13,
+        11
+      ],
+      "thinkMs": 36520,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrhfjay2_v2c4xzks",
+      "started": "2026-07-12T06:45:53.066Z",
+      "build": "?:",
+      "i": 4,
+      "free": true,
+      "human": "KD KH",
+      "expert": "4S 5C 6C 7D",
+      "facing": "PASS",
+      "hand": "AC KD KH QC KS 4S 9S 5C 7D JH 6C",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 59623,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrhfg6av_r5osglod",
+      "started": "2026-07-12T06:43:27.079Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "6S",
+      "expert": "4D",
+      "facing": "3D",
+      "hand": "KD JD 4D 8D 9D JH 9S QS 2C 6C 2H 5H 6S",
+      "handSizes": [
+        13,
+        12
+      ],
+      "thinkMs": 24363,
+      "matchRank": false,
+      "omin": 12,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrhfg6av_r5osglod",
+      "started": "2026-07-12T06:43:27.079Z",
+      "build": "?:",
+      "i": 6,
+      "free": false,
+      "human": "JD",
+      "expert": "KD",
+      "facing": "10C",
+      "hand": "KD JD 4D 9D JH 9S QS 2C 6C 2H 5H",
+      "handSizes": [
+        11,
+        10
+      ],
+      "thinkMs": 14323,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrhfg6av_r5osglod",
+      "started": "2026-07-12T06:43:27.079Z",
+      "build": "?:",
+      "i": 8,
+      "free": false,
+      "human": "2H",
+      "expert": "KD",
+      "facing": "QC",
+      "hand": "KD 4D 9D JH 9S QS 2C 6C 2H 5H",
+      "handSizes": [
+        10,
+        9
+      ],
+      "thinkMs": 36725,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrhfcp6t_xgxb3mx3",
+      "started": "2026-07-12T06:40:44.933Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "9S 9C",
+      "expert": "PASS",
+      "facing": "3H 3S",
+      "hand": "5S AH 9D 9C 4C 9S 5D KS QS 6S 8C 7C 10S",
+      "handSizes": [
+        13,
+        11
+      ],
+      "thinkMs": 53170,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrhfcp6t_xgxb3mx3",
+      "started": "2026-07-12T06:40:44.933Z",
+      "build": "?:",
+      "i": 10,
+      "free": false,
+      "human": "5S",
+      "expert": "10S",
+      "facing": "4D",
+      "hand": "5S AH 9D 4C 5D KS QS 6S 8C 7C 10S",
+      "handSizes": [
+        11,
+        4
+      ],
+      "thinkMs": 5642,
+      "matchRank": false,
+      "omin": 4,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrhfayk8_s64of3jw",
+      "started": "2026-07-12T06:39:23.768Z",
+      "build": "?:",
+      "i": 1,
+      "free": true,
+      "human": "6S 3C 4S 5S",
+      "expert": "3C 4C 5S 6S",
+      "facing": "PASS",
+      "hand": "6S 3C 10H 10C 4S 6C 2D AH 4C 4H 6D 5S QD",
+      "handSizes": [
+        13,
+        13
+      ],
+      "thinkMs": 41494,
+      "matchRank": true,
+      "omin": 13,
+      "cls": "H_diff_multi"
+    },
+    {
+      "game": "g_mrhbh37d_dqx2h8xl",
+      "started": "2026-07-12T04:52:11.257Z",
+      "build": "?:",
+      "i": 1,
+      "free": true,
+      "human": "3S 4D 5H",
+      "expert": "3S 4D 5H 6C",
+      "facing": "PASS",
+      "hand": "3S 9C 9S 8C 5H 10C 6C AS KD 4D KC 6D 10D",
+      "handSizes": [
+        13,
+        13
+      ],
+      "thinkMs": 64273,
+      "matchRank": false,
+      "omin": 13,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrhbh37d_dqx2h8xl",
+      "started": "2026-07-12T04:52:11.257Z",
+      "build": "?:",
+      "i": 9,
+      "free": true,
+      "human": "9C 9S",
+      "expert": "8C 9C 10C",
+      "facing": "PASS",
+      "hand": "9C 9S 8C 10C AS KD KC 10D",
+      "handSizes": [
+        8,
+        5
+      ],
+      "thinkMs": 15544,
+      "matchRank": false,
+      "omin": 5,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrhbh37d_dqx2h8xl",
+      "started": "2026-07-12T04:52:11.257Z",
+      "build": "?:",
+      "i": 15,
+      "free": true,
+      "human": "8C",
+      "expert": "AS",
+      "facing": "PASS",
+      "hand": "8C AS",
+      "handSizes": [
+        2,
+        5
+      ],
+      "thinkMs": 1410,
+      "matchRank": false,
+      "omin": 5,
+      "cls": "H_lower_single_save_high"
+    },
+    {
+      "game": "g_mrgldtbp_dveg8eng",
+      "started": "2026-07-11T16:41:48.470Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "4S 3H 5H",
+      "expert": "PASS",
+      "facing": "5D 4D 3C",
+      "hand": "8C 4S 3H 9S AS 10D 7S 7C 3D 5H 10S AH 10H",
+      "handSizes": [
+        13,
+        10
+      ],
+      "thinkMs": 12717,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrgldtbp_dveg8eng",
+      "started": "2026-07-11T16:41:48.470Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "8C 9S 10S",
+      "expert": "8C 9S 10D",
+      "facing": "8D 7H 6H",
+      "hand": "8C 9S AS 10D 7S 7C 3D 10S AH 10H",
+      "handSizes": [
+        10,
+        7
+      ],
+      "thinkMs": 23908,
+      "matchRank": true,
+      "omin": 7,
+      "cls": "H_diff_multi"
+    },
+    {
+      "game": "g_mrgkvhdv_1mvbz6dj",
+      "started": "2026-07-11T16:27:33.187Z",
+      "build": "?:",
+      "i": 9,
+      "free": false,
+      "human": "2H",
+      "expert": "KH",
+      "facing": "QH",
+      "hand": "KH 6H 2H 7S KS 7C 6D 8H 8S",
+      "handSizes": [
+        9,
+        9
+      ],
+      "thinkMs": 24955,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrgkvhdv_1mvbz6dj",
+      "started": "2026-07-11T16:27:33.187Z",
+      "build": "?:",
+      "i": 11,
+      "free": true,
+      "human": "6D 6H 7S 7C 8S 8H",
+      "expert": "6H 7C 8H",
+      "facing": "PASS",
+      "hand": "KH 6H 7S KS 7C 6D 8H 8S",
+      "handSizes": [
+        8,
+        9
+      ],
+      "thinkMs": 5755,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_longer_multi"
+    },
+    {
+      "game": "g_mrgkswdp_01922c0l",
+      "started": "2026-07-11T16:25:32.653Z",
+      "build": "?:",
+      "i": 13,
+      "free": true,
+      "human": "KS",
+      "expert": "QH QS QD",
+      "facing": "PASS",
+      "hand": "QC KS 10D QH QS QD 10H",
+      "handSizes": [
+        7,
+        8
+      ],
+      "thinkMs": 8899,
+      "matchRank": false,
+      "omin": 8,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrgkswdp_01922c0l",
+      "started": "2026-07-11T16:25:32.653Z",
+      "build": "?:",
+      "i": 15,
+      "free": true,
+      "human": "QS QC QD QH",
+      "expert": "QH QS QD",
+      "facing": "PASS",
+      "hand": "QC 10D QH QS QD 10H",
+      "handSizes": [
+        6,
+        8
+      ],
+      "thinkMs": 28435,
+      "matchRank": false,
+      "omin": 8,
+      "cls": "H_longer_multi"
+    },
+    {
+      "game": "g_mrgki4l9_0vcopel6",
+      "started": "2026-07-11T16:17:10.077Z",
+      "build": "?:",
+      "i": 3,
+      "free": false,
+      "human": "KH JD QD",
+      "expert": "QD KH AS",
+      "facing": "KC QS JC",
+      "hand": "10D KH JD 4S QD 7H 2H JS AS 5H",
+      "handSizes": [
+        10,
+        10
+      ],
+      "thinkMs": 24958,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrgk490b_fkmrpq2p",
+      "started": "2026-07-11T16:06:22.619Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "10H 9D JD",
+      "expert": "PASS",
+      "facing": "5C 4H 3S",
+      "hand": "10H 9D 10D 10C AH 5D AS 8S QC AD 5H JD 8D",
+      "handSizes": [
+        13,
+        10
+      ],
+      "thinkMs": 136404,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrgk490b_fkmrpq2p",
+      "started": "2026-07-11T16:06:22.619Z",
+      "build": "?:",
+      "i": 4,
+      "free": true,
+      "human": "5D 5H",
+      "expert": "AH AS AD",
+      "facing": "PASS",
+      "hand": "10D 10C AH 5D AS 8S QC AD 5H 8D",
+      "handSizes": [
+        10,
+        10
+      ],
+      "thinkMs": 49104,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrgidico_zffpetoo",
+      "started": "2026-07-11T15:17:35.400Z",
+      "build": "?:",
+      "i": 1,
+      "free": true,
+      "human": "3C 4H 5C 6H",
+      "expert": "3C 4H 5C 6H 7H",
+      "facing": "PASS",
+      "hand": "4H 5C QH 9C 9H 6H 3C 9S 10C 2H QS 7H 7C",
+      "handSizes": [
+        13,
+        13
+      ],
+      "thinkMs": 23019,
+      "matchRank": false,
+      "omin": 13,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrgidico_zffpetoo",
+      "started": "2026-07-11T15:17:35.400Z",
+      "build": "?:",
+      "i": 5,
+      "free": false,
+      "human": "PASS",
+      "expert": "QH QS",
+      "facing": "10H 10S",
+      "hand": "QH 9C 9H 9S 10C 2H QS 7H 7C",
+      "handSizes": [
+        9,
+        7
+      ],
+      "thinkMs": 30822,
+      "matchRank": false,
+      "omin": 7,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mrgidico_zffpetoo",
+      "started": "2026-07-11T15:17:35.400Z",
+      "build": "?:",
+      "i": 7,
+      "free": false,
+      "human": "PASS",
+      "expert": "QH QS",
+      "facing": "JD JC",
+      "hand": "QH 9C 9H 9S 10C 2H QS 7H 7C",
+      "handSizes": [
+        9,
+        5
+      ],
+      "thinkMs": 16161,
+      "matchRank": false,
+      "omin": 5,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mrgi8gr6_bu2zig7p",
+      "started": "2026-07-11T15:13:40.050Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "10S",
+      "expert": "JC",
+      "facing": "7S",
+      "hand": "10C 8D AH KH 9H 5D 6S 6C JC 7C 10S 5S",
+      "handSizes": [
+        12,
+        11
+      ],
+      "thinkMs": 42524,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrgi8gr6_bu2zig7p",
+      "started": "2026-07-11T15:13:40.050Z",
+      "build": "?:",
+      "i": 8,
+      "free": false,
+      "human": "PASS",
+      "expert": "AH",
+      "facing": "AC",
+      "hand": "10C 8D AH 9H 5D 6S 6C JC 7C 5S",
+      "handSizes": [
+        10,
+        9
+      ],
+      "thinkMs": 7720,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mrgi8gr6_bu2zig7p",
+      "started": "2026-07-11T15:13:40.050Z",
+      "build": "?:",
+      "i": 14,
+      "free": false,
+      "human": "JC",
+      "expert": "AH",
+      "facing": "8H",
+      "hand": "10C 8D AH 9H 5D 6S 6C JC 7C 5S",
+      "handSizes": [
+        10,
+        4
+      ],
+      "thinkMs": 39740,
+      "matchRank": false,
+      "omin": 4,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrgi8gr6_bu2zig7p",
+      "started": "2026-07-11T15:13:40.050Z",
+      "build": "?:",
+      "i": 18,
+      "free": true,
+      "human": "5S 5D",
+      "expert": "5S 6C 7C 8D 9H 10C",
+      "facing": "PASS",
+      "hand": "10C 8D 9H 5D 6S 6C 7C 5S",
+      "handSizes": [
+        8,
+        3
+      ],
+      "thinkMs": 24993,
+      "matchRank": false,
+      "omin": 3,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrgi8gr6_bu2zig7p",
+      "started": "2026-07-11T15:13:40.050Z",
+      "build": "?:",
+      "i": 20,
+      "free": true,
+      "human": "6S 6C",
+      "expert": "6S 7C 8D 9H 10C",
+      "facing": "PASS",
+      "hand": "10C 8D 9H 6S 6C 7C",
+      "handSizes": [
+        6,
+        3
+      ],
+      "thinkMs": 2630,
+      "matchRank": false,
+      "omin": 3,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrgi65y4_mbd822tn",
+      "started": "2026-07-11T15:11:52.732Z",
+      "build": "?:",
+      "i": 5,
+      "free": false,
+      "human": "8S",
+      "expert": "AD",
+      "facing": "5D",
+      "hand": "AD KD 8D KS 9S KC 10S 8C 8S 9C 10C",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 12643,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrgi65y4_mbd822tn",
+      "started": "2026-07-11T15:11:52.732Z",
+      "build": "?:",
+      "i": 7,
+      "free": false,
+      "human": "KS",
+      "expert": "AD",
+      "facing": "8H",
+      "hand": "AD KD 8D KS 9S KC 10S 8C 9C 10C",
+      "handSizes": [
+        10,
+        10
+      ],
+      "thinkMs": 10656,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrgi65y4_mbd822tn",
+      "started": "2026-07-11T15:11:52.732Z",
+      "build": "?:",
+      "i": 11,
+      "free": false,
+      "human": "8C 9S 10S",
+      "expert": "8D 9S 10S",
+      "facing": "7S 6S 5S",
+      "hand": "AD KD 8D 9S KC 10S 8C 9C 10C",
+      "handSizes": [
+        9,
+        6
+      ],
+      "thinkMs": 14865,
+      "matchRank": true,
+      "omin": 6,
+      "cls": "H_diff_multi"
+    },
+    {
+      "game": "g_mrgi25el_29104u82",
+      "started": "2026-07-11T15:08:45.405Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "4C 4H",
+      "expert": "PASS",
+      "facing": "3H 3C",
+      "hand": "2C 4H 6C 8D QS KH 5D 7S 4C KS QD 10S AS",
+      "handSizes": [
+        13,
+        11
+      ],
+      "thinkMs": 11823,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrgi25el_29104u82",
+      "started": "2026-07-11T15:08:45.405Z",
+      "build": "?:",
+      "i": 10,
+      "free": true,
+      "human": "10S",
+      "expert": "KH KS",
+      "facing": "PASS",
+      "hand": "2C KH KS 10S AS",
+      "handSizes": [
+        5,
+        7
+      ],
+      "thinkMs": 8432,
+      "matchRank": false,
+      "omin": 7,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrghxddl_ocghxyw2",
+      "started": "2026-07-11T15:05:02.457Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "10S JD QD",
+      "expert": "PASS",
+      "facing": "5C 4S 3D",
+      "hand": "2C QH 5H AD 7C 2D JD 10S KD 5D QD 6C 7S",
+      "handSizes": [
+        13,
+        10
+      ],
+      "thinkMs": 153079,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrghxddl_ocghxyw2",
+      "started": "2026-07-11T15:05:02.457Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "PASS",
+      "expert": "KD AD 2C",
+      "facing": "AH KH QC",
+      "hand": "2C QH 5H AD 7C 2D KD 5D 6C 7S",
+      "handSizes": [
+        10,
+        7
+      ],
+      "thinkMs": 17083,
+      "matchRank": false,
+      "omin": 7,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mrghxddl_ocghxyw2",
+      "started": "2026-07-11T15:05:02.457Z",
+      "build": "?:",
+      "i": 8,
+      "free": true,
+      "human": "6C",
+      "expert": "5H 6C 7C",
+      "facing": "PASS",
+      "hand": "2C 5H 7C 2D 5D 6C 7S",
+      "handSizes": [
+        7,
+        4
+      ],
+      "thinkMs": 6038,
+      "matchRank": false,
+      "omin": 4,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrfzvorp_7nysjyd8",
+      "started": "2026-07-11T06:39:50.821Z",
+      "build": "?:",
+      "i": 3,
+      "free": false,
+      "human": "9D 9H",
+      "expert": "PASS",
+      "facing": "8C 8S",
+      "hand": "10D 6D KD 2H 9D 9H JH JC 7S AH 7C",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 20076,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfzvorp_7nysjyd8",
+      "started": "2026-07-11T06:39:50.821Z",
+      "build": "?:",
+      "i": 7,
+      "free": false,
+      "human": "PASS",
+      "expert": "KD AH 2H",
+      "facing": "6S 5D 4C",
+      "hand": "10D 6D KD 2H JH JC 7S AH 7C",
+      "handSizes": [
+        9,
+        6
+      ],
+      "thinkMs": 6900,
+      "matchRank": false,
+      "omin": 6,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mrfzvorp_7nysjyd8",
+      "started": "2026-07-11T06:39:50.821Z",
+      "build": "?:",
+      "i": 9,
+      "free": false,
+      "human": "PASS",
+      "expert": "KD AH 2H",
+      "facing": "JS 10S 9C",
+      "hand": "10D 6D KD 2H JH JC 7S AH 7C",
+      "handSizes": [
+        9,
+        3
+      ],
+      "thinkMs": 2558,
+      "matchRank": false,
+      "omin": 3,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mrfzvorp_7nysjyd8",
+      "started": "2026-07-11T06:39:50.821Z",
+      "build": "?:",
+      "i": 13,
+      "free": false,
+      "human": "KD",
+      "expert": "2H",
+      "facing": "QC",
+      "hand": "6D KD 2H JH JC 7S AH 7C",
+      "handSizes": [
+        8,
+        1
+      ],
+      "thinkMs": 7488,
+      "matchRank": false,
+      "omin": 1,
+      "cls": "E_2_H_non2"
+    },
+    {
+      "game": "g_mrfzvorp_7nysjyd8",
+      "started": "2026-07-11T06:39:50.821Z",
+      "build": "?:",
+      "i": 15,
+      "free": true,
+      "human": "7S 7C",
+      "expert": "JH JC",
+      "facing": "PASS",
+      "hand": "6D 2H JH JC 7S AH 7C",
+      "handSizes": [
+        7,
+        1
+      ],
+      "thinkMs": 4089,
+      "matchRank": false,
+      "omin": 1,
+      "cls": "H_lower_multi_keep_high"
+    },
+    {
+      "game": "g_mrfzunjx_6y63ddik",
+      "started": "2026-07-11T06:39:02.589Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "9C",
+      "expert": "3H",
+      "facing": "3S",
+      "hand": "10H 5S AD 8D 9C 4H JH QD AH JD 9H KS 3H",
+      "handSizes": [
+        13,
+        12
+      ],
+      "thinkMs": 12943,
+      "matchRank": false,
+      "omin": 12,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfzunjx_6y63ddik",
+      "started": "2026-07-11T06:39:02.589Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "JD",
+      "expert": "9H",
+      "facing": "9D",
+      "hand": "10H 5S AD 8D 4H JH QD AH JD 9H KS 3H",
+      "handSizes": [
+        12,
+        11
+      ],
+      "thinkMs": 15888,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfzunjx_6y63ddik",
+      "started": "2026-07-11T06:39:02.589Z",
+      "build": "?:",
+      "i": 6,
+      "free": false,
+      "human": "AD",
+      "expert": "QD",
+      "facing": "QS",
+      "hand": "10H 5S AD 8D 4H JH QD AH 9H KS 3H",
+      "handSizes": [
+        11,
+        10
+      ],
+      "thinkMs": 7664,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfzunjx_6y63ddik",
+      "started": "2026-07-11T06:39:02.589Z",
+      "build": "?:",
+      "i": 8,
+      "free": true,
+      "human": "3H 4H 5S",
+      "expert": "8D 9H 10H JH QD KS AH",
+      "facing": "PASS",
+      "hand": "10H 5S 8D 4H JH QD AH 9H KS 3H",
+      "handSizes": [
+        10,
+        10
+      ],
+      "thinkMs": 3893,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrfztafa_cd4shlc5",
+      "started": "2026-07-11T06:37:58.918Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "8S 8H",
+      "expert": "PASS",
+      "facing": "3H 3S",
+      "hand": "JH 4S KD 8S 3D 5D QC JC JS 8H 7H 2D 5C",
+      "handSizes": [
+        13,
+        11
+      ],
+      "thinkMs": 10029,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfztafa_cd4shlc5",
+      "started": "2026-07-11T06:37:58.918Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "JS JC",
+      "expert": "PASS",
+      "facing": "9D 9C",
+      "hand": "JH 4S KD 3D 5D QC JC JS 7H 2D 5C",
+      "handSizes": [
+        11,
+        9
+      ],
+      "thinkMs": 5487,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfztafa_cd4shlc5",
+      "started": "2026-07-11T06:37:58.918Z",
+      "build": "?:",
+      "i": 10,
+      "free": true,
+      "human": "3D 4S 5C",
+      "expert": "3D 4S 5D",
+      "facing": "PASS",
+      "hand": "4S 3D 5D 7H 2D 5C",
+      "handSizes": [
+        6,
+        4
+      ],
+      "thinkMs": 5587,
+      "matchRank": true,
+      "omin": 4,
+      "cls": "H_diff_multi"
+    },
+    {
+      "game": "g_mrfzrx0v_egfsjyz9",
+      "started": "2026-07-11T06:36:54.895Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "JH QC KH",
+      "expert": "PASS",
+      "facing": "5C 4H 3S",
+      "hand": "7D 2D QC 4C 2C JH 5S QD 4D 9H KH 2S 5H",
+      "handSizes": [
+        13,
+        10
+      ],
+      "thinkMs": 19450,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfzrx0v_egfsjyz9",
+      "started": "2026-07-11T06:36:54.895Z",
+      "build": "?:",
+      "i": 6,
+      "free": false,
+      "human": "PASS",
+      "expert": "2D 2C",
+      "facing": "6D 6S",
+      "hand": "7D 2D 4C 2C 5S QD 4D 9H 2S 5H",
+      "handSizes": [
+        10,
+        5
+      ],
+      "thinkMs": 6215,
+      "matchRank": false,
+      "omin": 5,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mrfzrx0v_egfsjyz9",
+      "started": "2026-07-11T06:36:54.895Z",
+      "build": "?:",
+      "i": 10,
+      "free": false,
+      "human": "2S",
+      "expert": "2D",
+      "facing": "KS",
+      "hand": "7D 2D 4C 2C 5S QD 4D 9H 2S 5H",
+      "handSizes": [
+        10,
+        1
+      ],
+      "thinkMs": 7136,
+      "matchRank": true,
+      "omin": 1,
+      "cls": "H_lower_single_save_high"
+    },
+    {
+      "game": "g_mrfzrx0v_egfsjyz9",
+      "started": "2026-07-11T06:36:54.895Z",
+      "build": "?:",
+      "i": 16,
+      "free": true,
+      "human": "2D 2C",
+      "expert": "2D",
+      "facing": "PASS",
+      "hand": "7D 2D 2C QD 9H",
+      "handSizes": [
+        5,
+        1
+      ],
+      "thinkMs": 5449,
+      "matchRank": false,
+      "omin": 1,
+      "cls": "H_multi_E_single"
+    },
+    {
+      "game": "g_mrfzqnss_eelp7x4v",
+      "started": "2026-07-11T06:35:56.284Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "5D 5H",
+      "expert": "PASS",
+      "facing": "3C 3S",
+      "hand": "4H 2S QS 2C 6C 5D 7D 8H 5H 10H QH KH 7C",
+      "handSizes": [
+        13,
+        11
+      ],
+      "thinkMs": 21477,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfzqnss_eelp7x4v",
+      "started": "2026-07-11T06:35:56.284Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "7C 7D",
+      "expert": "PASS",
+      "facing": "6H 6S",
+      "hand": "4H 2S QS 2C 6C 7D 8H 10H QH KH 7C",
+      "handSizes": [
+        11,
+        9
+      ],
+      "thinkMs": 3300,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfzqnss_eelp7x4v",
+      "started": "2026-07-11T06:35:56.284Z",
+      "build": "?:",
+      "i": 6,
+      "free": true,
+      "human": "4H",
+      "expert": "QS QH",
+      "facing": "PASS",
+      "hand": "4H 2S QS 2C 6C 8H 10H QH KH",
+      "handSizes": [
+        9,
+        9
+      ],
+      "thinkMs": 4964,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_trash_first_E_high_multi"
+    },
+    {
+      "game": "g_mrfzqnss_eelp7x4v",
+      "started": "2026-07-11T06:35:56.284Z",
+      "build": "?:",
+      "i": 16,
+      "free": true,
+      "human": "6C",
+      "expert": "QS QH",
+      "facing": "PASS",
+      "hand": "QS 2C 6C QH",
+      "handSizes": [
+        4,
+        5
+      ],
+      "thinkMs": 6202,
+      "matchRank": false,
+      "omin": 5,
+      "cls": "H_trash_first_E_high_multi"
+    },
+    {
+      "game": "g_mrfzqnss_eelp7x4v",
+      "started": "2026-07-11T06:35:56.284Z",
+      "build": "?:",
+      "i": 18,
+      "free": false,
+      "human": "2C",
+      "expert": "QS",
+      "facing": "7H",
+      "hand": "QS 2C QH",
+      "handSizes": [
+        3,
+        4
+      ],
+      "thinkMs": 1861,
+      "matchRank": false,
+      "omin": 4,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrfzp7c1_y60fvzl5",
+      "started": "2026-07-11T06:34:48.289Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "6S 6C",
+      "expert": "PASS",
+      "facing": "5D 5S",
+      "hand": "2H 4S AC 10D QS 6C 7H 6S AH 8C 7C KS JS",
+      "handSizes": [
+        13,
+        8
+      ],
+      "thinkMs": 28747,
+      "matchRank": false,
+      "omin": 8,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfzp7c1_y60fvzl5",
+      "started": "2026-07-11T06:34:48.289Z",
+      "build": "?:",
+      "i": 6,
+      "free": true,
+      "human": "7C 7H",
+      "expert": "10D JS QS KS AH",
+      "facing": "PASS",
+      "hand": "2H 4S AC 10D QS 7H AH 8C 7C KS JS",
+      "handSizes": [
+        11,
+        8
+      ],
+      "thinkMs": 5908,
+      "matchRank": false,
+      "omin": 8,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrfzp7c1_y60fvzl5",
+      "started": "2026-07-11T06:34:48.289Z",
+      "build": "?:",
+      "i": 8,
+      "free": true,
+      "human": "4S",
+      "expert": "10D JS QS KS AC",
+      "facing": "PASS",
+      "hand": "2H 4S AC 10D QS AH 8C KS JS",
+      "handSizes": [
+        9,
+        8
+      ],
+      "thinkMs": 5722,
+      "matchRank": false,
+      "omin": 8,
+      "cls": "H_trash_first_E_high_multi"
+    },
+    {
+      "game": "g_mrfzp7c1_y60fvzl5",
+      "started": "2026-07-11T06:34:48.289Z",
+      "build": "?:",
+      "i": 12,
+      "free": false,
+      "human": "AH",
+      "expert": "10D",
+      "facing": "8D",
+      "hand": "2H AC 10D QS AH KS JS",
+      "handSizes": [
+        7,
+        6
+      ],
+      "thinkMs": 6592,
+      "matchRank": false,
+      "omin": 6,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfznxz9_5kevyiv2",
+      "started": "2026-07-11T06:33:49.509Z",
+      "build": "?:",
+      "i": 1,
+      "free": true,
+      "human": "3C",
+      "expert": "3C 4S 5D",
+      "facing": "PASS",
+      "hand": "8H AS KD 8C 2C JH 5D 2D 3C 9H 4S AH 4D",
+      "handSizes": [
+        13,
+        13
+      ],
+      "thinkMs": 24293,
+      "matchRank": false,
+      "omin": 13,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrfznxz9_5kevyiv2",
+      "started": "2026-07-11T06:33:49.509Z",
+      "build": "?:",
+      "i": 3,
+      "free": false,
+      "human": "5D",
+      "expert": "JH",
+      "facing": "3H",
+      "hand": "8H AS KD 8C 2C JH 5D 2D 9H 4S AH 4D",
+      "handSizes": [
+        12,
+        12
+      ],
+      "thinkMs": 5636,
+      "matchRank": false,
+      "omin": 12,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrfznxz9_5kevyiv2",
+      "started": "2026-07-11T06:33:49.509Z",
+      "build": "?:",
+      "i": 5,
+      "free": false,
+      "human": "9H",
+      "expert": "JH",
+      "facing": "7D",
+      "hand": "8H AS KD 8C 2C JH 2D 9H 4S AH 4D",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 3214,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrfzmsy8_t9o2vwio",
+      "started": "2026-07-11T06:32:56.336Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "6D 8D 7S",
+      "expert": "PASS",
+      "facing": "5C 4D 3H",
+      "hand": "AS QS 8D 6D JS 9D AH 4S 2H 7S 10H QD 7H",
+      "handSizes": [
+        13,
+        10
+      ],
+      "thinkMs": 21218,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfzmsy8_t9o2vwio",
+      "started": "2026-07-11T06:32:56.336Z",
+      "build": "?:",
+      "i": 10,
+      "free": false,
+      "human": "2H",
+      "expert": "QS",
+      "facing": "9S",
+      "hand": "AS QS AH 4S 2H QD",
+      "handSizes": [
+        6,
+        2
+      ],
+      "thinkMs": 7340,
+      "matchRank": false,
+      "omin": 2,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrfzljgg_aykwvkv2",
+      "started": "2026-07-11T06:31:57.376Z",
+      "build": "?:",
+      "i": 3,
+      "free": false,
+      "human": "5C 5H",
+      "expert": "PASS",
+      "facing": "5D 5S",
+      "hand": "JS 8D 6S 2S 10D 5C 5H 10C KD 7H 6D",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 11894,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfzljgg_aykwvkv2",
+      "started": "2026-07-11T06:31:57.376Z",
+      "build": "?:",
+      "i": 11,
+      "free": false,
+      "human": "6S",
+      "expert": "JS",
+      "facing": "4C",
+      "hand": "JS 8D 6S 2S KD 7H 6D",
+      "handSizes": [
+        7,
+        3
+      ],
+      "thinkMs": 8582,
+      "matchRank": false,
+      "omin": 3,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrfzjziv_flccm1g6",
+      "started": "2026-07-11T06:30:44.887Z",
+      "build": "?:",
+      "i": 3,
+      "free": false,
+      "human": "8S",
+      "expert": "5S",
+      "facing": "3D",
+      "hand": "8S QH 9C AS 8D 7D KS 2D 9H 6D 5S QS",
+      "handSizes": [
+        12,
+        12
+      ],
+      "thinkMs": 31440,
+      "matchRank": false,
+      "omin": 12,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfzjziv_flccm1g6",
+      "started": "2026-07-11T06:30:44.887Z",
+      "build": "?:",
+      "i": 5,
+      "free": false,
+      "human": "9C",
+      "expert": "8D",
+      "facing": "8C",
+      "hand": "QH 9C AS 8D 7D KS 2D 9H 6D 5S QS",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 4725,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfzjziv_flccm1g6",
+      "started": "2026-07-11T06:30:44.887Z",
+      "build": "?:",
+      "i": 7,
+      "free": false,
+      "human": "KS",
+      "expert": "9H",
+      "facing": "9D",
+      "hand": "QH AS 8D 7D KS 2D 9H 6D 5S QS",
+      "handSizes": [
+        10,
+        10
+      ],
+      "thinkMs": 12054,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfzh4co_4q5ax2uf",
+      "started": "2026-07-11T06:28:31.176Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "8C 9D 10H",
+      "expert": "PASS",
+      "facing": "5H 4C 3S",
+      "hand": "KD 10H 7C 7H JD 7S QS 9D 7D 4H 3H 8C 3C",
+      "handSizes": [
+        13,
+        10
+      ],
+      "thinkMs": 33307,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfzh4co_4q5ax2uf",
+      "started": "2026-07-11T06:28:31.176Z",
+      "build": "?:",
+      "i": 4,
+      "free": true,
+      "human": "3C 3H",
+      "expert": "7H 7S 7D",
+      "facing": "PASS",
+      "hand": "KD 7C 7H JD 7S QS 7D 4H 3H 3C",
+      "handSizes": [
+        10,
+        10
+      ],
+      "thinkMs": 47721,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrfzh4co_4q5ax2uf",
+      "started": "2026-07-11T06:28:31.176Z",
+      "build": "?:",
+      "i": 16,
+      "free": true,
+      "human": "7S 7C 7D 7H",
+      "expert": "7C 7H 7S",
+      "facing": "PASS",
+      "hand": "7C 7H 7S 7D 4H",
+      "handSizes": [
+        5,
+        4
+      ],
+      "thinkMs": 8125,
+      "matchRank": false,
+      "omin": 4,
+      "cls": "H_longer_multi"
+    },
+    {
+      "game": "g_mrfzf248_11egxvug",
+      "started": "2026-07-11T06:26:54.968Z",
+      "build": "?:",
+      "i": 1,
+      "free": true,
+      "human": "3C 4S 5D",
+      "expert": "3C 4C 5D",
+      "facing": "PASS",
+      "hand": "AS 10S 4C 3C JD 3H QD JC 4S 5D KC JS 8D",
+      "handSizes": [
+        13,
+        13
+      ],
+      "thinkMs": 59993,
+      "matchRank": true,
+      "omin": 13,
+      "cls": "H_diff_multi"
+    },
+    {
+      "game": "g_mrfzf248_11egxvug",
+      "started": "2026-07-11T06:26:54.968Z",
+      "build": "?:",
+      "i": 3,
+      "free": false,
+      "human": "10S JS QD",
+      "expert": "QD KC AS",
+      "facing": "10C 9D 8S",
+      "hand": "AS 10S 4C JD 3H QD JC KC JS 8D",
+      "handSizes": [
+        10,
+        10
+      ],
+      "thinkMs": 8781,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrfzf248_11egxvug",
+      "started": "2026-07-11T06:26:54.968Z",
+      "build": "?:",
+      "i": 11,
+      "free": true,
+      "human": "3H",
+      "expert": "JD JC",
+      "facing": "PASS",
+      "hand": "AS 4C JD 3H JC",
+      "handSizes": [
+        5,
+        5
+      ],
+      "thinkMs": 5402,
+      "matchRank": false,
+      "omin": 5,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrfzdbia_vkorosdz",
+      "started": "2026-07-11T06:25:33.826Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "5C 6S 7D",
+      "expert": "PASS",
+      "facing": "5H 4S 3H",
+      "hand": "KC KH 6S 7D 7H JD 5C 8H 9S 4H QS 4C 10C",
+      "handSizes": [
+        13,
+        10
+      ],
+      "thinkMs": 17363,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfzdbia_vkorosdz",
+      "started": "2026-07-11T06:25:33.826Z",
+      "build": "?:",
+      "i": 8,
+      "free": false,
+      "human": "QS",
+      "expert": "7H",
+      "facing": "7C",
+      "hand": "KC KH 7H JD 8H 9S 4H QS 4C 10C",
+      "handSizes": [
+        10,
+        3
+      ],
+      "thinkMs": 19174,
+      "matchRank": false,
+      "omin": 3,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfzdbia_vkorosdz",
+      "started": "2026-07-11T06:25:33.826Z",
+      "build": "?:",
+      "i": 12,
+      "free": false,
+      "human": "KH",
+      "expert": "JD",
+      "facing": "9D",
+      "hand": "KC KH 7H JD 8H 9S 4H 4C 10C",
+      "handSizes": [
+        9,
+        1
+      ],
+      "thinkMs": 8610,
+      "matchRank": false,
+      "omin": 1,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfzccue_b4i3m5xh",
+      "started": "2026-07-11T06:24:48.902Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "8S",
+      "expert": "5D",
+      "facing": "4D",
+      "hand": "QC 8S 6S 6H AS AD 6C 9D 5D 7H 8H 2C",
+      "handSizes": [
+        12,
+        11
+      ],
+      "thinkMs": 4465,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfzccue_b4i3m5xh",
+      "started": "2026-07-11T06:24:48.902Z",
+      "build": "?:",
+      "i": 8,
+      "free": false,
+      "human": "2C",
+      "expert": "AS",
+      "facing": "QH",
+      "hand": "6S 6H AS AD 6C 9D 5D 7H 8H 2C",
+      "handSizes": [
+        10,
+        9
+      ],
+      "thinkMs": 4232,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrfzccue_b4i3m5xh",
+      "started": "2026-07-11T06:24:48.902Z",
+      "build": "?:",
+      "i": 10,
+      "free": true,
+      "human": "5D 6S 7H 8H 9D",
+      "expert": "5D 6C 7H 8H 9D",
+      "facing": "PASS",
+      "hand": "6S 6H AS AD 6C 9D 5D 7H 8H",
+      "handSizes": [
+        9,
+        9
+      ],
+      "thinkMs": 6358,
+      "matchRank": true,
+      "omin": 9,
+      "cls": "H_diff_multi"
+    },
+    {
+      "game": "g_mrfzb27b_ipee3hd1",
+      "started": "2026-07-11T06:23:48.455Z",
+      "build": "?:",
+      "i": 5,
+      "free": false,
+      "human": "QH",
+      "expert": "AC",
+      "facing": "7C",
+      "hand": "7S QS 9D QH 9H 10C QD AC 9C 10S 9S",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 21066,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrfzb27b_ipee3hd1",
+      "started": "2026-07-11T06:23:48.455Z",
+      "build": "?:",
+      "i": 9,
+      "free": true,
+      "human": "10S 10C",
+      "expert": "9D 9H 9C",
+      "facing": "PASS",
+      "hand": "7S QS 9D 9H 10C QD 9C 10S 9S",
+      "handSizes": [
+        9,
+        10
+      ],
+      "thinkMs": 9300,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrfzb27b_ipee3hd1",
+      "started": "2026-07-11T06:23:48.455Z",
+      "build": "?:",
+      "i": 15,
+      "free": true,
+      "human": "9S 9C 9D 9H",
+      "expert": "9D 9H 9C",
+      "facing": "PASS",
+      "hand": "7S 9D 9H 9C 9S",
+      "handSizes": [
+        5,
+        6
+      ],
+      "thinkMs": 4498,
+      "matchRank": false,
+      "omin": 6,
+      "cls": "H_longer_multi"
+    },
+    {
+      "game": "g_mrfz9x9q_eynamchb",
+      "started": "2026-07-11T06:22:55.406Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "5S",
+      "expert": "3H",
+      "facing": "3C",
+      "hand": "AD 3H 2C 5H 4C 6S AC 9D 5S QC JC 2H 8S",
+      "handSizes": [
+        13,
+        12
+      ],
+      "thinkMs": 9649,
+      "matchRank": false,
+      "omin": 12,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfz9x9q_eynamchb",
+      "started": "2026-07-11T06:22:55.406Z",
+      "build": "?:",
+      "i": 12,
+      "free": false,
+      "human": "2H",
+      "expert": "AD",
+      "facing": "QD",
+      "hand": "AD 3H 2C 5H 4C 6S AC 2H",
+      "handSizes": [
+        8,
+        7
+      ],
+      "thinkMs": 5947,
+      "matchRank": false,
+      "omin": 7,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrfz88yn_tt0ev0au",
+      "started": "2026-07-11T06:21:37.247Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "8D 9S 10C",
+      "expert": "PASS",
+      "facing": "5D 4C 3D",
+      "hand": "JD KS JS JC 10C 8D 9S 10D KD 4D KH 9D 8H",
+      "handSizes": [
+        13,
+        10
+      ],
+      "thinkMs": 48354,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfz88yn_tt0ev0au",
+      "started": "2026-07-11T06:21:37.247Z",
+      "build": "?:",
+      "i": 6,
+      "free": false,
+      "human": "JC JD",
+      "expert": "JD JS",
+      "facing": "6D 6C",
+      "hand": "JD KS JS JC 10D KD 4D KH 9D 8H",
+      "handSizes": [
+        10,
+        5
+      ],
+      "thinkMs": 11103,
+      "matchRank": true,
+      "omin": 5,
+      "cls": "H_diff_multi"
+    },
+    {
+      "game": "g_mrfz5ze3_94ajof0c",
+      "started": "2026-07-11T06:19:51.531Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "JC JD",
+      "expert": "PASS",
+      "facing": "3D 3S",
+      "hand": "KH KS JD 10S 3H JS 9H 8S 4C JC 7S QH 8H",
+      "handSizes": [
+        13,
+        11
+      ],
+      "thinkMs": 38073,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfz5ze3_94ajof0c",
+      "started": "2026-07-11T06:19:51.531Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "PASS",
+      "expert": "KH KS",
+      "facing": "QC QS",
+      "hand": "KH KS 10S 3H JS 9H 8S 4C 7S QH 8H",
+      "handSizes": [
+        11,
+        9
+      ],
+      "thinkMs": 11981,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mrfz5ze3_94ajof0c",
+      "started": "2026-07-11T06:19:51.531Z",
+      "build": "?:",
+      "i": 6,
+      "free": false,
+      "human": "8H 8S",
+      "expert": "PASS",
+      "facing": "7H 7C",
+      "hand": "KH KS 10S 3H JS 9H 8S 4C 7S QH 8H",
+      "handSizes": [
+        11,
+        7
+      ],
+      "thinkMs": 21212,
+      "matchRank": false,
+      "omin": 7,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfz5ze3_94ajof0c",
+      "started": "2026-07-11T06:19:51.531Z",
+      "build": "?:",
+      "i": 8,
+      "free": false,
+      "human": "PASS",
+      "expert": "KH KS",
+      "facing": "10H 10D",
+      "hand": "KH KS 10S 3H JS 9H 4C 7S QH",
+      "handSizes": [
+        9,
+        5
+      ],
+      "thinkMs": 7165,
+      "matchRank": false,
+      "omin": 5,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mrfz5ze3_94ajof0c",
+      "started": "2026-07-11T06:19:51.531Z",
+      "build": "?:",
+      "i": 12,
+      "free": false,
+      "human": "KH",
+      "expert": "9H",
+      "facing": "9S",
+      "hand": "KH KS 10S 3H JS 9H 4C QH",
+      "handSizes": [
+        8,
+        3
+      ],
+      "thinkMs": 7278,
+      "matchRank": false,
+      "omin": 3,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfz3p14_p2t304iy",
+      "started": "2026-07-11T06:18:04.792Z",
+      "build": "?:",
+      "i": 3,
+      "free": false,
+      "human": "6D",
+      "expert": "5D",
+      "facing": "3C",
+      "hand": "9C QC 7H 8H AD KH 8C 5D 8D 6H 6D AS",
+      "handSizes": [
+        12,
+        12
+      ],
+      "thinkMs": 8002,
+      "matchRank": false,
+      "omin": 12,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfz3p14_p2t304iy",
+      "started": "2026-07-11T06:18:04.792Z",
+      "build": "?:",
+      "i": 5,
+      "free": false,
+      "human": "AD",
+      "expert": "9C",
+      "facing": "7C",
+      "hand": "9C QC 7H 8H AD KH 8C 5D 8D 6H AS",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 36096,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfz3p14_p2t304iy",
+      "started": "2026-07-11T06:18:04.792Z",
+      "build": "?:",
+      "i": 7,
+      "free": true,
+      "human": "5D 6H 7H",
+      "expert": "5D 6H 7H 8H 9C",
+      "facing": "PASS",
+      "hand": "9C QC 7H 8H KH 8C 5D 8D 6H AS",
+      "handSizes": [
+        10,
+        11
+      ],
+      "thinkMs": 17675,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrfz3p14_p2t304iy",
+      "started": "2026-07-11T06:18:04.792Z",
+      "build": "?:",
+      "i": 15,
+      "free": false,
+      "human": "KH",
+      "expert": "AS",
+      "facing": "QH",
+      "hand": "9C QC KH AS",
+      "handSizes": [
+        4,
+        4
+      ],
+      "thinkMs": 11798,
+      "matchRank": false,
+      "omin": 4,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrfz3p14_p2t304iy",
+      "started": "2026-07-11T06:18:04.792Z",
+      "build": "?:",
+      "i": 17,
+      "free": true,
+      "human": "QC",
+      "expert": "9C",
+      "facing": "PASS",
+      "hand": "9C QC AS",
+      "handSizes": [
+        3,
+        4
+      ],
+      "thinkMs": 3324,
+      "matchRank": false,
+      "omin": 4,
+      "cls": "H_higher_single"
+    },
+    {
+      "game": "g_mrfz3p14_p2t304iy",
+      "started": "2026-07-11T06:18:04.792Z",
+      "build": "?:",
+      "i": 19,
+      "free": true,
+      "human": "AS",
+      "expert": "9C",
+      "facing": "PASS",
+      "hand": "9C AS",
+      "handSizes": [
+        2,
+        4
+      ],
+      "thinkMs": 1785,
+      "matchRank": false,
+      "omin": 4,
+      "cls": "H_higher_single"
+    },
+    {
+      "game": "g_mrfz29dy_szg37b1s",
+      "started": "2026-07-11T06:16:57.862Z",
+      "build": "?:",
+      "i": 1,
+      "free": true,
+      "human": "4S 5S 6H",
+      "expert": "4S 5C 6H",
+      "facing": "PASS",
+      "hand": "KC 10S QS JS 5C 6H 9S 2S 5S 10C 4S AS QC",
+      "handSizes": [
+        13,
+        13
+      ],
+      "thinkMs": 18626,
+      "matchRank": true,
+      "omin": 13,
+      "cls": "H_diff_multi"
+    },
+    {
+      "game": "g_mrfz29dy_szg37b1s",
+      "started": "2026-07-11T06:16:57.862Z",
+      "build": "?:",
+      "i": 5,
+      "free": true,
+      "human": "5C",
+      "expert": "QS KC AS",
+      "facing": "PASS",
+      "hand": "KC QS 5C 2S 10C AS QC",
+      "handSizes": [
+        7,
+        10
+      ],
+      "thinkMs": 6604,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_trash_first_E_high_multi"
+    },
+    {
+      "game": "g_mrfz29dy_szg37b1s",
+      "started": "2026-07-11T06:16:57.862Z",
+      "build": "?:",
+      "i": 9,
+      "free": false,
+      "human": "2S",
+      "expert": "KC",
+      "facing": "QD",
+      "hand": "KC QS 2S AS QC",
+      "handSizes": [
+        5,
+        8
+      ],
+      "thinkMs": 10824,
+      "matchRank": false,
+      "omin": 8,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrfz29dy_szg37b1s",
+      "started": "2026-07-11T06:16:57.862Z",
+      "build": "?:",
+      "i": 11,
+      "free": true,
+      "human": "QC KC AS",
+      "expert": "QS KC AS",
+      "facing": "PASS",
+      "hand": "KC QS AS QC",
+      "handSizes": [
+        4,
+        8
+      ],
+      "thinkMs": 2955,
+      "matchRank": true,
+      "omin": 8,
+      "cls": "H_diff_multi"
+    },
+    {
+      "game": "g_mrfz0mq8_l620f8aj",
+      "started": "2026-07-11T06:15:41.840Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "JS",
+      "expert": "6C",
+      "facing": "5H",
+      "hand": "KH 8H 4H QH JS KD 7C 2S KC 10C 6C JC",
+      "handSizes": [
+        12,
+        11
+      ],
+      "thinkMs": 11162,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfz0mq8_l620f8aj",
+      "started": "2026-07-11T06:15:41.840Z",
+      "build": "?:",
+      "i": 6,
+      "free": false,
+      "human": "KC",
+      "expert": "QH",
+      "facing": "JD",
+      "hand": "KH 8H 4H QH KD 7C 2S KC 10C 6C JC",
+      "handSizes": [
+        11,
+        10
+      ],
+      "thinkMs": 25288,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfz0mq8_l620f8aj",
+      "started": "2026-07-11T06:15:41.840Z",
+      "build": "?:",
+      "i": 10,
+      "free": true,
+      "human": "6C 7C 8H",
+      "expert": "10C JC QH KH",
+      "facing": "PASS",
+      "hand": "KH 8H 4H QH KD 7C 10C 6C JC",
+      "handSizes": [
+        9,
+        9
+      ],
+      "thinkMs": 7751,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrfyz0wv_rl9hjpbp",
+      "started": "2026-07-11T06:14:26.911Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "5H",
+      "expert": "JD",
+      "facing": "3C",
+      "hand": "6S JD AS 8D 5H 3H 9S 9D 8H 7S 4S 5S 9H",
+      "handSizes": [
+        13,
+        12
+      ],
+      "thinkMs": 31038,
+      "matchRank": false,
+      "omin": 12,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrfyz0wv_rl9hjpbp",
+      "started": "2026-07-11T06:14:26.911Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "8D",
+      "expert": "JD",
+      "facing": "7C",
+      "hand": "6S JD AS 8D 3H 9S 9D 8H 7S 4S 5S 9H",
+      "handSizes": [
+        12,
+        11
+      ],
+      "thinkMs": 8899,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrfyz0wv_rl9hjpbp",
+      "started": "2026-07-11T06:14:26.911Z",
+      "build": "?:",
+      "i": 16,
+      "free": false,
+      "human": "9H",
+      "expert": "6S",
+      "facing": "5D",
+      "hand": "6S 3H 9S 9D 8H 7S 4S 5S 9H",
+      "handSizes": [
+        9,
+        3
+      ],
+      "thinkMs": 11508,
+      "matchRank": false,
+      "omin": 3,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfyyboh_2j40hlqw",
+      "started": "2026-07-11T06:13:54.209Z",
+      "build": "?:",
+      "i": 3,
+      "free": true,
+      "human": "6S",
+      "expert": "QS QC",
+      "facing": "PASS",
+      "hand": "2D QS 6S QC AC",
+      "handSizes": [
+        5,
+        13
+      ],
+      "thinkMs": 3684,
+      "matchRank": false,
+      "omin": 13,
+      "cls": "H_trash_first_E_high_multi"
+    },
+    {
+      "game": "g_mrfyw1yq_0jh01a1t",
+      "started": "2026-07-11T06:12:08.306Z",
+      "build": "?:",
+      "i": 5,
+      "free": false,
+      "human": "9D 7D 8S",
+      "expert": "PASS",
+      "facing": "9S 8H 7S",
+      "hand": "9D 6H 8D AD 8S AH JH 6S 6C 7D 5S",
+      "handSizes": [
+        11,
+        8
+      ],
+      "thinkMs": 40828,
+      "matchRank": false,
+      "omin": 8,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfyw1yq_0jh01a1t",
+      "started": "2026-07-11T06:12:08.306Z",
+      "build": "?:",
+      "i": 11,
+      "free": false,
+      "human": "JH",
+      "expert": "8D",
+      "facing": "4C",
+      "hand": "6H 8D AD AH JH 6S 6C 5S",
+      "handSizes": [
+        8,
+        1
+      ],
+      "thinkMs": 16427,
+      "matchRank": false,
+      "omin": 1,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfyv4sy_sx5y3xrf",
+      "started": "2026-07-11T06:11:25.330Z",
+      "build": "?:",
+      "i": 3,
+      "free": false,
+      "human": "9H 10D JD",
+      "expert": "QH KD AS",
+      "facing": "10S 9S 8D",
+      "hand": "AS 7C QH 9H KD 8S 10D JD 9D QD",
+      "handSizes": [
+        10,
+        10
+      ],
+      "thinkMs": 20872,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrfyt5sh_vij05ci6",
+      "started": "2026-07-11T06:09:53.297Z",
+      "build": "?:",
+      "i": 3,
+      "free": false,
+      "human": "8H 9S 10D",
+      "expert": "9S 10H JS",
+      "facing": "7C 6S 5S",
+      "hand": "8C 9D 8S 8H 10D 2H JS 9S AC 10H",
+      "handSizes": [
+        10,
+        10
+      ],
+      "thinkMs": 35530,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrfyt5sh_vij05ci6",
+      "started": "2026-07-11T06:09:53.297Z",
+      "build": "?:",
+      "i": 9,
+      "free": false,
+      "human": "8S",
+      "expert": "JS",
+      "facing": "5H",
+      "hand": "8C 9D 8S 2H JS AC 10H",
+      "handSizes": [
+        7,
+        4
+      ],
+      "thinkMs": 13269,
+      "matchRank": false,
+      "omin": 4,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrfyt5sh_vij05ci6",
+      "started": "2026-07-11T06:09:53.297Z",
+      "build": "?:",
+      "i": 11,
+      "free": false,
+      "human": "AC",
+      "expert": "JS",
+      "facing": "10S",
+      "hand": "8C 9D 2H JS AC 10H",
+      "handSizes": [
+        6,
+        3
+      ],
+      "thinkMs": 5083,
+      "matchRank": false,
+      "omin": 3,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfyppxp_8die7d2k",
+      "started": "2026-07-11T06:07:12.781Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "8S 8D",
+      "expert": "PASS",
+      "facing": "3D 3S",
+      "hand": "3H JH 5S QD JS 8D 6D 8S KC QS 2H 10S KD",
+      "handSizes": [
+        13,
+        11
+      ],
+      "thinkMs": 13479,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfyppxp_8die7d2k",
+      "started": "2026-07-11T06:07:12.781Z",
+      "build": "?:",
+      "i": 14,
+      "free": false,
+      "human": "PASS",
+      "expert": "2H",
+      "facing": "AC",
+      "hand": "3H 5S QD JS KC QS 2H KD",
+      "handSizes": [
+        8,
+        3
+      ],
+      "thinkMs": 13377,
+      "matchRank": false,
+      "omin": 3,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mrfyppxp_8die7d2k",
+      "started": "2026-07-11T06:07:12.781Z",
+      "build": "?:",
+      "i": 16,
+      "free": false,
+      "human": "QD",
+      "expert": "JS",
+      "facing": "6C",
+      "hand": "3H 5S QD JS KC QS 2H KD",
+      "handSizes": [
+        8,
+        2
+      ],
+      "thinkMs": 29277,
+      "matchRank": false,
+      "omin": 2,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfyppxp_8die7d2k",
+      "started": "2026-07-11T06:07:12.781Z",
+      "build": "?:",
+      "i": 18,
+      "free": true,
+      "human": "3H",
+      "expert": "JS QS KC",
+      "facing": "PASS",
+      "hand": "3H 5S JS KC QS 2H KD",
+      "handSizes": [
+        7,
+        2
+      ],
+      "thinkMs": 5824,
+      "matchRank": false,
+      "omin": 2,
+      "cls": "H_trash_first_E_high_multi"
+    },
+    {
+      "game": "g_mrfyppxp_8die7d2k",
+      "started": "2026-07-11T06:07:12.781Z",
+      "build": "?:",
+      "i": 20,
+      "free": false,
+      "human": "2H",
+      "expert": "JS",
+      "facing": "9C",
+      "hand": "5S JS KC QS 2H KD",
+      "handSizes": [
+        6,
+        1
+      ],
+      "thinkMs": 2789,
+      "matchRank": false,
+      "omin": 1,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrfyppxp_8die7d2k",
+      "started": "2026-07-11T06:07:12.781Z",
+      "build": "?:",
+      "i": 22,
+      "free": true,
+      "human": "JS QS KC",
+      "expert": "KC KD",
+      "facing": "PASS",
+      "hand": "5S JS KC QS KD",
+      "handSizes": [
+        5,
+        1
+      ],
+      "thinkMs": 7314,
+      "matchRank": false,
+      "omin": 1,
+      "cls": "H_longer_multi"
+    },
+    {
+      "game": "g_mrfyo2jk_3ijq3q4o",
+      "started": "2026-07-11T06:05:55.808Z",
+      "build": "?:",
+      "i": 3,
+      "free": false,
+      "human": "QC QH",
+      "expert": "PASS",
+      "facing": "4C 4S",
+      "hand": "QC 2H QH AS 9H AC JS 10H 10D 2D 7H",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 25836,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfyo2jk_3ijq3q4o",
+      "started": "2026-07-11T06:05:55.808Z",
+      "build": "?:",
+      "i": 5,
+      "free": true,
+      "human": "7H",
+      "expert": "9H 10H JS",
+      "facing": "PASS",
+      "hand": "2H AS 9H AC JS 10H 10D 2D 7H",
+      "handSizes": [
+        9,
+        11
+      ],
+      "thinkMs": 8352,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrfyo2jk_3ijq3q4o",
+      "started": "2026-07-11T06:05:55.808Z",
+      "build": "?:",
+      "i": 11,
+      "free": false,
+      "human": "2H",
+      "expert": "AS",
+      "facing": "JH",
+      "hand": "2H AS AC 10H 10D 2D",
+      "handSizes": [
+        6,
+        8
+      ],
+      "thinkMs": 5361,
+      "matchRank": false,
+      "omin": 8,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrfylmec_2k6akjrz",
+      "started": "2026-07-11T06:04:01.572Z",
+      "build": "?:",
+      "i": 3,
+      "free": false,
+      "human": "7C 7H",
+      "expert": "PASS",
+      "facing": "4H 4S",
+      "hand": "JD 7H AD 8S 9H 7C 10H AC 5D 9S QD",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 42513,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfylmec_2k6akjrz",
+      "started": "2026-07-11T06:04:01.572Z",
+      "build": "?:",
+      "i": 5,
+      "free": false,
+      "human": "PASS",
+      "expert": "AD AC",
+      "facing": "8H 8D",
+      "hand": "JD AD 8S 9H 10H AC 5D 9S QD",
+      "handSizes": [
+        9,
+        9
+      ],
+      "thinkMs": 15181,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mrfylmec_2k6akjrz",
+      "started": "2026-07-11T06:04:01.572Z",
+      "build": "?:",
+      "i": 9,
+      "free": true,
+      "human": "5D",
+      "expert": "9H 9S",
+      "facing": "PASS",
+      "hand": "AD 8S 9H AC 5D 9S",
+      "handSizes": [
+        6,
+        6
+      ],
+      "thinkMs": 6898,
+      "matchRank": false,
+      "omin": 6,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrfylmec_2k6akjrz",
+      "started": "2026-07-11T06:04:01.572Z",
+      "build": "?:",
+      "i": 13,
+      "free": false,
+      "human": "AD",
+      "expert": "9H",
+      "facing": "8C",
+      "hand": "AD 9H AC 9S",
+      "handSizes": [
+        4,
+        4
+      ],
+      "thinkMs": 7452,
+      "matchRank": false,
+      "omin": 4,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfyjw0r_rg7rhyqp",
+      "started": "2026-07-11T06:02:40.731Z",
+      "build": "?:",
+      "i": 1,
+      "free": true,
+      "human": "3C 5D 6C 4C",
+      "expert": "3C 4C 5D 6C 7S",
+      "facing": "PASS",
+      "hand": "JH AD 3C 4C 10S QH JC JD 6C 5D 4H 7S 7D",
+      "handSizes": [
+        13,
+        13
+      ],
+      "thinkMs": 29739,
+      "matchRank": false,
+      "omin": 13,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrfyjw0r_rg7rhyqp",
+      "started": "2026-07-11T06:02:40.731Z",
+      "build": "?:",
+      "i": 13,
+      "free": true,
+      "human": "10S JC QH",
+      "expert": "JH JC JD",
+      "facing": "PASS",
+      "hand": "JH 10S QH JC JD 7S 7D",
+      "handSizes": [
+        7,
+        3
+      ],
+      "thinkMs": 13291,
+      "matchRank": false,
+      "omin": 3,
+      "cls": "H_higher_multi_take_control"
+    },
+    {
+      "game": "g_mrfppj8t_gyxkyisz",
+      "started": "2026-07-11T01:55:07.565Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "KS KD",
+      "expert": "PASS",
+      "facing": "9H 9S",
+      "hand": "6S 7H QC 6H 7D AH KS 2C AD KD 5C 2H 8S",
+      "handSizes": [
+        13,
+        8
+      ],
+      "thinkMs": 18866,
+      "matchRank": false,
+      "omin": 8,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfppj8t_gyxkyisz",
+      "started": "2026-07-11T01:55:07.565Z",
+      "build": "?:",
+      "i": 6,
+      "free": true,
+      "human": "5C 6S 7D 8S",
+      "expert": "5C 6H 7D 8S",
+      "facing": "PASS",
+      "hand": "6S 7H QC 6H 7D AH 2C AD 5C 2H 8S",
+      "handSizes": [
+        11,
+        8
+      ],
+      "thinkMs": 6487,
+      "matchRank": true,
+      "omin": 8,
+      "cls": "H_diff_multi"
+    },
+    {
+      "game": "g_mrfppj8t_gyxkyisz",
+      "started": "2026-07-11T01:55:07.565Z",
+      "build": "?:",
+      "i": 8,
+      "free": true,
+      "human": "6H",
+      "expert": "AH AD",
+      "facing": "PASS",
+      "hand": "7H QC 6H AH 2C AD 2H",
+      "handSizes": [
+        7,
+        8
+      ],
+      "thinkMs": 2554,
+      "matchRank": false,
+      "omin": 8,
+      "cls": "H_trash_first_E_high_multi"
+    },
+    {
+      "game": "g_mrfppj8t_gyxkyisz",
+      "started": "2026-07-11T01:55:07.565Z",
+      "build": "?:",
+      "i": 14,
+      "free": false,
+      "human": "2C",
+      "expert": "AH",
+      "facing": "QH",
+      "hand": "AH 2C AD 2H",
+      "handSizes": [
+        4,
+        5
+      ],
+      "thinkMs": 4307,
+      "matchRank": false,
+      "omin": 5,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrfpokmu_kgyac7r7",
+      "started": "2026-07-11T01:54:22.710Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "6C 6H",
+      "expert": "PASS",
+      "facing": "4D 4S",
+      "hand": "6C 2S 7S 2H 7H AH AD KC 5S 10C 6H JD KH",
+      "handSizes": [
+        13,
+        11
+      ],
+      "thinkMs": 14605,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfpokmu_kgyac7r7",
+      "started": "2026-07-11T01:54:22.710Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "KC KH",
+      "expert": "PASS",
+      "facing": "8D 8C",
+      "hand": "2S 7S 2H 7H AH AD KC 5S 10C JD KH",
+      "handSizes": [
+        11,
+        9
+      ],
+      "thinkMs": 4391,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfpokmu_kgyac7r7",
+      "started": "2026-07-11T01:54:22.710Z",
+      "build": "?:",
+      "i": 6,
+      "free": true,
+      "human": "5S",
+      "expert": "7S 7H",
+      "facing": "PASS",
+      "hand": "2S 7S 2H 7H AH AD 5S 10C JD",
+      "handSizes": [
+        9,
+        9
+      ],
+      "thinkMs": 4071,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrfpokmu_kgyac7r7",
+      "started": "2026-07-11T01:54:22.710Z",
+      "build": "?:",
+      "i": 12,
+      "free": false,
+      "human": "2H",
+      "expert": "AH",
+      "facing": "QC",
+      "hand": "2S 7S 2H 7H AH AD",
+      "handSizes": [
+        6,
+        6
+      ],
+      "thinkMs": 4441,
+      "matchRank": false,
+      "omin": 6,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrfpnpc2_se80uohf",
+      "started": "2026-07-11T01:53:42.146Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "4S 6D 5C",
+      "expert": "PASS",
+      "facing": "5D 4D 3H",
+      "hand": "8H 5C 2S 4S 9D QC AS 8C 6D KH 9S 9H QS",
+      "handSizes": [
+        13,
+        10
+      ],
+      "thinkMs": 6275,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfpnpc2_se80uohf",
+      "started": "2026-07-11T01:53:42.146Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "QS KH AS",
+      "expert": "QC KH AS",
+      "facing": "7H 6C 5S",
+      "hand": "8H 2S 9D QC AS 8C KH 9S 9H QS",
+      "handSizes": [
+        10,
+        7
+      ],
+      "thinkMs": 10323,
+      "matchRank": true,
+      "omin": 7,
+      "cls": "H_diff_multi"
+    },
+    {
+      "game": "g_mrfpnpc2_se80uohf",
+      "started": "2026-07-11T01:53:42.146Z",
+      "build": "?:",
+      "i": 8,
+      "free": true,
+      "human": "QC",
+      "expert": "8H 8C",
+      "facing": "PASS",
+      "hand": "8H 2S QC 8C",
+      "handSizes": [
+        4,
+        7
+      ],
+      "thinkMs": 3416,
+      "matchRank": false,
+      "omin": 7,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrfplqnt_f032yinl",
+      "started": "2026-07-11T01:52:10.553Z",
+      "build": "?:",
+      "i": 1,
+      "free": true,
+      "human": "3H 4S 5S 6D 7C",
+      "expert": "3H 4S 5S 6H 7C",
+      "facing": "PASS",
+      "hand": "10H 3H 4S 10S 9D KD 6H JD 6D QC 2D 5S 7C",
+      "handSizes": [
+        13,
+        13
+      ],
+      "thinkMs": 17415,
+      "matchRank": true,
+      "omin": 13,
+      "cls": "H_diff_multi"
+    },
+    {
+      "game": "g_mrfplqnt_f032yinl",
+      "started": "2026-07-11T01:52:10.553Z",
+      "build": "?:",
+      "i": 3,
+      "free": false,
+      "human": "9D 10S JD QC KD",
+      "expert": "9D 10H JD QC KD",
+      "facing": "10D 9S 8S 7H 6C",
+      "hand": "10H 10S 9D KD 6H JD QC 2D",
+      "handSizes": [
+        8,
+        8
+      ],
+      "thinkMs": 6343,
+      "matchRank": true,
+      "omin": 8,
+      "cls": "H_diff_multi"
+    },
+    {
+      "game": "g_mrfpkw8l_8gbfguxu",
+      "started": "2026-07-11T01:51:31.125Z",
+      "build": "?:",
+      "i": 9,
+      "free": true,
+      "human": "2C 2D",
+      "expert": "KS KH",
+      "facing": "PASS",
+      "hand": "KS KH 2C 2D",
+      "handSizes": [
+        4,
+        4
+      ],
+      "thinkMs": 3478,
+      "matchRank": false,
+      "omin": 4,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrfpjvlb_syxik28a",
+      "started": "2026-07-11T01:50:43.631Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "QS QD",
+      "expert": "PASS",
+      "facing": "3H 3S",
+      "hand": "6C 8H QD 5C 9C 7C 10C QS QH 4D 3C 5S JC",
+      "handSizes": [
+        13,
+        11
+      ],
+      "thinkMs": 13564,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfpjvlb_syxik28a",
+      "started": "2026-07-11T01:50:43.631Z",
+      "build": "?:",
+      "i": 8,
+      "free": false,
+      "human": "5C",
+      "expert": "QH",
+      "facing": "4S",
+      "hand": "6C 8H 5C 9C 7C 10C QH 4D 3C 5S JC",
+      "handSizes": [
+        11,
+        5
+      ],
+      "thinkMs": 12182,
+      "matchRank": false,
+      "omin": 5,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrfpiw9r_49wyiy6b",
+      "started": "2026-07-11T01:49:57.855Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "7D",
+      "expert": "8C",
+      "facing": "4S",
+      "hand": "KS QS 6D 5H 6H 2S 7D 4D 4C 8C 2D JC 5S",
+      "handSizes": [
+        13,
+        12
+      ],
+      "thinkMs": 22189,
+      "matchRank": false,
+      "omin": 12,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrfpiw9r_49wyiy6b",
+      "started": "2026-07-11T01:49:57.855Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "2S",
+      "expert": "JC",
+      "facing": "9C",
+      "hand": "KS QS 6D 5H 6H 2S 4D 4C 8C 2D JC 5S",
+      "handSizes": [
+        12,
+        11
+      ],
+      "thinkMs": 5656,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrfpiw9r_49wyiy6b",
+      "started": "2026-07-11T01:49:57.855Z",
+      "build": "?:",
+      "i": 6,
+      "free": true,
+      "human": "8C",
+      "expert": "4D 5S 6H",
+      "facing": "PASS",
+      "hand": "KS QS 6D 5H 6H 4D 4C 8C 2D JC 5S",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 4788,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrfpiw9r_49wyiy6b",
+      "started": "2026-07-11T01:49:57.855Z",
+      "build": "?:",
+      "i": 8,
+      "free": false,
+      "human": "2D",
+      "expert": "JC",
+      "facing": "9D",
+      "hand": "KS QS 6D 5H 6H 4D 4C 2D JC 5S",
+      "handSizes": [
+        10,
+        10
+      ],
+      "thinkMs": 2656,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrfpiw9r_49wyiy6b",
+      "started": "2026-07-11T01:49:57.855Z",
+      "build": "?:",
+      "i": 10,
+      "free": true,
+      "human": "4C 4D 5S 5H 6D 6H",
+      "expert": "4D 5S 6H",
+      "facing": "PASS",
+      "hand": "KS QS 6D 5H 6H 4D 4C JC 5S",
+      "handSizes": [
+        9,
+        10
+      ],
+      "thinkMs": 5194,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_longer_multi"
+    },
+    {
+      "game": "g_mrfphqr7_dsekl81q",
+      "started": "2026-07-11T01:49:04.051Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "6C",
+      "expert": "AS",
+      "facing": "4C",
+      "hand": "7D QS 8H JH 6C QC 10S AS 6S 9C 10C QD",
+      "handSizes": [
+        12,
+        11
+      ],
+      "thinkMs": 17019,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrfphqr7_dsekl81q",
+      "started": "2026-07-11T01:49:04.051Z",
+      "build": "?:",
+      "i": 6,
+      "free": false,
+      "human": "10C",
+      "expert": "AS",
+      "facing": "6H",
+      "hand": "7D QS 8H JH QC 10S AS 6S 9C 10C QD",
+      "handSizes": [
+        11,
+        10
+      ],
+      "thinkMs": 8689,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrfpgf9h_xtyyk87i",
+      "started": "2026-07-11T01:48:02.501Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "3D",
+      "expert": "JS",
+      "facing": "3S",
+      "hand": "KC 2H 7S 3D 6D 9C 2S 2C 8D 4H KD JS 7C",
+      "handSizes": [
+        13,
+        12
+      ],
+      "thinkMs": 6039,
+      "matchRank": false,
+      "omin": 12,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrfpgf9h_xtyyk87i",
+      "started": "2026-07-11T01:48:02.501Z",
+      "build": "?:",
+      "i": 8,
+      "free": false,
+      "human": "2S",
+      "expert": "KC",
+      "facing": "JC",
+      "hand": "KC 2H 7S 6D 9C 2S 2C 8D KD 7C",
+      "handSizes": [
+        10,
+        9
+      ],
+      "thinkMs": 8425,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrfpgf9h_xtyyk87i",
+      "started": "2026-07-11T01:48:02.501Z",
+      "build": "?:",
+      "i": 10,
+      "free": true,
+      "human": "7S",
+      "expert": "6D 7S 8D 9C",
+      "facing": "PASS",
+      "hand": "KC 2H 7S 6D 9C 2C 8D KD 7C",
+      "handSizes": [
+        9,
+        9
+      ],
+      "thinkMs": 6549,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrfpgf9h_xtyyk87i",
+      "started": "2026-07-11T01:48:02.501Z",
+      "build": "?:",
+      "i": 12,
+      "free": false,
+      "human": "2C",
+      "expert": "9C",
+      "facing": "8H",
+      "hand": "KC 2H 6D 9C 2C 8D KD 7C",
+      "handSizes": [
+        8,
+        8
+      ],
+      "thinkMs": 3031,
+      "matchRank": false,
+      "omin": 8,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrfpgf9h_xtyyk87i",
+      "started": "2026-07-11T01:48:02.501Z",
+      "build": "?:",
+      "i": 14,
+      "free": true,
+      "human": "KC KD",
+      "expert": "6D 7C 8D 9C",
+      "facing": "PASS",
+      "hand": "KC 2H 6D 9C 8D KD 7C",
+      "handSizes": [
+        7,
+        8
+      ],
+      "thinkMs": 7248,
+      "matchRank": false,
+      "omin": 8,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrfpgf9h_xtyyk87i",
+      "started": "2026-07-11T01:48:02.501Z",
+      "build": "?:",
+      "i": 16,
+      "free": true,
+      "human": "2H",
+      "expert": "6D 7C 8D 9C",
+      "facing": "PASS",
+      "hand": "2H 6D 9C 8D 7C",
+      "handSizes": [
+        5,
+        8
+      ],
+      "thinkMs": 1736,
+      "matchRank": false,
+      "omin": 8,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrfpfo3a_jyftyvxa",
+      "started": "2026-07-11T01:47:27.286Z",
+      "build": "?:",
+      "i": 9,
+      "free": true,
+      "human": "QS KH AS",
+      "expert": "QS KH AS 2C",
+      "facing": "PASS",
+      "hand": "KH QS 2C AS",
+      "handSizes": [
+        4,
+        7
+      ],
+      "thinkMs": 2914,
+      "matchRank": false,
+      "omin": 7,
+      "cls": "E_2_H_non2"
+    },
+    {
+      "game": "g_mrfpe75i_jzuqbwtj",
+      "started": "2026-07-11T01:46:18.678Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "9S 9D",
+      "expert": "PASS",
+      "facing": "3H 3S",
+      "hand": "6D 10C 9S QS 4C AC 4D 9D 7D 9H QD 8S 3C",
+      "handSizes": [
+        13,
+        11
+      ],
+      "thinkMs": 21224,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfpe75i_jzuqbwtj",
+      "started": "2026-07-11T01:46:18.678Z",
+      "build": "?:",
+      "i": 6,
+      "free": true,
+      "human": "3C",
+      "expert": "6D 7D 8S 9H 10C",
+      "facing": "PASS",
+      "hand": "6D 10C 4C AC 4D 7D 9H 8S 3C",
+      "handSizes": [
+        9,
+        9
+      ],
+      "thinkMs": 19300,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrfpe75i_jzuqbwtj",
+      "started": "2026-07-11T01:46:18.678Z",
+      "build": "?:",
+      "i": 8,
+      "free": false,
+      "human": "AC",
+      "expert": "6D",
+      "facing": "4S",
+      "hand": "6D 10C 4C AC 4D 7D 9H 8S",
+      "handSizes": [
+        8,
+        8
+      ],
+      "thinkMs": 5881,
+      "matchRank": false,
+      "omin": 8,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfpdbc8_blx33e13",
+      "started": "2026-07-11T01:45:37.448Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "10C",
+      "expert": "4D",
+      "facing": "3D",
+      "hand": "5S 6C 9H 7S 5D JH 2D 6H 8S 10C 4D 10S AD",
+      "handSizes": [
+        13,
+        12
+      ],
+      "thinkMs": 12021,
+      "matchRank": false,
+      "omin": 12,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfpdbc8_blx33e13",
+      "started": "2026-07-11T01:45:37.448Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "AD",
+      "expert": "JH",
+      "facing": "JS",
+      "hand": "5S 6C 9H 7S 5D JH 2D 6H 8S 4D 10S AD",
+      "handSizes": [
+        12,
+        11
+      ],
+      "thinkMs": 4273,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfpdbc8_blx33e13",
+      "started": "2026-07-11T01:45:37.448Z",
+      "build": "?:",
+      "i": 6,
+      "free": true,
+      "human": "4D 5S 6C",
+      "expert": "4D 5D 6H 7S 8S 9H 10S JH",
+      "facing": "PASS",
+      "hand": "5S 6C 9H 7S 5D JH 2D 6H 8S 4D 10S",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 4238,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrfpdbc8_blx33e13",
+      "started": "2026-07-11T01:45:37.448Z",
+      "build": "?:",
+      "i": 12,
+      "free": false,
+      "human": "2D",
+      "expert": "5D",
+      "facing": "4H",
+      "hand": "9H 7S 5D JH 2D 6H 8S 10S",
+      "handSizes": [
+        8,
+        5
+      ],
+      "thinkMs": 3431,
+      "matchRank": false,
+      "omin": 5,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrfpce9k_cpboupug",
+      "started": "2026-07-11T01:44:54.584Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "JS JH",
+      "expert": "PASS",
+      "facing": "3H 3C",
+      "hand": "9D 9C 6H 8H JH 8S 10C 5H JS 10S AD 3D QC",
+      "handSizes": [
+        13,
+        11
+      ],
+      "thinkMs": 19327,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfpce9k_cpboupug",
+      "started": "2026-07-11T01:44:54.584Z",
+      "build": "?:",
+      "i": 4,
+      "free": true,
+      "human": "3D",
+      "expert": "8H 9C 10C",
+      "facing": "PASS",
+      "hand": "9D 9C 6H 8H 8S 10C 5H 10S AD 3D QC",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 3395,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrfpce9k_cpboupug",
+      "started": "2026-07-11T01:44:54.584Z",
+      "build": "?:",
+      "i": 12,
+      "free": true,
+      "human": "8S 8H 9C 9D 10S 10C",
+      "expert": "8H 9C 10C",
+      "facing": "PASS",
+      "hand": "9D 9C 6H 8H 8S 10C 10S",
+      "handSizes": [
+        7,
+        8
+      ],
+      "thinkMs": 4530,
+      "matchRank": false,
+      "omin": 8,
+      "cls": "H_longer_multi"
+    },
+    {
+      "game": "g_mrfpb03a_4sly7ej9",
+      "started": "2026-07-11T01:43:49.558Z",
+      "build": "?:",
+      "i": 6,
+      "free": false,
+      "human": "10D JD QH",
+      "expert": "JD QH KH",
+      "facing": "9H 8S 7H",
+      "hand": "5D 3C 3D QH KH 10D 10C 7S 8H 2C 8D JD 9S",
+      "handSizes": [
+        13,
+        6
+      ],
+      "thinkMs": 20251,
+      "matchRank": false,
+      "omin": 6,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrfp9g2e_oqibybsc",
+      "started": "2026-07-11T01:42:36.950Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "PASS",
+      "expert": "9C 10C JH",
+      "facing": "JS 10H 9S",
+      "hand": "JH AH 8C 7H 9C 5D 4S 4D 9D KC 7C AS 10C",
+      "handSizes": [
+        13,
+        7
+      ],
+      "thinkMs": 6635,
+      "matchRank": false,
+      "omin": 7,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mrfp9g2e_oqibybsc",
+      "started": "2026-07-11T01:42:36.950Z",
+      "build": "?:",
+      "i": 6,
+      "free": false,
+      "human": "PASS",
+      "expert": "AH AS",
+      "facing": "QH QC",
+      "hand": "JH AH 8C 7H 9C 5D 4S 4D 9D KC 7C AS 10C",
+      "handSizes": [
+        13,
+        5
+      ],
+      "thinkMs": 5960,
+      "matchRank": false,
+      "omin": 5,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mrfp9g2e_oqibybsc",
+      "started": "2026-07-11T01:42:36.950Z",
+      "build": "?:",
+      "i": 10,
+      "free": false,
+      "human": "7H",
+      "expert": "JH",
+      "facing": "7S",
+      "hand": "JH AH 8C 7H 9C 4S 4D 9D KC 7C AS 10C",
+      "handSizes": [
+        12,
+        3
+      ],
+      "thinkMs": 13531,
+      "matchRank": false,
+      "omin": 3,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrfp9g2e_oqibybsc",
+      "started": "2026-07-11T01:42:36.950Z",
+      "build": "?:",
+      "i": 14,
+      "free": true,
+      "human": "7C 8C 9C",
+      "expert": "7C 8C 9D 10C JH",
+      "facing": "PASS",
+      "hand": "JH 8C 9C 4S 4D 9D KC 7C AS 10C",
+      "handSizes": [
+        10,
+        2
+      ],
+      "thinkMs": 8569,
+      "matchRank": false,
+      "omin": 2,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrfp9g2e_oqibybsc",
+      "started": "2026-07-11T01:42:36.950Z",
+      "build": "?:",
+      "i": 18,
+      "free": true,
+      "human": "KC",
+      "expert": "4S 4D",
+      "facing": "PASS",
+      "hand": "4S 4D KC AS",
+      "handSizes": [
+        4,
+        2
+      ],
+      "thinkMs": 6249,
+      "matchRank": false,
+      "omin": 2,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrfp9g2e_oqibybsc",
+      "started": "2026-07-11T01:42:36.950Z",
+      "build": "?:",
+      "i": 20,
+      "free": true,
+      "human": "AS",
+      "expert": "4S 4D",
+      "facing": "PASS",
+      "hand": "4S 4D AS",
+      "handSizes": [
+        3,
+        2
+      ],
+      "thinkMs": 2008,
+      "matchRank": false,
+      "omin": 2,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrfp8ci9_qrm6bhoy",
+      "started": "2026-07-11T01:41:45.681Z",
+      "build": "?:",
+      "i": 1,
+      "free": true,
+      "human": "3S 4H 5S 6S",
+      "expert": "3S 4H 5S 6H",
+      "facing": "PASS",
+      "hand": "2C 3S 4H 9H JH 6H KD QD AC 6S QH 9D 5S",
+      "handSizes": [
+        13,
+        13
+      ],
+      "thinkMs": 30853,
+      "matchRank": true,
+      "omin": 13,
+      "cls": "H_diff_multi"
+    },
+    {
+      "game": "g_mrfp8ci9_qrm6bhoy",
+      "started": "2026-07-11T01:41:45.681Z",
+      "build": "?:",
+      "i": 5,
+      "free": true,
+      "human": "6H",
+      "expert": "9H 9D",
+      "facing": "PASS",
+      "hand": "2C 9H 6H QH 9D",
+      "handSizes": [
+        5,
+        9
+      ],
+      "thinkMs": 2822,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrfp73xf_vchy2tdx",
+      "started": "2026-07-11T01:40:47.907Z",
+      "build": "?:",
+      "i": 5,
+      "free": false,
+      "human": "PASS",
+      "expert": "AH AC",
+      "facing": "JD JC",
+      "hand": "10D 6S AH 9S 5S KS 6C JS 2C AC 6D",
+      "handSizes": [
+        11,
+        9
+      ],
+      "thinkMs": 2407,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mrfp73xf_vchy2tdx",
+      "started": "2026-07-11T01:40:47.907Z",
+      "build": "?:",
+      "i": 7,
+      "free": false,
+      "human": "PASS",
+      "expert": "KS AH 2C",
+      "facing": "AS KC QC",
+      "hand": "10D 6S AH 9S 5S KS 6C JS 2C AC 6D",
+      "handSizes": [
+        11,
+        6
+      ],
+      "thinkMs": 4899,
+      "matchRank": false,
+      "omin": 6,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mrfp73xf_vchy2tdx",
+      "started": "2026-07-11T01:40:47.907Z",
+      "build": "?:",
+      "i": 11,
+      "free": false,
+      "human": "KS",
+      "expert": "9S",
+      "facing": "6H",
+      "hand": "10D 6S AH 9S KS 6C JS 2C AC 6D",
+      "handSizes": [
+        10,
+        4
+      ],
+      "thinkMs": 6218,
+      "matchRank": false,
+      "omin": 4,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfp63cq_5qllue6a",
+      "started": "2026-07-11T01:40:00.506Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "6S 6C",
+      "expert": "PASS",
+      "facing": "3C 3S",
+      "hand": "9S 10S 2S 6C 7S 2H QS KD 10H 8D 6S 3D 10D",
+      "handSizes": [
+        13,
+        11
+      ],
+      "thinkMs": 12263,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfp63cq_5qllue6a",
+      "started": "2026-07-11T01:40:00.506Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "PASS",
+      "expert": "2S 2H",
+      "facing": "QD QC",
+      "hand": "9S 10S 2S 7S 2H QS KD 10H 8D 3D 10D",
+      "handSizes": [
+        11,
+        9
+      ],
+      "thinkMs": 3980,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mrfp63cq_5qllue6a",
+      "started": "2026-07-11T01:40:00.506Z",
+      "build": "?:",
+      "i": 6,
+      "free": false,
+      "human": "10S 10D",
+      "expert": "PASS",
+      "facing": "5D 5S",
+      "hand": "9S 10S 2S 7S 2H QS KD 10H 8D 3D 10D",
+      "handSizes": [
+        11,
+        7
+      ],
+      "thinkMs": 7778,
+      "matchRank": false,
+      "omin": 7,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfp63cq_5qllue6a",
+      "started": "2026-07-11T01:40:00.506Z",
+      "build": "?:",
+      "i": 8,
+      "free": true,
+      "human": "3D",
+      "expert": "7S 8D 9S 10H",
+      "facing": "PASS",
+      "hand": "9S 2S 7S 2H QS KD 10H 8D 3D",
+      "handSizes": [
+        9,
+        7
+      ],
+      "thinkMs": 2222,
+      "matchRank": false,
+      "omin": 7,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrfp63cq_5qllue6a",
+      "started": "2026-07-11T01:40:00.506Z",
+      "build": "?:",
+      "i": 10,
+      "free": false,
+      "human": "QS",
+      "expert": "7S",
+      "facing": "6H",
+      "hand": "9S 2S 7S 2H QS KD 10H 8D",
+      "handSizes": [
+        8,
+        6
+      ],
+      "thinkMs": 5274,
+      "matchRank": false,
+      "omin": 6,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfp63cq_5qllue6a",
+      "started": "2026-07-11T01:40:00.506Z",
+      "build": "?:",
+      "i": 14,
+      "free": true,
+      "human": "2S 2H",
+      "expert": "7S 8D 9S 10H",
+      "facing": "PASS",
+      "hand": "9S 2S 7S 2H 10H 8D",
+      "handSizes": [
+        6,
+        5
+      ],
+      "thinkMs": 6896,
+      "matchRank": false,
+      "omin": 5,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrfp4azp_1pjfqfzx",
+      "started": "2026-07-11T01:38:37.093Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "QS QH",
+      "expert": "PASS",
+      "facing": "3H 3D",
+      "hand": "6D 8D 5H 2S 2D KD 4S 9S 10S QH 4C AH QS",
+      "handSizes": [
+        13,
+        11
+      ],
+      "thinkMs": 31239,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfp4azp_1pjfqfzx",
+      "started": "2026-07-11T01:38:37.093Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "PASS",
+      "expert": "2S 2D",
+      "facing": "KH KS",
+      "hand": "6D 8D 5H 2S 2D KD 4S 9S 10S 4C AH",
+      "handSizes": [
+        11,
+        9
+      ],
+      "thinkMs": 4359,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mrfp4azp_1pjfqfzx",
+      "started": "2026-07-11T01:38:37.093Z",
+      "build": "?:",
+      "i": 8,
+      "free": false,
+      "human": "PASS",
+      "expert": "2S 2D",
+      "facing": "6H 6S",
+      "hand": "6D 8D 5H 2S 2D KD 4S 9S 10S 4C AH",
+      "handSizes": [
+        11,
+        4
+      ],
+      "thinkMs": 7471,
+      "matchRank": false,
+      "omin": 4,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mrfp4azp_1pjfqfzx",
+      "started": "2026-07-11T01:38:37.093Z",
+      "build": "?:",
+      "i": 10,
+      "free": false,
+      "human": "KD",
+      "expert": "6D",
+      "facing": "5S",
+      "hand": "6D 8D 5H 2S 2D KD 4S 9S 10S 4C AH",
+      "handSizes": [
+        11,
+        3
+      ],
+      "thinkMs": 11709,
+      "matchRank": false,
+      "omin": 3,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfp4azp_1pjfqfzx",
+      "started": "2026-07-11T01:38:37.093Z",
+      "build": "?:",
+      "i": 12,
+      "free": true,
+      "human": "4S",
+      "expert": "4S 5H 6D",
+      "facing": "PASS",
+      "hand": "6D 8D 5H 2S 2D 4S 9S 10S 4C AH",
+      "handSizes": [
+        10,
+        3
+      ],
+      "thinkMs": 7501,
+      "matchRank": false,
+      "omin": 3,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrfp4azp_1pjfqfzx",
+      "started": "2026-07-11T01:38:37.093Z",
+      "build": "?:",
+      "i": 14,
+      "free": false,
+      "human": "AH",
+      "expert": "8D",
+      "facing": "8S",
+      "hand": "6D 8D 5H 2S 2D 9S 10S 4C AH",
+      "handSizes": [
+        9,
+        2
+      ],
+      "thinkMs": 6222,
+      "matchRank": false,
+      "omin": 2,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfp2ve4_gejlscq7",
+      "started": "2026-07-11T01:37:30.220Z",
+      "build": "?:",
+      "i": 1,
+      "free": true,
+      "human": "3C 3H",
+      "expert": "3C 4C 5S 6C 7D",
+      "facing": "PASS",
+      "hand": "3C 10D AS KH 4S 3H 6C 7C 7D 10C 5S 4H 4C",
+      "handSizes": [
+        13,
+        13
+      ],
+      "thinkMs": 41399,
+      "matchRank": false,
+      "omin": 13,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrfp2ve4_gejlscq7",
+      "started": "2026-07-11T01:37:30.220Z",
+      "build": "?:",
+      "i": 3,
+      "free": false,
+      "human": "7C 7D",
+      "expert": "PASS",
+      "facing": "5H 5D",
+      "hand": "10D AS KH 4S 6C 7C 7D 10C 5S 4H 4C",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 7551,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfp1xcv_z2nctu3k",
+      "started": "2026-07-11T01:36:46.111Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "5H 6D 7C",
+      "expert": "PASS",
+      "facing": "5S 4H 3S",
+      "hand": "JH 6D 7C 9C KD 3H 7D 5H 8D QC 2S 2C 2H",
+      "handSizes": [
+        13,
+        10
+      ],
+      "thinkMs": 17254,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfp1xcv_z2nctu3k",
+      "started": "2026-07-11T01:36:46.111Z",
+      "build": "?:",
+      "i": 4,
+      "free": true,
+      "human": "3H",
+      "expert": "7D 8D 9C",
+      "facing": "PASS",
+      "hand": "JH 9C KD 3H 7D 8D QC 2S 2C 2H",
+      "handSizes": [
+        10,
+        10
+      ],
+      "thinkMs": 10584,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrfp1xcv_z2nctu3k",
+      "started": "2026-07-11T01:36:46.111Z",
+      "build": "?:",
+      "i": 6,
+      "free": false,
+      "human": "2S",
+      "expert": "7D",
+      "facing": "4C",
+      "hand": "JH 9C KD 7D 8D QC 2S 2C 2H",
+      "handSizes": [
+        9,
+        9
+      ],
+      "thinkMs": 4602,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrfp0g42_9vuhhxst",
+      "started": "2026-07-11T01:35:37.106Z",
+      "build": "?:",
+      "i": 1,
+      "free": true,
+      "human": "3S 4H 5D",
+      "expert": "3D 3H 3S",
+      "facing": "PASS",
+      "hand": "3D 3H KH 3S 5D 8D 10H 9S JC 7C 9H 4H 5H",
+      "handSizes": [
+        13,
+        13
+      ],
+      "thinkMs": 20167,
+      "matchRank": false,
+      "omin": 13,
+      "cls": "H_higher_multi_take_control"
+    },
+    {
+      "game": "g_mrfoygno_zy78fscb",
+      "started": "2026-07-11T01:34:04.500Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "6S 7C 8H",
+      "expert": "PASS",
+      "facing": "5S 4D 3H",
+      "hand": "10D 4S 9C 2C 6H 6S JC 8H 7C 2H 9H 4C 9S",
+      "handSizes": [
+        13,
+        10
+      ],
+      "thinkMs": 36859,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfoygno_zy78fscb",
+      "started": "2026-07-11T01:34:04.500Z",
+      "build": "?:",
+      "i": 6,
+      "free": false,
+      "human": "PASS",
+      "expert": "9C 9H 9S",
+      "facing": "7H 7D 7S",
+      "hand": "10D 4S 9C 2C 6H JC 2H 9H 4C 9S",
+      "handSizes": [
+        10,
+        4
+      ],
+      "thinkMs": 6491,
+      "matchRank": false,
+      "omin": 4,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mrfoygno_zy78fscb",
+      "started": "2026-07-11T01:34:04.500Z",
+      "build": "?:",
+      "i": 8,
+      "free": false,
+      "human": "9C 9S",
+      "expert": "9C 9H",
+      "facing": "8D 8S",
+      "hand": "10D 4S 9C 2C 6H JC 2H 9H 4C 9S",
+      "handSizes": [
+        10,
+        2
+      ],
+      "thinkMs": 11359,
+      "matchRank": true,
+      "omin": 2,
+      "cls": "H_diff_multi"
+    },
+    {
+      "game": "g_mrfoygno_zy78fscb",
+      "started": "2026-07-11T01:34:04.500Z",
+      "build": "?:",
+      "i": 12,
+      "free": true,
+      "human": "6H",
+      "expert": "4S 4C",
+      "facing": "PASS",
+      "hand": "4S 2C 6H 2H 4C",
+      "handSizes": [
+        5,
+        2
+      ],
+      "thinkMs": 7432,
+      "matchRank": false,
+      "omin": 2,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrfoygno_zy78fscb",
+      "started": "2026-07-11T01:34:04.500Z",
+      "build": "?:",
+      "i": 14,
+      "free": false,
+      "human": "2H",
+      "expert": "2C",
+      "facing": "KH",
+      "hand": "4S 2C 2H 4C",
+      "handSizes": [
+        4,
+        1
+      ],
+      "thinkMs": 2964,
+      "matchRank": true,
+      "omin": 1,
+      "cls": "H_lower_single_save_high"
+    },
+    {
+      "game": "g_mrfoxl5k_il9w16ni",
+      "started": "2026-07-11T01:33:23.672Z",
+      "build": "?:",
+      "i": 3,
+      "free": false,
+      "human": "5S 5H",
+      "expert": "PASS",
+      "facing": "5D 5C",
+      "hand": "9H 2C 2S 5S JD KH QS 5H AH AD 6H",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 7276,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrfoxl5k_il9w16ni",
+      "started": "2026-07-11T01:33:23.672Z",
+      "build": "?:",
+      "i": 7,
+      "free": true,
+      "human": "6H",
+      "expert": "JD QS KH",
+      "facing": "PASS",
+      "hand": "9H 2C 2S JD KH QS 6H",
+      "handSizes": [
+        7,
+        9
+      ],
+      "thinkMs": 2247,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_trash_first_E_high_multi"
+    },
+    {
+      "game": "g_mrfoxl5k_il9w16ni",
+      "started": "2026-07-11T01:33:23.672Z",
+      "build": "?:",
+      "i": 11,
+      "free": false,
+      "human": "2S",
+      "expert": "JD",
+      "facing": "10H",
+      "hand": "2C 2S JD KH QS",
+      "handSizes": [
+        5,
+        7
+      ],
+      "thinkMs": 3815,
+      "matchRank": false,
+      "omin": 7,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrfovlyr_joe22dtf",
+      "started": "2026-07-11T01:31:51.411Z",
+      "build": "?:",
+      "i": 9,
+      "free": false,
+      "human": "7S",
+      "expert": "4S",
+      "facing": "3D",
+      "hand": "7S KS JH 10H 4S QD 9H 10C JC AH AD",
+      "handSizes": [
+        11,
+        5
+      ],
+      "thinkMs": 8452,
+      "matchRank": false,
+      "omin": 5,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfovlyr_joe22dtf",
+      "started": "2026-07-11T01:31:51.411Z",
+      "build": "?:",
+      "i": 11,
+      "free": false,
+      "human": "AH",
+      "expert": "9H",
+      "facing": "8C",
+      "hand": "KS JH 10H 4S QD 9H 10C JC AH AD",
+      "handSizes": [
+        10,
+        4
+      ],
+      "thinkMs": 12214,
+      "matchRank": false,
+      "omin": 4,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfovlyr_joe22dtf",
+      "started": "2026-07-11T01:31:51.411Z",
+      "build": "?:",
+      "i": 13,
+      "free": true,
+      "human": "9H 10C JC",
+      "expert": "9H 10C JC QD KS AD",
+      "facing": "PASS",
+      "hand": "KS JH 10H 4S QD 9H 10C JC AD",
+      "handSizes": [
+        9,
+        4
+      ],
+      "thinkMs": 12495,
+      "matchRank": false,
+      "omin": 4,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrfoug08_pozgewiy",
+      "started": "2026-07-11T01:30:57.032Z",
+      "build": "?:",
+      "i": 3,
+      "free": false,
+      "human": "7C",
+      "expert": "9H",
+      "facing": "4D",
+      "hand": "4C 4H JC AH 7C JH KH 9H KC 6D QC 6S",
+      "handSizes": [
+        12,
+        12
+      ],
+      "thinkMs": 7289,
+      "matchRank": false,
+      "omin": 12,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrfoug08_pozgewiy",
+      "started": "2026-07-11T01:30:57.032Z",
+      "build": "?:",
+      "i": 7,
+      "free": false,
+      "human": "QC",
+      "expert": "AH",
+      "facing": "10C",
+      "hand": "4C 4H JC AH JH KH KC 6D QC 6S",
+      "handSizes": [
+        10,
+        10
+      ],
+      "thinkMs": 9438,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrfosu58_kwo0n0bx",
+      "started": "2026-07-11T01:29:42.044Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "5D",
+      "expert": "4S",
+      "facing": "3H",
+      "hand": "9C KC JC 4S 9H 6C 5H QC 5D AS 10S JH 9D",
+      "handSizes": [
+        13,
+        12
+      ],
+      "thinkMs": 12188,
+      "matchRank": false,
+      "omin": 12,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrfosu58_kwo0n0bx",
+      "started": "2026-07-11T01:29:42.044Z",
+      "build": "?:",
+      "i": 8,
+      "free": false,
+      "human": "9C 10S JC",
+      "expert": "PASS",
+      "facing": "10H 9S 8D",
+      "hand": "9C KC JC 4S 9H 6C 5H QC 10S JH 9D",
+      "handSizes": [
+        11,
+        7
+      ],
+      "thinkMs": 19476,
+      "matchRank": false,
+      "omin": 7,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrforb7v_4k30x5b9",
+      "started": "2026-07-11T01:28:30.860Z",
+      "build": "?:",
+      "i": 3,
+      "free": false,
+      "human": "10C",
+      "expert": "KD",
+      "facing": "5H",
+      "hand": "JS 4S 4D 8D JC JH 2D 8S 10C KD 7D 7H",
+      "handSizes": [
+        12,
+        12
+      ],
+      "thinkMs": 6672,
+      "matchRank": false,
+      "omin": 12,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrforb7v_4k30x5b9",
+      "started": "2026-07-11T01:28:30.860Z",
+      "build": "?:",
+      "i": 9,
+      "free": true,
+      "human": "4S 4D",
+      "expert": "JS JC JH",
+      "facing": "PASS",
+      "hand": "JS 4S 4D 8D JC JH 8S 7D 7H",
+      "handSizes": [
+        9,
+        10
+      ],
+      "thinkMs": 5998,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrforb7v_4k30x5b9",
+      "started": "2026-07-11T01:28:30.860Z",
+      "build": "?:",
+      "i": 15,
+      "free": false,
+      "human": "JH",
+      "expert": "JS",
+      "facing": "8C",
+      "hand": "JS 8D JC JH 8S 7D 7H",
+      "handSizes": [
+        7,
+        4
+      ],
+      "thinkMs": 8693,
+      "matchRank": true,
+      "omin": 4,
+      "cls": "H_lower_single_save_high"
+    },
+    {
+      "game": "g_mrf9u6b4_2luupg10",
+      "started": "2026-07-10T18:30:50.224Z",
+      "build": "?:",
+      "i": 6,
+      "free": false,
+      "human": "2S",
+      "expert": "8S",
+      "facing": "7C",
+      "hand": "QC 2D 10C 9D KD 8S 9S JC 9H 2S KH",
+      "handSizes": [
+        11,
+        10
+      ],
+      "thinkMs": 13934,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrf9u6b4_2luupg10",
+      "started": "2026-07-10T18:30:50.224Z",
+      "build": "?:",
+      "i": 8,
+      "free": true,
+      "human": "8S 9S 10C JC QC",
+      "expert": "8S 9H 10C JC QC KH",
+      "facing": "PASS",
+      "hand": "QC 2D 10C 9D KD 8S 9S JC 9H KH",
+      "handSizes": [
+        10,
+        10
+      ],
+      "thinkMs": 6875,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrf9t7ij_999j1jnh",
+      "started": "2026-07-10T18:30:05.131Z",
+      "build": "?:",
+      "i": 3,
+      "free": true,
+      "human": "5D 5H",
+      "expert": "9H 10S JD QH",
+      "facing": "PASS",
+      "hand": "5H 5D QC 7S 2H 10S QD QH 9H JD",
+      "handSizes": [
+        10,
+        13
+      ],
+      "thinkMs": 8079,
+      "matchRank": false,
+      "omin": 13,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrf9t7ij_999j1jnh",
+      "started": "2026-07-10T18:30:05.131Z",
+      "build": "?:",
+      "i": 13,
+      "free": false,
+      "human": "2H",
+      "expert": "9H",
+      "facing": "9D",
+      "hand": "2H 10S QH 9H JD",
+      "handSizes": [
+        5,
+        5
+      ],
+      "thinkMs": 4199,
+      "matchRank": false,
+      "omin": 5,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrf9sdme_d4c9h6vr",
+      "started": "2026-07-10T18:29:26.390Z",
+      "build": "?:",
+      "i": 3,
+      "free": false,
+      "human": "6C 6H",
+      "expert": "PASS",
+      "facing": "5D 5C",
+      "hand": "JC AH 4S 6C 6H QH 2C 10C 2D 9H AD",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 9438,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrf9sdme_d4c9h6vr",
+      "started": "2026-07-10T18:29:26.390Z",
+      "build": "?:",
+      "i": 7,
+      "free": true,
+      "human": "4S",
+      "expert": "9H 10C JC QH",
+      "facing": "PASS",
+      "hand": "JC 4S QH 2C 10C 2D 9H",
+      "handSizes": [
+        7,
+        9
+      ],
+      "thinkMs": 3664,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_trash_first_E_high_multi"
+    },
+    {
+      "game": "g_mrf9sdme_d4c9h6vr",
+      "started": "2026-07-10T18:29:26.390Z",
+      "build": "?:",
+      "i": 9,
+      "free": false,
+      "human": "2C",
+      "expert": "9H",
+      "facing": "6S",
+      "hand": "JC QH 2C 10C 2D 9H",
+      "handSizes": [
+        6,
+        8
+      ],
+      "thinkMs": 2238,
+      "matchRank": false,
+      "omin": 8,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrf9pw82_l5ofjnqc",
+      "started": "2026-07-10T18:27:30.530Z",
+      "build": "?:",
+      "i": 3,
+      "free": false,
+      "human": "6S",
+      "expert": "7C",
+      "facing": "3H",
+      "hand": "4S JS 4H QC 6H QD 2C 8H 6S 9C 10C 7C",
+      "handSizes": [
+        12,
+        12
+      ],
+      "thinkMs": 11324,
+      "matchRank": false,
+      "omin": 12,
+      "cls": "H_minimal_beat_E_overkill"
+    },
+    {
+      "game": "g_mrf9pw82_l5ofjnqc",
+      "started": "2026-07-10T18:27:30.530Z",
+      "build": "?:",
+      "i": 5,
+      "free": false,
+      "human": "2C",
+      "expert": "8H",
+      "facing": "8D",
+      "hand": "4S JS 4H QC 6H QD 2C 8H 9C 10C 7C",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 7800,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrf9pw82_l5ofjnqc",
+      "started": "2026-07-10T18:27:30.530Z",
+      "build": "?:",
+      "i": 7,
+      "free": true,
+      "human": "6H 7C 8H 9C 10C",
+      "expert": "6H 7C 8H 9C 10C JS QD",
+      "facing": "PASS",
+      "hand": "4S JS 4H QC 6H QD 8H 9C 10C 7C",
+      "handSizes": [
+        10,
+        11
+      ],
+      "thinkMs": 5238,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrf9o90b_odg1hkm5",
+      "started": "2026-07-10T18:26:13.787Z",
+      "build": "?:",
+      "i": 7,
+      "free": false,
+      "human": "QC QH",
+      "expert": "QS QC",
+      "facing": "JC JS",
+      "hand": "QS QC QH KD 10C 2D 4H 9S 9D",
+      "handSizes": [
+        9,
+        4
+      ],
+      "thinkMs": 10160,
+      "matchRank": true,
+      "omin": 4,
+      "cls": "H_diff_multi"
+    },
+    {
+      "game": "g_mrf9o90b_odg1hkm5",
+      "started": "2026-07-10T18:26:13.787Z",
+      "build": "?:",
+      "i": 9,
+      "free": true,
+      "human": "4H",
+      "expert": "9S 9D",
+      "facing": "PASS",
+      "hand": "QS KD 10C 2D 4H 9S 9D",
+      "handSizes": [
+        7,
+        4
+      ],
+      "thinkMs": 2530,
+      "matchRank": false,
+      "omin": 4,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrf9o90b_odg1hkm5",
+      "started": "2026-07-10T18:26:13.787Z",
+      "build": "?:",
+      "i": 11,
+      "free": false,
+      "human": "KD",
+      "expert": "2D",
+      "facing": "QD",
+      "hand": "QS KD 10C 2D 9S 9D",
+      "handSizes": [
+        6,
+        3
+      ],
+      "thinkMs": 5289,
+      "matchRank": false,
+      "omin": 3,
+      "cls": "E_2_H_non2"
+    },
+    {
+      "game": "g_mrf9o90b_odg1hkm5",
+      "started": "2026-07-10T18:26:13.787Z",
+      "build": "?:",
+      "i": 13,
+      "free": false,
+      "human": "PASS",
+      "expert": "2D",
+      "facing": "AH",
+      "hand": "QS 10C 2D 9S 9D",
+      "handSizes": [
+        5,
+        2
+      ],
+      "thinkMs": 13147,
+      "matchRank": false,
+      "omin": 2,
+      "cls": "H_pass_E_play"
+    },
+    {
+      "game": "g_mrf9o90b_odg1hkm5",
+      "started": "2026-07-10T18:26:13.787Z",
+      "build": "?:",
+      "i": 15,
+      "free": false,
+      "human": "2D",
+      "expert": "QS",
+      "facing": "3H",
+      "hand": "QS 10C 2D 9S 9D",
+      "handSizes": [
+        5,
+        1
+      ],
+      "thinkMs": 11710,
+      "matchRank": false,
+      "omin": 1,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrf9n1hv_subjqw7m",
+      "started": "2026-07-10T18:25:17.395Z",
+      "build": "?:",
+      "i": 6,
+      "free": false,
+      "human": "JS",
+      "expert": "9C",
+      "facing": "7H",
+      "hand": "2D 5C QS 2S 5H JD JS 9C 5D 10H 5S",
+      "handSizes": [
+        11,
+        10
+      ],
+      "thinkMs": 4652,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrf9n1hv_subjqw7m",
+      "started": "2026-07-10T18:25:17.395Z",
+      "build": "?:",
+      "i": 8,
+      "free": false,
+      "human": "2S",
+      "expert": "QS",
+      "facing": "JH",
+      "hand": "2D 5C QS 2S 5H JD 9C 5D 10H 5S",
+      "handSizes": [
+        10,
+        9
+      ],
+      "thinkMs": 5081,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrf9n1hv_subjqw7m",
+      "started": "2026-07-10T18:25:17.395Z",
+      "build": "?:",
+      "i": 10,
+      "free": true,
+      "human": "2D",
+      "expert": "9C 10H JD QS",
+      "facing": "PASS",
+      "hand": "2D 5C QS 5H JD 9C 5D 10H 5S",
+      "handSizes": [
+        9,
+        9
+      ],
+      "thinkMs": 4779,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_2_E_non2"
+    },
+    {
+      "game": "g_mrf9n1hv_subjqw7m",
+      "started": "2026-07-10T18:25:17.395Z",
+      "build": "?:",
+      "i": 12,
+      "free": true,
+      "human": "5S 5C 5D 5H",
+      "expert": "9C 10H JD QS",
+      "facing": "PASS",
+      "hand": "5C QS 5H JD 9C 5D 10H 5S",
+      "handSizes": [
+        8,
+        9
+      ],
+      "thinkMs": 3551,
+      "matchRank": false,
+      "omin": 9,
+      "cls": "H_lower_multi_keep_high"
+    },
+    {
+      "game": "g_mrf9mbq8_zp0m32r6",
+      "started": "2026-07-10T18:24:44.000Z",
+      "build": "?:",
+      "i": 2,
+      "free": false,
+      "human": "5S 6C 7C",
+      "expert": "PASS",
+      "facing": "5D 4C 3H",
+      "hand": "5S JH QD 10S 2S AC 6C QC 2C 8D 7C KH 9C",
+      "handSizes": [
+        13,
+        10
+      ],
+      "thinkMs": 16099,
+      "matchRank": false,
+      "omin": 10,
+      "cls": "H_play_E_pass"
+    },
+    {
+      "game": "g_mrf9mbq8_zp0m32r6",
+      "started": "2026-07-10T18:24:44.000Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "QD KH AC",
+      "expert": "9C 10S JH",
+      "facing": "10C 9S 8H",
+      "hand": "JH QD 10S 2S AC QC 2C 8D KH 9C",
+      "handSizes": [
+        10,
+        7
+      ],
+      "thinkMs": 8625,
+      "matchRank": false,
+      "omin": 7,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrf9kzru_zgcr0ly3",
+      "started": "2026-07-10T18:23:41.850Z",
+      "build": "?:",
+      "i": 3,
+      "free": true,
+      "human": "4D",
+      "expert": "6D 7H 8D 9H 10C",
+      "facing": "PASS",
+      "hand": "7H 8C 8H 10C 6D QD AC 8D 4D 9H",
+      "handSizes": [
+        10,
+        13
+      ],
+      "thinkMs": 4752,
+      "matchRank": false,
+      "omin": 13,
+      "cls": "H_single_E_multi"
+    },
+    {
+      "game": "g_mrf9kzru_zgcr0ly3",
+      "started": "2026-07-10T18:23:41.850Z",
+      "build": "?:",
+      "i": 5,
+      "free": false,
+      "human": "QD",
+      "expert": "6D",
+      "facing": "4H",
+      "hand": "7H 8C 8H 10C 6D QD AC 8D 9H",
+      "handSizes": [
+        9,
+        12
+      ],
+      "thinkMs": 22881,
+      "matchRank": false,
+      "omin": 12,
+      "cls": "H_overkill_E_minimal"
+    },
+    {
+      "game": "g_mrf9kzru_zgcr0ly3",
+      "started": "2026-07-10T18:23:41.850Z",
+      "build": "?:",
+      "i": 9,
+      "free": true,
+      "human": "6D 7H 8C 9H 10C",
+      "expert": "6D 7H 8D 9H 10C",
+      "facing": "PASS",
+      "hand": "7H 8C 8H 10C 6D 8D 9H",
+      "handSizes": [
+        7,
+        11
+      ],
+      "thinkMs": 5798,
+      "matchRank": true,
+      "omin": 11,
+      "cls": "H_diff_multi"
+    },
+    {
+      "game": "g_mrf9jzkw_ml5nmmqo",
+      "started": "2026-07-10T18:22:54.944Z",
+      "build": "?:",
+      "i": 4,
+      "free": false,
+      "human": "AD",
+      "expert": "2S",
+      "facing": "AC",
+      "hand": "5D JH 10D 5H 10C QH AD 2S 9D QC 9C JD",
+      "handSizes": [
+        12,
+        11
+      ],
+      "thinkMs": 3113,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "E_2_H_non2"
+    },
+    {
+      "game": "g_mrf9jzkw_ml5nmmqo",
+      "started": "2026-07-10T18:22:54.944Z",
+      "build": "?:",
+      "i": 6,
+      "free": true,
+      "human": "5D 5H",
+      "expert": "9C 10D JD QC",
+      "facing": "PASS",
+      "hand": "5D JH 10D 5H 10C QH 2S 9D QC 9C JD",
+      "handSizes": [
+        11,
+        11
+      ],
+      "thinkMs": 4554,
+      "matchRank": false,
+      "omin": 11,
+      "cls": "E_longer_multi_H_shorter"
+    },
+    {
+      "game": "g_mrf9jzkw_ml5nmmqo",
+      "started": "2026-07-10T18:22:54.944Z",
+      "build": "?:",
+      "i": 10,
+      "free": false,
+      "human": "JD JH",
+      "expert": "QH QC",
+      "facing": "10H 10S",
+      "hand": "JH 10D 10C QH 2S QC JD",
+      "handSizes": [
+        7,
+        7
+      ],
+      "thinkMs": 5710,
+      "matchRank": false,
+      "omin": 7,
+      "cls": "H_minimal_beat_E_overkill"
+    }
+  ]
+}
