@@ -1,34 +1,36 @@
-# STATUS — Dual ceiling 0.68; aggressive swarm complete so far
+# STATUS — Aggressive multi-agent dual hunt
 
-**Updated:** 2026-07-13T22:00Z
+**Updated:** 2026-07-13T22:30Z
 
-## Dual N=50 vs freeze v91 (seed 20260711, MS280 BR96)
+## Dual N=50 ceiling (freeze v91, seed 20260711)
 
-| Build | WR | Notes |
-|-------|---:|-------|
-| pure / race+ / maxBudget | **34/50 = 0.68** | **best, stable across re-runs** |
-| TWO_OMIN2 | 0.68 | seed-duel flips did not hold under full dual |
-| COMBO exact+contest | 0.68 | flat |
-| GOLD_SURGICAL structure | **0.62** | N=20 0.80 mirage |
-| series-1 full | 0.56 | |
-| series-2/3 bulk gold | 0.50–0.54 | |
+**Best: 34/50 = 0.68** (pure race+ maxBudget MS280 BR96) — reproduced many times.
 
-## Probe farm (N=20 faithful dual)
-BASE **0.80**; most soft levers **0.75** (−1); many **silent** under GM+exact.
+| Candidate | N=50 WR | Outcome |
+|-----------|--------:|---------|
+| pure / race+ maxBudget | **0.68** | best |
+| BR160 / ultraBudget / COMBO / TWO_OMIN2 | 0.68 | flat |
+| GOLD_SURGICAL structure | 0.62 | regress |
+| series-1/2/3 bulk gold | 0.50–0.56 | regress |
 
-## Flip swarm
-TWO_OMIN2 only candidate on seed-duel; **failed to move full N=50**.
+## Aggressive swarm (30+ parallel probes)
 
-## Short-loss analysis
-20380387: freeze multi-climb trap (not free-lead gift). NO_GIFT_HARD rejected (dual −2).
+**N=20 top:** BASE 0.80; most soft knobs 0.75 or silent  
+**Rejects:** multiTie, dualSelf, MULTI_REFUSE, AA_SAVE, SEQ_GATE, NO_GIFT, ENSEMBLE_FL, UCT_C, PLACE_HUNGRY, hard soft-pass flips that dual-regress  
 
-## Live baseline
-`v9.2 (race+ maxBudget base)` — pure policy + race leaf, no dual-regressing structure bulk.
+**Flip-swarm:** TWO_OMIN2 looked good on seed-duel; **full dual no move**.
 
-## Ship / GitHub
-**No dual pass yet** — no freeze/push of a successful rung. Evidence docs committed when ready.
+## Short-loss root causes
+- 20380387: multi-climb trap (freeze better same-len with 2)
+- 20549928: triple race lose control  
+- 20290630: long free-lead seq dump  
 
-## Next
-- Multi-climb refuse (perfect-info better opp multi)
-- Avoid AA burn on low pairs early  
-- Continue subagent swarm
+## Live
+`v9.2 (BR160 maxBudget)` dual running; exotic4 + soft multi-refuse subagents.
+
+## GitHub ship
+Only after dual **>0.70** primary+rerun → freeze + **push main + gh-pages**.  
+Evidence commits on main (ahead of origin).
+
+## Handoff
+Dual-safe gold remains open: GOLD_SURGICAL helps series-1 gold but dual 0.62 at N=50.
