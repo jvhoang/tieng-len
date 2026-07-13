@@ -93,9 +93,37 @@ function freezeOpts() {
   };
 }
 
-/** Cheap expert model of freeze for live BR/exploit (speed). */
+/**
+ * Live BR/exploit opponent model of freeze.
+ * Default (v9.2+): low-budget freeze GRANDMASTER — dual N50 evidence
+ *   BR_GM_MODEL 40/50 vs freeze-expert-cheap STACK ceiling 35/50.
+ * Opt out: TIENLEN_BR_MODEL=expert for legacy freeze-expert-cheap.
+ * Env: TIENLEN_BR_OPP_MS (40), TIENLEN_BR_OPP_ITERS (20), TIENLEN_BR_OPP_SIMS (40),
+ *      TIENLEN_BR_OPP_BRANCH (12).
+ */
+function freezeBrGmOpts() {
+  return {
+    difficulty: 'grandmaster',
+    useSearch: true,
+    perfectInfo: true,
+    hiddenInfo: false,
+    timeMs: parseInt(process.env.TIENLEN_BR_OPP_MS || '40', 10),
+    iterations: parseInt(process.env.TIENLEN_BR_OPP_ITERS || '20', 10),
+    maxSims: parseInt(process.env.TIENLEN_BR_OPP_SIMS || '40', 10),
+    bestResponse: false,
+    maxBranch: parseInt(process.env.TIENLEN_BR_OPP_BRANCH || '12', 10),
+    exactExploit: true,
+    exploit: false,
+    mode: 'auto'
+  };
+}
+
 function freezeExpertMove(state, seat) {
-  var key = 'E|' + _stateKey(state, seat);
+  var useExpert = process.env.TIENLEN_BR_MODEL === 'expert';
+  var opts = useExpert ? null : freezeBrGmOpts();
+  var key = useExpert
+    ? ('E|' + _stateKey(state, seat))
+    : ('BRGM|' + _stateKey(state, seat) + '|' + opts.timeMs + '|' + opts.iterations);
   if (_brMemo[key] !== undefined) return _brMemo[key];
   var seed = _hashKey(key);
   var savedRandom = Math.random;
@@ -105,7 +133,15 @@ function freezeExpertMove(state, seat) {
   };
   var mv;
   try {
-    mv = freeze.getAIMove(state, seat, { difficulty: 'easy', iterations: 0, mode: 'expert' });
+    if (useExpert) {
+      mv = freeze.getAIMove(state, seat, { difficulty: 'easy', iterations: 0, mode: 'expert' });
+    } else {
+      try {
+        mv = freeze.getAIMove(state, seat, opts);
+      } catch (e) {
+        mv = freeze.getAIMove(state, seat, { difficulty: 'easy', iterations: 0, mode: 'expert' });
+      }
+    }
   } finally {
     Math.random = savedRandom;
   }
@@ -157,7 +193,7 @@ function freezeMove(state, seat) {
 }
 
 if (search.setExploitOpponent) {
-  // Live BR models freeze via cheap expert of frozen code (not nested grandmaster).
+  // Live BR models freeze via low-budget grandmaster by default (see freezeExpertMove).
   search.setExploitOpponent(function (state, seat) {
     return freezeExpertMove(state, seat);
   });
@@ -285,10 +321,13 @@ function main() {
   console.log('live opts', lOpts);
   console.log('freeze opts', fOpts);
   console.log('opponentFreeze policies/' + freezeTag + '-ai.js + search');
+  var brModelLabel = process.env.TIENLEN_BR_MODEL === 'expert'
+    ? 'freeze-expert-cheap'
+    : 'freeze-grandmaster-low-budget-40ms-20it';
   console.log('protocol', {
     freezeDifficulty: fOpts.difficulty,
     liveDifficulty: lOpts.difficulty,
-    brModel: 'freeze-expert-cheap'
+    brModel: brModelLabel
   });
 
   let liveWins = 0;

@@ -1,6 +1,13 @@
-/** v9.2 strategy priorities P1–P5 (minimal-beat, mid contest, low-pair FL, residual multi, 2-budget) */
+/**
+ * ai-build.js — zero-dependency build identity for the title screen.
+ * Auto-synced by evolve/ship-rung.sh from AI_BUILD.
+ */
 (function (root) {
-  var BUILD = { id: "v9.2", stamped: "2026-07-13T13:00:00Z", label: "Grandmaster v9.2 (P1–P5 surgical)" };
+  var BUILD = {
+    id: 'v9.2',
+    stamped: '2026-07-13T22:46:04Z',
+    label: 'Grandmaster v9.2'
+  };
   root.TIENLEN_AI_BUILD = BUILD;
   root.TienLenAI = root.TienLenAI || {};
   root.TienLenAI.AI_BUILD = BUILD;
