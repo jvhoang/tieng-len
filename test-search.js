@@ -465,6 +465,39 @@ console.log('=== User-reported bug guards ===');
   const expPlay = exp && (exp.play || exp);
   ok(expPlay && expPlay.length === 1 && expPlay[0].rank === 12,
     'expert/guards path uses 2 vs Ace when Ace+2 held');
+
+  // User: prefer loose single over low single that breaks a multi (pair/run).
+  // exact-endgame previously took first equal-win legal (often pair-break).
+  {
+    const stBr = engine.createGameState(2, 42);
+    stBr.isFirstLead = false;
+    stBr.firstLeadCard = null;
+    stBr.currentPlayer = 0;
+    stBr.currentCombo = engine.detectCombo([{ rank: 0, suit: 1 }]); // face a 3
+    // hand: loose 3, pair of 5s, loose 10, J, A, 2 — must beat with 10+ not break pair
+    stBr.players[0].hand = [
+      { rank: 0, suit: 0 }, { rank: 2, suit: 0 }, { rank: 2, suit: 1 },
+      { rank: 7, suit: 0 }, { rank: 8, suit: 1 }, { rank: 10, suit: 0 }, { rank: 12, suit: 0 }
+    ];
+    stBr.players[1].hand = [
+      { rank: 6, suit: 1 }, { rank: 7, suit: 1 }, { rank: 8, suit: 0 },
+      { rank: 11, suit: 1 }, { rank: 3, suit: 2 }
+    ];
+    const exactBr = search.exactEndgameMove
+      ? search.exactEndgameMove(stBr, 0)
+      : null;
+    const ordered = search.orderLegals(
+      engine.getLegalPlays(stBr.players[0].hand, stBr.currentCombo, false, false, null),
+      stBr, 0
+    );
+    const top = ordered && ordered[0];
+    ok(top && top.length === 1 && top[0].rank !== 2,
+      'orderLegals: loose beat over pair-break (got rank=' + (top && top[0] && top[0].rank) + ')');
+    if (exactBr) {
+      ok(exactBr.length === 1 && exactBr[0].rank !== 2,
+        'exactEndgame: loose beat over pair-break (got rank=' + exactBr[0].rank + ')');
+    }
+  }
 }
 
 console.log('\n=== SEARCH TEST SUMMARY ===');
