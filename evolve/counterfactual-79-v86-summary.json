@@ -1,10 +1,9 @@
 {
   "aiBuild": {
-    "id": "v9.1",
-    "stamped": "2026-07-12T23:24:28Z",
-    "label": "Grandmaster v9.1"
+    "id": "v8.6",
+    "stamped": "2026-07-12T14:00:00-07:00",
+    "label": "Grandmaster v8.6"
   },
-  "corpus": "all-completed-1v1-playlogs",
   "method": "getAIMove human-seat hiddenInfo=true perfectInfo=false",
   "issueList": [
     1,
@@ -85,89 +84,62 @@
     82,
     83,
     84,
-    85,
-    86,
-    87,
-    88,
-    89,
-    90,
-    91,
-    92,
-    93,
-    94,
-    95,
-    96,
-    97,
-    98,
-    99,
-    100,
-    101,
-    102,
-    103
+    85
   ],
-  "issueListCount": 97,
-  "completedGames": 97,
-  "totalHumanActions": 787,
-  "matchCount": 483,
-  "differCount": 304,
-  "matchRate": 0.613722998729352,
+  "completedGames": 79,
+  "totalHumanActions": 633,
+  "matchCount": 380,
+  "differCount": 253,
+  "matchRate": 0.6003159557661928,
   "differPatterns": {
-    "humanTwoAltNot": 33,
-    "altTwoHumanNot": 13,
-    "humanPassAltPlay": 33,
+    "humanTwoAltNot": 29,
+    "altTwoHumanNot": 12,
+    "humanPassAltPlay": 29,
     "humanPlayAltPass": 0,
-    "freeLeadDiffer": 116,
-    "combatDiffer": 188,
-    "multiVsSingle": 71,
-    "classDisagree": 202
+    "freeLeadDiffer": 87,
+    "combatDiffer": 166,
+    "multiVsSingle": 60,
+    "classDisagree": 172
   },
   "classDisagreeTop": [
     {
       "pair": "triple→triple",
-      "n": 28
+      "n": 25
     },
     {
       "pair": "single_mid→single_mid",
-      "n": 24
-    },
-    {
-      "pair": "pair→pair",
-      "n": 23
-    },
-    {
-      "pair": "pass→pair",
-      "n": 22
-    },
-    {
-      "pair": "single_trash→pair",
       "n": 20
     },
     {
-      "pair": "single_two→single_mid",
-      "n": 17
+      "pair": "pass→pair",
+      "n": 20
     },
     {
-      "pair": "single_trash→single_mid",
+      "pair": "single_trash→pair",
+      "n": 18
+    },
+    {
+      "pair": "single_two→single_mid",
       "n": 16
     },
     {
-      "pair": "single_trash→single_trash",
+      "pair": "pair→pair",
       "n": 15
     },
     {
-      "pair": "single_mid→single_trash",
+      "pair": "single_trash→single_mid",
       "n": 14
     },
     {
-      "pair": "bomb_or_long→triple",
-      "n": 12
+      "pair": "single_trash→single_trash",
+      "n": 13
     },
     {
-      "pair": "triple→pair",
+      "pair": "single_mid→single_trash",
       "n": 10
     },
     {
-      "pair": "bomb_or_long→bomb_or_long",
+      "pair": "bomb_or_long→triple",
       "n": 10
     },
     {
@@ -175,51 +147,59 @@
       "n": 10
     },
     {
-      "pair": "single_trash→triple",
-      "n": 8
-    },
-    {
-      "pair": "pair→bomb_or_long",
-      "n": 7
-    },
-    {
-      "pair": "pass→triple",
-      "n": 7
-    },
-    {
       "pair": "single_mid→single_high",
-      "n": 7
+      "n": 8
     },
     {
       "pair": "single_two→single_high",
       "n": 7
     },
     {
+      "pair": "triple→pair",
+      "n": 7
+    },
+    {
+      "pair": "pass→triple",
+      "n": 6
+    },
+    {
       "pair": "bomb_or_long→pair",
       "n": 6
     },
     {
-      "pair": "pair→triple",
+      "pair": "bomb_or_long→bomb_or_long",
       "n": 6
     },
     {
-      "pair": "single_mid→pair",
+      "pair": "single_trash→triple",
+      "n": 6
+    },
+    {
+      "pair": "pair→triple",
       "n": 5
     },
     {
-      "pair": "triple→bomb_or_long",
-      "n": 5
+      "pair": "single_mid→pair",
+      "n": 4
+    },
+    {
+      "pair": "pair→bomb_or_long",
+      "n": 4
     },
     {
       "pair": "single_trash→single_high",
       "n": 4
     },
     {
-      "pair": "single_two→single_trash",
+      "pair": "triple→bomb_or_long",
       "n": 3
     },
     {
-      "pair": "single_high→pair",
+      "pair": "single_two→triple",
+      "n": 2
+    },
+    {
+      "pair": "pass→single_two",
       "n": 2
     }
   ],
@@ -269,8 +249,8 @@
       "outcome": "human-win",
       "skipped": false,
       "humanActions": 11,
-      "match": 6,
-      "differ": 5,
+      "match": 7,
+      "differ": 4,
       "reason": null,
       "applyError": null
     },
@@ -349,8 +329,8 @@
       "outcome": "human-win",
       "skipped": false,
       "humanActions": 9,
-      "match": 8,
-      "differ": 1,
+      "match": 7,
+      "differ": 2,
       "reason": null,
       "applyError": null
     },
@@ -479,8 +459,8 @@
       "outcome": "human-win",
       "skipped": false,
       "humanActions": 7,
-      "match": 4,
-      "differ": 3,
+      "match": 3,
+      "differ": 4,
       "reason": null,
       "applyError": null
     },
@@ -529,8 +509,8 @@
       "outcome": "human-win",
       "skipped": false,
       "humanActions": 7,
-      "match": 5,
-      "differ": 2,
+      "match": 4,
+      "differ": 3,
       "reason": null,
       "applyError": null
     },
@@ -759,8 +739,8 @@
       "outcome": "human-win",
       "skipped": false,
       "humanActions": 9,
-      "match": 5,
-      "differ": 4,
+      "match": 4,
+      "differ": 5,
       "reason": null,
       "applyError": null
     },
@@ -829,8 +809,8 @@
       "outcome": "human-win",
       "skipped": false,
       "humanActions": 10,
-      "match": 6,
-      "differ": 4,
+      "match": 8,
+      "differ": 2,
       "reason": null,
       "applyError": null
     },
@@ -849,8 +829,8 @@
       "outcome": "human-win",
       "skipped": false,
       "humanActions": 9,
-      "match": 6,
-      "differ": 3,
+      "match": 5,
+      "differ": 4,
       "reason": null,
       "applyError": null
     },
@@ -859,8 +839,8 @@
       "outcome": "human-win",
       "skipped": false,
       "humanActions": 7,
-      "match": 4,
-      "differ": 3,
+      "match": 5,
+      "differ": 2,
       "reason": null,
       "applyError": null
     },
@@ -869,8 +849,8 @@
       "outcome": "human-win",
       "skipped": false,
       "humanActions": 10,
-      "match": 6,
-      "differ": 4,
+      "match": 7,
+      "differ": 3,
       "reason": null,
       "applyError": null
     },
@@ -899,8 +879,8 @@
       "outcome": "human-win",
       "skipped": false,
       "humanActions": 5,
-      "match": 1,
-      "differ": 4,
+      "match": 2,
+      "differ": 3,
       "reason": null,
       "applyError": null
     },
@@ -969,8 +949,8 @@
       "outcome": "human-win",
       "skipped": false,
       "humanActions": 7,
-      "match": 5,
-      "differ": 2,
+      "match": 6,
+      "differ": 1,
       "reason": null,
       "applyError": null
     },
@@ -979,8 +959,8 @@
       "outcome": "human-win",
       "skipped": false,
       "humanActions": 9,
-      "match": 4,
-      "differ": 5,
+      "match": 6,
+      "differ": 3,
       "reason": null,
       "applyError": null
     },
@@ -989,8 +969,8 @@
       "outcome": "human-win",
       "skipped": false,
       "humanActions": 9,
-      "match": 7,
-      "differ": 2,
+      "match": 6,
+      "differ": 3,
       "reason": null,
       "applyError": null
     },
@@ -999,8 +979,8 @@
       "outcome": "human-win",
       "skipped": false,
       "humanActions": 7,
-      "match": 5,
-      "differ": 2,
+      "match": 4,
+      "differ": 3,
       "reason": null,
       "applyError": null
     },
@@ -1011,186 +991,6 @@
       "humanActions": 7,
       "match": 5,
       "differ": 2,
-      "reason": null,
-      "applyError": null
-    },
-    {
-      "issue": 86,
-      "outcome": "human-win",
-      "skipped": false,
-      "humanActions": 9,
-      "match": 8,
-      "differ": 1,
-      "reason": null,
-      "applyError": null
-    },
-    {
-      "issue": 87,
-      "outcome": "ai-win",
-      "skipped": false,
-      "humanActions": 8,
-      "match": 6,
-      "differ": 2,
-      "reason": null,
-      "applyError": null
-    },
-    {
-      "issue": 88,
-      "outcome": "human-win",
-      "skipped": false,
-      "humanActions": 9,
-      "match": 6,
-      "differ": 3,
-      "reason": null,
-      "applyError": null
-    },
-    {
-      "issue": 89,
-      "outcome": "human-win",
-      "skipped": false,
-      "humanActions": 11,
-      "match": 7,
-      "differ": 4,
-      "reason": null,
-      "applyError": null
-    },
-    {
-      "issue": 90,
-      "outcome": "human-win",
-      "skipped": false,
-      "humanActions": 5,
-      "match": 4,
-      "differ": 1,
-      "reason": null,
-      "applyError": null
-    },
-    {
-      "issue": 91,
-      "outcome": "human-win",
-      "skipped": false,
-      "humanActions": 8,
-      "match": 5,
-      "differ": 3,
-      "reason": null,
-      "applyError": null
-    },
-    {
-      "issue": 92,
-      "outcome": "human-win",
-      "skipped": false,
-      "humanActions": 8,
-      "match": 6,
-      "differ": 2,
-      "reason": null,
-      "applyError": null
-    },
-    {
-      "issue": 93,
-      "outcome": "human-win",
-      "skipped": false,
-      "humanActions": 10,
-      "match": 8,
-      "differ": 2,
-      "reason": null,
-      "applyError": null
-    },
-    {
-      "issue": 94,
-      "outcome": "human-win",
-      "skipped": false,
-      "humanActions": 7,
-      "match": 5,
-      "differ": 2,
-      "reason": null,
-      "applyError": null
-    },
-    {
-      "issue": 95,
-      "outcome": "human-win",
-      "skipped": false,
-      "humanActions": 7,
-      "match": 3,
-      "differ": 4,
-      "reason": null,
-      "applyError": null
-    },
-    {
-      "issue": 96,
-      "outcome": "human-win",
-      "skipped": false,
-      "humanActions": 9,
-      "match": 6,
-      "differ": 3,
-      "reason": null,
-      "applyError": null
-    },
-    {
-      "issue": 97,
-      "outcome": "ai-win",
-      "skipped": false,
-      "humanActions": 9,
-      "match": 8,
-      "differ": 1,
-      "reason": null,
-      "applyError": null
-    },
-    {
-      "issue": 98,
-      "outcome": "human-win",
-      "skipped": false,
-      "humanActions": 11,
-      "match": 5,
-      "differ": 6,
-      "reason": null,
-      "applyError": null
-    },
-    {
-      "issue": 99,
-      "outcome": "human-win",
-      "skipped": false,
-      "humanActions": 7,
-      "match": 5,
-      "differ": 2,
-      "reason": null,
-      "applyError": null
-    },
-    {
-      "issue": 100,
-      "outcome": "human-win",
-      "skipped": false,
-      "humanActions": 12,
-      "match": 7,
-      "differ": 5,
-      "reason": null,
-      "applyError": null
-    },
-    {
-      "issue": 101,
-      "outcome": "human-win",
-      "skipped": false,
-      "humanActions": 10,
-      "match": 7,
-      "differ": 3,
-      "reason": null,
-      "applyError": null
-    },
-    {
-      "issue": 102,
-      "outcome": "human-win",
-      "skipped": false,
-      "humanActions": 3,
-      "match": 2,
-      "differ": 1,
-      "reason": null,
-      "applyError": null
-    },
-    {
-      "issue": 103,
-      "outcome": "human-win",
-      "skipped": false,
-      "humanActions": 11,
-      "match": 7,
-      "differ": 4,
       "reason": null,
       "applyError": null
     }
@@ -1433,7 +1233,7 @@
       "legalSingles": 3,
       "curType": "single",
       "curTop": 8,
-      "mode": "best-response-det",
+      "mode": "exact-endgame",
       "err": null
     },
     {
@@ -1494,36 +1294,6 @@
       "curType": null,
       "curTop": null,
       "mode": "exact-endgame",
-      "err": null
-    },
-    {
-      "issue": 5,
-      "eventI": 1,
-      "humanActionIdx": 0,
-      "freeLead": true,
-      "humanSig": "2,5,8,13",
-      "altSig": "2,5,8",
-      "match": false,
-      "humanPass": false,
-      "altPass": false,
-      "humanTwo": false,
-      "altTwo": false,
-      "humanLen": 4,
-      "altLen": 3,
-      "humanClass": "bomb_or_long",
-      "altClass": "triple",
-      "handSize": 13,
-      "oppMin": 13,
-      "twos": 1,
-      "aces": 0,
-      "pairs": 3,
-      "control": 2,
-      "legalCount": 5,
-      "legalMulti": 4,
-      "legalSingles": 1,
-      "curType": null,
-      "curTop": null,
-      "mode": "best-response-det",
       "err": null
     },
     {
@@ -1892,16 +1662,16 @@
       "humanActionIdx": 3,
       "freeLead": true,
       "humanSig": "20,24,29,33,37",
-      "altSig": "20,27,29,33,37",
+      "altSig": "24,26,27",
       "match": false,
       "humanPass": false,
       "altPass": false,
       "humanTwo": false,
       "altTwo": false,
       "humanLen": 5,
-      "altLen": 5,
+      "altLen": 3,
       "humanClass": "bomb_or_long",
-      "altClass": "bomb_or_long",
+      "altClass": "triple",
       "handSize": 10,
       "oppMin": 10,
       "twos": 1,
@@ -1913,7 +1683,7 @@
       "legalSingles": 10,
       "curType": null,
       "curTop": null,
-      "mode": "best-response-det",
+      "mode": "exact-endgame",
       "err": null
     },
     {
@@ -2003,7 +1773,7 @@
       "legalSingles": 9,
       "curType": null,
       "curTop": null,
-      "mode": "best-response-det",
+      "mode": "exact-endgame",
       "err": null
     },
     {
@@ -2127,6 +1897,36 @@
       "err": null
     },
     {
+      "issue": 16,
+      "eventI": 7,
+      "humanActionIdx": 3,
+      "freeLead": false,
+      "humanSig": "37",
+      "altSig": "33",
+      "match": false,
+      "humanPass": false,
+      "altPass": false,
+      "humanTwo": false,
+      "altTwo": false,
+      "humanLen": 1,
+      "altLen": 1,
+      "humanClass": "single_mid",
+      "altClass": "single_mid",
+      "handSize": 10,
+      "oppMin": 10,
+      "twos": 0,
+      "aces": 1,
+      "pairs": 4,
+      "control": 3,
+      "legalCount": 6,
+      "legalMulti": 0,
+      "legalSingles": 6,
+      "curType": "single",
+      "curTop": 7,
+      "mode": "exact-endgame",
+      "err": null
+    },
+    {
       "issue": 17,
       "eventI": 3,
       "humanActionIdx": 1,
@@ -2183,7 +1983,7 @@
       "legalSingles": 0,
       "curType": "pair",
       "curTop": 6,
-      "mode": "best-response-det",
+      "mode": "exact-endgame",
       "err": null
     },
     {
@@ -2633,7 +2433,7 @@
       "legalSingles": 10,
       "curType": null,
       "curTop": null,
-      "mode": "best-response-det",
+      "mode": "exact-endgame",
       "err": null
     },
     {
@@ -2672,7 +2472,7 @@
       "humanActionIdx": 0,
       "freeLead": true,
       "humanSig": "1,3",
-      "altSig": "1,5,8,13,17",
+      "altSig": "1,4,8,13,17",
       "match": false,
       "humanPass": false,
       "altPass": false,
@@ -2753,7 +2553,7 @@
       "legalSingles": 0,
       "curType": "pair",
       "curTop": 10,
-      "mode": "best-response-det",
+      "mode": "exact-endgame",
       "err": null
     },
     {
@@ -2903,7 +2703,7 @@
       "legalSingles": 0,
       "curType": "pair",
       "curTop": 9,
-      "mode": "best-response-det",
+      "mode": "exact-endgame",
       "err": null
     },
     {
@@ -3083,7 +2883,7 @@
       "legalSingles": 0,
       "curType": "pair",
       "curTop": 8,
-      "mode": "best-response-det",
+      "mode": "exact-endgame",
       "err": null
     },
     {
@@ -3182,16 +2982,16 @@
       "humanActionIdx": 0,
       "freeLead": true,
       "humanSig": "0,7,8,12",
-      "altSig": "0,7,8",
+      "altSig": "0,7,8,15",
       "match": false,
       "humanPass": false,
       "altPass": false,
       "humanTwo": false,
       "altTwo": false,
       "humanLen": 4,
-      "altLen": 3,
+      "altLen": 4,
       "humanClass": "bomb_or_long",
-      "altClass": "triple",
+      "altClass": "bomb_or_long",
       "handSize": 13,
       "oppMin": 13,
       "twos": 1,
@@ -3263,7 +3063,7 @@
       "legalSingles": 0,
       "curType": "seq",
       "curTop": 8,
-      "mode": "best-response-det",
+      "mode": "exact-endgame",
       "err": null
     },
     {
@@ -3542,7 +3342,7 @@
       "humanActionIdx": 2,
       "freeLead": false,
       "humanSig": "30,34,39",
-      "altSig": "34,39,43",
+      "altSig": "23,24,30",
       "match": false,
       "humanPass": false,
       "altPass": false,
@@ -3563,7 +3363,7 @@
       "legalSingles": 0,
       "curType": "seq",
       "curTop": 6,
-      "mode": "best-response-det",
+      "mode": "exact-endgame",
       "err": null
     },
     {
@@ -3624,6 +3424,36 @@
       "curType": null,
       "curTop": null,
       "mode": "best-response-det",
+      "err": null
+    },
+    {
+      "issue": 29,
+      "eventI": 6,
+      "humanActionIdx": 2,
+      "freeLead": false,
+      "humanSig": "11",
+      "altSig": "15",
+      "match": false,
+      "humanPass": false,
+      "altPass": false,
+      "humanTwo": false,
+      "altTwo": false,
+      "humanLen": 1,
+      "altLen": 1,
+      "humanClass": "single_trash",
+      "altClass": "single_trash",
+      "handSize": 10,
+      "oppMin": 10,
+      "twos": 0,
+      "aces": 1,
+      "pairs": 3,
+      "control": 1,
+      "legalCount": 10,
+      "legalMulti": 0,
+      "legalSingles": 10,
+      "curType": "single",
+      "curTop": 1,
+      "mode": "exact-endgame",
       "err": null
     },
     {
@@ -3923,7 +3753,7 @@
       "legalSingles": 5,
       "curType": "single",
       "curTop": 8,
-      "mode": "best-response-det",
+      "mode": "exact-endgame",
       "err": null
     },
     {
@@ -4107,6 +3937,36 @@
       "err": null
     },
     {
+      "issue": 34,
+      "eventI": 8,
+      "humanActionIdx": 3,
+      "freeLead": false,
+      "humanSig": "44",
+      "altSig": "36",
+      "match": false,
+      "humanPass": false,
+      "altPass": false,
+      "humanTwo": false,
+      "altTwo": false,
+      "humanLen": 1,
+      "altLen": 1,
+      "humanClass": "single_high",
+      "altClass": "single_mid",
+      "handSize": 10,
+      "oppMin": 9,
+      "twos": 0,
+      "aces": 1,
+      "pairs": 1,
+      "control": 1,
+      "legalCount": 5,
+      "legalMulti": 0,
+      "legalSingles": 5,
+      "curType": "single",
+      "curTop": 7,
+      "mode": "exact-endgame",
+      "err": null
+    },
+    {
       "issue": 35,
       "eventI": 2,
       "humanActionIdx": 0,
@@ -4133,66 +3993,6 @@
       "legalSingles": 13,
       "curType": "single",
       "curTop": 1,
-      "mode": "best-response-det",
-      "err": null
-    },
-    {
-      "issue": 35,
-      "eventI": 4,
-      "humanActionIdx": 1,
-      "freeLead": false,
-      "humanSig": "48",
-      "altSig": "33",
-      "match": false,
-      "humanPass": false,
-      "altPass": false,
-      "humanTwo": true,
-      "altTwo": false,
-      "humanLen": 1,
-      "altLen": 1,
-      "humanClass": "single_two",
-      "altClass": "single_mid",
-      "handSize": 12,
-      "oppMin": 11,
-      "twos": 2,
-      "aces": 0,
-      "pairs": 4,
-      "control": 3,
-      "legalCount": 5,
-      "legalMulti": 0,
-      "legalSingles": 5,
-      "curType": "single",
-      "curTop": 6,
-      "mode": "best-response-det",
-      "err": null
-    },
-    {
-      "issue": 35,
-      "eventI": 6,
-      "humanActionIdx": 2,
-      "freeLead": true,
-      "humanSig": "21",
-      "altSig": "5,8,15",
-      "match": false,
-      "humanPass": false,
-      "altPass": false,
-      "humanTwo": false,
-      "altTwo": false,
-      "humanLen": 1,
-      "altLen": 3,
-      "humanClass": "single_trash",
-      "altClass": "triple",
-      "handSize": 11,
-      "oppMin": 11,
-      "twos": 1,
-      "aces": 0,
-      "pairs": 3,
-      "control": 2,
-      "legalCount": 24,
-      "legalMulti": 13,
-      "legalSingles": 11,
-      "curType": null,
-      "curTop": null,
       "mode": "best-response-det",
       "err": null
     }

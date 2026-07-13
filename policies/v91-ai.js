@@ -16,15 +16,8 @@
 const AI_BUILD = {
   id: "v9.1",
   stamped: "2026-07-13T02:50:38Z",
-  label: "Grandmaster v9.1"
+  label: "Grandmaster v9.1 (ladder freeze)"
 };
-
-if (typeof window !== 'undefined') {
-  window.TIENLEN_AI_BUILD = AI_BUILD;
-  window.TienLenAI = window.TienLenAI || {};
-  window.TienLenAI.AI_BUILD = AI_BUILD;
-}
-
 
 // Publish build identity IMMEDIATELY (before any later init that might throw).
 // Title screen reads these even if the rest of the AI module fails to finish loading.
@@ -40,12 +33,12 @@ if (typeof window !== 'undefined') {
 // `window.TienLenAI` is fully assigned.
 const _isNodeCjs = (typeof module === 'object' && module && module.exports &&
   typeof require === 'function');
-const engine = _isNodeCjs ? require('./engine.js') : ((typeof window !== 'undefined' && window.TienLenEngine) || {});
+const engine = _isNodeCjs ? require('../engine.js') : ((typeof window !== 'undefined' && window.TienLenEngine) || {});
 const genomeMod = _isNodeCjs
-  ? require('./genome.js')
+  ? require('../genome.js')
   : (typeof window !== 'undefined' ? window.TienLenGenome : null);
 const searchMod = _isNodeCjs
-  ? require('./search.js')
+  ? require('./v91-search.js')
   : (typeof window !== 'undefined' ? window.TienLenSearch : null);
 const {
   detectCombo, getLegalPlays, applyPlay, pass, cardCompare, cloneState: engineClone

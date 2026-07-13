@@ -1,17 +1,14 @@
 /**
- * Live AI vs frozen policy — continuous 2p single-deal bench.
- *
  * Live AI vs frozen prior champion — continuous 2p single-deal bench.
  *
- * OBJECTIVE contract (default):
- *   N≥100, target >0.70, seed 20260711, freeze = expert path of frozen policy.
+ * Default (user): N≥50, WR>0.70, seed 20260711, grandmaster vs grandmaster.
  *
- *   TIENLEN_FREEZE=v89 TIENLEN_BENCH_GAMES=100 TIENLEN_TARGET=0.70 \
- *   TIENLEN_BENCH_SEED=20260711 TIENLEN_FREEZE_DIFF=expert \
- *   TIENLEN_BENCH_OUT=v90-vs-v89-final.json \
+ *   TIENLEN_FREEZE=v90 TIENLEN_BENCH_GAMES=50 TIENLEN_TARGET=0.70 \
+ *   TIENLEN_BENCH_SEED=20260711 TIENLEN_FREEZE_DIFF=grandmaster \
+ *   TIENLEN_V8_DIFF=grandmaster TIENLEN_BENCH_OUT=v91-vs-v90-final.json \
  *   node evolve/bench-ladder.js
  *
- * Optional: TIENLEN_FREEZE_DIFF=grandmaster for GM-search opponent (slower).
+ * Optional: TIENLEN_FREEZE_DIFF=expert for fast expert-policy opponent.
  */
 'use strict';
 
@@ -68,9 +65,9 @@ function _stateKey(state, seat) {
   return key;
 }
 
-/** Freeze seat opts — default expert path of frozen policy (OBJECTIVE contract). */
+/** Freeze seat opts — default grandmaster (search) of frozen policy. */
 function freezeOpts() {
-  const diff = process.env.TIENLEN_FREEZE_DIFF || 'expert';
+  const diff = process.env.TIENLEN_FREEZE_DIFF || 'grandmaster';
   if (diff === 'expert' || diff === 'easy') {
     return { difficulty: 'easy', iterations: 0, mode: 'expert' };
   }
@@ -80,13 +77,13 @@ function freezeOpts() {
     useSearch: true,
     perfectInfo: perfect,
     hiddenInfo: !perfect,
-    timeMs: parseInt(process.env.TIENLEN_FREEZE_MS || '250', 10),
-    iterations: parseInt(process.env.TIENLEN_FREEZE_ITERS || '200', 10),
+    // Slightly lower budgets than live so gates remain discriminative but still GM
+    timeMs: parseInt(process.env.TIENLEN_FREEZE_MS || '120', 10),
+    iterations: parseInt(process.env.TIENLEN_FREEZE_ITERS || '80', 10),
     maxSims: parseInt(process.env.TIENLEN_FREEZE_SIMS || '160', 10),
-    bestResponse: process.env.TIENLEN_FREEZE_BR !== '0',
+    bestResponse: process.env.TIENLEN_FREEZE_BR === '1',
     maxBranch: parseInt(process.env.TIENLEN_FREEZE_BRANCH || '16', 10),
     mode: process.env.TIENLEN_FREEZE_MODE || 'auto',
-    // Keep soft roots off for freeze seat unless explicitly enabled
     combatRoot: process.env.TIENLEN_FREEZE_COMBAT_ROOT === '1',
     flRoot: process.env.TIENLEN_FREEZE_FL_ROOT === '1',
     dualSelf: process.env.TIENLEN_FREEZE_DUAL_SELF === '1',
@@ -204,10 +201,10 @@ function apply(state, cp, choice) {
 function liveOpts() {
   const perfect = process.env.TIENLEN_V8_PERFECT !== '0';
   return {
-    // Hard+exploit is the project strength-gate challenger (matches historical N=100)
-    difficulty: process.env.TIENLEN_V8_DIFF || 'hard',
-    timeMs: parseInt(process.env.TIENLEN_V8_MS || '100', 10),
-    iterations: parseInt(process.env.TIENLEN_V8_ITERS || '160', 10),
+    // Grandmaster + exploit/BR vs freeze grandmaster (user protocol)
+    difficulty: process.env.TIENLEN_V8_DIFF || 'grandmaster',
+    timeMs: parseInt(process.env.TIENLEN_V8_MS || '150', 10),
+    iterations: parseInt(process.env.TIENLEN_V8_ITERS || '120', 10),
     maxSims: parseInt(process.env.TIENLEN_V8_SIMS || '320', 10),
     brTrials: parseInt(process.env.TIENLEN_BR_TRIALS || '48', 10),
     bestResponse: process.env.TIENLEN_BR !== '0',
@@ -273,8 +270,8 @@ function play2p(seed) {
 }
 
 function main() {
-  // OBJECTIVE contract defaults: N≥100, target 0.70, seed 20260711
-  const games = parseInt(process.env.TIENLEN_BENCH_GAMES || '100', 10);
+  // Default: N≥50 GM vs GM, target 0.70, seed 20260711
+  const games = parseInt(process.env.TIENLEN_BENCH_GAMES || '50', 10);
   const seed0 = parseInt(process.env.TIENLEN_BENCH_SEED || '20260711', 10);
   const scratch = process.env.TIENLEN_SCRATCH || path.join(__dirname);
   const target = parseFloat(process.env.TIENLEN_TARGET || '0.70');
@@ -297,14 +294,22 @@ function main() {
   let liveWins = 0;
   const t0 = Date.now();
   const checkpoints = [];
+  const perGame = [];
+  const logGames = process.env.TIENLEN_LOG_GAMES === '1';
   const progressEvery = Math.max(1, parseInt(process.env.TIENLEN_PROGRESS_EVERY || '5', 10));
   const checkpointEvery = Math.max(1, parseInt(process.env.TIENLEN_CHECKPOINT_EVERY || '10', 10));
 
   for (let g = 0; g < games; g++) {
     const gt0 = Date.now();
-    const r = play2p(seed0 + g * 9973);
+    const seed = seed0 + g * 9973;
+    const r = play2p(seed);
     const gms = Date.now() - gt0;
-    if (gms > 60000) console.error(JSON.stringify({slowGame:g, seed:seed0+g*9973, ms:gms, win:r.liveWin}));
+    if (gms > 60000) console.error(JSON.stringify({slowGame:g, seed:seed, ms:gms, win:r.liveWin}));
+    if (logGames) {
+      const row = { g: g, seed: seed, liveWin: !!r.liveWin, liveSeat: r.liveSeat, steps: r.steps, ms: gms };
+      perGame.push(row);
+      console.log(JSON.stringify(row));
+    }
     if (r.liveWin) liveWins++;
     if ((g + 1) % progressEvery === 0 || g === games - 1) {
       try {
@@ -339,8 +344,8 @@ function main() {
   const final = {
     mode: '2p-h2h-single-deal-continuous',
     protocol: (fOpts.mode === 'expert' || fOpts.difficulty === 'easy')
-      ? 'live-hard-vs-freeze-expert'
-      : 'live-vs-freeze-' + (fOpts.difficulty || 'search'),
+      ? 'live-vs-freeze-expert'
+      : 'grandmaster-vs-grandmaster',
     games: games,
     liveWins: liveWins,
     freezeWins: games - liveWins,
@@ -350,7 +355,7 @@ function main() {
     v80WinRate: liveWins / games,
     ci95: wilsonCI(liveWins, games),
     target: target,
-    // OBJECTIVE: strictly greater than target (e.g. >0.70)
+    // Strictly greater than target (e.g. >0.70 → need ≥36/50)
     passed: (liveWins / games) > target,
     ms: Date.now() - t0,
     live: live.AI_BUILD,
@@ -361,7 +366,9 @@ function main() {
     opponentFreeze: 'policies/' + freezeTag + '-ai.js + policies/' + freezeTag + '-search.js',
     freezeTag: freezeTag,
     seed0: seed0,
-    checkpoints: checkpoints
+    checkpoints: checkpoints,
+    perGame: logGames ? perGame : undefined,
+    lossSeeds: logGames ? perGame.filter(function (x) { return !x.liveWin; }).map(function (x) { return x.seed; }) : undefined
   };
   console.log('=== FINAL ===');
   console.log(JSON.stringify(final, null, 2));

@@ -1,8 +1,8 @@
 {
   "aiBuild": {
-    "id": "v9.0",
-    "stamped": "2026-07-12T20:10:01Z",
-    "label": "Grandmaster v9.0"
+    "id": "v9.1",
+    "stamped": "2026-07-12T23:24:28Z",
+    "label": "Grandmaster v9.1"
   },
   "corpus": "all-completed-1v1-playlogs",
   "method": "getAIMove human-seat hiddenInfo=true perfectInfo=false",
