@@ -1,9 +1,12 @@
 
-## 2026-07-13T12:30:00Z — P1–P5 dual-safe refinement
-- First dual P1–P5 raw: **24/50 = 0.48 FAIL** (harsh gap penalties + structure-second orderLegals).
-- Softened: mild expertScore gaps; structure-first orderLegals; restore deep soft-pass;
-  P3 only intercepts AA/KK residual leads; keep gold 0500/0520b singles ranking.
-- All gold + P1/P3/P5 tests green. Re-running dual N=50.
+## 2026-07-13T13:00:00Z — P1–P5 surgical (on dual baseline)
+- Broad P1–P5 duals failed **0.48** then **0.44** vs v91.
+- Restored search to playlog-align `9b20d49` (P1/P2/P5 already dual-safe there).
+- Surgical only: **P3** AA/KK→low pair free-lead; **P4** same-len seq lower top when residual tied.
+- Tests 79/79. Dual N=50 re-run `v92-p15c-vs-v91`.
+
+## 2026-07-13T12:30:00Z — P1–P5 dual-safe refinement (superseded)
+- First dual P1–P5 raw: **24/50 = 0.48 FAIL**. Soften still **22/50 = 0.44 FAIL**.
 
 ## 2026-07-13T12:00:00Z — strategy priorities P1–P5
 - P1 minimal-beat singles (residual run → quality → lower top)
