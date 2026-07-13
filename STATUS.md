@@ -1,4 +1,10 @@
 
+## 2026-07-13T12:30:00Z — P1–P5 dual-safe refinement
+- First dual P1–P5 raw: **24/50 = 0.48 FAIL** (harsh gap penalties + structure-second orderLegals).
+- Softened: mild expertScore gaps; structure-first orderLegals; restore deep soft-pass;
+  P3 only intercepts AA/KK residual leads; keep gold 0500/0520b singles ranking.
+- All gold + P1/P3/P5 tests green. Re-running dual N=50.
+
 ## 2026-07-13T12:00:00Z — strategy priorities P1–P5
 - P1 minimal-beat singles (residual run → quality → lower top)
 - P2 contest mid; narrow structure-pass only (0501/0510)
@@ -6,7 +12,6 @@
 - P4 same-len seq residual then lower top
 - P5 2-budget: safe non-2 sc&lt;12; spend 2 on structure smash (0500)
 - Fixed 0500 (2 not K) + 0520b (7 not Q). All gold 0498–0521 green.
-- Dual N=50 GM vs freeze v91 launching (`v92-p15-vs-v91`).
 
 
 ## 2026-07-13T08:20:04Z — series-3 control-plan gold (0514/0516–0521)

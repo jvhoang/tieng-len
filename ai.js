@@ -15,8 +15,8 @@
 /** Shown on title screen — bump when shipping AI behavior changes. */
 const AI_BUILD = {
   id: "v9.2",
-  stamped: "2026-07-13T12:00:00Z",
-  label: "Grandmaster v9.2 (P1–P5)"
+  stamped: "2026-07-13T12:30:00Z",
+  label: "Grandmaster v9.2 (P1–P5 dual-safe)"
 };
 
 if (typeof window !== 'undefined') {
