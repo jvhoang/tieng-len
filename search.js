@@ -367,12 +367,18 @@
         else if (Math.abs(res - bestRes) <= 0.3 && sc < bestSc - 0.5) better = true;
         else if (Math.abs(res - bestRes) <= 0.3 && Math.abs(sc - bestSc) < 0.5 && exp < bestExp) better = true;
       } else if (allSingles) {
-        // Gold 0520: max residual maxRun first (7 keeps 6789 vs 6→789+trash).
-        // Then residual quality (0498 A keeps pair vs 6-from-pair).
-        // Then minimal non-2 top among equal residual (7 not Q overkill).
+        // Gold 0520 log (omin=1): prefer 2 for sure control over residual mid.
+        // Gold 0520 residual: max residual maxRun (7 keeps 6789 vs 6→789+trash).
+        // Then residual quality (0498 A keeps pair). Then minimal non-2 top.
         var pTop = p[0].rank;
         var bTop = best[0].rank;
-        if (run > bestRun && pTop < 12) better = true;
+        var ominS = oppMinHand(state, myIdx);
+        if (ominS <= 1) {
+          if (pTop === 12 && bTop !== 12) better = true;
+          else if (pTop !== 12 && bTop === 12) better = false;
+          else if (run > bestRun) better = true;
+          else if (run === bestRun && pTop < bTop) better = true;
+        } else if (run > bestRun && pTop < 12) better = true;
         else if (run === bestRun) {
           if (res > bestRes + 0.4) better = true;
           else if (Math.abs(res - bestRes) <= 0.4 && pTop < 12 && (bTop === 12 || pTop < bTop)) better = true;
@@ -619,6 +625,13 @@
       twoSingles.length &&
       (handLen >= 3 || omin <= 3)
     ) {
+      twoSingles.sort(function (a, b) { return a[0].suit - b[0].suit; });
+      return { play: twoSingles[0] };
+    }
+
+    // Playlog gold (IMG_0520 actual): vs 1-card opp, single-beat with 2 for sure control
+    // (safer than residual mid). Screenshot residual 7-vs-6 still applies when omin>1.
+    if (cur.type === 'single' && omin <= 1 && twoSingles.length && handLen >= 3) {
       twoSingles.sort(function (a, b) { return a[0].suit - b[0].suit; });
       return { play: twoSingles[0] };
     }

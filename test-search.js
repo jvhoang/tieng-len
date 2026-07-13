@@ -712,14 +712,23 @@ console.log('=== User-reported bug guards ===');
     ok(d && d.play && d.play.length === 3 && ranks[0] === 7,
       'IMG0519: 10-J-Q save 99 (got ' + playRank(d) + ')');
   }
-  // 0520: combat 7 not 6 (residual 4-run)
+  // 0520a: omin=1 + 2s → 2 for sure (actual playlog gold), not mid residual
   {
     const st = mk(handOf([
       [3, 0], [4, 1], [4, 3], [5, 1], [6, 0], [9, 0], [9, 2], [12, 1], [12, 2]
     ]), [card(2, 3)], 1);
     const d = search.expertPolicy(st, 0);
+    ok(d && d.play && d.play.length === 1 && d.play[0].rank === 12,
+      'IMG0520a: omin1 prefer 2 (got ' + playRank(d) + ')');
+  }
+  // 0520b: omin>1 → 7 not 6 (residual 4-run keeps 6789)
+  {
+    const st = mk(handOf([
+      [3, 0], [4, 1], [4, 3], [5, 1], [6, 0], [9, 0], [9, 2], [12, 1], [12, 2]
+    ]), [card(2, 3)], 6);
+    const d = search.expertPolicy(st, 0);
     ok(d && d.play && d.play.length === 1 && d.play[0].rank === 4,
-      'IMG0520: 7 keeps 6789 residual (got ' + playRank(d) + ')');
+      'IMG0520b: 7 keeps 6789 residual (got ' + playRank(d) + ')');
   }
   // 0521: free-lead 6789 not 77 vs omin=1
   {

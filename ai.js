@@ -15,7 +15,7 @@
 /** Shown on title screen — bump when shipping AI behavior changes. */
 const AI_BUILD = {
   id: "v9.2",
-  stamped: "2026-07-13T08:19:43Z",
+  stamped: "2026-07-13T08:32:27Z",
   label: "Grandmaster v9.2"
 };
 
