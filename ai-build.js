@@ -1,6 +1,6 @@
-/** auto-synced structure-gold v9.2 (narrow pass) */
+/** auto-synced series-3 control-plan gold v9.2 */
 (function (root) {
-  var BUILD = { id: "v9.2", stamped: "2026-07-13T07:15:52Z", label: "Grandmaster v9.2" };
+  var BUILD = { id: "v9.2", stamped: "2026-07-13T08:19:43Z", label: "Grandmaster v9.2" };
   root.TIENLEN_AI_BUILD = BUILD;
   root.TienLenAI = root.TienLenAI || {};
   root.TienLenAI.AI_BUILD = BUILD;

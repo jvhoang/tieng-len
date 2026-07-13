@@ -665,6 +665,71 @@ console.log('=== User-reported bug guards ===');
     ok(d && d.play && d.play.length === 1 && d.play[0].rank === 12,
       'IMG0513: 2 not K-from-pair (got ' + playRank(d) + ')');
   }
+
+  // ─── Series 3: IMG_0514/0516–0521 control-plan gold ───
+  // 0514: free-lead trash 5 before high multi 9-10-J
+  {
+    const st = mk(handOf([
+      [2, 2], [6, 2], [7, 1], [7, 2], [8, 3], [10, 0], [11, 1], [11, 2], [12, 0]
+    ]), null, 11);
+    const d = search.expertPolicy(st, 0);
+    ok(d && d.play && d.play.length === 1 && d.play[0].rank === 2,
+      'IMG0514: trash 5 before 9-10-J (got ' + playRank(d) + ')');
+  }
+  // 0516: 2 not A-from-pair vs K
+  {
+    const st = mk(handOf([
+      [6, 2], [7, 2], [8, 3], [11, 1], [11, 2], [12, 0]
+    ]), [card(10, 2)], 8);
+    const d = search.expertPolicy(st, 0);
+    ok(d && d.play && d.play.length === 1 && d.play[0].rank === 12,
+      'IMG0516: 2 not A-from-pair (got ' + playRank(d) + ')');
+  }
+  // 0517: free-lead 10-J-Q-K not 9-10-J-Q-K (keep 99)
+  {
+    const st = mk(handOf([
+      [4, 2], [6, 1], [6, 3], [7, 3], [8, 3], [9, 0], [10, 1], [12, 1], [12, 3]
+    ]), null, 9);
+    const d = search.expertPolicy(st, 0);
+    const ranks = (d.play || []).map(c => c.rank).sort((a, b) => a - b);
+    ok(d && d.play && d.play.length === 4 && ranks[0] === 7 && ranks[3] === 10,
+      'IMG0517: 10-J-Q-K residual (got ' + playRank(d) + ')');
+  }
+  // 0518: free-lead 22 not trash 7 when hand short
+  {
+    const st = mk(handOf([[4, 2], [12, 1], [12, 3]]), null, 9);
+    const d = search.expertPolicy(st, 0);
+    ok(d && d.play && d.play.length === 2 && d.play[0].rank === 12,
+      'IMG0518: 22 then trash (got ' + playRank(d) + ')');
+  }
+  // 0519: combat 10-J-Q not 9-10-J (save 99)
+  {
+    const st = mk(handOf([
+      [1, 3], [3, 0], [3, 1], [6, 1], [6, 2], [7, 3], [8, 1], [9, 1], [10, 2], [10, 3]
+    ]), [card(4, 3), card(5, 0), card(6, 0)], 7);
+    const d = search.expertPolicy(st, 0);
+    const ranks = (d.play || []).map(c => c.rank).sort((a, b) => a - b);
+    ok(d && d.play && d.play.length === 3 && ranks[0] === 7,
+      'IMG0519: 10-J-Q save 99 (got ' + playRank(d) + ')');
+  }
+  // 0520: combat 7 not 6 (residual 4-run)
+  {
+    const st = mk(handOf([
+      [3, 0], [4, 1], [4, 3], [5, 1], [6, 0], [9, 0], [9, 2], [12, 1], [12, 2]
+    ]), [card(2, 3)], 1);
+    const d = search.expertPolicy(st, 0);
+    ok(d && d.play && d.play.length === 1 && d.play[0].rank === 4,
+      'IMG0520: 7 keeps 6789 residual (got ' + playRank(d) + ')');
+  }
+  // 0521: free-lead 6789 not 77 vs omin=1
+  {
+    const st = mk(handOf([
+      [3, 0], [4, 1], [4, 3], [5, 1], [6, 0], [12, 1]
+    ]), null, 1);
+    const d = search.expertPolicy(st, 0);
+    ok(d && d.play && d.play.length === 4,
+      'IMG0521: 6789 not pair vs 1-card opp (got ' + playRank(d) + ')');
+  }
 }
 
 console.log('\n=== SEARCH TEST SUMMARY ===');

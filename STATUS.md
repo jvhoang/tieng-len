@@ -1,4 +1,11 @@
 
+## 2026-07-13T08:20:04Z — series-3 control-plan gold (0514/0516–0521)
+- Free-lead: trash-before-mid-multi (no 22); with 22 prefer high residual multi; short 22 first; omin=1 multi.
+- Combat: residual maxRun singles; residual same-len seq.
+- GitHub playlogs still max #103 (Jul 12) — screenshot games not uploaded yet.
+- Dual N=50 vs freeze v91 next with stamp series-3.
+
+
 ## 2026-07-13T07:16:33Z — structure gold-interpretation fix (v9.2)
 - Gold 0498–0513 kept; over-general series-2 pass/doubleseq force fixed.
 - cheap-exists pass rate ~2.1% (was over-pass on dual).

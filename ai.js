@@ -15,7 +15,7 @@
 /** Shown on title screen — bump when shipping AI behavior changes. */
 const AI_BUILD = {
   id: "v9.2",
-  stamped: "2026-07-13T07:15:52Z",
+  stamped: "2026-07-13T08:19:43Z",
   label: "Grandmaster v9.2"
 };
 
@@ -589,15 +589,28 @@ function forceMultiFreeLead(legals, proposed, state, myIdx) {
   if (searchMod && searchMod.pickFreeLeadHard) {
     const hard = searchMod.pickFreeLeadHard(legals, state, myIdx);
     if (!proposed) return hard;
-    // Conditional doubleseq (gold 0506/0507): only when hard prefers dseq as plan
+    // Trust pickFreeLeadHard plan when it is structure/residual deliberate
     const hardCom = hard ? comboOf(hard) : null;
     if (hardCom && hardCom.type === 'doubleseq') {
       const propCom = comboOf(proposed);
-      if (!propCom || propCom.type !== 'doubleseq') {
-        // hard already residual-gated in pickFreeLeadHard — trust it
-        return hard;
-      }
+      if (!propCom || propCom.type !== 'doubleseq') return hard;
       if (proposed.length < hard.length) return hard;
+    }
+    // Gold 0518: 22 over trash single
+    if (hard && hard.length === 2 && hard[0].rank === 12 && hard[1].rank === 12 &&
+        proposed && proposed.length === 1 && proposed[0].rank < 12) {
+      return hard;
+    }
+    // Gold 0514/0517/0521: residual multi or trash plan over search
+    if (hard && proposed && searchMod.residualQuality) {
+      try {
+        /* residualQuality may not be exported */
+      } catch (_) { /* ignore */ }
+    }
+    if (hard && proposed && hard.length !== proposed.length) {
+      // Prefer hard multi plan over search single, or hard trash over high multi
+      if (hard.length >= 2 && proposed.length === 1) return hard;
+      if (hard.length === 1 && proposed.length >= 2 && hard[0].rank <= 5) return hard;
     }
     // Veto gift leads
     const omin = oppMinHand(state, myIdx);
@@ -1108,7 +1121,8 @@ function getAIMove(state, myIdx, opts = {}) {
           mv = searchMod.enforcePolicyGuards(state, myIdx, mv);
         }
       }
-      if (!cur && !exploitMode) {
+      // Always apply free-lead hard plan (residual multi / trash / 22) after search
+      if (!cur) {
         mv = forceMultiFreeLead(legals, mv, state, myIdx);
       }
       // Do NOT re-force a cheap beat when guards/search chose PASS

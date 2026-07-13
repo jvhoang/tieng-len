@@ -144,7 +144,9 @@
     softPass11: _PATCH.indexOf('SOFTPASS11') >= 0,
     two7: _PATCH.indexOf('TWO7') >= 0,
     trashFL: _PATCH.indexOf('TRASHFL') >= 0,
-    struct: _PATCH.indexOf('STRUCT') >= 0
+    struct: _PATCH.indexOf('STRUCT') >= 0,
+    combatV91: _PATCH.indexOf('COMBATV91') >= 0,
+    flV91: _PATCH.indexOf('FLV91') >= 0
   };
 
   /**
@@ -231,10 +233,10 @@
       var left = (byRank[rk] || 0) - used;
       var had = byRank[rk] || 0;
       // Breaking a pair into a single (humans punish this hard) — user IMG_0498/0501
-      if (had >= 2 && left === 1 && used === 1) cost += 20;
-      if (had === 2 && used === 1) cost += 14;
+      if (had >= 2 && left === 1 && used === 1) cost += 11; // ladder-soft pair-break
+      if (had === 2 && used === 1) cost += 7;
       // Breaking a triple
-      if (had >= 3 && left > 0 && left < 3 && used < had) cost += 10;
+      if (had >= 3 && left > 0 && left < 3 && used < had) cost += 5;
       // Breaking sequence spine (only count real ≥3 chains; not mere 7-8 couples)
       if (left === 0) {
         var chainN = 1;
@@ -242,12 +244,12 @@
         for (tn = rk - 1; byRank[tn]; tn--) chainN++;
         for (tn = rk + 1; byRank[tn]; tn++) chainN++;
         if (chainN >= 3) {
-          if (byRank[rk - 1] && byRank[rk + 1]) cost += 22; // interior of ≥3 run
-          else if (byRank[rk - 1] || byRank[rk + 1]) cost += 6; // edge of ≥3 run
+          if (byRank[rk - 1] && byRank[rk + 1]) cost += 12; // interior of ≥3 run
+          else if (byRank[rk - 1] || byRank[rk + 1]) cost += 3; // edge of ≥3 run
         }
       }
     }
-    if (play.length === 1 && (byRank[play[0].rank] || 0) >= 2) cost += 28;
+    if (play.length === 1 && (byRank[play[0].rank] || 0) >= 2) cost += 14;
     // Sequence interior / edge: single from a real ≥3 run (user IMG_0500/0502/0504/0505)
     // Do NOT punish mere 2-card connectors (7-8 alone is not a straight).
     if (play.length === 1) {
@@ -261,10 +263,10 @@
         var nbrR = byRank[pr0 + 1] || 0;
         // Interior run-break must lose to loose/extra singles (gold 0500/02/04/05).
         // Dual harm came from over-pass / forced doubleseq, not from this ranking.
-        if (nbrL && nbrR) cost += 36;
-        else cost += 16;
-        if (chain >= 4) cost += 10;
-        else cost += 5;
+        if (nbrL && nbrR) cost += 24; // interior run — prefer loose/2 (IMG0500)
+        else cost += 8;
+        if (chain >= 4) cost += 5;
+        else cost += 3;
         // Prefer shedding from triple/quad over pure run singles
         if ((byRank[pr0] || 0) >= 3) cost -= 8;
       }
@@ -321,7 +323,8 @@
       var c = left[ui];
       if (byRank[c.rank] === 1 && c.rank >= 8 && c.rank <= 11) highLoose += (c.rank - 7);
     }
-    return maxRun * 5 + pairs * 4 - info.trashCount * 4 + highLoose * 0.5 - left.length * 0.15;
+    // Stronger pair preservation (gold 0517: keep 99 over loose 9 after long seq)
+    return maxRun * 5 + pairs * 5.5 - info.trashCount * 5 + highLoose * 0.5 - left.length * 0.15;
   }
 
   /**
@@ -331,33 +334,51 @@
   function pickStructureSafe(pool, state, myIdx) {
     if (!pool || !pool.length) return null;
     var hand = state.players[myIdx].hand;
-    // User IMG_0503: among equal-length sequences, residual structure dominates
-    // (even if one path nicks a leftover pair count).
+    // User IMG_0503/0519: among equal-length sequences, residual structure dominates
     var seqLen = 0;
     var allSameSeq = true;
+    var allSingles = true;
     var si;
     for (si = 0; si < pool.length; si++) {
       var comS = detectCombo(pool[si]);
-      if (!comS || comS.type !== 'seq') { allSameSeq = false; break; }
-      if (!seqLen) seqLen = pool[si].length;
-      else if (pool[si].length !== seqLen) { allSameSeq = false; break; }
+      if (!comS || comS.type !== 'seq') { allSameSeq = false; }
+      else {
+        if (!seqLen) seqLen = pool[si].length;
+        else if (pool[si].length !== seqLen) { allSameSeq = false; }
+      }
+      if (!pool[si] || pool[si].length !== 1) allSingles = false;
     }
     var best = pool[0];
     var bestSc = structureBreakCost(hand, best);
     var bestRes = residualQuality(hand, best);
+    var bestRun = residualMaxRun(hand, best);
     var bestExp = expertScore(best, state, myIdx);
     var i;
     for (i = 1; i < pool.length; i++) {
       var p = pool[i];
       var sc = structureBreakCost(hand, p);
       var res = residualQuality(hand, p);
+      var run = residualMaxRun(hand, p);
       var exp = expertScore(p, state, myIdx);
       var better = false;
       if (allSameSeq) {
-        // residual first among same-length seq answers
+        // residual first among same-length seq answers (0503, 0519 save pair)
         if (res > bestRes + 0.3) better = true;
         else if (Math.abs(res - bestRes) <= 0.3 && sc < bestSc - 0.5) better = true;
         else if (Math.abs(res - bestRes) <= 0.3 && Math.abs(sc - bestSc) < 0.5 && exp < bestExp) better = true;
+      } else if (allSingles) {
+        // Gold 0520: max residual maxRun first (7 keeps 6789 vs 6→789+trash).
+        // Then residual quality (0498 A keeps pair vs 6-from-pair).
+        // Then minimal non-2 top among equal residual (7 not Q overkill).
+        var pTop = p[0].rank;
+        var bTop = best[0].rank;
+        if (run > bestRun && pTop < 12) better = true;
+        else if (run === bestRun) {
+          if (res > bestRes + 0.4) better = true;
+          else if (Math.abs(res - bestRes) <= 0.4 && pTop < 12 && (bTop === 12 || pTop < bTop)) better = true;
+          else if (Math.abs(res - bestRes) <= 0.4 && pTop === bTop && sc < bestSc - 0.5) better = true;
+          else if (Math.abs(res - bestRes) <= 0.4 && pTop === bTop && Math.abs(sc - bestSc) < 0.5 && exp < bestExp) better = true;
+        }
       } else {
         if (sc < bestSc - 0.5) better = true;
         else if (Math.abs(sc - bestSc) < 0.5 && res > bestRes + 0.25) better = true;
@@ -367,6 +388,7 @@
         best = p;
         bestSc = sc;
         bestRes = res;
+        bestRun = run;
         bestExp = exp;
       }
     }
@@ -640,7 +662,7 @@
         if (csc0 < minC) minC = csc0;
       }
       // Include 2s when all cheap answers smash structure (user IMG_0500)
-      if (twoSingles.length && minC >= 16 && cur.type === 'single' && curTop >= 8) {
+      if (twoSingles.length && minC >= 14 && cur.type === 'single' && curTop >= 8) {
         for (ci = 0; ci < twoSingles.length; ci++) pool.push(twoSingles[ci]);
       }
       var safe = pickStructureSafe(pool, state, cp);
@@ -649,12 +671,13 @@
       // 0501: soft-pass mid pair already handles deep mid pairs.
       // 0510: pass high seq that burns Q/K pair-backs while holding mid pairs to back.
       // Default: play structure-safe beat — never fold a cheap safe answer.
-      if (safe && shouldStructurePass(hand, safe, safeCost, cur, infoC, omin, handLen)) {
+      if (!_P.combatV91 && safe && shouldStructurePass(hand, safe, safeCost, cur, infoC, omin, handLen)) {
         return { pass: true };
       }
       if (
+        !_P.combatV91 &&
         twoSingles.length &&
-        safeCost >= 16 &&
+        safeCost >= 14 &&
         cur.type === 'single' &&
         curTop >= 8 &&
         !(safe && safe.length === 1 && safe[0].rank === 12)
@@ -662,6 +685,8 @@
         twoSingles.sort(function (a, b) { return a[0].suit - b[0].suit; });
         return { play: twoSingles[0] };
       }
+      // COMBATV91: v9.1-style cheap path via orderLegals (structure via expertScore only)
+      if (_P.combatV91) return { play: orderLegals(cheap, state, cp)[0] };
       return { play: safe };
     }
 
@@ -821,33 +846,65 @@
       }
     }
 
-    // (2) One-card opponent: no gift
+    // Sort multi by residual plan quality (gold 0517/0521)
+    function rankFreeMulti(a, b) {
+      // Gold 0517: with pair-of-2s, prefer high control multi (seq top≥9) before low pairs
+      if (info.twos >= 2) {
+        var ca = detectCombo(a);
+        var cb = detectCombo(b);
+        var aCtrl = ca && ca.type === 'seq' && topRank(a) >= 9;
+        var bCtrl = cb && cb.type === 'seq' && topRank(b) >= 9;
+        if (aCtrl !== bCtrl) return aCtrl ? -1 : 1;
+        if (aCtrl && bCtrl) {
+          // Prefer residual that keeps mid pairs (10-J-Q-K over 9-10-J-Q-K),
+          // but longer/higher multi wins when residual close (include K in control).
+          var ra0 = residualQuality(hand, a);
+          var rb0 = residualQuality(hand, b);
+          if (a.length !== b.length && Math.abs(ra0 - rb0) < 3.5) return b.length - a.length;
+          if (Math.abs(ra0 - rb0) > 0.5) return rb0 - ra0;
+          return topRank(b) - topRank(a);
+        }
+      }
+      var ra = residualQuality(hand, a);
+      var rb = residualQuality(hand, b);
+      if (Math.abs(ra - rb) > 0.4) return rb - ra;
+      var sa = structureBreakCost(hand, a);
+      var sb = structureBreakCost(hand, b);
+      if (Math.abs(sa - sb) > 0.5) return sa - sb;
+      if (a.length !== b.length) return b.length - a.length;
+      return topRank(a) - topRank(b);
+    }
+
+    // (2) One-card opponent: no gift — multi they cannot answer (gold 0521: 6789 not 77/2)
     if (omin === 1) {
-      // Prefer multi that empties or high control single
-      var go = null;
       for (i = 0; i < leg.length; i++) {
         if (leg[i].length === handLen) return leg[i];
       }
-      if (dseqAll.length) return dseqAll[0];
-      if (multi.length) return orderLegals(multi, state, cp)[0];
-      var highs = leg.filter(function (p) {
+      if (dseqAll.length) {
+        dseqAll.sort(rankFreeMulti);
+        return dseqAll[0];
+      }
+      if (multi.length) {
+        multi.sort(rankFreeMulti);
+        return multi[0];
+      }
+      // No multi: high control single (2 best)
+      var highs1 = leg.filter(function (p) {
         return p.length === 1 && p[0].rank >= 10;
       });
-      if (highs.length) {
-        highs.sort(function (a, b) { return b[0].rank - a[0].rank || b[0].suit - a[0].suit; });
-        return highs[0];
+      if (highs1.length) {
+        highs1.sort(function (a, b) { return b[0].rank - a[0].rank || b[0].suit - a[0].suit; });
+        return highs1[0];
       }
-      // last resort: highest single available
-      var allS = leg.filter(function (p) { return p.length === 1; });
-      if (allS.length) {
-        allS.sort(function (a, b) { return b[0].rank - a[0].rank; });
-        return allS[0];
+      var allS1 = leg.filter(function (p) { return p.length === 1; });
+      if (allS1.length) {
+        allS1.sort(function (a, b) { return b[0].rank - a[0].rank; });
+        return allS1[0];
       }
       return orderLegals(leg, state, cp)[0];
     }
 
-    // (3) v5 free lead: multi-always when multi exists (human 21:10 + BR self).
-    // Hybrid only when dual-self exploit scoring enables _exploitFlMode.
+    // (3) Free lead plan
     var trashPlays = [];
     for (i = 0; i < leg.length; i++) {
       if (isTrashSinglePlay(leg[i], info)) trashPlays.push(leg[i]);
@@ -856,8 +913,22 @@
       return a[0].rank - b[0].rank || a[0].suit - b[0].suit;
     });
 
-    // User IMG_0499: opp short (≤2) + hold 2 → lead 2 for sure win, not multi they may beat
-    if (omin <= 2 && info.twos >= 1 && handLen <= 5) {
+    // Gold 0518: short hand + pair of 2s → lead 22 for sure control, then trash
+    if (handLen <= 4 && info.twos >= 2) {
+      var pair2Lead = [];
+      for (i = 0; i < leg.length; i++) {
+        if (
+          leg[i].length === 2 &&
+          leg[i][0].rank === 12 &&
+          leg[i][1].rank === 12
+        ) pair2Lead.push(leg[i]);
+      }
+      if (pair2Lead.length) return pair2Lead[0];
+    }
+
+    // User IMG_0499: opp exactly 2 cards + hold 2 → lead 2 (they may beat multi).
+    // Do NOT do this for omin===1 (multi is unanswerable — gold 0521).
+    if (omin === 2 && info.twos >= 1 && handLen <= 5) {
       var twoLead = [];
       for (i = 0; i < leg.length; i++) {
         if (leg[i].length === 1 && leg[i][0].rank === 12) twoLead.push(leg[i]);
@@ -907,9 +978,32 @@
     }
 
     if (multi.length) {
+      // Residual-first multi ranking (gold 0517)
+      var multiRanked = multi.slice().sort(rankFreeMulti);
+      var multiPick = multiRanked[0];
 
-      // v8.5 free-lead: if 2p and we can see opp hand, prefer unanswerable multi first
-      if (state.players.length === 2) {
+      // Gold 0514: trash before high multi when we do NOT hold pair-of-2s.
+      // Gold 0517: with 22, lead residual high multi first (10-J-Q-K), trash last.
+      // twos>=2 means absolute control backup — multi-first is correct.
+      if (
+        trashPlays.length >= 1 &&
+        info.twos < 2 &&
+        (info.twos >= 1 || info.control >= 2) &&
+        handLen >= 8 &&
+        handLen <= 12 &&
+        omin >= 4
+      ) {
+        var highMultiPlan = multi.filter(function (p) {
+          var tp = topRank(p);
+          var cm = detectCombo(p);
+          return tp >= 8 && cm && (cm.type === 'seq' || cm.type === 'doubleseq' || tp >= 9);
+        });
+        if (highMultiPlan.length) return trashPlays[0];
+      }
+
+      // v8.5: 2p perfect-info unanswerable multi (after trash-first plan).
+      // Skip when holding 22 — residual control multi plan dominates (gold 0517).
+      if (state.players.length === 2 && info.twos < 2) {
         var oppI = cp === 0 ? 1 : 0;
         var oppHand = state.players[oppI] && state.players[oppI].hand;
         if (oppHand && oppHand.length) {
@@ -925,37 +1019,25 @@
             else if (!cheapLegals(oleg).length) forceExp.push(mp);
           }
           if (unans.length) {
-            // Prefer longer unanswerable multi (shed more under free control)
-            unans.sort(function (a, b) {
-              if (a.length !== b.length) return b.length - a.length;
-              return topRank(a) - topRank(b);
-            });
+            unans.sort(rankFreeMulti);
             return unans[0];
           }
           if (forceExp.length && handLen <= 11) {
-            forceExp.sort(function (a, b) {
-              if (a.length !== b.length) return b.length - a.length;
-              return topRank(a) - topRank(b);
-            });
+            forceExp.sort(rankFreeMulti);
             return forceExp[0];
           }
         }
       }
-      // v7.5 multi-always core + mild length preference among low multi
-      // Prefer plain seq length ≥5 over short pairs when both exist mid free-lead
+
+      // Mild low-multi preference when residual close — NOT when holding 22
+      // (gold 0517: keep high control multi over low pair 99)
       var lowMulti = multi.filter(function (p) { return topRank(p) <= 8; });
-      var pool = lowMulti.length ? lowMulti : multi;
-      pool = pool.slice().sort(function (a, b) {
-        var la = a.length, lb = b.length;
-        var ta = topRank(a), tb = topRank(b);
-        // Prefer longer multi (shed volume / control) when tops close
-        if (la !== lb && Math.abs(ta - tb) <= 2) return lb - la;
-        if (la !== lb && Math.abs(ta - tb) <= 1) return lb - la;
-        return expertScore(a, state, cp) - expertScore(b, state, cp);
-      });
-      var multiPick = pool[0];
-      // Hybrid trash only when exploit dual-self scores hybrid mode (ladder: multi-always
-      // + TWO 2-tempo is the dual-pass package; aggressive trash default re-lost flips).
+      if (lowMulti.length && info.twos < 2) {
+        lowMulti.sort(rankFreeMulti);
+        if (residualQuality(hand, lowMulti[0]) >= residualQuality(hand, multiPick) - 1.0) {
+          multiPick = lowMulti[0];
+        }
+      }
       if (
         _exploitFlMode === 'hybrid' &&
         trashPlays.length >= 2 &&
@@ -963,19 +1045,6 @@
         handLen >= 7 &&
         multiPick &&
         topRank(multiPick) > 6
-      ) {
-        return trashPlays[0];
-      }
-      // TRASHFL: gated trash free-lead when multi would burn high top (≥9) and we hold control
-      if (
-        _P.trashFL &&
-        trashPlays.length >= 1 &&
-        multiPick &&
-        topRank(multiPick) >= 9 &&
-        info.control >= 2 &&
-        handLen >= 8 &&
-        handLen <= 12 &&
-        omin >= 4
       ) {
         return trashPlays[0];
       }
@@ -1099,24 +1168,43 @@
         }
       }
 
-      // Conditional doubleseq: only override when hard prefers dseq for residual plan
-      if (hardCom && hardCom.type === 'doubleseq') {
-        if (!proposed || !isLegalPlay(proposed)) return hard;
-        var propComFL = detectCombo(proposed);
-        if (!propComFL || propComFL.type !== 'doubleseq') {
-          var resH = residualQuality(hand, hard);
-          var resPr = residualQuality(hand, proposed);
-          var runH = residualMaxRun(hand, hard);
-          if (runH >= 3 || resH > resPr + 0.5 || state.isFirstLead) return hard;
-        } else if (proposed.length < hard.length) {
+      // Prefer hard free-lead plan when residual/structure clearly better than search
+      if (hard && proposed && isLegalPlay(proposed)) {
+        var resH0 = residualQuality(hand, hard);
+        var resPr0 = residualQuality(hand, proposed);
+        var runH0 = residualMaxRun(hand, hard);
+        var runPr0 = residualMaxRun(hand, proposed);
+        // Gold 0518: hard 22 over proposed trash single
+        if (hard.length === 2 && hard[0].rank === 12 && hard[1].rank === 12 &&
+            proposed.length === 1 && proposed[0].rank < 12) {
           return hard;
         }
+        // Gold 0514: hard trash over high multi
+        if (hard.length === 1 && isTrashSinglePlay(hard, infoG) && proposed.length >= 2 &&
+            topRank(proposed) >= 8) {
+          return hard;
+        }
+        // Gold 0517/0521: residual multi plan
+        if (hard.length >= 2 && resH0 > resPr0 + 0.4) return hard;
+        if (hard.length >= 2 && runH0 > runPr0) return hard;
+        if (hardCom && hardCom.type === 'doubleseq') {
+          var propComFL = detectCombo(proposed);
+          if (!propComFL || propComFL.type !== 'doubleseq') {
+            if (runH0 >= 3 || resH0 > resPr0 + 0.5 || state.isFirstLead) return hard;
+          } else if (proposed.length < hard.length) return hard;
+        }
+      } else if (hardCom && hardCom.type === 'doubleseq' && (!proposed || !isLegalPlay(proposed))) {
+        return hard;
       }
 
       // If proposed is legal and matches strategy constraints, keep it
       if (proposed && isLegalPlay(proposed)) {
         if (ominG === 1 && proposed.length === 1 && proposed[0].rank < 10) {
           return hard; // veto gift
+        }
+        // omin=1: multi over 2 (gold 0521)
+        if (ominG === 1 && proposed.length === 1 && hard && hard.length >= 2) {
+          return hard;
         }
         // Block high singles (K/A) early when multi or trash exist — keep 2 free-leads
         if (proposed.length === 1 && proposed[0].rank >= 10 && proposed[0].rank < 12 && hand.length > 5) {
@@ -1125,11 +1213,10 @@
           });
           if (multiG.length || infoG.trashCount > 0) return hard;
         }
-        // Short opp: override multi with hard (2)
-        if (ominG <= 2 && proposed.length >= 2 && hard && hard.length === 1 && hard[0].rank === 12) {
+        // Short opp omin=2: hard 2 over multi
+        if (ominG === 2 && proposed.length >= 2 && hard && hard.length === 1 && hard[0].rank === 12) {
           return hard;
         }
-        // Prefer hard when it is longer multi (better free-lead volume) than proposed
         if (hard && hard.length >= 2 && proposed.length >= 2 && hard.length > proposed.length + 1) {
           return hard;
         }
