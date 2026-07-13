@@ -581,6 +581,90 @@ console.log('=== User-reported bug guards ===');
     ok(d && d.play && d.play.length === 1 && d.play[0].rank !== 5,
       'IMG0504: J not 8-from-789 (got ' + playRank(d) + ')');
   }
+
+  // ─── Series 2: IMG_0505–0513 (2026-07-13) ───
+  // 0505: beat 4 with 8, not 4 from 345
+  {
+    const st = mk(handOf([
+      [0, 1], [1, 3], [2, 1], [3, 0], [3, 2], [4, 2], [4, 3], [5, 0], [5, 1], [5, 2], [12, 3]
+    ]), [card(1, 2)], 11);
+    const d = search.expertPolicy(st, 0);
+    ok(d && d.play && d.play.length === 1 && d.play[0].rank === 5,
+      'IMG0505: 8 not 4-from-345 (got ' + playRank(d) + ')');
+    const gm = ai.getAIMove(st, 0, { difficulty: 'grandmaster', hiddenInfo: true, iterations: 40, timeMs: 200 });
+    ok(gm && gm.length === 1 && gm[0].rank === 5,
+      'IMG0505 gm: 8 not 4 (got ' + playRank(gm) + ')');
+  }
+  // 0506: free-lead doubleseq 667788, not 6-card straight
+  {
+    const st = mk(handOf([
+      [0, 1], [1, 3], [2, 1], [3, 0], [3, 2], [4, 2], [4, 3], [5, 0], [5, 1]
+    ]), null, 10);
+    const d = search.expertPolicy(st, 0);
+    const com = d.play ? engine.detectCombo(d.play) : null;
+    ok(com && com.type === 'doubleseq' && d.play.length === 6,
+      'IMG0506: free-lead doubleseq 667788 (got ' + playRank(d) + ' type=' + (com && com.type) + ')');
+    const gm = ai.getAIMove(st, 0, { difficulty: 'grandmaster', hiddenInfo: true, iterations: 40, timeMs: 300 });
+    const gcom = gm ? engine.detectCombo(gm) : null;
+    ok(gcom && gcom.type === 'doubleseq' && gm.length === 6,
+      'IMG0506 gm: doubleseq (got ' + playRank(gm) + ' type=' + (gcom && gcom.type) + ')');
+  }
+  // 0507: first-lead full 334455 doubleseq, not pair of 3s
+  {
+    const hand = handOf([
+      [0, 0], [0, 1], [1, 2], [1, 3], [2, 0], [2, 3], [4, 0], [5, 3], [6, 2], [7, 2], [8, 2], [10, 2], [11, 1]
+    ]);
+    const st = mk(hand, null, 13);
+    st.isFirstLead = true;
+    st.firstLeadCard = card(0, 0);
+    const d = search.expertPolicy(st, 0);
+    const com = d.play ? engine.detectCombo(d.play) : null;
+    ok(com && com.type === 'doubleseq' && d.play.length === 6 &&
+      d.play.some(c => c.rank === 0 && c.suit === 0),
+      'IMG0507: first-lead 334455 doubleseq (got ' + playRank(d) + ' type=' + (com && com.type) + ')');
+    const gm = ai.getAIMove(st, 0, { difficulty: 'grandmaster', hiddenInfo: true, iterations: 40, timeMs: 300 });
+    const gcom = gm ? engine.detectCombo(gm) : null;
+    ok(gcom && gcom.type === 'doubleseq' && gm.length === 6,
+      'IMG0507 gm: doubleseq (got ' + playRank(gm) + ' type=' + (gcom && gcom.type) + ')');
+  }
+  // 0510: pass vs mid seq — save QQ/KK for low pairs
+  {
+    const st = mk(handOf([
+      [1, 3], [3, 2], [3, 3], [4, 2], [4, 3], [7, 3], [9, 0], [9, 3], [10, 1], [10, 3], [11, 1], [12, 2], [12, 3]
+    ]), [card(1, 0), card(2, 0), card(3, 0)], 10);
+    const d = search.expertPolicy(st, 0);
+    ok(d && d.pass, 'IMG0510: pass not QKA (got ' + playRank(d) + ')');
+    const gm = ai.getAIMove(st, 0, { difficulty: 'grandmaster', hiddenInfo: true, iterations: 40, timeMs: 200 });
+    ok(gm == null, 'IMG0510 gm: pass (got ' + playRank(gm) + ')');
+  }
+  // 0511: pass vs AA — save 22 for singles
+  {
+    const st = mk(handOf([
+      [1, 3], [3, 2], [3, 3], [4, 2], [4, 3], [7, 3], [9, 0], [9, 3], [10, 1], [10, 3], [11, 1], [12, 2], [12, 3]
+    ]), [card(11, 0), card(11, 3)], 5);
+    const d = search.expertPolicy(st, 0);
+    ok(d && d.pass, 'IMG0511: pass not 22 (got ' + playRank(d) + ')');
+    const gm = ai.getAIMove(st, 0, { difficulty: 'grandmaster', hiddenInfo: true, iterations: 40, timeMs: 200 });
+    ok(gm == null, 'IMG0511 gm: pass (got ' + playRank(gm) + ')');
+  }
+  // 0512: beat 5 with 10, not 6 from pair
+  {
+    const st = mk(handOf([
+      [1, 3], [3, 2], [3, 3], [4, 2], [4, 3], [7, 3], [9, 0], [9, 3], [10, 1], [10, 3], [11, 1], [12, 2], [12, 3]
+    ]), [card(2, 3)], 4);
+    const d = search.expertPolicy(st, 0);
+    ok(d && d.play && d.play.length === 1 && d.play[0].rank === 7,
+      'IMG0512: 10 not 6-from-pair (got ' + playRank(d) + ')');
+  }
+  // 0513: beat K with 2, not K from pair
+  {
+    const st = mk(handOf([
+      [1, 3], [3, 2], [3, 3], [4, 2], [4, 3], [9, 0], [9, 3], [10, 1], [10, 3], [11, 1], [12, 2], [12, 3]
+    ]), [card(10, 0)], 3);
+    const d = search.expertPolicy(st, 0);
+    ok(d && d.play && d.play.length === 1 && d.play[0].rank === 12,
+      'IMG0513: 2 not K-from-pair (got ' + playRank(d) + ')');
+  }
 }
 
 console.log('\n=== SEARCH TEST SUMMARY ===');

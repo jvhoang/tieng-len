@@ -183,7 +183,7 @@
       }
     }
     if (play.length === 1 && (byRank[play[0].rank] || 0) >= 2) cost += 28;
-    // Sequence interior / edge: single from a real ≥3 run (user IMG_0500/0502/0504)
+    // Sequence interior / edge: single from a real ≥3 run (user IMG_0500/0502/0504/0505)
     // Do NOT punish mere 2-card connectors (7-8 alone is not a straight).
     if (play.length === 1) {
       var pr0 = play[0].rank;
@@ -194,10 +194,10 @@
       if (chain >= 3) {
         var nbrL = byRank[pr0 - 1] || 0;
         var nbrR = byRank[pr0 + 1] || 0;
-        if (nbrL && nbrR) cost += 24; // interior of a run
-        else cost += 12; // edge of a ≥3 run
-        if (chain >= 4) cost += 10;
-        else if (chain >= 3) cost += 6;
+        if (nbrL && nbrR) cost += 40; // interior of a run — never prefer over loose singles
+        else cost += 18; // edge of a ≥3 run
+        if (chain >= 4) cost += 12;
+        else cost += 6;
       }
     }
     // Multi play that splits a longer same-type residual (user IMG_0503)
@@ -576,17 +576,43 @@
       }
       var safe = pickStructureSafe(pool, state, cp);
       var safeCost = safe ? structureBreakCost(hand, safe) : 0;
-      // User IMG_0501: pass mid multi rather than break JQKA when we have 2s
-      if (
+      // Count mid pairs (≤10) that need high pair-backs (user IMG_0510)
+      var midPairs = 0;
+      var prk;
+      for (prk = 0; prk <= 7; prk++) {
+        if ((infoC.byRank[prk] || 0) >= 2) midPairs++;
+      }
+      // High pair-backs smashed by this answer (Q/K/A pairs → singles)
+      var highPairBreaks = 0;
+      if (safe) {
+        var sRanks = {};
+        for (var sri = 0; sri < safe.length; sri++) {
+          sRanks[safe[sri].rank] = (sRanks[safe[sri].rank] || 0) + 1;
+        }
+        for (prk = 9; prk <= 11; prk++) {
+          if ((infoC.byRank[prk] || 0) >= 2 && (sRanks[prk] || 0) === 1) highPairBreaks++;
+        }
+      }
+      // User IMG_0501/0510: pass when cheap answer smashes structure / high pair-backs
+      // User IMG_0503: do NOT pass a residual same-len seq that only nicks mid chain pairs
+      // (play 9-10-J-Q). Only pass seq answers that burn Q/K/A pair-backs for mid pairs.
+      var passStruct =
         safe &&
-        safeCost >= 20 &&
+        safeCost >= 16 &&
         handLen >= 8 &&
-        omin >= 5 &&
-        curTop <= 10 &&
-        (infoC.twos >= 1 || infoC.control >= 3) &&
-        (cur.type === 'pair' || cur.type === 'triple')
-      ) {
-        return { pass: true }; // v9.2 structure pass (pairs/trips only)
+        omin >= 4 &&
+        curTop <= 11 &&
+        (infoC.twos >= 1 || infoC.control >= 3 || midPairs >= 2) &&
+        (cur.type === 'pair' || cur.type === 'triple' || cur.type === 'seq');
+      if (passStruct && cur.type === 'seq') {
+        // Require high pair-back smash OR no same-len seq residual path
+        var safeCom = detectCombo(safe);
+        if (safeCom && safeCom.type === 'seq' && highPairBreaks < 1) {
+          passStruct = false; // residual seq reply (IMG_0503)
+        }
+      }
+      if (passStruct) {
+        return { pass: true }; // v9.2 structure / pair-back pass
       }
       if (
         twoSingles.length &&
@@ -599,6 +625,24 @@
         return { play: twoSingles[0] };
       }
       return { play: safe };
+    }
+
+    // User IMG_0511: only 2-pair/2-bomb answers left — pass to save 2s for weak singles
+    if (!cheapLegals(leg).length) {
+      var onlyTwoAns = true;
+      var ti2;
+      for (ti2 = 0; ti2 < leg.length; ti2++) {
+        if (!playHasTwo(leg[ti2]) && !playIsBomb(leg[ti2])) { onlyTwoAns = false; break; }
+      }
+      if (
+        onlyTwoAns &&
+        handLen >= 6 &&
+        omin >= 3 &&
+        curTop >= 10 &&
+        (infoC.trashCount >= 1 || handLen >= 8)
+      ) {
+        return { pass: true }; // v9.2 save pair-of-2s
+      }
     }
 
     // Bombs vs 2s
@@ -725,9 +769,17 @@
     var omin = oppMinHand(state, cp);
     var handLen = hand.length;
     var multi = [];
+    var dseqAll = []; // doubleseq is bomb-classed (≥3 pairs) but excellent free leads
     var i;
     for (i = 0; i < leg.length; i++) {
-      if (leg[i].length >= 2 && !playIsExpensive(leg[i])) multi.push(leg[i]);
+      if (leg[i].length < 2) continue;
+      var comL0 = detectCombo(leg[i]);
+      if (comL0 && comL0.type === 'doubleseq') {
+        dseqAll.push(leg[i]);
+        multi.push(leg[i]); // include even if expensive/bomb-classed
+      } else if (!playIsExpensive(leg[i])) {
+        multi.push(leg[i]);
+      }
     }
 
     // (2) One-card opponent: no gift
@@ -737,6 +789,7 @@
       for (i = 0; i < leg.length; i++) {
         if (leg[i].length === handLen) return leg[i];
       }
+      if (dseqAll.length) return dseqAll[0];
       if (multi.length) return orderLegals(multi, state, cp)[0];
       var highs = leg.filter(function (p) {
         return p.length === 1 && p[0].rank >= 10;
@@ -776,7 +829,26 @@
       }
     }
 
+    // User IMG_0506/0507: prefer double-sequence free lead (often bomb-classed, filtered out of cheap multi)
+    if (dseqAll.length) {
+      dseqAll.sort(function (a, b) {
+        if (a.length !== b.length) return b.length - a.length;
+        return topRank(a) - topRank(b);
+      });
+      if (state.isFirstLead) {
+        var with3 = dseqAll.filter(function (p) {
+          for (var zi = 0; zi < p.length; zi++) {
+            if (p[zi].rank === 0 && p[zi].suit === 0) return true;
+          }
+          return false;
+        });
+        if (with3.length) return with3[0];
+      }
+      return dseqAll[0]; // v9.2 doubleseq prefer
+    }
+
     if (multi.length) {
+
       // v8.5 free-lead: if 2p and we can see opp hand, prefer unanswerable multi first
       if (state.players.length === 2) {
         var oppI = cp === 0 ? 1 : 0;
@@ -811,11 +883,14 @@
         }
       }
       // v7.5 multi-always core + mild length preference among low multi
+      // Prefer plain seq length ≥5 over short pairs when both exist mid free-lead
       var lowMulti = multi.filter(function (p) { return topRank(p) <= 8; });
       var pool = lowMulti.length ? lowMulti : multi;
       pool = pool.slice().sort(function (a, b) {
         var la = a.length, lb = b.length;
         var ta = topRank(a), tb = topRank(b);
+        // Prefer longer multi (shed volume / control) when tops close
+        if (la !== lb && Math.abs(ta - tb) <= 2) return lb - la;
         if (la !== lb && Math.abs(ta - tb) <= 1) return lb - la;
         return expertScore(a, state, cp) - expertScore(b, state, cp);
       });
@@ -955,6 +1030,7 @@
       var hard = pickFreeLeadHard(leg, state, myIdx);
       var ominG = oppMinHand(state, myIdx);
       var infoG = analyzeHand(hand);
+      var hardCom = hard ? detectCombo(hard) : null;
 
       // User IMG_0499: short opp + 2 → always free-lead 2 (sure), never multi
       if (ominG <= 2 && infoG.twos >= 1 && hand.length <= 5) {
@@ -963,6 +1039,9 @@
           return proposed;
         }
       }
+
+      // User IMG_0506/0507: prefer doubleseq hard pick over search plain multi/seq
+      if (hardCom && hardCom.type === 'doubleseq') return hard;
 
       // If proposed is legal and matches strategy constraints, keep it
       if (proposed && isLegalPlay(proposed)) {
@@ -980,15 +1059,19 @@
         if (ominG <= 2 && proposed.length >= 2 && hard && hard.length === 1 && hard[0].rank === 12) {
           return hard;
         }
+        // Prefer hard when it is longer multi (better free-lead volume) than proposed
+        if (hard && hard.length >= 2 && proposed.length >= 2 && hard.length > proposed.length + 1) {
+          return hard;
+        }
         return proposed;
       }
       return hard;
     }
 
     var curTopG = cur.top ? cur.top.rank : 0;
-    // Facing Ace: prefer 2 over Ace-climb BEFORE cheap-path (human-log #43–#72)
-    // Must run before cheapLegals returns a higher-suit Ace.
-    if (curTopG >= 11 && leg.length) {
+    // Facing Ace SINGLE: prefer 2 over Ace-climb (human-log #43–#72)
+    // Do NOT apply to pair/trip of Aces — user IMG_0511: pass rather than burn 22.
+    if (cur.type === 'single' && curTopG >= 11 && leg.length) {
       var twoAns = [];
       for (var t2 = 0; t2 < leg.length; t2++) {
         if (leg[t2].length === 1 && leg[t2][0].rank === 12) twoAns.push(leg[t2]);
@@ -1031,22 +1114,62 @@
         safeG = twoG[0];
         scSafe = 0;
       }
-      // Structure-pass FIRST (user IMG_0501) — before accepting a smashing proposed beat
+      // Structure-pass FIRST (user IMG_0501/0510) — mid multi/seq smashing pair-backs
       var infoPass = analyzeHand(hand);
-      if (
-        scSafe >= 20 &&
+      var midPairsG = 0;
+      var prg;
+      for (prg = 0; prg <= 7; prg++) {
+        if ((infoPass.byRank[prg] || 0) >= 2) midPairsG++;
+      }
+      var highPairBreaksG = 0;
+      if (safeG) {
+        var sRanksG = {};
+        for (var sgi = 0; sgi < safeG.length; sgi++) {
+          sRanksG[safeG[sgi].rank] = (sRanksG[safeG[sgi].rank] || 0) + 1;
+        }
+        for (prg = 9; prg <= 11; prg++) {
+          if ((infoPass.byRank[prg] || 0) >= 2 && (sRanksG[prg] || 0) === 1) highPairBreaksG++;
+        }
+      }
+      var passStructG =
+        scSafe >= 16 &&
         hand.length >= 8 &&
-        oppMinHand(state, myIdx) >= 5 &&
-        curTopG <= 10 &&
-        (infoPass.twos >= 1 || infoPass.control >= 3) &&
+        oppMinHand(state, myIdx) >= 4 &&
+        curTopG <= 11 &&
+        (infoPass.twos >= 1 || infoPass.control >= 3 || midPairsG >= 2) &&
         cur &&
-        (cur.type === 'pair' || cur.type === 'triple')
-      ) {
-        return null; // pass — keep long structure + 2s for later control
+        (cur.type === 'pair' || cur.type === 'triple' || cur.type === 'seq');
+      if (passStructG && cur.type === 'seq') {
+        var safeComG = safeG ? detectCombo(safeG) : null;
+        // User IMG_0503: residual same-len seq without burning Q/K/A pair-backs → play
+        if (safeComG && safeComG.type === 'seq' && highPairBreaksG < 1) {
+          passStructG = false;
+        }
+      }
+      if (passStructG) {
+        return null; // pass — keep structure / pair-backs / 2s
       }
       // Always prefer structure-safe ordering over search "cheapest"/BR proposal
-      // (user screenshots: BR often returns structure-breaking or overshoot beats)
       return safeG;
+    }
+
+    // User IMG_0511: only 2-answers vs high multi — prefer pass (save 22 for singles)
+    if (!cheap.length) {
+      var only2G = true;
+      var og;
+      for (og = 0; og < leg.length; og++) {
+        if (!playHasTwo(leg[og]) && !playIsBomb(leg[og])) { only2G = false; break; }
+      }
+      var info2 = analyzeHand(hand);
+      if (
+        only2G &&
+        hand.length >= 6 &&
+        oppMinHand(state, myIdx) >= 3 &&
+        curTopG >= 10 &&
+        (info2.trashCount >= 1 || hand.length >= 8)
+      ) {
+        return null;
+      }
     }
 
     var curTop = curTopG;

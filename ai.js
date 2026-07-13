@@ -15,7 +15,7 @@
 /** Shown on title screen — bump when shipping AI behavior changes. */
 const AI_BUILD = {
   id: "v9.2",
-  stamped: "2026-07-13T05:15:38Z",
+  stamped: "2026-07-13T06:13:02Z",
   label: "Grandmaster v9.2"
 };
 
@@ -126,9 +126,15 @@ function structureBreakPenalty(hand, play) {
     if (had >= 2 && left === 1 && u === 1) cost += 20;
     if (had === 2 && u === 1) cost += 14;
     if (had >= 3 && left > 0 && left < 3 && u < had) cost += 10;
+    // Only real ≥3 chains (not mere 2-card connectors)
     if (left === 0) {
-      if (byRank[r - 1] && byRank[r + 1]) cost += 8;
-      else if (byRank[r - 1] || byRank[r + 1]) cost += 4;
+      let chainN = 1;
+      for (let tn = r - 1; byRank[tn]; tn--) chainN++;
+      for (let tn = r + 1; byRank[tn]; tn++) chainN++;
+      if (chainN >= 3) {
+        if (byRank[r - 1] && byRank[r + 1]) cost += 22;
+        else if (byRank[r - 1] || byRank[r + 1]) cost += 6;
+      }
     }
   });
   if (play.length === 1 && (byRank[play[0].rank] || 0) >= 2) cost += 28;
@@ -140,9 +146,9 @@ function structureBreakPenalty(hand, play) {
     if (chain >= 3) {
       const nbrL = byRank[pr0 - 1] || 0;
       const nbrR = byRank[pr0 + 1] || 0;
-      if (nbrL && nbrR) cost += 24;
-      else cost += 12;
-      if (chain >= 4) cost += 10;
+      if (nbrL && nbrR) cost += 40; // interior of run — never prefer over loose singles
+      else cost += 18;
+      if (chain >= 4) cost += 12;
       else cost += 6;
     }
   }
@@ -402,13 +408,17 @@ function shouldPassStrategically(state, myIdx, legals, genome) {
   const cheap = cheapLegals(legals);
   const me = state.players[myIdx];
   const omin = oppMinHand(state, myIdx);
-  // User IMG_0501: pass mid multi when every cheap answer smashes structure and we hold 2s
+  // User IMG_0501/0510: pass when cheap answers smash structure / high pair-backs
   if (cheap.length > 0) {
     const hand = me.hand;
     let minStruct = Infinity;
+    let bestCheap = cheap[0];
     for (let i = 0; i < cheap.length; i++) {
       const sc = structureBreakPenalty(hand, cheap[i]);
-      if (sc < minStruct) minStruct = sc;
+      if (sc < minStruct) {
+        minStruct = sc;
+        bestCheap = cheap[i];
+      }
     }
     const cur = state.currentCombo;
     const curTop = cur && cur.top ? cur.top.rank : 0;
@@ -416,18 +426,49 @@ function shouldPassStrategically(state, myIdx, legals, genome) {
     hand.forEach(c => { byR[c.rank] = (byR[c.rank] || 0) + 1; });
     const twos = byR[12] || 0;
     const control = hand.filter(c => c.rank >= 10).length;
-    if (
-      minStruct >= 20 &&
+    let midPairs = 0;
+    for (let r = 0; r <= 7; r++) if ((byR[r] || 0) >= 2) midPairs++;
+    let highPairBreaks = 0;
+    if (bestCheap) {
+      const used = {};
+      bestCheap.forEach(c => { used[c.rank] = (used[c.rank] || 0) + 1; });
+      for (let r = 9; r <= 11; r++) {
+        if ((byR[r] || 0) >= 2 && (used[r] || 0) === 1) highPairBreaks++;
+      }
+    }
+    let passStruct =
+      minStruct >= 16 &&
       hand.length >= 8 &&
-      omin >= 5 &&
-      curTop <= 10 &&
-      (twos >= 1 || control >= 3) &&
+      omin >= 4 &&
+      curTop <= 11 &&
+      (twos >= 1 || control >= 3 || midPairs >= 2) &&
       cur &&
-      (cur.type === 'pair' || cur.type === 'triple')
-    ) {
-      return true; // structure pass
+      (cur.type === 'pair' || cur.type === 'triple' || cur.type === 'seq');
+    // User IMG_0503: residual same-len seq without Q/K/A pair-back smash → play not pass
+    if (passStruct && cur.type === 'seq') {
+      const com = comboOf(bestCheap);
+      if (com && com.type === 'seq' && highPairBreaks < 1) passStruct = false;
+    }
+    if (passStruct) {
+      return true; // structure / pair-back pass
     }
     return false; // otherwise always contest cheap
+  }
+  // User IMG_0511: only 2-pair answers vs high tops — pass to save 2s for singles
+  {
+    const hand = me.hand;
+    const onlyTwo = legals.every(p => playHasTwo(p) || playIsBomb(p));
+    const cur = state.currentCombo;
+    const curTop = cur && cur.top ? cur.top.rank : 0;
+    const byR = {};
+    hand.forEach(c => { byR[c.rank] = (byR[c.rank] || 0) + 1; });
+    let trashish = 0;
+    Object.keys(byR).forEach(r => {
+      if (+r <= 9 && byR[r] === 1) trashish++;
+    });
+    if (onlyTwo && hand.length >= 6 && omin >= 3 && curTop >= 10 && trashish >= 1) {
+      return true;
+    }
   }
 
 
@@ -540,6 +581,12 @@ function forceMultiFreeLead(legals, proposed, state, myIdx) {
   if (searchMod && searchMod.pickFreeLeadHard) {
     const hard = searchMod.pickFreeLeadHard(legals, state, myIdx);
     if (!proposed) return hard;
+    // User IMG_0506/0507: doubleseq free lead always beats plain seq/pair from search
+    const hardCom = hard ? comboOf(hard) : null;
+    if (hardCom && hardCom.type === 'doubleseq') {
+      const propCom = comboOf(proposed);
+      if (!propCom || propCom.type !== 'doubleseq' || proposed.length < hard.length) return hard;
+    }
     // Veto gift leads
     const omin = oppMinHand(state, myIdx);
     if (omin === 1 && proposed.length === 1 && proposed[0].rank < 10) return hard;
@@ -930,25 +977,22 @@ function getAIMove(state, myIdx, opts = {}) {
   const forceExpert = evolveFast || difficulty === 'easy' || iters === 0 || opts.mode === 'expert';
   if (forceExpert) {
     let mv;
-    if (!cur) {
+    // Prefer search expertPolicy for free-lead AND combat (structure + doubleseq)
+    if (searchMod && searchMod.expertPolicy) {
+      const dec = searchMod.expertPolicy(state, myIdx);
+      mv = dec && dec.pass ? null : (dec && dec.play);
+    } else if (!cur) {
       mv = pickFreeLead(state, myIdx, legals, genome);
-      if (searchMod && searchMod.enforcePolicyGuards) mv = searchMod.enforcePolicyGuards(state, myIdx, mv);
-      mv = forceMultiFreeLead(legals, mv, state, myIdx);
     } else {
-      // Prefer search expertPolicy when available (structure-safe + residual multi)
-      if (searchMod && searchMod.expertPolicy) {
-        const dec = searchMod.expertPolicy(state, myIdx);
-        mv = dec && dec.pass ? null : (dec && dec.play);
-      } else {
-        const cheap = cheapLegals(legals);
-        if (shouldPassStrategically(state, myIdx, legals, genome)) mv = null;
-        else if (cheap.length) mv = pickBestPlay(state, myIdx, cheap, genome) || cheap[0];
-        else mv = pickBestPlay(state, myIdx, legals, genome) || legals[0];
-      }
-      if (searchMod && searchMod.enforcePolicyGuards) {
-        mv = searchMod.enforcePolicyGuards(state, myIdx, mv);
-      }
+      const cheap = cheapLegals(legals);
+      if (shouldPassStrategically(state, myIdx, legals, genome)) mv = null;
+      else if (cheap.length) mv = pickBestPlay(state, myIdx, cheap, genome) || cheap[0];
+      else mv = pickBestPlay(state, myIdx, legals, genome) || legals[0];
     }
+    if (searchMod && searchMod.enforcePolicyGuards) {
+      mv = searchMod.enforcePolicyGuards(state, myIdx, mv);
+    }
+    if (!cur) mv = forceMultiFreeLead(legals, mv, state, myIdx);
     // Endgame solvers can override — re-apply combat guards (Ace+2, never pass vs Ace)
     if (searchMod && searchMod.exactEndgameMove) {
       const ex = searchMod.exactEndgameMove(state, myIdx);
@@ -1031,25 +1075,13 @@ function getAIMove(state, myIdx, opts = {}) {
       );
 
       if (searchMod.enforcePolicyGuards) {
-        // Free lead + exploit: only hard no-gift (keep search free-lead choice).
+        // Always full free-lead guards (doubleseq prefer, short-opp 2, no-gift) even in
+        // exploit modes — user IMG_0506/0507: search/BR preferred plain seq over doubleseq.
         // Combat: ALWAYS full guards — Ace+2 / never pass vs Ace (human-log #43–#72).
-        // exact-endgame/exploit previously skipped combat guards → Ace-climb regression.
-        if (exploitMode && !cur) {
-          const omin = oppMinHand(state, myIdx);
-          if (mv && mv.length === 1 && omin === 1 && mv[0].rank < 10) {
-            mv = searchMod.pickFreeLeadHard
-              ? searchMod.pickFreeLeadHard(legals, state, myIdx)
-              : mv;
-          }
-          // User IMG_0499: short opp free-lead — force structure/2 guards even in exploit mode
-          if (omin <= 2) {
-            mv = searchMod.enforcePolicyGuards(state, myIdx, mv);
-          }
-        } else {
-          mv = searchMod.enforcePolicyGuards(state, myIdx, mv);
-        }
+        mv = searchMod.enforcePolicyGuards(state, myIdx, mv);
       }
-      if (!cur && !exploitMode) {
+      // Free lead: also force doubleseq / multi hard preference after search
+      if (!cur) {
         mv = forceMultiFreeLead(legals, mv, state, myIdx);
       }
       // Do NOT re-force a cheap beat when guards/search chose PASS

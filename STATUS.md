@@ -1,3 +1,9 @@
+
+## 2026-07-13T06:13:31Z — series-2 structure-safe ship
+- Fixed IMG_0505–0513 (doubleseq free-lead, pair-back pass, structure singles).
+- Root: exploit free-lead skipped enforce → plain seq over doubleseq.
+- All test-engine/search/ai pass. Stamp v9.2 @ 2026-07-13T06:13:02Z.
+
 # STATUS — Tiến Lên AI
 
 **Updated:** 2026-07-11 (v8.4 CF79 cycle — gate passed)
