@@ -739,6 +739,36 @@ console.log('=== User-reported bug guards ===');
     ok(d && d.play && d.play.length === 4,
       'IMG0521: 6789 not pair vs 1-card opp (got ' + playRank(d) + ')');
   }
+
+  // ─── Strategy priorities P1–P5 regression (playlog inference) ───
+  // P3: deep free-lead low pair (33) before AA when no pair-of-2s
+  {
+    const st = mk(handOf([
+      [0, 0], [0, 1], [1, 0], [2, 1], [3, 2], [4, 0], [5, 1], [6, 2], [7, 0],
+      [8, 0], [9, 1], [11, 0], [11, 1]
+    ]), null, 10);
+    const d = search.expertPolicy(st, 0);
+    ok(d && d.play && d.play.length === 2 && d.play[0].rank === 0 && d.play[1].rank === 0,
+      'P3: free-lead 33 before AA (got ' + playRank(d) + ')');
+  }
+  // P1: minimal beat — facing 5 with 7+Q+2s, prefer 7 not Q (0520b family)
+  {
+    const st = mk(handOf([
+      [3, 0], [4, 1], [4, 3], [5, 1], [6, 0], [9, 0], [9, 2], [12, 1], [12, 2]
+    ]), [card(2, 3)], 6);
+    const d = search.expertPolicy(st, 0);
+    ok(d && d.play && d.play.length === 1 && d.play[0].rank === 4,
+      'P1: min-beat 7 not Q (got ' + playRank(d) + ')');
+  }
+  // P5: 2-budget — facing Q, smash-only non-2 (K from JQK) → spend 2
+  {
+    const st = mk(handOf([
+      [0, 2], [4, 0], [4, 1], [4, 2], [5, 0], [5, 2], [8, 0], [9, 2], [10, 1], [12, 0]
+    ]), [card(9, 0)], 3);
+    const d = search.expertPolicy(st, 0);
+    ok(d && d.play && d.play.length === 1 && d.play[0].rank === 12,
+      'P5: 2-budget smash→2 (got ' + playRank(d) + ')');
+  }
 }
 
 console.log('\n=== SEARCH TEST SUMMARY ===');
