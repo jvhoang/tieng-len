@@ -1,39 +1,32 @@
 # Ladder STATUS — v9.0 → v11.0
 
-Updated: 2026-07-13T02:50Z
+Updated: 2026-07-13T04:55Z
 
-## Protocol (user)
-| Setting | Value |
-|---------|--------|
-| N | **≥50** continuous 2p |
-| Target | **WR > 0.70** (strict ≥36/50) |
-| Seed | **20260711** primary + independent re-run |
-| Live | **grandmaster** + exploit/BR |
-| Freeze | **grandmaster** (search of frozen policy) |
-| CF | refresh ALL 1v1 playlogs each phase |
-| Ship | freeze + main + gh-pages after dual pass |
+## Protocol
+N≥50 · WR>0.70 strict · seed 20260711 dual · GM vs GM · ship main+gh-pages
 
-## Versions
-v9.1 … v9.9, v10.0 … v10.9, **v11.0**
+## Completed
+| Rung | Dual GM | Ship |
+|------|---------|------|
+| **v9.1** | **36/50 ×2 (0.72)** vs v90 | main+gh-pages `2e35aac` · freeze `policies/v91-*` |
 
-## Completed rungs
-| Rung | Freeze | Dual GM N=50 | Notes |
-|------|--------|--------------|-------|
-| **v9.0** | `policies/v90-*` | prior expert N=100 + GM baseline | freeze champion until v9.1 |
-| **v9.1** | `policies/v91-*` | **36/50 + 36/50 (0.72)** vs v90 GM | **SHIPPED** |
+### v9.1 (shipped — playable live now)
+1. **Structure-break singles** — exact-endgame no longer splits pairs when a loose beat ties (user report fixed + tests)
+2. **Broader 2-tempo** mid tops J–K when `omin≤3` (flips seed 20510036)
+3. leafEval race/trash/ctrl/lead; short multi soft bias
 
-### v9.1 package (real strength)
-1. **Structure-break singles** — exact-endgame no longer splits pairs/runs when a loose beat ties (user report)
-2. **Broader 2-tempo** (probe-TWO) — mid tops J–K band when `omin≤3`; flips seed `20510036`
-3. Soft-pass contest merge (TWO) — contest more mid-tops when short
-4. leafEval race 0.056 / trash / ctrl / lead / 1-card
-5. Short multi BR bias + multiBonus
-6. Mild combat pass (ladder-tuned)
+## In progress: v9.2 vs freeze v91
+Harder rung: freeze has full v9.1 package.
 
-Artifacts: `evolve/v91-vs-v90-final.json`, `evolve/v91-vs-v90-rerun.json`  
-CF: 97 completed 1v1; human WR in corpus ~89.7%  
-Note: user structure-break fixed in `evolve/NOTE-structure-break-single.md`
+| Probe | Result |
+|-------|--------|
+| race/ctrl micro only | 34/50 |
+| broader 2-tempo omin≤4 | 34/50 |
+| dualSelf=1 + higher budget | 34/50 |
+| exact depth 20 | **33/50** (reverted; hung/worse) |
+| lockBonus + short multi win | in tree; dual WIP |
 
-## Next
-- Refresh playlogs → CF → **v9.2** dual GM N=50 vs freeze **v91** → ship
-- Continue 0.1 steps to **v11.0**
+Need a **real policy differentiator** vs v91 (loss-mine + flip) before dual will clear 36/50.
+
+## User-facing
+Hard-refresh the live site for **Grandmaster v9.1** (title stamp). Structure-break fix is in this build.

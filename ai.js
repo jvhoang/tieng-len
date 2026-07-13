@@ -14,9 +14,9 @@
 
 /** Shown on title screen — bump when shipping AI behavior changes. */
 const AI_BUILD = {
-  id: "v9.1",
-  stamped: "2026-07-13T02:50:38Z",
-  label: "Grandmaster v9.1"
+  id: "v9.2",
+  stamped: "2026-07-13T05:15:38Z",
+  label: "Grandmaster v9.2"
 };
 
 if (typeof window !== 'undefined') {
@@ -112,6 +112,7 @@ function playIsExpensive(play) {
 
 /** Mirror search structure cost lightly for scorePlay ordering. */
 function structureBreakPenalty(hand, play) {
+  // Mirror search.js structureBreakCost (user screenshots: no break pair/run for cheap)
   const byRank = {};
   hand.forEach(c => { byRank[c.rank] = (byRank[c.rank] || 0) + 1; });
   let cost = 0;
@@ -122,9 +123,29 @@ function structureBreakPenalty(hand, play) {
     const u = used[r];
     const had = byRank[r] || 0;
     const left = had - u;
-    if (had >= 2 && left === 1 && u === 1) cost += 6;
-    if (play.length === 1 && had >= 2) cost += 10;
+    if (had >= 2 && left === 1 && u === 1) cost += 20;
+    if (had === 2 && u === 1) cost += 14;
+    if (had >= 3 && left > 0 && left < 3 && u < had) cost += 10;
+    if (left === 0) {
+      if (byRank[r - 1] && byRank[r + 1]) cost += 8;
+      else if (byRank[r - 1] || byRank[r + 1]) cost += 4;
+    }
   });
+  if (play.length === 1 && (byRank[play[0].rank] || 0) >= 2) cost += 28;
+  if (play.length === 1) {
+    const pr0 = play[0].rank;
+    let chain = 1;
+    for (let t = pr0 - 1; byRank[t]; t--) chain++;
+    for (let t = pr0 + 1; byRank[t]; t++) chain++;
+    if (chain >= 3) {
+      const nbrL = byRank[pr0 - 1] || 0;
+      const nbrR = byRank[pr0 + 1] || 0;
+      if (nbrL && nbrR) cost += 24;
+      else cost += 12;
+      if (chain >= 4) cost += 10;
+      else cost += 6;
+    }
+  }
   return cost;
 }
 
@@ -327,6 +348,8 @@ function scorePlay(play, state, myIdx, genome) {
   } else {
     score += topRank(play) * g.beatTopCost;
     score += play.length * g.beatLenCost;
+    // Structure preservation dominates cheap/minimal-beat (user screenshots Jul 2026)
+    score += structureBreakPenalty(hand, play) * 6;
     // 2s: don't always refuse — use when facing high tops or short hands
     if (usesTwo && !facing2) {
       const curTop = cur.top ? cur.top.rank : 0;
@@ -335,6 +358,8 @@ function scorePlay(play, state, myIdx, genome) {
       else if (curTop >= 8) pen *= 0.55;
       if (omin <= 3) pen *= 0.35;
       if (hand.length <= 4) pen *= 0.4;
+      // Prefer 2 over structure-breaking cheap singles
+      if (structureBreakPenalty(hand, play) === 0 && curTop >= 8) pen *= 0.35;
       score += pen;
     }
     if (bomb && !facing2) score += g.bombBeatPen;
@@ -375,11 +400,36 @@ function shouldPassStrategically(state, myIdx, legals, genome) {
   const g = G(genome);
 
   const cheap = cheapLegals(legals);
-  // ALWAYS play a cheap beat when available
-  if (cheap.length > 0) return false;
-
   const me = state.players[myIdx];
   const omin = oppMinHand(state, myIdx);
+  // User IMG_0501: pass mid multi when every cheap answer smashes structure and we hold 2s
+  if (cheap.length > 0) {
+    const hand = me.hand;
+    let minStruct = Infinity;
+    for (let i = 0; i < cheap.length; i++) {
+      const sc = structureBreakPenalty(hand, cheap[i]);
+      if (sc < minStruct) minStruct = sc;
+    }
+    const cur = state.currentCombo;
+    const curTop = cur && cur.top ? cur.top.rank : 0;
+    const byR = {};
+    hand.forEach(c => { byR[c.rank] = (byR[c.rank] || 0) + 1; });
+    const twos = byR[12] || 0;
+    const control = hand.filter(c => c.rank >= 10).length;
+    if (
+      minStruct >= 20 &&
+      hand.length >= 8 &&
+      omin >= 5 &&
+      curTop <= 10 &&
+      (twos >= 1 || control >= 3) &&
+      cur &&
+      (cur.type === 'pair' || cur.type === 'triple')
+    ) {
+      return true; // structure pass
+    }
+    return false; // otherwise always contest cheap
+  }
+
 
   if (omin <= g.passOppMin || me.hand.length <= g.passHandMin) return false;
 
@@ -493,8 +543,12 @@ function forceMultiFreeLead(legals, proposed, state, myIdx) {
     // Veto gift leads
     const omin = oppMinHand(state, myIdx);
     if (omin === 1 && proposed.length === 1 && proposed[0].rank < 10) return hard;
+    // User IMG_0499: short opp — keep 2 lead, do not force multi
+    if (omin <= 2 && proposed.length === 1 && proposed[0].rank === 12) return proposed;
+    if (omin <= 2 && hard && hard.length === 1 && hard[0].rank === 12) return hard;
     // Veto early high singles when better options
-    if (proposed.length === 1 && proposed[0].rank >= 10 && state.players[myIdx].hand.length > 5) {
+    if (proposed.length === 1 && proposed[0].rank >= 10 && proposed[0].rank < 12 &&
+        state.players[myIdx].hand.length > 5) {
       const multi = legals.filter(p => p.length >= 2 && !playIsExpensive(p));
       if (multi.length) return hard;
     }
@@ -522,6 +576,16 @@ function pickFreeLead(state, myIdx, legals, genome) {
   for (let i = 0; i < legals.length; i++) {
     if (legals[i].length === state.players[myIdx].hand.length) return legals[i];
   }
+  // User IMG_0499: opp ≤2 cards + hold 2 → lead 2 (sure), not multi they may beat
+  const ominFL = oppMinHand(state, myIdx);
+  if (ominFL <= 2 && state.players[myIdx].hand.length <= 5) {
+    const twoLead = legals.filter(p => p.length === 1 && p[0].rank === 12);
+    if (twoLead.length) {
+      twoLead.sort((a, b) => a[0].suit - b[0].suit);
+      return twoLead[0];
+    }
+  }
+
   // HARD: multi-only when non-expensive multi exists (never single-open)
   let pick = null;
   if (searchMod && searchMod.pickFreeLeadHard) {
@@ -549,13 +613,31 @@ function pickBestPlay(state, myIdx, legals, genome) {
     return pickFreeLead(state, myIdx, legals, g);
   }
 
-  const ordered = heuristicOrder(legals, state, myIdx, g);
+  const hand = state.players[myIdx].hand;
+  // Structure-first: never prefer pair/run-break over a safe legal (user screenshots)
+  const byStruct = legals.slice().sort((a, b) => {
+    const sa = structureBreakPenalty(hand, a);
+    const sb = structureBreakPenalty(hand, b);
+    if (sa !== sb) return sa - sb;
+    return scorePlay(a, state, myIdx, g) - scorePlay(b, state, myIdx, g);
+  });
   const evolveFast = (typeof process !== 'undefined' && process.env && process.env.TIENLEN_EVOLVE);
-  if (evolveFast) return ordered[0];
+  if (evolveFast) return byStruct[0];
 
-  // Beating: prefer scorePlay among top candidates; light winProb only as tie-break
-  // so multi-card structure isn't abandoned for weak eval noise
-  const candidates = ordered.slice(0, Math.min(10, ordered.length));
+  const minS = structureBreakPenalty(hand, byStruct[0]);
+  const safePool = byStruct.filter(p => structureBreakPenalty(hand, p) <= minS + 2);
+  // Prefer 2 over remaining high structure-break when facing mid/high single
+  const cur = state.currentCombo;
+  const curTop = cur && cur.top ? cur.top.rank : 0;
+  if (minS >= 16 && cur && cur.type === 'single' && curTop >= 8) {
+    const twos = legals.filter(p => p.length === 1 && p[0].rank === 12);
+    if (twos.length) {
+      twos.sort((a, b) => a[0].suit - b[0].suit);
+      return twos[0];
+    }
+  }
+
+  const candidates = safePool.slice(0, Math.min(10, safePool.length));
   let best = candidates[0];
   let bestScore = scorePlay(best, state, myIdx, g);
   let bestP = estimateActionWinProb(state, myIdx, best, g);
@@ -564,7 +646,6 @@ function pickBestPlay(state, myIdx, legals, genome) {
   for (let i = 1; i < candidates.length; i++) {
     const pl = candidates[i];
     const sc = scorePlay(pl, state, myIdx, g);
-    // Primary: lower scorePlay (minimal beat, multi when useful)
     if (sc < bestScore - 0.5) {
       best = pl;
       bestScore = sc;
@@ -854,10 +935,16 @@ function getAIMove(state, myIdx, opts = {}) {
       if (searchMod && searchMod.enforcePolicyGuards) mv = searchMod.enforcePolicyGuards(state, myIdx, mv);
       mv = forceMultiFreeLead(legals, mv, state, myIdx);
     } else {
-      const cheap = cheapLegals(legals);
-      if (cheap.length) mv = pickBestPlay(state, myIdx, cheap, genome) || cheap[0];
-      else if (shouldPassStrategically(state, myIdx, legals, genome)) mv = null;
-      else mv = pickBestPlay(state, myIdx, legals, genome) || legals[0];
+      // Prefer search expertPolicy when available (structure-safe + residual multi)
+      if (searchMod && searchMod.expertPolicy) {
+        const dec = searchMod.expertPolicy(state, myIdx);
+        mv = dec && dec.pass ? null : (dec && dec.play);
+      } else {
+        const cheap = cheapLegals(legals);
+        if (shouldPassStrategically(state, myIdx, legals, genome)) mv = null;
+        else if (cheap.length) mv = pickBestPlay(state, myIdx, cheap, genome) || cheap[0];
+        else mv = pickBestPlay(state, myIdx, legals, genome) || legals[0];
+      }
       if (searchMod && searchMod.enforcePolicyGuards) {
         mv = searchMod.enforcePolicyGuards(state, myIdx, mv);
       }
@@ -871,7 +958,16 @@ function getAIMove(state, myIdx, opts = {}) {
       const eg = searchMod.endgamePick(state, myIdx);
       if (eg) mv = eg;
     }
-    if (cur && searchMod && searchMod.enforcePolicyGuards) {
+    // User IMG_0499: exact-endgame may dump multi vs short opp — re-assert free-lead 2
+    if (!cur && searchMod && searchMod.pickFreeLeadHard) {
+      const ominEg = oppMinHand(state, myIdx);
+      if (ominEg <= 2 && hand.length <= 5) {
+        const hardEg = searchMod.pickFreeLeadHard(legals, state, myIdx);
+        if (hardEg && hardEg.length === 1 && hardEg[0].rank === 12) mv = hardEg;
+      }
+    }
+    if (searchMod && searchMod.enforcePolicyGuards) {
+      // Always re-apply guards after exact/endgame (structure + short-opp free-lead + combat)
       mv = searchMod.enforcePolicyGuards(state, myIdx, mv);
     }
     return mv == null ? null : mv;
@@ -945,16 +1041,19 @@ function getAIMove(state, myIdx, opts = {}) {
               ? searchMod.pickFreeLeadHard(legals, state, myIdx)
               : mv;
           }
+          // User IMG_0499: short opp free-lead — force structure/2 guards even in exploit mode
+          if (omin <= 2) {
+            mv = searchMod.enforcePolicyGuards(state, myIdx, mv);
+          }
         } else {
           mv = searchMod.enforcePolicyGuards(state, myIdx, mv);
         }
       }
       if (!cur && !exploitMode) {
         mv = forceMultiFreeLead(legals, mv, state, myIdx);
-      } else if (mv == null && cur) {
-        const cheapS = cheapLegals(legals);
-        if (cheapS.length) mv = pickBestPlay(state, myIdx, cheapS, genome) || cheapS[0];
       }
+      // Do NOT re-force a cheap beat when guards/search chose PASS
+      // (user IMG_0501: structure-pass mid pair with 2s — null is intentional)
 
       if (mv != null && mv.length) {
         const sig = mv.map(c => c.rank * 4 + c.suit).sort((a, b) => a - b).join(',');

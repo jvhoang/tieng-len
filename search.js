@@ -136,6 +136,17 @@
    * Structure cost: how much a play damages remaining hand flexibility.
    * Higher cost = worse (breaks pairs/seqs).
    */
+  // Experimental policy levers (seed-duel / ladder probes). Empty = baseline v9.1 package.
+  // PATCH: MIDGAP | SOFTPASS11 | TWO7 | TRASHFL | STRUCT
+  var _PATCH = (typeof process !== 'undefined' && process.env && process.env.TIENLEN_PATCH) || '';
+  var _P = {
+    midGap: _PATCH.indexOf('MIDGAP') >= 0,
+    softPass11: _PATCH.indexOf('SOFTPASS11') >= 0,
+    two7: _PATCH.indexOf('TWO7') >= 0,
+    trashFL: _PATCH.indexOf('TRASHFL') >= 0,
+    struct: _PATCH.indexOf('STRUCT') >= 0
+  };
+
   function structureBreakCost(hand, play) {
     var byRank = {};
     for (var i = 0; i < hand.length; i++) {
@@ -154,28 +165,143 @@
       var used = playRanks[rk];
       var left = (byRank[rk] || 0) - used;
       var had = byRank[rk] || 0;
-      // Breaking a pair into a single (humans punish this hard)
-      if (had >= 2 && left === 1 && used === 1) cost += 8;
-      if (had === 2 && used === 1) cost += 5;
+      // Breaking a pair into a single (humans punish this hard) — user IMG_0498/0501
+      if (had >= 2 && left === 1 && used === 1) cost += 20;
+      if (had === 2 && used === 1) cost += 14;
       // Breaking a triple
-      if (had >= 3 && left > 0 && left < 3 && used < had) cost += 4;
-      // Breaking potential sequence links
+      if (had >= 3 && left > 0 && left < 3 && used < had) cost += 10;
+      // Breaking sequence spine (only count real ≥3 chains; not mere 7-8 couples)
       if (left === 0) {
-        if (byRank[rk - 1] && byRank[rk + 1]) cost += 3;
-        else if (byRank[rk - 1] || byRank[rk + 1]) cost += 1;
+        var chainN = 1;
+        var tn;
+        for (tn = rk - 1; byRank[tn]; tn--) chainN++;
+        for (tn = rk + 1; byRank[tn]; tn++) chainN++;
+        if (chainN >= 3) {
+          if (byRank[rk - 1] && byRank[rk + 1]) cost += 22; // interior of ≥3 run
+          else if (byRank[rk - 1] || byRank[rk + 1]) cost += 6; // edge of ≥3 run
+        }
       }
     }
-    if (play.length === 1 && (byRank[play[0].rank] || 0) >= 2) cost += 12;
-    // v9.1: stronger sequence / multi-combo break (user: don't dump low single from a run
-    // when a true loose single exists — exact-endgame was ignoring soft costs on ties)
+    if (play.length === 1 && (byRank[play[0].rank] || 0) >= 2) cost += 28;
+    // Sequence interior / edge: single from a real ≥3 run (user IMG_0500/0502/0504)
+    // Do NOT punish mere 2-card connectors (7-8 alone is not a straight).
     if (play.length === 1) {
       var pr0 = play[0].rank;
-      var nbrL = byRank[pr0 - 1] || 0;
-      var nbrR = byRank[pr0 + 1] || 0;
-      if (nbrL && nbrR) cost += 10; // interior of a run
-      else if (nbrL || nbrR) cost += 4; // edge of a run / connector
+      var chain = 1;
+      var t;
+      for (t = pr0 - 1; byRank[t]; t--) chain++;
+      for (t = pr0 + 1; byRank[t]; t++) chain++;
+      if (chain >= 3) {
+        var nbrL = byRank[pr0 - 1] || 0;
+        var nbrR = byRank[pr0 + 1] || 0;
+        if (nbrL && nbrR) cost += 24; // interior of a run
+        else cost += 12; // edge of a ≥3 run
+        if (chain >= 4) cost += 10;
+        else if (chain >= 3) cost += 6;
+      }
+    }
+    // Multi play that splits a longer same-type residual (user IMG_0503)
+    if (play.length >= 3) {
+      var comP = detectCombo(play);
+      if (comP && comP.type === 'seq') {
+        // Prefer not taking the low end of a longer chain when higher parallel seq exists
+        var low = 99, hi = -1, pi;
+        for (pi = 0; pi < play.length; pi++) {
+          if (play[pi].rank < low) low = play[pi].rank;
+          if (play[pi].rank > hi) hi = play[pi].rank;
+        }
+        if (byRank[low - 1] || byRank[hi + 1]) cost += 6;
+      }
     }
     return cost;
+  }
+
+  /**
+   * Residual hand quality after a play (higher = better). Used to pick among
+   * equal-structure multi answers (e.g. 9-10-J-Q leaves 7-8-9 vs 7-8-9-10 leaves trash 9).
+   */
+  function residualQuality(hand, play) {
+    if (!play || !play.length) return 0;
+    var used = {};
+    var ui;
+    for (ui = 0; ui < play.length; ui++) {
+      used[play[ui].rank * 4 + play[ui].suit] = 1;
+    }
+    var left = [];
+    for (ui = 0; ui < hand.length; ui++) {
+      if (!used[hand[ui].rank * 4 + hand[ui].suit]) left.push(hand[ui]);
+    }
+    if (!left.length) return 100; // emptied
+    var info = analyzeHand(left);
+    var byRank = info.byRank;
+    var ranks = Object.keys(byRank).map(Number).sort(function (a, b) { return a - b; });
+    var maxRun = 1, run = 1, ri;
+    for (ri = 1; ri < ranks.length; ri++) {
+      if (ranks[ri] === ranks[ri - 1] + 1) {
+        run++;
+        if (run > maxRun) maxRun = run;
+      } else run = 1;
+    }
+    var pairs = 0;
+    for (ri = 0; ri < ranks.length; ri++) {
+      if (byRank[ranks[ri]] >= 2) pairs++;
+    }
+    // Prefer low trash, long runs, pairs; mild preference for higher leftover singles (J > 9)
+    var highLoose = 0;
+    for (ui = 0; ui < left.length; ui++) {
+      var c = left[ui];
+      if (byRank[c.rank] === 1 && c.rank >= 8 && c.rank <= 11) highLoose += (c.rank - 7);
+    }
+    return maxRun * 5 + pairs * 4 - info.trashCount * 4 + highLoose * 0.5 - left.length * 0.15;
+  }
+
+  /**
+   * Pick best legal among pool: minimize structure break, then maximize residual,
+   * then expertScore (minimal beat among safe plays).
+   */
+  function pickStructureSafe(pool, state, myIdx) {
+    if (!pool || !pool.length) return null;
+    var hand = state.players[myIdx].hand;
+    // User IMG_0503: among equal-length sequences, residual structure dominates
+    // (even if one path nicks a leftover pair count).
+    var seqLen = 0;
+    var allSameSeq = true;
+    var si;
+    for (si = 0; si < pool.length; si++) {
+      var comS = detectCombo(pool[si]);
+      if (!comS || comS.type !== 'seq') { allSameSeq = false; break; }
+      if (!seqLen) seqLen = pool[si].length;
+      else if (pool[si].length !== seqLen) { allSameSeq = false; break; }
+    }
+    var best = pool[0];
+    var bestSc = structureBreakCost(hand, best);
+    var bestRes = residualQuality(hand, best);
+    var bestExp = expertScore(best, state, myIdx);
+    var i;
+    for (i = 1; i < pool.length; i++) {
+      var p = pool[i];
+      var sc = structureBreakCost(hand, p);
+      var res = residualQuality(hand, p);
+      var exp = expertScore(p, state, myIdx);
+      var better = false;
+      if (allSameSeq) {
+        // residual first among same-length seq answers
+        if (res > bestRes + 0.3) better = true;
+        else if (Math.abs(res - bestRes) <= 0.3 && sc < bestSc - 0.5) better = true;
+        else if (Math.abs(res - bestRes) <= 0.3 && Math.abs(sc - bestSc) < 0.5 && exp < bestExp) better = true;
+      } else {
+        if (sc < bestSc - 0.5) better = true;
+        else if (Math.abs(sc - bestSc) < 0.5 && res > bestRes + 0.25) better = true;
+        else if (Math.abs(sc - bestSc) < 0.5 && Math.abs(res - bestRes) < 0.25 && exp < bestExp) better = true;
+      }
+      if (better) {
+        best = p;
+        bestSc = sc;
+        bestRes = res;
+        bestExp = exp;
+      }
+    }
+    return best;
   }
 
   /**
@@ -255,7 +381,7 @@
     if (afterLen === 0) return -100000; // go out immediately
 
     score += afterLen * 1.0;
-    score += structureBreakCost(hand, play) * 2.2;
+    score += structureBreakCost(hand, play) * (_P.struct ? 3.4 : 2.2);
 
     if (!cur) {
       // FREE LEAD
@@ -317,17 +443,15 @@
       if (facing2 && bomb) score -= 30;
       if (cur.type === 'single' && com.type === 'single') {
         var gap = com.top.rank - cur.top.rank;
-        if (gap > 2 && com.top.rank >= 9 && !usesTwo) score += gap * 0.8;
-        // v9.1: hard preference — never climb with a structure-breaking single when a
-        // true loose (trash / non-break) single beat exists (user hint observation)
-        var sbc = structureBreakCost(hand, play);
-        if (sbc >= 8) {
-          var hasLooseBeat = false;
-          // cheap scan: any other single legal with lower structure cost that also beats
-          // (orderLegals compares pairwise; extra penalty makes break lose to loose)
-          score += 18 + sbc * 0.5; // v9.1 no-break-multi
-        }
+        if (_P.midGap) {
+          if (gap > 1 && com.top.rank >= 8 && !usesTwo) score += gap * 1.6;
+        } else if (gap > 2 && com.top.rank >= 9 && !usesTwo) score += gap * 0.8;
       }
+      // Structure dominates combat ranking (user screenshots Jul 2026)
+      var sbcC = structureBreakCost(hand, play);
+      if (sbcC > 0) score += sbcC * 2.5;
+      // Residual quality among multi answers
+      if (play && play.length >= 2) score -= residualQuality(hand, play) * 0.8;
       // If omin==1 and we can beat, prefer beating over pass (handled in policy)
     }
 
@@ -341,7 +465,27 @@
   }
 
   function orderLegals(legals, state, myIdx) {
+    var hand = state.players[myIdx].hand;
+    var cur = state.currentCombo;
     return legals.slice().sort(function (a, b) {
+      // 1) Structure preservation (user screenshots)
+      var sa = structureBreakCost(hand, a);
+      var sb = structureBreakCost(hand, b);
+      if (sa !== sb) return sa - sb;
+      // 2) Combat singles: minimal beat among structure-safe (prefer 7 over J over 2)
+      if (cur && a && b && a.length === 1 && b.length === 1) {
+        var ta = a[0].rank, tb = b[0].rank;
+        // Prefer non-2; among non-2 prefer lower top
+        if (ta === 12 && tb !== 12) return 1;
+        if (tb === 12 && ta !== 12) return -1;
+        if (ta !== tb) return ta - tb;
+      }
+      // 3) Multi residual (seq vs seq)
+      if (a && b && a.length >= 2 && b.length >= 2) {
+        var ra = residualQuality(hand, a);
+        var rb = residualQuality(hand, b);
+        if (Math.abs(ra - rb) > 0.2) return rb - ra;
+      }
       return expertScore(a, state, myIdx) - expertScore(b, state, myIdx);
     });
   }
@@ -388,11 +532,11 @@
       return { play: twoSingles[0] };
     }
 
-    // probe-TWO: broader 2-tempo vs mid tops when short race / trash or control remains
-    // Flips loss seed 20510036 vs freeze v90 GM; N=50 probe 36/50 (was 35/50).
+    // probe-TWO (v9.1): broader 2-tempo vs mid tops when short race / trash or control remains
+    // TWO7 patch: also face 7s (curTop 7-10) carefully
     if (
       cur.type === 'single' &&
-      curTop >= 8 &&
+      curTop >= (_P.two7 ? 7 : 8) &&
       curTop <= 10 &&
       twoSingles.length &&
       omin <= 3 &&
@@ -404,20 +548,58 @@
       return { play: twoSingles[0] };
     }
 
-    // v9.1 combat pass: deep mid multi fold (tuned: handLen≥11 so ladder vs freeze not over-passive)
-    // Keep force-contest when short hand, short opp, high tops, or singles/bombs.
+    // Soft-pass mid multi when deep — pairs/trips only (never fold a beatable seq we hold)
+    // User IMG_0503: must answer mid seq with residual-preserving higher seq.
     if (
       handLen >= 11 &&
-      omin >= 7 &&
-      curTop < 8 &&
-      cur.type !== 'single' &&
-      !playIsBomb(cur.cards || [])
+      (cur.type === 'pair' || cur.type === 'triple') &&
+      !playIsBomb(cur.cards || []) &&
+      (
+        (omin >= 7 && curTop < 8) ||
+        (_P.softPass11 && omin >= 5 && curTop < 10)
+      )
     ) {
-      return { pass: true }; // v9.1 pass disc (ladder-tuned)
+      return { pass: true }; // v9.1 / SOFTPASS11 pass disc
     }
 
     var cheap = cheapLegals(leg);
-    if (cheap.length) return { play: orderLegals(cheap, state, cp)[0] };
+    if (cheap.length) {
+      var pool = cheap.slice();
+      var minC = 1e9, ci;
+      for (ci = 0; ci < cheap.length; ci++) {
+        var csc0 = structureBreakCost(hand, cheap[ci]);
+        if (csc0 < minC) minC = csc0;
+      }
+      // Include 2s when all cheap answers smash structure (user IMG_0500)
+      if (twoSingles.length && minC >= 16 && cur.type === 'single' && curTop >= 8) {
+        for (ci = 0; ci < twoSingles.length; ci++) pool.push(twoSingles[ci]);
+      }
+      var safe = pickStructureSafe(pool, state, cp);
+      var safeCost = safe ? structureBreakCost(hand, safe) : 0;
+      // User IMG_0501: pass mid multi rather than break JQKA when we have 2s
+      if (
+        safe &&
+        safeCost >= 20 &&
+        handLen >= 8 &&
+        omin >= 5 &&
+        curTop <= 10 &&
+        (infoC.twos >= 1 || infoC.control >= 3) &&
+        (cur.type === 'pair' || cur.type === 'triple')
+      ) {
+        return { pass: true }; // v9.2 structure pass (pairs/trips only)
+      }
+      if (
+        twoSingles.length &&
+        safeCost >= 16 &&
+        cur.type === 'single' &&
+        curTop >= 8 &&
+        !(safe && safe.length === 1 && safe[0].rank === 12)
+      ) {
+        twoSingles.sort(function (a, b) { return a[0].suit - b[0].suit; });
+        return { play: twoSingles[0] };
+      }
+      return { play: safe };
+    }
 
     // Bombs vs 2s
     if (cur.cards.every(function (c) { return c.rank === 12; })) {
@@ -582,6 +764,18 @@
       return a[0].rank - b[0].rank || a[0].suit - b[0].suit;
     });
 
+    // User IMG_0499: opp short (≤2) + hold 2 → lead 2 for sure win, not multi they may beat
+    if (omin <= 2 && info.twos >= 1 && handLen <= 5) {
+      var twoLead = [];
+      for (i = 0; i < leg.length; i++) {
+        if (leg[i].length === 1 && leg[i][0].rank === 12) twoLead.push(leg[i]);
+      }
+      if (twoLead.length) {
+        twoLead.sort(function (a, b) { return a[0].suit - b[0].suit; });
+        return twoLead[0];
+      }
+    }
+
     if (multi.length) {
       // v8.5 free-lead: if 2p and we can see opp hand, prefer unanswerable multi first
       if (state.players.length === 2) {
@@ -635,6 +829,19 @@
         handLen >= 7 &&
         multiPick &&
         topRank(multiPick) > 6
+      ) {
+        return trashPlays[0];
+      }
+      // TRASHFL: gated trash free-lead when multi would burn high top (≥9) and we hold control
+      if (
+        _P.trashFL &&
+        trashPlays.length >= 1 &&
+        multiPick &&
+        topRank(multiPick) >= 9 &&
+        info.control >= 2 &&
+        handLen >= 8 &&
+        handLen <= 12 &&
+        omin >= 4
       ) {
         return trashPlays[0];
       }
@@ -749,19 +956,30 @@
       var ominG = oppMinHand(state, myIdx);
       var infoG = analyzeHand(hand);
 
+      // User IMG_0499: short opp + 2 → always free-lead 2 (sure), never multi
+      if (ominG <= 2 && infoG.twos >= 1 && hand.length <= 5) {
+        if (hard && hard.length === 1 && hard[0].rank === 12) return hard;
+        if (proposed && proposed.length === 1 && proposed[0].rank === 12 && isLegalPlay(proposed)) {
+          return proposed;
+        }
+      }
+
       // If proposed is legal and matches strategy constraints, keep it
       if (proposed && isLegalPlay(proposed)) {
         if (ominG === 1 && proposed.length === 1 && proposed[0].rank < 10) {
           return hard; // veto gift
         }
-        // Block high singles (K/A/2) early when multi or trash exist
-        if (proposed.length === 1 && proposed[0].rank >= 10 && hand.length > 5) {
+        // Block high singles (K/A) early when multi or trash exist — keep 2 free-leads
+        if (proposed.length === 1 && proposed[0].rank >= 10 && proposed[0].rank < 12 && hand.length > 5) {
           var multiG = leg.filter(function (p) {
             return p.length >= 2 && !playIsExpensive(p);
           });
           if (multiG.length || infoG.trashCount > 0) return hard;
         }
-        // Allow trash single / multi / low single from pick
+        // Short opp: override multi with hard (2)
+        if (ominG <= 2 && proposed.length >= 2 && hard && hard.length === 1 && hard[0].rank === 12) {
+          return hard;
+        }
         return proposed;
       }
       return hard;
@@ -790,10 +1008,45 @@
 
     var cheap = cheapLegals(leg);
     if (cheap.length) {
-      if (proposed && proposed.length && isLegalPlay(proposed) && !playIsExpensive(proposed)) {
-        return proposed;
+      // Expand pool with 2s when all cheap answers smash structure (user IMG_0500)
+      var poolG = cheap.slice();
+      var minCheapSc = 1e9;
+      var cgi;
+      for (cgi = 0; cgi < cheap.length; cgi++) {
+        var csc = structureBreakCost(hand, cheap[cgi]);
+        if (csc < minCheapSc) minCheapSc = csc;
       }
-      return orderLegals(cheap, state, myIdx)[0];
+      var twoG = [];
+      for (var tg = 0; tg < leg.length; tg++) {
+        if (leg[tg].length === 1 && leg[tg][0].rank === 12) twoG.push(leg[tg]);
+      }
+      if (twoG.length && minCheapSc >= 16 && curTopG >= 8) {
+        for (tg = 0; tg < twoG.length; tg++) poolG.push(twoG[tg]);
+      }
+      var safeG = pickStructureSafe(poolG, state, myIdx);
+      var scSafe = safeG ? structureBreakCost(hand, safeG) : 0;
+      // Prefer 2 when still structure-breaking
+      if (twoG.length && scSafe >= 16 && curTopG >= 8 && !(safeG && safeG.length === 1 && safeG[0].rank === 12)) {
+        twoG.sort(function (a, b) { return a[0].suit - b[0].suit; });
+        safeG = twoG[0];
+        scSafe = 0;
+      }
+      // Structure-pass FIRST (user IMG_0501) — before accepting a smashing proposed beat
+      var infoPass = analyzeHand(hand);
+      if (
+        scSafe >= 20 &&
+        hand.length >= 8 &&
+        oppMinHand(state, myIdx) >= 5 &&
+        curTopG <= 10 &&
+        (infoPass.twos >= 1 || infoPass.control >= 3) &&
+        cur &&
+        (cur.type === 'pair' || cur.type === 'triple')
+      ) {
+        return null; // pass — keep long structure + 2s for later control
+      }
+      // Always prefer structure-safe ordering over search "cheapest"/BR proposal
+      // (user screenshots: BR often returns structure-breaking or overshoot beats)
+      return safeG;
     }
 
     var curTop = curTopG;
@@ -1792,7 +2045,7 @@
       if (!state.players[i].finished) total += state.players[i].hand.length;
     }
     // ladder v8.6: deeper exact endgame (20 cards) for late midgame
-    if (total > 18) return null; // v8.6 keep 18 — 20 hung some deals
+    if (total > 18) return null; // v8.6 keep 18 — 20 hurt ladder WR
 
     var memo = {};
     function key(st) {

@@ -498,6 +498,89 @@ console.log('=== User-reported bug guards ===');
         'exactEndgame: loose beat over pair-break (got rank=' + exactBr[0].rank + ')');
     }
   }
+
+  // User screenshots IMG_0498–0504 (2026-07-12): structure preservation gold cases
+  function card(r, s) { return { rank: r, suit: s, id: r * 4 + s }; }
+  function handOf(arr) { return arr.map(([r, s]) => card(r, s)); }
+  function mk(hand, curCards, oppN) {
+    const opp = [];
+    for (let i = 0; i < oppN; i++) opp.push(card(i % 11, i % 4));
+    return {
+      players: [
+        { hand: hand.slice(), finished: false, passed: false },
+        { hand: opp, finished: false, passed: false }
+      ],
+      currentPlayer: 0,
+      currentCombo: curCards ? engine.detectCombo(curCards) : null,
+      isFirstLead: false,
+      firstLeadCard: null,
+      finishOrder: [],
+      roundOver: false,
+      playersCount: 2
+    };
+  }
+  function playRank(mv) {
+    if (mv == null) return 'PASS';
+    if (mv.pass) return 'PASS';
+    const p = mv.play || mv;
+    if (!p || !p.length) return 'PASS';
+    return p.map(c => c.rank).join(',');
+  }
+  // 0498: beat 4 with A, not 6 from pair of 6s
+  {
+    const st = mk(handOf([[3, 0], [3, 1], [5, 1], [6, 1], [7, 0], [8, 0], [11, 1], [12, 2]]),
+      [card(1, 1)], 2);
+    const d = search.expertPolicy(st, 0);
+    ok(d && d.play && d.play.length === 1 && d.play[0].rank === 11,
+      'IMG0498: A not 6-from-pair (got ' + playRank(d) + ')');
+  }
+  // 0499: free-lead 2 vs short opp, not pair of 6s
+  {
+    const st = mk(handOf([[3, 0], [3, 1], [12, 2]]), null, 2);
+    const d = search.expertPolicy(st, 0);
+    ok(d && d.play && d.play.length === 1 && d.play[0].rank === 12,
+      'IMG0499: free-lead 2 not pair (got ' + playRank(d) + ')');
+  }
+  // 0500: beat Q with 2, not Q from JQK
+  {
+    const st = mk(handOf([[0, 2], [4, 0], [4, 1], [4, 2], [5, 0], [5, 2], [8, 0], [9, 2], [10, 1], [12, 0]]),
+      [card(9, 0)], 3);
+    const d = search.expertPolicy(st, 0);
+    ok(d && d.play && d.play.length === 1 && d.play[0].rank === 12,
+      'IMG0500: 2 not Q-from-JQK (got ' + playRank(d) + ')');
+  }
+  // 0501: pass QQ vs mid pair when holding JQKA + two 2s
+  {
+    const st = mk(handOf([[0, 0], [3, 0], [5, 1], [6, 0], [8, 0], [9, 0], [9, 2], [10, 0], [11, 0], [12, 0], [12, 2]]),
+      [card(7, 1), card(7, 0)], 9);
+    const d = search.expertPolicy(st, 0);
+    ok(d && d.pass, 'IMG0501: pass not QQ (got ' + playRank(d) + ')');
+  }
+  // 0502: beat 5 with K, not 6 from long run
+  {
+    const st = mk(handOf([[2, 0], [3, 1], [4, 0], [5, 2], [6, 2], [7, 0], [10, 0], [11, 1], [12, 1]]),
+      [card(2, 1)], 6);
+    const d = search.expertPolicy(st, 0);
+    ok(d && d.play && d.play.length === 1 && d.play[0].rank >= 10,
+      'IMG0502: K/A not 6-from-run (got ' + playRank(d) + ')');
+  }
+  // 0503: 9-10-J-Q residual over 7-8-9-10
+  {
+    const st = mk(handOf([[2, 1], [4, 0], [5, 0], [6, 1], [6, 2], [7, 1], [8, 0], [8, 1], [9, 2], [11, 1], [12, 0], [12, 1], [12, 2]]),
+      [card(0, 1), card(1, 0), card(2, 2), card(3, 0)], 9);
+    const d = search.expertPolicy(st, 0);
+    const ranks = (d.play || []).map(c => c.rank).sort((a, b) => a - b);
+    ok(d && d.play && d.play.length === 4 && ranks[0] >= 6,
+      'IMG0503: high residual seq (got ' + playRank(d) + ')');
+  }
+  // 0504: beat 7 with J, not 8 from 789
+  {
+    const st = mk(handOf([[4, 0], [5, 0], [6, 1], [8, 1], [11, 1], [12, 0], [12, 1], [12, 2]]),
+      [card(4, 1)], 8);
+    const d = search.expertPolicy(st, 0);
+    ok(d && d.play && d.play.length === 1 && d.play[0].rank !== 5,
+      'IMG0504: J not 8-from-789 (got ' + playRank(d) + ')');
+  }
 }
 
 console.log('\n=== SEARCH TEST SUMMARY ===');
