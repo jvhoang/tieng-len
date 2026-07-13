@@ -1,4 +1,11 @@
 
+## 2026-07-13T07:16:33Z — structure gold-interpretation fix (v9.2)
+- Gold 0498–0513 kept; over-general series-2 pass/doubleseq force fixed.
+- cheap-exists pass rate ~2.1% (was over-pass on dual).
+- Doubleseq free-lead residual-gated; 0510/0511 narrow.
+- Dual N=50 vs freeze v91 launching.
+
+
 ## 2026-07-13T06:13:31Z — series-2 structure-safe ship
 - Fixed IMG_0505–0513 (doubleseq free-lead, pair-back pass, structure singles).
 - Root: exploit free-lead skipped enforce → plain seq over doubleseq.

@@ -136,7 +136,7 @@
    * Structure cost: how much a play damages remaining hand flexibility.
    * Higher cost = worse (breaks pairs/seqs).
    */
-  // Experimental policy levers (seed-duel / ladder probes). Empty = baseline v9.1 package.
+  // Experimental policy levers (seed-duel / ladder probes). Empty = live default.
   // PATCH: MIDGAP | SOFTPASS11 | TWO7 | TRASHFL | STRUCT
   var _PATCH = (typeof process !== 'undefined' && process.env && process.env.TIENLEN_PATCH) || '';
   var _P = {
@@ -146,6 +146,71 @@
     trashFL: _PATCH.indexOf('TRASHFL') >= 0,
     struct: _PATCH.indexOf('STRUCT') >= 0
   };
+
+  /**
+   * Narrow structure-pass (gold 0510 / harsh pair-back smash only).
+   * Human GM: pass when the only "cheap" answer burns the plan (high pair-backs
+   * for mid pairs), not whenever structure cost is middling.
+   */
+  function shouldStructurePass(hand, safe, safeCost, cur, info, omin, handLen) {
+    if (!safe || !cur || !info) return false;
+    if (handLen < 10 || omin < 5) return false;
+    var curTop = cur.top ? cur.top.rank : 0;
+    if (curTop > 10) return false;
+    var midPairs = 0;
+    var prk;
+    for (prk = 0; prk <= 7; prk++) {
+      if ((info.byRank[prk] || 0) >= 2) midPairs++;
+    }
+    var highPairBreaks = 0;
+    var sRanks = {};
+    var si;
+    for (si = 0; si < safe.length; si++) {
+      sRanks[safe[si].rank] = (sRanks[safe[si].rank] || 0) + 1;
+    }
+    for (prk = 9; prk <= 11; prk++) {
+      // Break pair into single (Q/K/A pair-back destroyed)
+      if ((info.byRank[prk] || 0) >= 2 && (sRanks[prk] || 0) === 1) highPairBreaks++;
+    }
+    // Gold 0510: mid pairs + answer is high seq that tears Q/K pair-backs
+    if (cur.type === 'seq' && midPairs >= 2 && highPairBreaks >= 1) {
+      var sc = detectCombo(safe);
+      if (sc && sc.type === 'seq' && safe.length >= 3) return true;
+    }
+    // Harsh pair/trip answer that burns high pair-backs while holding 2s (0501-adjacent)
+    // Soft mid-pair pass already covers many 0501 cases; keep this for QQ-as-pair from spine.
+    if (
+      (cur.type === 'pair' || cur.type === 'triple') &&
+      info.twos >= 1 &&
+      curTop <= 9 &&
+      (highPairBreaks >= 1 || safeCost >= 34)
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  function residualMaxRun(hand, play) {
+    if (!play || !play.length) return 0;
+    var used = {};
+    var i;
+    for (i = 0; i < play.length; i++) used[play[i].rank * 4 + play[i].suit] = 1;
+    var leftRanks = {};
+    for (i = 0; i < hand.length; i++) {
+      if (!used[hand[i].rank * 4 + hand[i].suit]) {
+        leftRanks[hand[i].rank] = (leftRanks[hand[i].rank] || 0) + 1;
+      }
+    }
+    var ranks = Object.keys(leftRanks).map(Number).sort(function (a, b) { return a - b; });
+    var maxRun = 1, run = 1, ri;
+    for (ri = 1; ri < ranks.length; ri++) {
+      if (ranks[ri] === ranks[ri - 1] + 1) {
+        run++;
+        if (run > maxRun) maxRun = run;
+      } else run = 1;
+    }
+    return ranks.length ? maxRun : 0;
+  }
 
   function structureBreakCost(hand, play) {
     var byRank = {};
@@ -194,10 +259,14 @@
       if (chain >= 3) {
         var nbrL = byRank[pr0 - 1] || 0;
         var nbrR = byRank[pr0 + 1] || 0;
-        if (nbrL && nbrR) cost += 40; // interior of a run — never prefer over loose singles
-        else cost += 18; // edge of a ≥3 run
-        if (chain >= 4) cost += 12;
-        else cost += 6;
+        // Interior run-break must lose to loose/extra singles (gold 0500/02/04/05).
+        // Dual harm came from over-pass / forced doubleseq, not from this ranking.
+        if (nbrL && nbrR) cost += 36;
+        else cost += 16;
+        if (chain >= 4) cost += 10;
+        else cost += 5;
+        // Prefer shedding from triple/quad over pure run singles
+        if ((byRank[pr0] || 0) >= 3) cost -= 8;
       }
     }
     // Multi play that splits a longer same-type residual (user IMG_0503)
@@ -576,43 +645,12 @@
       }
       var safe = pickStructureSafe(pool, state, cp);
       var safeCost = safe ? structureBreakCost(hand, safe) : 0;
-      // Count mid pairs (≤10) that need high pair-backs (user IMG_0510)
-      var midPairs = 0;
-      var prk;
-      for (prk = 0; prk <= 7; prk++) {
-        if ((infoC.byRank[prk] || 0) >= 2) midPairs++;
-      }
-      // High pair-backs smashed by this answer (Q/K/A pairs → singles)
-      var highPairBreaks = 0;
-      if (safe) {
-        var sRanks = {};
-        for (var sri = 0; sri < safe.length; sri++) {
-          sRanks[safe[sri].rank] = (sRanks[safe[sri].rank] || 0) + 1;
-        }
-        for (prk = 9; prk <= 11; prk++) {
-          if ((infoC.byRank[prk] || 0) >= 2 && (sRanks[prk] || 0) === 1) highPairBreaks++;
-        }
-      }
-      // User IMG_0501/0510: pass when cheap answer smashes structure / high pair-backs
-      // User IMG_0503: do NOT pass a residual same-len seq that only nicks mid chain pairs
-      // (play 9-10-J-Q). Only pass seq answers that burn Q/K/A pair-backs for mid pairs.
-      var passStruct =
-        safe &&
-        safeCost >= 16 &&
-        handLen >= 8 &&
-        omin >= 4 &&
-        curTop <= 11 &&
-        (infoC.twos >= 1 || infoC.control >= 3 || midPairs >= 2) &&
-        (cur.type === 'pair' || cur.type === 'triple' || cur.type === 'seq');
-      if (passStruct && cur.type === 'seq') {
-        // Require high pair-back smash OR no same-len seq residual path
-        var safeCom = detectCombo(safe);
-        if (safeCom && safeCom.type === 'seq' && highPairBreaks < 1) {
-          passStruct = false; // residual seq reply (IMG_0503)
-        }
-      }
-      if (passStruct) {
-        return { pass: true }; // v9.2 structure / pair-back pass
+      // Gold structure-pass is NARROW (over-pass killed dual WR):
+      // 0501: soft-pass mid pair already handles deep mid pairs.
+      // 0510: pass high seq that burns Q/K pair-backs while holding mid pairs to back.
+      // Default: play structure-safe beat — never fold a cheap safe answer.
+      if (safe && shouldStructurePass(hand, safe, safeCost, cur, infoC, omin, handLen)) {
+        return { pass: true };
       }
       if (
         twoSingles.length &&
@@ -634,14 +672,15 @@
       for (ti2 = 0; ti2 < leg.length; ti2++) {
         if (!playHasTwo(leg[ti2]) && !playIsBomb(leg[ti2])) { onlyTwoAns = false; break; }
       }
+      // Gold 0511: pass 22 vs AA only when several weak singles need 2-cover later
       if (
         onlyTwoAns &&
-        handLen >= 6 &&
-        omin >= 3 &&
-        curTop >= 10 &&
-        (infoC.trashCount >= 1 || handLen >= 8)
+        handLen >= 10 &&
+        omin >= 4 &&
+        curTop >= 11 &&
+        infoC.trashCount >= 2
       ) {
-        return { pass: true }; // v9.2 save pair-of-2s
+        return { pass: true };
       }
     }
 
@@ -829,7 +868,9 @@
       }
     }
 
-    // User IMG_0506/0507: prefer double-sequence free lead (often bomb-classed, filtered out of cheap multi)
+    // Gold 0506/0507: doubleseq free-lead when it is the plan — not always.
+    // 0507 first-lead: 334455 with 3♠. 0506: 667788 leaves finishing 345 run.
+    // Always-force burned bombs early and lost dual tempo.
     if (dseqAll.length) {
       dseqAll.sort(function (a, b) {
         if (a.length !== b.length) return b.length - a.length;
@@ -844,7 +885,25 @@
         });
         if (with3.length) return with3[0];
       }
-      return dseqAll[0]; // v9.2 doubleseq prefer
+      var bestD = dseqAll[0];
+      var resD = residualQuality(hand, bestD);
+      var runAfter = residualMaxRun(hand, bestD);
+      // Prefer dseq when residual keeps a finishing ≥3 run (0506) or clears most of hand
+      if (runAfter >= 3 || bestD.length >= handLen - 3) return bestD;
+      // Or residual clearly better than best plain multi
+      var plainMulti = [];
+      for (i = 0; i < multi.length; i++) {
+        var cm = detectCombo(multi[i]);
+        if (!cm || cm.type !== 'doubleseq') plainMulti.push(multi[i]);
+      }
+      if (!plainMulti.length) return bestD;
+      plainMulti.sort(function (a, b) {
+        if (a.length !== b.length) return b.length - a.length;
+        return residualQuality(hand, b) - residualQuality(hand, a);
+      });
+      var resP = residualQuality(hand, plainMulti[0]);
+      if (resD > resP + 0.5) return bestD;
+      // else fall through — search/multi ranking may prefer plain seq
     }
 
     if (multi.length) {
@@ -1040,8 +1099,19 @@
         }
       }
 
-      // User IMG_0506/0507: prefer doubleseq hard pick over search plain multi/seq
-      if (hardCom && hardCom.type === 'doubleseq') return hard;
+      // Conditional doubleseq: only override when hard prefers dseq for residual plan
+      if (hardCom && hardCom.type === 'doubleseq') {
+        if (!proposed || !isLegalPlay(proposed)) return hard;
+        var propComFL = detectCombo(proposed);
+        if (!propComFL || propComFL.type !== 'doubleseq') {
+          var resH = residualQuality(hand, hard);
+          var resPr = residualQuality(hand, proposed);
+          var runH = residualMaxRun(hand, hard);
+          if (runH >= 3 || resH > resPr + 0.5 || state.isFirstLead) return hard;
+        } else if (proposed.length < hard.length) {
+          return hard;
+        }
+      }
 
       // If proposed is legal and matches strategy constraints, keep it
       if (proposed && isLegalPlay(proposed)) {
@@ -1114,46 +1184,18 @@
         safeG = twoG[0];
         scSafe = 0;
       }
-      // Structure-pass FIRST (user IMG_0501/0510) — mid multi/seq smashing pair-backs
+      // Narrow structure-pass (gold 0510); default structure-safe beat
       var infoPass = analyzeHand(hand);
-      var midPairsG = 0;
-      var prg;
-      for (prg = 0; prg <= 7; prg++) {
-        if ((infoPass.byRank[prg] || 0) >= 2) midPairsG++;
+      if (
+        safeG &&
+        shouldStructurePass(hand, safeG, scSafe, cur, infoPass, oppMinHand(state, myIdx), hand.length)
+      ) {
+        return null;
       }
-      var highPairBreaksG = 0;
-      if (safeG) {
-        var sRanksG = {};
-        for (var sgi = 0; sgi < safeG.length; sgi++) {
-          sRanksG[safeG[sgi].rank] = (sRanksG[safeG[sgi].rank] || 0) + 1;
-        }
-        for (prg = 9; prg <= 11; prg++) {
-          if ((infoPass.byRank[prg] || 0) >= 2 && (sRanksG[prg] || 0) === 1) highPairBreaksG++;
-        }
-      }
-      var passStructG =
-        scSafe >= 16 &&
-        hand.length >= 8 &&
-        oppMinHand(state, myIdx) >= 4 &&
-        curTopG <= 11 &&
-        (infoPass.twos >= 1 || infoPass.control >= 3 || midPairsG >= 2) &&
-        cur &&
-        (cur.type === 'pair' || cur.type === 'triple' || cur.type === 'seq');
-      if (passStructG && cur.type === 'seq') {
-        var safeComG = safeG ? detectCombo(safeG) : null;
-        // User IMG_0503: residual same-len seq without burning Q/K/A pair-backs → play
-        if (safeComG && safeComG.type === 'seq' && highPairBreaksG < 1) {
-          passStructG = false;
-        }
-      }
-      if (passStructG) {
-        return null; // pass — keep structure / pair-backs / 2s
-      }
-      // Always prefer structure-safe ordering over search "cheapest"/BR proposal
       return safeG;
     }
 
-    // User IMG_0511: only 2-answers vs high multi — prefer pass (save 22 for singles)
+    // Gold 0511: save 22 for weak singles only when deep + several trash singles
     if (!cheap.length) {
       var only2G = true;
       var og;
@@ -1163,10 +1205,10 @@
       var info2 = analyzeHand(hand);
       if (
         only2G &&
-        hand.length >= 6 &&
-        oppMinHand(state, myIdx) >= 3 &&
-        curTopG >= 10 &&
-        (info2.trashCount >= 1 || hand.length >= 8)
+        hand.length >= 10 &&
+        oppMinHand(state, myIdx) >= 4 &&
+        curTopG >= 11 &&
+        info2.trashCount >= 2
       ) {
         return null;
       }
