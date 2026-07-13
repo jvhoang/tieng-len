@@ -1,9 +1,15 @@
 
-## 2026-07-13T13:00:00Z — P1–P5 surgical (on dual baseline)
-- Broad P1–P5 duals failed **0.48** then **0.44** vs v91.
-- Restored search to playlog-align `9b20d49` (P1/P2/P5 already dual-safe there).
-- Surgical only: **P3** AA/KK→low pair free-lead; **P4** same-len seq lower top when residual tied.
-- Tests 79/79. Dual N=50 re-run `v92-p15c-vs-v91`.
+## 2026-07-13T13:00:00Z — P1–P5 surgical COMPLETE (dual still short of gate)
+- **Implemented all 5 priorities** (see `NOTE-strategy-priorities-p1-p5.md`).
+- P1/P2/P5 already in playlog-align baseline (gold-safe). Surgical **P3** + **P4** added.
+- Tests: **79/79** search + AI/engine green.
+- Dual results vs freeze v91 (seed 20260711, GM N=50):
+  - Broad rewrite: 0.48 / 0.44 FAIL
+  - Surgical P3+P4: **22/50 = 0.44 FAIL**
+  - Pure 9b20d49 N=20 probe: **10/20 = 0.50** (same early pace as surgical)
+  - Post-structure series-2/gold historical: **~27/50 = 0.54**
+  - Pre-structure early v9.2: **33/50 = 0.66** (still &lt;0.70)
+- **Gate >0.70 still open** — needs strength levers beyond policy gold (probes/budgets), not more broad P1–P5 rewrites.
 
 ## 2026-07-13T12:30:00Z — P1–P5 dual-safe refinement (superseded)
 - First dual P1–P5 raw: **24/50 = 0.48 FAIL**. Soften still **22/50 = 0.44 FAIL**.
