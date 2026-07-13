@@ -1,6 +1,6 @@
-/** series-3 + playlog-aligned v9.2 */
+/** v9.2 strategy priorities P1–P5 (minimal-beat, mid contest, low-pair FL, residual multi, 2-budget) */
 (function (root) {
-  var BUILD = { id: "v9.2", stamped: "2026-07-13T08:32:27Z", label: "Grandmaster v9.2" };
+  var BUILD = { id: "v9.2", stamped: "2026-07-13T12:00:00Z", label: "Grandmaster v9.2 (P1–P5)" };
   root.TIENLEN_AI_BUILD = BUILD;
   root.TienLenAI = root.TienLenAI || {};
   root.TienLenAI.AI_BUILD = BUILD;

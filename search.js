@@ -179,15 +179,17 @@
       var sc = detectCombo(safe);
       if (sc && sc.type === 'seq' && safe.length >= 3) return true;
     }
-    // Harsh pair/trip answer that burns high pair-backs while holding 2s (0501-adjacent)
-    // Soft mid-pair pass already covers many 0501 cases; keep this for QQ-as-pair from spine.
+    // Gold 0501: mid pair answered by high pair (QQ+) while holding 2s → pass
     if (
       (cur.type === 'pair' || cur.type === 'triple') &&
       info.twos >= 1 &&
       curTop <= 9 &&
-      (highPairBreaks >= 1 || safeCost >= 34)
+      handLen >= 10 &&
+      omin >= 5
     ) {
-      return true;
+      var safeComP = detectCombo(safe);
+      if (safeComP && safeComP.type === 'pair' && topRank(safe) >= 9) return true;
+      if (highPairBreaks >= 1 || safeCost >= 34) return true;
     }
     return false;
   }
@@ -362,14 +364,21 @@
       var exp = expertScore(p, state, myIdx);
       var better = false;
       if (allSameSeq) {
-        // residual first among same-length seq answers (0503, 0519 save pair)
-        if (res > bestRes + 0.3) better = true;
-        else if (Math.abs(res - bestRes) <= 0.3 && sc < bestSc - 0.5) better = true;
-        else if (Math.abs(res - bestRes) <= 0.3 && Math.abs(sc - bestSc) < 0.5 && exp < bestExp) better = true;
+        // P4: lower-top same-len seq unless residual clearly superior (0503)
+        // Human: answer 3456 not 10JQK when residual similar.
+        var pTopS = topRank(p);
+        var bTopS = topRank(best);
+        if (res > bestRes + 2.0) better = true;
+        else if (res < bestRes - 2.0) better = false;
+        else if (pTopS < bTopS) better = true;
+        else if (pTopS === bTopS && sc < bestSc - 0.5) better = true;
+        else if (pTopS === bTopS && Math.abs(sc - bestSc) < 0.5 && exp < bestExp) better = true;
       } else if (allSingles) {
-        // Gold 0520 log (omin=1): prefer 2 for sure control over residual mid.
-        // Gold 0520 residual: max residual maxRun (7 keeps 6789 vs 6→789+trash).
-        // Then residual quality (0498 A keeps pair). Then minimal non-2 top.
+        // P1 minimal-beat + P5 2-budget + residual (0500/0520b):
+        // 1) 2 when non-2 smashes structure (0500: K edge of JQK sc≥12)
+        // 2) residual max-run first (0520b: 7 keeps 6789 over 6)
+        // 3) residual quality (0498: A keeps pair over 6-from-pair)
+        // 4) lower top when residual close (P1: 7 not Q)
         var pTop = p[0].rank;
         var bTop = best[0].rank;
         var ominS = oppMinHand(state, myIdx);
@@ -377,17 +386,28 @@
           if (pTop === 12 && bTop !== 12) better = true;
           else if (pTop !== 12 && bTop === 12) better = false;
           else if (run > bestRun) better = true;
-          else if (run === bestRun && pTop < bTop) better = true;
-        } else if (run > bestRun && pTop < 12) better = true;
-        else if (run === bestRun) {
-          if (res > bestRes + 0.4) better = true;
-          else if (Math.abs(res - bestRes) <= 0.4 && pTop < 12 && (bTop === 12 || pTop < bTop)) better = true;
-          else if (Math.abs(res - bestRes) <= 0.4 && pTop === bTop && sc < bestSc - 0.5) better = true;
-          else if (Math.abs(res - bestRes) <= 0.4 && pTop === bTop && Math.abs(sc - bestSc) < 0.5 && exp < bestExp) better = true;
+          else if (run === bestRun && res > bestRes + 0.4) better = true;
+          else if (run === bestRun && Math.abs(res - bestRes) <= 0.4 && pTop < bTop) better = true;
+        } else if (pTop === 12 && bTop < 12) {
+          // 0500/0513/0516: spend 2 when best non-2 is structure-smashing
+          if (bestSc >= 12) better = true;
+        } else if (pTop < 12 && bTop === 12) {
+          // clean non-2 preferred over 2
+          if (sc < 12) better = true;
+        } else if (pTop < 12 && bTop < 12) {
+          if (run > bestRun) better = true;
+          else if (run < bestRun) better = false;
+          else if (res > bestRes + 0.5) better = true;
+          else if (res < bestRes - 0.5) better = false;
+          else if (pTop < bTop) better = true; // P1 min top (0520b: 7 not Q)
+          else if (pTop === bTop && sc < bestSc - 0.5) better = true;
+          else if (pTop === bTop && Math.abs(sc - bestSc) < 0.5 && exp < bestExp) better = true;
         }
       } else {
         if (sc < bestSc - 0.5) better = true;
         else if (Math.abs(sc - bestSc) < 0.5 && res > bestRes + 0.25) better = true;
+        else if (Math.abs(sc - bestSc) < 0.5 && Math.abs(res - bestRes) < 0.25 &&
+                 p.length === best.length && topRank(p) < topRank(best)) better = true;
         else if (Math.abs(sc - bestSc) < 0.5 && Math.abs(res - bestRes) < 0.25 && exp < bestExp) better = true;
       }
       if (better) {
@@ -540,9 +560,24 @@
       if (facing2 && bomb) score -= 30;
       if (cur.type === 'single' && com.type === 'single') {
         var gap = com.top.rank - cur.top.rank;
-        if (_P.midGap) {
-          if (gap > 1 && com.top.rank >= 8 && !usesTwo) score += gap * 1.6;
-        } else if (gap > 2 && com.top.rank >= 9 && !usesTwo) score += gap * 0.8;
+        if (!usesTwo) {
+          if (_P.midGap) {
+            if (gap > 1 && com.top.rank >= 8) score += gap * 1.6;
+          } else {
+            if (gap >= 2) score += gap * 1.8;
+            if (gap >= 3 && com.top.rank >= 9) score += 6;
+            if (com.top.rank >= 10 && curTop <= 7) score += 14;
+            if (com.top.rank === 11 && curTop <= 9) score += 8;
+          }
+        }
+      }
+      // P4 multi lower top preference when same type
+      if (play && play.length >= 2 && cur && com && cur.type === com.type) {
+        score += topRank(play) * 0.35;
+      }
+      // P5: 2 penalty vs mid when not short
+      if (usesTwo && !facing2 && cur.type === 'single') {
+        if (curTop < 10 && omin >= 4 && handLen >= 6) score += 18;
       }
       // Structure dominates combat ranking (user screenshots Jul 2026)
       var sbcC = structureBreakCost(hand, play);
@@ -564,27 +599,63 @@
   function orderLegals(legals, state, myIdx) {
     var hand = state.players[myIdx].hand;
     var cur = state.currentCombo;
+    var ominO = oppMinHand(state, myIdx);
     return legals.slice().sort(function (a, b) {
-      // 1) Structure preservation (user screenshots)
       var sa = structureBreakCost(hand, a);
       var sb = structureBreakCost(hand, b);
-      if (sa !== sb) return sa - sb;
-      // 2) Combat singles: minimal beat among structure-safe (prefer 7 over J over 2)
+      // Near-equal structure: let minimal-beat decide (P1)
+      if (Math.abs(sa - sb) > 10) {
+        if (sa !== sb) return sa - sb;
+      }
+      // Combat singles: non-2 first (unless omin<=1), then lower top
       if (cur && a && b && a.length === 1 && b.length === 1) {
         var ta = a[0].rank, tb = b[0].rank;
-        // Prefer non-2; among non-2 prefer lower top
-        if (ta === 12 && tb !== 12) return 1;
-        if (tb === 12 && ta !== 12) return -1;
+        if (ominO > 1) {
+          if (ta === 12 && tb !== 12) return 1;
+          if (tb === 12 && ta !== 12) return -1;
+        }
         if (ta !== tb) return ta - tb;
       }
-      // 3) Multi residual (seq vs seq)
+      // Multi: residual then lower top (P4)
       if (a && b && a.length >= 2 && b.length >= 2) {
         var ra = residualQuality(hand, a);
         var rb = residualQuality(hand, b);
-        if (Math.abs(ra - rb) > 0.2) return rb - ra;
+        if (Math.abs(ra - rb) > 0.4) return rb - ra;
+        if (a.length === b.length) {
+          var ta2 = topRank(a), tb2 = topRank(b);
+          if (ta2 !== tb2) return ta2 - tb2;
+        }
       }
+      if (Math.abs(sa - sb) > 0.5) return sa - sb;
       return expertScore(a, state, myIdx) - expertScore(b, state, myIdx);
     });
+  }
+
+  /** P5: spend single 2 only when needed (not for clean non-2 beats). */
+  function shouldSpendTwoNow(state, myIdx, cur, omin, handLen, info, non2Pool) {
+    if (!cur || cur.type !== 'single') return false;
+    var curTop = cur.top ? cur.top.rank : 0;
+    if (omin <= 1) return true;
+    if (curTop >= 11) return true;
+    if (handLen <= 3) return true;
+    var hand = state.players[myIdx].hand;
+    var hasSafeNon2 = false;
+    var minNon2Sc = 1e9;
+    var ni;
+    for (ni = 0; ni < (non2Pool || []).length; ni++) {
+      var p = non2Pool[ni];
+      if (!p || p.length !== 1 || p[0].rank >= 12) continue;
+      var psc = structureBreakCost(hand, p);
+      if (psc < minNon2Sc) minNon2Sc = psc;
+      // sc < 12 = truly clean (loose single / low edge). K edge of JQK is sc=14 → not safe.
+      if (psc < 12) { hasSafeNon2 = true; break; }
+    }
+    // Safe non-2 → save 2. Structure-smash only (0500) → spend 2.
+    if (hasSafeNon2 && curTop <= 10 && omin >= 2) return false;
+    if (!hasSafeNon2 && curTop >= 8) return true;
+    if (minNon2Sc >= 12 && curTop >= 8) return true;
+    if (omin <= 2 && curTop >= 8) return true;
+    return false;
   }
 
   /**
@@ -636,34 +707,41 @@
       return { play: twoSingles[0] };
     }
 
-    // probe-TWO (v9.1): broader 2-tempo vs mid tops when short race / trash or control remains
-    // TWO7 patch: also face 7s (curTop 7-10) carefully
+    // P5 / probe-TWO: only when 2-budget allows
     if (
       cur.type === 'single' &&
       curTop >= (_P.two7 ? 7 : 8) &&
       curTop <= 10 &&
       twoSingles.length &&
-      omin <= 3 &&
       handLen >= 4 &&
-      handLen <= 9 &&
-      (infoC.trashCount >= 1 || infoC.control >= 2)
+      handLen <= 9
     ) {
-      twoSingles.sort(function (a, b) { return a[0].suit - b[0].suit; });
-      return { play: twoSingles[0] };
+      var non2Probe = [];
+      for (var np = 0; np < leg.length; np++) {
+        if (!playHasTwo(leg[np]) && !playIsBomb(leg[np])) non2Probe.push(leg[np]);
+      }
+      if (shouldSpendTwoNow(state, cp, cur, omin, handLen, infoC, non2Probe)) {
+        twoSingles.sort(function (a, b) { return a[0].suit - b[0].suit; });
+        return { play: twoSingles[0] };
+      }
     }
 
-    // Soft-pass mid multi when deep — pairs/trips only (never fold a beatable seq we hold)
-    // User IMG_0503: must answer mid seq with residual-preserving higher seq.
+    // P2: contest clean mid pairs/trips (human tempo). SOFTPASS11 probe only if no safe beat.
     if (
-      handLen >= 11 &&
+      _P.softPass11 &&
+      handLen >= 12 &&
       (cur.type === 'pair' || cur.type === 'triple') &&
       !playIsBomb(cur.cards || []) &&
-      (
-        (omin >= 7 && curTop < 8) ||
-        (_P.softPass11 && omin >= 5 && curTop < 10)
-      )
+      omin >= 8 &&
+      curTop < 7
     ) {
-      return { pass: true }; // v9.1 / SOFTPASS11 pass disc
+      var anySafeP = false, spi;
+      for (spi = 0; spi < leg.length; spi++) {
+        if (!playIsExpensive(leg[spi]) && structureBreakCost(hand, leg[spi]) <= 8) {
+          anySafeP = true; break;
+        }
+      }
+      if (!anySafeP) return { pass: true };
     }
 
     var cheap = cheapLegals(leg);
@@ -695,8 +773,10 @@
         curTop >= 8 &&
         !(safe && safe.length === 1 && safe[0].rank === 12)
       ) {
-        twoSingles.sort(function (a, b) { return a[0].suit - b[0].suit; });
-        return { play: twoSingles[0] };
+        if (shouldSpendTwoNow(state, cp, cur, omin, handLen, infoC, cheap)) {
+          twoSingles.sort(function (a, b) { return a[0].suit - b[0].suit; });
+          return { play: twoSingles[0] };
+        }
       }
       // COMBATV91: v9.1-style cheap path via orderLegals (structure via expertScore only)
       if (_P.combatV91) return { play: orderLegals(cheap, state, cp)[0] };
@@ -739,16 +819,20 @@
         cur.type === 'single' &&
         curTop >= 10 &&
         twoSingles.length &&
-        handLen >= 6 &&
-        (infoC.trashCount >= 1 || infoC.twos >= 1)
+        handLen >= 6
       ) {
+        var onlyAcesNon2 = non2.every(function (p) {
+          return p.length === 1 && p[0].rank >= 11;
+        });
         var onlyHighNon2 = non2.every(function (p) {
           return p.length === 1 && p[0].rank >= 10;
         });
-        if (onlyHighNon2) {
+        if (onlyAcesNon2 || (onlyHighNon2 && shouldSpendTwoNow(state, cp, cur, omin, handLen, infoC, non2))) {
           twoSingles.sort(function (a, b) { return a[0].suit - b[0].suit; });
           return { play: twoSingles[0] };
         }
+        // Playlog: face Q with K+2 → K not 2
+        if (onlyHighNon2) return { play: orderLegals(non2, state, cp)[0] };
       }
       // v8.5: mild climb only vs 1-card opp (force out), not general midgame waste
       if (
@@ -786,8 +870,7 @@
     if (handLen <= 7 && leg.length) {
       return { play: orderLegals(leg, state, cp)[0] };
     }
-    if (handLen >= 10 && curTop < 9 && omin >= 7) return { pass: true }; // TWO soft-pass
-    if (handLen >= 9 && curTop < 9 && omin >= 7) return { pass: true }; // residual v9.1 (tighter omin)
+    // P2: contest mid rather than soft-pass
     if (handLen >= 8 && curTop < 10 && omin <= 4 && leg.length) {
       return { play: orderLegals(leg, state, cp)[0] };
     }
@@ -937,6 +1020,21 @@
         ) pair2Lead.push(leg[i]);
       }
       if (pair2Lead.length) return pair2Lead[0];
+    }
+
+    // P3: deep free-lead low pair (≤5) before high pair (Q+/AA)
+    if (handLen >= 10 && info.twos < 2 && multi.length) {
+      var lowPairs = [], highPairs = [];
+      for (i = 0; i < multi.length; i++) {
+        var comLP = detectCombo(multi[i]);
+        if (!comLP || comLP.type !== 'pair') continue;
+        if (topRank(multi[i]) <= 5) lowPairs.push(multi[i]);
+        else if (topRank(multi[i]) >= 9) highPairs.push(multi[i]);
+      }
+      if (lowPairs.length && highPairs.length) {
+        lowPairs.sort(function (a, b) { return topRank(a) - topRank(b); });
+        return lowPairs[0];
+      }
     }
 
     // User IMG_0499: opp exactly 2 cards + hold 2 → lead 2 (they may beat multi).
@@ -1273,13 +1371,14 @@
       for (var tg = 0; tg < leg.length; tg++) {
         if (leg[tg].length === 1 && leg[tg][0].rank === 12) twoG.push(leg[tg]);
       }
-      if (twoG.length && minCheapSc >= 16 && curTopG >= 8) {
+      // P5: include 2s when all cheap non-2 smash structure (aligned with expert ≥14 / 0500)
+      if (twoG.length && minCheapSc >= 12 && curTopG >= 8) {
         for (tg = 0; tg < twoG.length; tg++) poolG.push(twoG[tg]);
       }
       var safeG = pickStructureSafe(poolG, state, myIdx);
       var scSafe = safeG ? structureBreakCost(hand, safeG) : 0;
-      // Prefer 2 when still structure-breaking
-      if (twoG.length && scSafe >= 16 && curTopG >= 8 && !(safeG && safeG.length === 1 && safeG[0].rank === 12)) {
+      // Prefer 2 when still structure-breaking (sc≥12 = run-edge/pair smash)
+      if (twoG.length && scSafe >= 12 && curTopG >= 8 && !(safeG && safeG.length === 1 && safeG[0].rank === 12)) {
         twoG.sort(function (a, b) { return a[0].suit - b[0].suit; });
         safeG = twoG[0];
         scSafe = 0;

@@ -1,4 +1,14 @@
 
+## 2026-07-13T12:00:00Z — strategy priorities P1–P5
+- P1 minimal-beat singles (residual run → quality → lower top)
+- P2 contest mid; narrow structure-pass only (0501/0510)
+- P3 free-lead low pair before high pair/AA (deep hand, no 22)
+- P4 same-len seq residual then lower top
+- P5 2-budget: safe non-2 sc&lt;12; spend 2 on structure smash (0500)
+- Fixed 0500 (2 not K) + 0520b (7 not Q). All gold 0498–0521 green.
+- Dual N=50 GM vs freeze v91 launching (`v92-p15-vs-v91`).
+
+
 ## 2026-07-13T08:20:04Z — series-3 control-plan gold (0514/0516–0521)
 - Free-lead: trash-before-mid-multi (no 22); with 22 prefer high residual multi; short 22 first; omin=1 multi.
 - Combat: residual maxRun singles; residual same-len seq.

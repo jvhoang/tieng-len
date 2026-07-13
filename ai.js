@@ -15,8 +15,8 @@
 /** Shown on title screen — bump when shipping AI behavior changes. */
 const AI_BUILD = {
   id: "v9.2",
-  stamped: "2026-07-13T08:32:27Z",
-  label: "Grandmaster v9.2"
+  stamped: "2026-07-13T12:00:00Z",
+  label: "Grandmaster v9.2 (P1–P5)"
 };
 
 if (typeof window !== 'undefined') {
@@ -608,9 +608,14 @@ function forceMultiFreeLead(legals, proposed, state, myIdx) {
       } catch (_) { /* ignore */ }
     }
     if (hard && proposed && hard.length !== proposed.length) {
-      // Prefer hard multi plan over search single, or hard trash over high multi
+      // Prefer hard multi plan over search single
       if (hard.length >= 2 && proposed.length === 1) return hard;
-      if (hard.length === 1 && proposed.length >= 2 && hard[0].rank <= 5) return hard;
+      // Hard trash over high multi only — not general multi-length override (ladder)
+      if (hard.length === 1 && proposed.length >= 2 && hard[0].rank <= 5) {
+        var hi = 0, pi;
+        for (pi = 0; pi < proposed.length; pi++) if (proposed[pi].rank > hi) hi = proposed[pi].rank;
+        if (hi >= 9) return hard;
+      }
     }
     // Veto gift leads
     const omin = oppMinHand(state, myIdx);
