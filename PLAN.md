@@ -32,7 +32,12 @@ Lever: `com_sbc0` unique true-loose Ace combat single (on convert-first stack th
 | Tag | vs v95 | vs v91 | Notes |
 |-----|--------|--------|-------|
 | `p_w49_ex_maxedge` | 25/26 | 36/37 | Queen climb |
-| `p_w50_ex_egunder` | **25/27** | 36/36 | binary Ace underclimb; stack +2 vs v95 id |
+| `p_w50_ex_egunder` | 25/27 | 36/36 | Ace underclimb |
+| `p_w54_ex_seqadj` | 26/30 | 36/36 | mulowg-band adj seq4 |
+| `p_w55_ex_seq5adj` | 27/30 | 36/37 | mid-face adj seq5; A 20430342@1 |
+| `p_w56_ex_seqmidunder` | 28/30 | 36/37 | mid-face underclimb; A 20340585@1 |
+| `p_w57_ex_qpairclimb` | 28/31 | 36/37 | Queen pair-peel; B 20430343@1 |
+| **`p_w58_ex_flpair88`** | **29/31** | **36/38** | FREE pair-88; A 20460261@1 |
 
 ## Live wiring (must hold)
 - `AI_BUILD.id === "v9.5"`
@@ -40,11 +45,11 @@ Lever: `com_sbc0` unique true-loose Ace combat single (on convert-first stack th
 - Dual evidence: `evolve/dual-primary.json`, `evolve/dual-rerun.json`, `SHIP_READY.md`
 
 ## Stack (convert-first)
-combat: mulowg · pairhi · pairhi_wide · seqhi · sbc0 · **maxedge (banked)**  
-FREE: flvol · flshort5 · flhidetight · brseq3 · tripair · pairshed · lotesh · pairseq · twoshed
+combat: mulowg · pairhi · pairhi_wide · seqhi · sbc0 · maxedge · egunder · qpairclimb · seqhi_res · seqadj · seq5adj · seqmidunder  
+FREE: flvol · flshort5 · flhidetight · brseq3 · tripair · pairshed · lotesh · pairseq · twoshed · seqopen · pairseq3 · **flpair88**
 
 ## Next
-1. **v9.6** — stack pure 0-reverse converts on maxedge until holdout A/B both WR>0.70 **vs freeze v95**  
+1. **v9.6** — stack pure 0-reverse converts on **flpair88** until holdout A/B both WR>0.70 **vs freeze v95**  
 2. Full-policy firstdiff + identity-diff before promote (reject dual-null / BR thrash)  
 3. Continue 0.1 rungs → **v11.0**  
 4. SoftN stays dead  

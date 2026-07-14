@@ -1,0 +1,71 @@
+{
+  "protocol": "fair-firstdiff-v1",
+  "freeze": "p_w57_ex_qpairclimb",
+  "chall": "p_w58_ex_flpair88",
+  "live": {
+    "id": "v9.1-probe-p_w58_ex_flpair88",
+    "stamped": "2026-07-14T10:26:39Z",
+    "label": "Grandmaster v9.1-probe p_w58_ex_flpair88"
+  },
+  "freezeBuild": {
+    "id": "v9.1-probe-p_w57_ex_qpairclimb",
+    "stamped": "2026-07-14T10:26:39Z",
+    "label": "Grandmaster v9.1-probe p_w57_ex_qpairclimb"
+  },
+  "opts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": false,
+    "hiddenInfo": true,
+    "timeMs": 200,
+    "iterations": 60,
+    "maxSims": 120,
+    "brTrials": 20,
+    "bestResponse": true,
+    "exactExploit": false,
+    "exploit": true,
+    "softSamples": 0,
+    "maxBranch": 12,
+    "mode": "auto",
+    "strongSelf": false
+  },
+  "nGames": 2,
+  "nDiverged": 1,
+  "divergeRate": 0.5,
+  "classCount": {
+    "FL_other": 1
+  },
+  "results": [
+    {
+      "seed": 20460261,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 17,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20460261,
+      "liveSeat": 1,
+      "firstDiff": {
+        "step": 3,
+        "seat": 1,
+        "phase": "FREE",
+        "handLen": 10,
+        "omin": 10,
+        "curTop": null,
+        "freeze": "4S",
+        "chall": "8S 8C",
+        "freezeSig": "4",
+        "challSig": "20,23",
+        "same": false,
+        "class": "FL_other"
+      },
+      "pathLen": 2,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 4,
+      "freezeWinIfNoDiff": null
+    }
+  ]
+}

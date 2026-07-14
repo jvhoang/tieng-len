@@ -1,0 +1,19 @@
+{
+  "tag": "p_w57_ex_qpairclimb",
+  "base": "p_w56_ex_seqmidunder",
+  "lever": "com_qpairclimb Queen pair-peel climb under triple midface",
+  "convert": "B 20430343@1 7S→QS",
+  "vs_v95_id": {
+    "A": 28,
+    "B": 31,
+    "new": ["20430343@1"],
+    "rev": []
+  },
+  "vs_v91": {
+    "A": 36,
+    "B": 37,
+    "sum": 73
+  },
+  "ship_v96": false,
+  "stack": "A 28 flat, B 30→31 pure vs v95 id"
+}

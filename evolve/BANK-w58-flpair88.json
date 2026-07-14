@@ -1,0 +1,19 @@
+{
+  "tag": "p_w58_ex_flpair88",
+  "base": "p_w57_ex_qpairclimb",
+  "lever": "fl_pair88 FREE force naked pair-of-8s midhand",
+  "convert": "A 20460261@1 4S→88",
+  "vs_v95_id": {
+    "A": 29,
+    "B": 31,
+    "new": ["20460261@1"],
+    "rev": []
+  },
+  "vs_v91": {
+    "A": 36,
+    "B": 38,
+    "sum": 74
+  },
+  "ship_v96": false,
+  "stack": "A 28→29, B 31 flat pure vs v95 id"
+}

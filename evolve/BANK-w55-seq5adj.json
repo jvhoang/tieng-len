@@ -1,0 +1,19 @@
+{
+  "tag": "p_w55_ex_seq5adj",
+  "base": "p_w54_ex_seqadj",
+  "lever": "seq5adj mid-face combat seq5 adjacent climb",
+  "convert": "A 20430342@1 789TJ→89TJQ",
+  "vs_v95_id": {
+    "A": 27,
+    "B": 30,
+    "new": ["20430342@1"],
+    "rev": []
+  },
+  "vs_v91": {
+    "A": 36,
+    "B": 37,
+    "sum": 73
+  },
+  "ship_v96": false,
+  "stack": "A 26→27, B 30 flat pure vs v95 id"
+}

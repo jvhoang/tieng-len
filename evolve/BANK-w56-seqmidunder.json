@@ -1,0 +1,19 @@
+{
+  "tag": "p_w56_ex_seqmidunder",
+  "base": "p_w55_ex_seq5adj",
+  "lever": "seqmidunder mid-face combat seq3 underclimb",
+  "convert": "A 20340585@1 9TJ→89T",
+  "vs_v95_id": {
+    "A": 28,
+    "B": 30,
+    "new": ["20340585@1"],
+    "rev": []
+  },
+  "vs_v91": {
+    "A": 36,
+    "B": 37,
+    "sum": 73
+  },
+  "ship_v96": false,
+  "stack": "A 27→28, B 30 flat pure vs v95 id"
+}
