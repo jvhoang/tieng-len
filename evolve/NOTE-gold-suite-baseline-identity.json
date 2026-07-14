@@ -1,0 +1,113 @@
+{
+  "protocol": "gold-suite-baseline-identity",
+  "live": {
+    "id": "v9.7",
+    "fails": [
+      "FAIL: searchMove perfectInfo:false \u2192 mode det-mcts (got fl-seqopen-hard)",
+      "FAIL: stats.mode is free-lead or search (got fl-seqopen-hard)",
+      "FAIL: IMG0498: A not 6-from-pair (got 5)",
+      "FAIL: IMG0499: free-lead 2 not pair (got 3,3)",
+      "FAIL: IMG0500: 2 not Q-from-JQK (got 10)",
+      "FAIL: IMG0502: K/A not 6-from-run (got 7)",
+      "FAIL: IMG0503: high residual seq (got PASS)",
+      "FAIL: IMG0505: 8 not 4-from-345 (got 1)",
+      "FAIL: IMG0505 gm: 8 not 4 (got 1)",
+      "FAIL: IMG0506: free-lead doubleseq 667788 (got 3,3 type=pair)",
+      "FAIL: IMG0506 gm: doubleseq (got 0,1,2,3,4 type=seq)",
+      "FAIL: IMG0507: first-lead 334455 doubleseq (got 0,1,2 type=seq)",
+      "FAIL: IMG0507 gm: doubleseq (got 0,1,2 type=seq)",
+      "FAIL: IMG0510 gm: pass (got 9,10,11)",
+      "FAIL: IMG0511: pass not 22 (got 12,12)",
+      "FAIL: IMG0511 gm: pass (got 12,12)",
+      "FAIL: IMG0513: 2 not K-from-pair (got 11)",
+      "FAIL: IMG0516: 2 not A-from-pair (got 11)",
+      "FAIL: IMG0517: 10-J-Q-K residual (got 6,7,8,9,10)",
+      "FAIL: IMG0518: 22 then trash (got 4)",
+      "FAIL: IMG0519: 10-J-Q save 99 (got 6,7,8)",
+      "FAIL: IMG0520a: omin1 prefer 2 (got 3)",
+      "FAIL: IMG0520b: 7 keeps 6789 residual (got 3)",
+      "FAIL: IMG0521: 6789 not pair vs 1-card opp (got 4,4)",
+      "FAIL: P3: free-lead 33 before AA (got 2,3,4,5,6)",
+      "FAIL: P1: min-beat 7 not Q (got 3)",
+      "FAIL: P5: 2-budget smash\u21922 (got 10)"
+    ],
+    "summary": [
+      52,
+      27
+    ]
+  },
+  "freeze_v96": {
+    "fails": [
+      "FAIL: searchMove perfectInfo:false \u2192 mode det-mcts (got fl-seqopen-hard)",
+      "FAIL: stats.mode is free-lead or search (got fl-seqopen-hard)",
+      "FAIL: IMG0498: A not 6-from-pair (got 5)",
+      "FAIL: IMG0499: free-lead 2 not pair (got 3,3)",
+      "FAIL: IMG0500: 2 not Q-from-JQK (got 10)",
+      "FAIL: IMG0502: K/A not 6-from-run (got 7)",
+      "FAIL: IMG0503: high residual seq (got PASS)",
+      "FAIL: IMG0505: 8 not 4-from-345 (got 1)",
+      "FAIL: IMG0505 gm: 8 not 4 (got 1)",
+      "FAIL: IMG0506: free-lead doubleseq 667788 (got 3,3 type=pair)",
+      "FAIL: IMG0506 gm: doubleseq (got 0,1,2,3,4 type=seq)",
+      "FAIL: IMG0507: first-lead 334455 doubleseq (got 0,1,2 type=seq)",
+      "FAIL: IMG0507 gm: doubleseq (got 0,1,2 type=seq)",
+      "FAIL: IMG0510 gm: pass (got 9,10,11)",
+      "FAIL: IMG0511: pass not 22 (got 12,12)",
+      "FAIL: IMG0511 gm: pass (got 12,12)",
+      "FAIL: IMG0513: 2 not K-from-pair (got 11)",
+      "FAIL: IMG0516: 2 not A-from-pair (got 11)",
+      "FAIL: IMG0517: 10-J-Q-K residual (got 6,7,8,9,10)",
+      "FAIL: IMG0518: 22 then trash (got 4)",
+      "FAIL: IMG0519: 10-J-Q save 99 (got 6,7,8)",
+      "FAIL: IMG0520a: omin1 prefer 2 (got 3)",
+      "FAIL: IMG0520b: 7 keeps 6789 residual (got 3)",
+      "FAIL: IMG0521: 6789 not pair vs 1-card opp (got 4,4)",
+      "FAIL: P3: free-lead 33 before AA (got 2,3,4,5,6)",
+      "FAIL: P1: min-beat 7 not Q (got 3)",
+      "FAIL: P5: 2-budget smash\u21922 (got 10)"
+    ],
+    "summary": [
+      52,
+      27
+    ]
+  },
+  "freeze_v97": {
+    "fails": [
+      "FAIL: searchMove perfectInfo:false \u2192 mode det-mcts (got fl-seqopen-hard)",
+      "FAIL: stats.mode is free-lead or search (got fl-seqopen-hard)",
+      "FAIL: IMG0498: A not 6-from-pair (got 5)",
+      "FAIL: IMG0499: free-lead 2 not pair (got 3,3)",
+      "FAIL: IMG0500: 2 not Q-from-JQK (got 10)",
+      "FAIL: IMG0502: K/A not 6-from-run (got 7)",
+      "FAIL: IMG0503: high residual seq (got PASS)",
+      "FAIL: IMG0505: 8 not 4-from-345 (got 1)",
+      "FAIL: IMG0505 gm: 8 not 4 (got 1)",
+      "FAIL: IMG0506: free-lead doubleseq 667788 (got 3,3 type=pair)",
+      "FAIL: IMG0506 gm: doubleseq (got 0,1,2,3,4 type=seq)",
+      "FAIL: IMG0507: first-lead 334455 doubleseq (got 0,1,2 type=seq)",
+      "FAIL: IMG0507 gm: doubleseq (got 0,1,2 type=seq)",
+      "FAIL: IMG0510 gm: pass (got 9,10,11)",
+      "FAIL: IMG0511: pass not 22 (got 12,12)",
+      "FAIL: IMG0511 gm: pass (got 12,12)",
+      "FAIL: IMG0513: 2 not K-from-pair (got 11)",
+      "FAIL: IMG0516: 2 not A-from-pair (got 11)",
+      "FAIL: IMG0517: 10-J-Q-K residual (got 6,7,8,9,10)",
+      "FAIL: IMG0518: 22 then trash (got 4)",
+      "FAIL: IMG0519: 10-J-Q save 99 (got 6,7,8)",
+      "FAIL: IMG0520a: omin1 prefer 2 (got 3)",
+      "FAIL: IMG0520b: 7 keeps 6789 residual (got 3)",
+      "FAIL: IMG0521: 6789 not pair vs 1-card opp (got 4,4)",
+      "FAIL: P3: free-lead 33 before AA (got 2,3,4,5,6)",
+      "FAIL: P1: min-beat 7 not Q (got 3)",
+      "FAIL: P5: 2-budget smash\u21922 (got 10)"
+    ],
+    "summary": [
+      52,
+      27
+    ]
+  },
+  "live_identical_to_v96": true,
+  "live_identical_to_v97": true,
+  "v96_identical_to_v97": true,
+  "note": "Pre-existing gold Series 1-3 / P1/P3/P5 expert-path fails; not introduced by residual handoff. Same fail set on freeze v96 and live v9.7."
+}

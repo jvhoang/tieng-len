@@ -33,3 +33,10 @@ FORBIDDEN forever under this goal.
 
 ## Resume
 See handoff note § Resume path. Next ship must use **new** seed set and clear identity-lift gates.
+
+## Gold / test-search suite (skeptic AC4)
+`node test-search.js`: **52 pass / 27 fail** on live **v9.7**.  
+**Identical** fail set on freeze **v96** and freeze **v97** (machine proof).  
+Artifacts: `evolve/NOTE-gold-suite-baseline-identity.md` + `.json`; SCRATCH `test-search-*-v9*.log`.  
+Pre-existing gold Series 1–3 debt — not introduced by residual handoff. Engine 42/42 + AI 37/37 green.
+

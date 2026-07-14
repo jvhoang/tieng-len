@@ -47,3 +47,6 @@ Still **FORBIDDEN**. Do not relaunch softSamples ship thrash.
 ## Live package (stable)
 - `AI_BUILD.id = "v9.7"`
 - Tests: engine 42/42, AI 37/37 (search suite has pre-existing gold IMG fails under expert path — same as freeze v96)
+
+## Gold suite (test-search)
+52/27 fail on live v9.7 — **identical** to freeze v96 and v97. See `NOTE-gold-suite-baseline-identity.md`.
