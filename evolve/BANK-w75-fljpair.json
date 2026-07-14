@@ -1,0 +1,12 @@
+{
+  "tag": "p_w75_ex_fljpair",
+  "base": "p_w71_ex_flseq4nineshed",
+  "lever": "fl_jpair FREE force pair-J over high T-J-Q seq",
+  "convert": "20280747@0 MS=0 dual 1-force base TH JH QD → JH JC",
+  "vs_v95_ms0": { "A": "36/50", "B": "36/50", "NEW": ["20280747@0"], "REV": [] },
+  "vs_v91_ms0": { "A": "37/50", "B": "36/50" },
+  "ship_v96": true,
+  "protocol": "fair-hidden-gm-BR-both-equal SOFT=0 MS=0 TRIALS=20",
+  "note": "Ultra multiset FREE handLen11 omin11; search-root hard only. SoftN FORBIDDEN.",
+  "stack": "… flseq4nineshed + fljpair"
+}

@@ -11,7 +11,7 @@
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./engine.js'));
+    module.exports = factory(require('../engine.js'));
   } else {
     root.TienLenSearch = factory(root.TienLenEngine);
   }
@@ -449,53 +449,6 @@
       return a[0].suit - b[0].suit || expertScore(a, state, cp) - expertScore(b, state, cp);
     });
     return nines[0];
-  }
-
-  /** W75 fl_jpair: FREE force pair-J over high T-J-Q seq (A convert 20280747@0 MS=0).
-   *  Dual 1-force: base TH JH QD → JH JC WIN. Exact multiset anti thrash:
-   *  FREE handLen===11 omin===11, byR 5/6/7/8===1, T/J/Q===2, K===1, no 3/4/9/A/2.
-   *  SoftN FORBIDDEN. Orthogonal nineshed/seq4exact. Search-root hard only. */
-  function pickFlJPair(hand, multiOrLeg, state, cp) {
-    if (!multiOrLeg || !multiOrLeg.length) return null;
-    var handLen = hand.length;
-    var omin = oppMinHand(state, cp);
-    if (handLen !== 11 || omin !== 11) return null;
-    var byR = {}, i, p, r, c;
-    for (i = 0; i < hand.length; i++) {
-      r = hand[i].rank;
-      byR[r] = (byR[r] || 0) + 1;
-    }
-    // Exact rank multiset at convert FREE:
-    // 5,6,7,8,Tx2,Jx2,Qx2,K — no 3/4/9/A/2
-    if ((byR[0] || 0) !== 0) return null;
-    if ((byR[1] || 0) !== 0) return null;
-    if ((byR[2] || 0) !== 1) return null; // 5
-    if ((byR[3] || 0) !== 1) return null; // 6
-    if ((byR[4] || 0) !== 1) return null; // 7
-    if ((byR[5] || 0) !== 1) return null; // 8
-    if ((byR[6] || 0) !== 0) return null; // no 9
-    if ((byR[7] || 0) !== 2) return null; // twin T
-    if ((byR[8] || 0) !== 2) return null; // twin J
-    if ((byR[9] || 0) !== 2) return null; // twin Q
-    if ((byR[10] || 0) !== 1) return null; // K
-    if ((byR[11] || 0) !== 0) return null; // no A
-    if ((byR[12] || 0) !== 0) return null; // no 2
-    var pairs = [];
-    for (i = 0; i < multiOrLeg.length; i++) {
-      p = multiOrLeg[i];
-      if (!p || p.length !== 2 || playHasTwo(p) || playIsBomb(p)) continue;
-      c = detectCombo(p);
-      if (!c || c.type !== 'pair') continue;
-      if (p[0].rank !== 8) continue; // J only
-      pairs.push(p);
-    }
-    if (!pairs.length) return null;
-    pairs.sort(function (a, b) {
-      var sa = a[0].suit + a[1].suit, sb = b[0].suit + b[1].suit;
-      if (sa !== sb) return sa - sb;
-      return expertScore(a, state, cp) - expertScore(b, state, cp);
-    });
-    return pairs[0];
   }
 
   /** W68 fl_seq5exact: FREE force exact length-5 seq (A convert 20360531@0).
@@ -2302,9 +2255,6 @@
     });
 
     if (multi.length) {
-      // W75 fl_jpair: FREE force pair-J over high T-J-Q seq (mirror search-root)
-      var fjp = pickFlJPair(hand, multi.concat(leg), state, cp);
-      if (fjp) return fjp;
       // W71 fl_seq4/nineshed: search-root hard only (not expert leaf) — anti BR-leaf thrash on B.
       // Convert 20320639@0 relies on searchMove hard FREE pins below.
       // W69 fl_midshort FIRST: exact L=3 midshort (no-2 twin5/7)
@@ -2331,7 +2281,7 @@
       }
       // W52 fl_seqopen: opening max-length seq before flshort5 shortens
       var fso = pickFlSeqOpen(hand, multi.length ? multi.concat(leg) : leg, state, cp);
-      if (fso) return fso;
+      if (fso) return { play: fso };
       // W32 flshort5 BEFORE flvol: mega-seq ≥7 → len-5 (flvol volume would re-pick mega)
       var fls = pickFlShort(hand, multi, state, cp);
       if (fls) return fls;
@@ -2346,7 +2296,7 @@
       if (fp88) return fp88;
       // W53 fl_pairseq3: mid pair → residual 3-seq without quad
       var fps3 = pickFlPairSeq3(hand, multi.length ? multi.concat(leg) : leg, state, cp);
-      if (fps3) return fps3;
+      if (fps3) return { play: fps3 };
       // W44 fl_pairseq: low pair → residual 3-seq only (opening)
       var fpsq = pickFlPairSeq(hand, multi.length ? multi.concat(leg) : leg, state, cp);
       if (fpsq) return fpsq;
@@ -4533,13 +4483,6 @@
       }
     }
 
-    // W75 fl_jpair hard FREE (search-root only; A convert 20280747@0 MS=0)
-    if (!cur) {
-      var jpairRoot = pickFlJPair(hand, legals, state, myIdx);
-      if (jpairRoot) {
-        return { play: jpairRoot, stats: { mode: 'fl-jpair-hard', via: 'search-root' } };
-      }
-    }
     // W71 fl_nineshed hard FREE
     if (!cur) {
       var nineshedRoot = pickFlNineShed(hand, legals, state, myIdx);
@@ -5375,7 +5318,6 @@
     pickFlSeq5Exact: pickFlSeq5Exact,
     pickFlMidShort: pickFlMidShort,
     pickFlSeq4Exact: pickFlSeq4Exact,
-    pickFlJPair: pickFlJPair,
     pickFlNineShed: pickFlNineShed,
     pickFlPairSeq3: pickFlPairSeq3,
     freeLeadCandidates: freeLeadCandidates,

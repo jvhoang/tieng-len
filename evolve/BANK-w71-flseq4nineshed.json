@@ -1,0 +1,21 @@
+{
+  "tag": "p_w71_ex_flseq4nineshed",
+  "base": "p_w69_ex_flmidshort",
+  "lever": "FREE multi-ply fl_seq4exact + fl_nineshed (search-root hard)",
+  "convert": "A 20320639@0 FREE seq3→seq4 then trip→single9",
+  "vs_v95_id": {
+    "A": 35,
+    "B": 36,
+    "new": ["20320639@0"],
+    "rev": [],
+    "dual_rerun_B": 36
+  },
+  "vs_v91": {
+    "A": 36,
+    "B": 37,
+    "sum": 73
+  },
+  "ship_v96": false,
+  "note": "A 0.70 not >0.70; need +1 more pure A. Parallel duals thrash wall-clock BR — sequential dual-rerun gate required.",
+  "stack": "A 34→35, B 36 flat; B>0.70; A needs +1 more for >0.70"
+}

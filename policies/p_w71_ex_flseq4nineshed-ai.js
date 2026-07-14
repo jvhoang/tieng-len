@@ -14,9 +14,9 @@
 
 /** Shown on title screen — bump when shipping AI behavior changes. */
 const AI_BUILD = {
-  id: "v9.6",
-  stamped: "2026-07-14T14:33:42Z",
-  label: "Grandmaster v9.6 (fair dual fljpair)"
+  id: "v9.1-probe-p_w71_ex_flseq4nineshed",
+  stamped: "2026-07-14T14:50:00Z",
+  label: "Grandmaster v9.1-probe p_w71_ex_flseq4nineshed"
 };
 
 // Publish build identity IMMEDIATELY (before any later init that might throw).
@@ -33,12 +33,12 @@ if (typeof window !== 'undefined') {
 // `window.TienLenAI` is fully assigned.
 const _isNodeCjs = (typeof module === 'object' && module && module.exports &&
   typeof require === 'function');
-const engine = _isNodeCjs ? require('./engine.js') : ((typeof window !== 'undefined' && window.TienLenEngine) || {});
+const engine = _isNodeCjs ? require('../engine.js') : ((typeof window !== 'undefined' && window.TienLenEngine) || {});
 const genomeMod = _isNodeCjs
-  ? require('./genome.js')
+  ? require('../genome.js')
   : (typeof window !== 'undefined' ? window.TienLenGenome : null);
 const searchMod = _isNodeCjs
-  ? require('./search.js')
+  ? require('./p_w71_ex_flseq4nineshed-search.js')
   : (typeof window !== 'undefined' ? window.TienLenSearch : null);
 const {
   detectCombo, getLegalPlays, applyPlay, pass, cardCompare, cloneState: engineClone
@@ -483,11 +483,6 @@ function forceMultiFreeLead(legals, proposed, state, myIdx) {
   if (searchMod && searchMod.pickFreeLeadHard) {
     const hard = searchMod.pickFreeLeadHard(legals, state, myIdx);
     if (!proposed) return hard;
-    // Normalize {play:[...]} wrappers from some search helpers
-    if (proposed && !Array.isArray(proposed) && Array.isArray(proposed.play)) {
-      proposed = proposed.play;
-    }
-    if (!Array.isArray(proposed)) return hard;
     // Veto gift leads
     const omin = oppMinHand(state, myIdx);
     if (omin === 1 && proposed.length === 1 && proposed[0].rank < 10) return hard;
