@@ -41,7 +41,8 @@ Lever: `com_sbc0` unique true-loose Ace combat single (on convert-first stack th
 | `p_w59_ex_flmidshed` | 29/32 | 36/37 | FREE mid shed 99→6; B 20460262@0 |
 | `p_w60_ex_flegpair` | 30/32 | 37/37 | FREE eg dual-pair→8; A 20490180@1 |
 | `p_w61_ex_flpair5` | 30/33 | 37/38 | FREE pair-5 over seq; B 20360532@1 |
-| **`p_w62_ex_flquad4lead`** | **30/34** | **37/38** | FREE trash-3 +quad4; B 20450289@1 |
+| `p_w62_ex_flquad4lead` | 30/34 | 37/38 | FREE trash-3 +quad4; B 20450289@1 |
+| **`p_w63_ex_flpair6`** | **30/35** | **37/38** | FREE pair-6 over seq; B 20300694@0 |
 
 ## Live wiring (must hold)
 - `AI_BUILD.id === "v9.5"`
@@ -50,10 +51,10 @@ Lever: `com_sbc0` unique true-loose Ace combat single (on convert-first stack th
 
 ## Stack (convert-first)
 combat: mulowg · pairhi · pairhi_wide · seqhi · sbc0 · maxedge · egunder · qpairclimb · seqhi_res · seqadj · seq5adj · seqmidunder  
-FREE: flvol · flshort5 · flhidetight · brseq3 · tripair · pairshed · lotesh · pairseq · twoshed · seqopen · pairseq3 · flpair88 · flmidshed · flegpair · flpair5 · **flquad4lead**
+FREE: flvol · flshort5 · flhidetight · brseq3 · tripair · pairshed · lotesh · pairseq · twoshed · seqopen · pairseq3 · flpair88 · flmidshed · flegpair · flpair5 · flquad4lead · **flpair6**
 
 ## Next
-1. **v9.6** — stack pure 0-reverse converts on **flquad4lead** until holdout A/B both WR>0.70 **vs freeze v95**  
+1. **v9.6** — stack pure 0-reverse converts on **flpair6** until holdout A/B both WR>0.70 **vs freeze v95**  
 2. Full-policy firstdiff + identity-diff before promote (reject dual-null / BR thrash)  
 3. Continue 0.1 rungs → **v11.0**  
 4. SoftN stays dead  

@@ -1,0 +1,19 @@
+{
+  "tag": "p_w63_ex_flpair6",
+  "base": "p_w62_ex_flquad4lead",
+  "lever": "fl_pair6 FREE force pair-6 over seq4 no-2 twin-J",
+  "convert": "B 20300694@0 5678→66",
+  "vs_v95_id": {
+    "A": 30,
+    "B": 35,
+    "new": ["20300694@0"],
+    "rev": []
+  },
+  "vs_v91": {
+    "A": 37,
+    "B": 38,
+    "sum": 75
+  },
+  "ship_v96": false,
+  "stack": "A 30 flat, B 34→35 pure vs v95 id; B at 0.70 need >0.70"
+}
