@@ -1,8 +1,6 @@
-# SHIP READY — Grandmaster v9.3
+# SHIP READY — Grandmaster v9.4
 
-**Dual vs freeze v9.2**
 - Primary seed 20260711: **40/50 WR=0.80**
-- Re-run seed 20260712: **41/50 WR=0.82**
-
-**Lever:** residual multiTie on BR free-lead ranking (V93_RESIDUAL_MT)
-**Freeze:** policies/v93-ai.js + policies/v93-search.js
+- Re-run seed 20260712: **42/50 WR=0.84**
+- Lever: V94_TWO_OMIN2 + residual multiTie BR
+- Freeze: policies/v94-ai.js + policies/v94-search.js
