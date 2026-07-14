@@ -4,9 +4,9 @@
  */
 (function (root) {
   var BUILD = {
-    id: 'v9.3',
-    stamped: '2026-07-14T00:27:00Z',
-    label: 'Grandmaster v9.3'
+    id: 'v9.4',
+    stamped: '2026-07-14T01:40:33Z',
+    label: 'Grandmaster v9.4'
   };
   root.TIENLEN_AI_BUILD = BUILD;
   root.TienLenAI = root.TienLenAI || {};
