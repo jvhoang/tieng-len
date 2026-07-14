@@ -1,0 +1,16 @@
+{
+  "protocol": "fresh-seed-fair-dual-v1",
+  "stamped": "2026-07-14T16:19:18.949Z",
+  "masterSeed": null,
+  "gamesPerPartition": 2,
+  "bothSeats": true,
+  "A": [
+    2083698882,
+    2538374713
+  ],
+  "B": [
+    2265342595,
+    2603190790
+  ],
+  "note": "One-time seed set for this eval round. Do not reuse across ship rungs as a fixed holdout."
+}

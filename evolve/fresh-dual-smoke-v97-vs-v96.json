@@ -1,0 +1,291 @@
+{
+  "protocol": "fresh-seed-fair-dual-v1",
+  "antiOverfit": true,
+  "infoModel": "hidden",
+  "perfectInfo": false,
+  "hiddenInfo": true,
+  "brBoth": true,
+  "equalBudget": true,
+  "softN": 0,
+  "ms": 0,
+  "trials": 20,
+  "bothSeats": true,
+  "freezeTag": "v96",
+  "challTag": "v97",
+  "live": {
+    "id": "v9.7",
+    "stamped": "2026-07-14T15:35:16Z",
+    "label": "Grandmaster v9.7 (fair dual fl7open stack)"
+  },
+  "freeze": {
+    "id": "v9.6",
+    "stamped": "2026-07-14T14:33:42Z",
+    "label": "Grandmaster v9.6 (fair dual fljpair)"
+  },
+  "seedSetPath": "/Users/johnhoang/Developer/Grok/tieng-len/evolve/seed-sets/ship-2026-07-14T16-19-18-949Z-v97-vs-v96.json",
+  "seedSetGenerated": true,
+  "seeds": {
+    "A": [
+      2083698882,
+      2538374713
+    ],
+    "B": [
+      2265342595,
+      2603190790
+    ]
+  },
+  "opts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": false,
+    "hiddenInfo": true,
+    "timeMs": 0,
+    "iterations": 60,
+    "maxSims": 120,
+    "brTrials": 20,
+    "bestResponse": true,
+    "exactExploit": false,
+    "exploit": true,
+    "softSamples": 0,
+    "maxBranch": 12,
+    "mode": "auto",
+    "strongSelf": false
+  },
+  "target": 0.7,
+  "minDelta": 2,
+  "chall": {
+    "A": {
+      "mode": "chall-vs-freeze",
+      "partition": "A",
+      "games": 4,
+      "liveWins": 2,
+      "freezeWins": 2,
+      "liveWinRate": 0.5,
+      "seeds": [
+        2083698882,
+        2538374713
+      ],
+      "bothSeats": true,
+      "ms": 1822,
+      "perGame": [
+        {
+          "seed": 2083698882,
+          "liveWin": true,
+          "liveSeat": 0,
+          "steps": 28,
+          "ms": 706
+        },
+        {
+          "seed": 2083698882,
+          "liveWin": false,
+          "liveSeat": 1,
+          "steps": 28,
+          "ms": 482
+        },
+        {
+          "seed": 2538374713,
+          "liveWin": true,
+          "liveSeat": 0,
+          "steps": 23,
+          "ms": 484
+        },
+        {
+          "seed": 2538374713,
+          "liveWin": false,
+          "liveSeat": 1,
+          "steps": 23,
+          "ms": 149
+        }
+      ],
+      "lossSeats": [
+        "2083698882@1",
+        "2538374713@1"
+      ]
+    },
+    "B": {
+      "mode": "chall-vs-freeze",
+      "partition": "B",
+      "games": 4,
+      "liveWins": 2,
+      "freezeWins": 2,
+      "liveWinRate": 0.5,
+      "seeds": [
+        2265342595,
+        2603190790
+      ],
+      "bothSeats": true,
+      "ms": 1345,
+      "perGame": [
+        {
+          "seed": 2265342595,
+          "liveWin": false,
+          "liveSeat": 0,
+          "steps": 20,
+          "ms": 167
+        },
+        {
+          "seed": 2265342595,
+          "liveWin": true,
+          "liveSeat": 1,
+          "steps": 20,
+          "ms": 145
+        },
+        {
+          "seed": 2603190790,
+          "liveWin": false,
+          "liveSeat": 0,
+          "steps": 26,
+          "ms": 573
+        },
+        {
+          "seed": 2603190790,
+          "liveWin": true,
+          "liveSeat": 1,
+          "steps": 26,
+          "ms": 459
+        }
+      ],
+      "lossSeats": [
+        "2265342595@0",
+        "2603190790@0"
+      ]
+    }
+  },
+  "identity": {
+    "A": {
+      "mode": "freeze-vs-freeze",
+      "partition": "A",
+      "games": 4,
+      "liveWins": 2,
+      "freezeWins": 2,
+      "liveWinRate": 0.5,
+      "seeds": [
+        2083698882,
+        2538374713
+      ],
+      "bothSeats": true,
+      "ms": 1022,
+      "perGame": [
+        {
+          "seed": 2083698882,
+          "liveWin": true,
+          "liveSeat": 0,
+          "steps": 28,
+          "ms": 418
+        },
+        {
+          "seed": 2083698882,
+          "liveWin": false,
+          "liveSeat": 1,
+          "steps": 28,
+          "ms": 420
+        },
+        {
+          "seed": 2538374713,
+          "liveWin": true,
+          "liveSeat": 0,
+          "steps": 23,
+          "ms": 90
+        },
+        {
+          "seed": 2538374713,
+          "liveWin": false,
+          "liveSeat": 1,
+          "steps": 23,
+          "ms": 93
+        }
+      ],
+      "lossSeats": [
+        "2083698882@1",
+        "2538374713@1"
+      ]
+    },
+    "B": {
+      "mode": "freeze-vs-freeze",
+      "partition": "B",
+      "games": 4,
+      "liveWins": 2,
+      "freezeWins": 2,
+      "liveWinRate": 0.5,
+      "seeds": [
+        2265342595,
+        2603190790
+      ],
+      "bothSeats": true,
+      "ms": 1145,
+      "perGame": [
+        {
+          "seed": 2265342595,
+          "liveWin": false,
+          "liveSeat": 0,
+          "steps": 20,
+          "ms": 134
+        },
+        {
+          "seed": 2265342595,
+          "liveWin": true,
+          "liveSeat": 1,
+          "steps": 20,
+          "ms": 137
+        },
+        {
+          "seed": 2603190790,
+          "liveWin": false,
+          "liveSeat": 0,
+          "steps": 26,
+          "ms": 455
+        },
+        {
+          "seed": 2603190790,
+          "liveWin": true,
+          "liveSeat": 1,
+          "steps": 26,
+          "ms": 418
+        }
+      ],
+      "lossSeats": [
+        "2265342595@0",
+        "2603190790@0"
+      ]
+    }
+  },
+  "summary": {
+    "challA": {
+      "wins": 2,
+      "games": 4,
+      "wr": 0.5
+    },
+    "challB": {
+      "wins": 2,
+      "games": 4,
+      "wr": 0.5
+    },
+    "idA": {
+      "wins": 2,
+      "games": 4,
+      "wr": 0.5
+    },
+    "idB": {
+      "wins": 2,
+      "games": 4,
+      "wr": 0.5
+    },
+    "deltaA": 0,
+    "deltaB": 0,
+    "passA": {
+      "wrOk": false,
+      "deltaOk": false,
+      "delta": 0,
+      "passed": false
+    },
+    "passB": {
+      "wrOk": false,
+      "deltaOk": false,
+      "delta": 0,
+      "passed": false
+    }
+  },
+  "totalMs": 5336,
+  "passed": false,
+  "note": "Fixed HOLDOUT seeds 20260801/20260802 are FORBIDDEN for ship under this protocol. Each eval round uses a new seed set recorded in seedSetPath."
+}
