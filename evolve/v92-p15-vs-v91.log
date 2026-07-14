@@ -1,0 +1,187 @@
+=== live vs freeze v91 games=50 target=0.7 ===
+live build { id: 'v9.2',
+  stamped: '2026-07-13T12:00:00Z',
+  label: 'Grandmaster v9.2 (P1–P5)' }
+freeze build { id: 'v9.1',
+  stamped: '2026-07-13T02:50:38Z',
+  label: 'Grandmaster v9.1 (ladder freeze)' }
+live opts { difficulty: 'grandmaster',
+  timeMs: 150,
+  iterations: 120,
+  maxSims: 320,
+  brTrials: 48,
+  bestResponse: true,
+  useSearch: true,
+  perfectInfo: true,
+  hiddenInfo: false,
+  maxBranch: 20,
+  dualSelf: false,
+  exactExploit: true,
+  mode: 'auto',
+  combatRoot: false,
+  flRoot: false,
+  softSamples: 0,
+  exploit: true }
+freeze opts { difficulty: 'grandmaster',
+  useSearch: true,
+  perfectInfo: true,
+  hiddenInfo: false,
+  timeMs: 120,
+  iterations: 80,
+  maxSims: 160,
+  bestResponse: false,
+  maxBranch: 16,
+  mode: 'auto',
+  combatRoot: false,
+  flRoot: false,
+  dualSelf: false,
+  exactExploit: true,
+  softSamples: 0,
+  exploit: false }
+opponentFreeze policies/v91-ai.js + search
+protocol { freezeDifficulty: 'grandmaster',
+  liveDifficulty: 'grandmaster',
+  brModel: 'freeze-expert-cheap' }
+{"games":10,"liveWins":4,"liveWinRate":0.4,"ci95":{"p":0.4,"lo":0.16817758120350967,"hi":0.6873304525498135},"ms":221584,"gps":0.045129612246371575}
+{"games":20,"liveWins":10,"liveWinRate":0.5,"ci95":{"p":0.5,"lo":0.2992949144298199,"hi":0.70070508557018},"ms":335257,"gps":0.059655726800633545}
+{"slowGame":27,"seed":20529982,"ms":74190,"win":true}
+{"games":30,"liveWins":15,"liveWinRate":0.5,"ci95":{"p":0.5,"lo":0.3315385122717376,"hi":0.6684614877282624},"ms":510222,"gps":0.058797935016522224}
+{"games":40,"liveWins":20,"liveWinRate":0.5,"ci95":{"p":0.5,"lo":0.3519927879709976,"hi":0.6480072120290024},"ms":691578,"gps":0.057838739809537035}
+{"games":50,"liveWins":24,"liveWinRate":0.48,"ci95":{"p":0.48,"lo":0.347969123955057,"hi":0.6148848774119157},"ms":882630,"gps":0.056648878918686196}
+=== FINAL ===
+{
+  "mode": "2p-h2h-single-deal-continuous",
+  "protocol": "grandmaster-vs-grandmaster",
+  "games": 50,
+  "liveWins": 24,
+  "freezeWins": 26,
+  "liveWinRate": 0.48,
+  "v80Wins": 24,
+  "v80WinRate": 0.48,
+  "ci95": {
+    "p": 0.48,
+    "lo": 0.347969123955057,
+    "hi": 0.6148848774119157
+  },
+  "target": 0.7,
+  "passed": false,
+  "ms": 882631,
+  "live": {
+    "id": "v9.2",
+    "stamped": "2026-07-13T12:00:00Z",
+    "label": "Grandmaster v9.2 (P1–P5)"
+  },
+  "freeze": {
+    "id": "v9.1",
+    "stamped": "2026-07-13T02:50:38Z",
+    "label": "Grandmaster v9.1 (ladder freeze)"
+  },
+  "v80": {
+    "id": "v9.2",
+    "stamped": "2026-07-13T12:00:00Z",
+    "label": "Grandmaster v9.2 (P1–P5)"
+  },
+  "v80Opts": {
+    "difficulty": "grandmaster",
+    "timeMs": 150,
+    "iterations": 120,
+    "maxSims": 320,
+    "brTrials": 48,
+    "bestResponse": true,
+    "useSearch": true,
+    "perfectInfo": true,
+    "hiddenInfo": false,
+    "maxBranch": 20,
+    "dualSelf": false,
+    "exactExploit": true,
+    "mode": "auto",
+    "combatRoot": false,
+    "flRoot": false,
+    "softSamples": 0,
+    "exploit": true
+  },
+  "freezeOpts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": true,
+    "hiddenInfo": false,
+    "timeMs": 120,
+    "iterations": 80,
+    "maxSims": 160,
+    "bestResponse": false,
+    "maxBranch": 16,
+    "mode": "auto",
+    "combatRoot": false,
+    "flRoot": false,
+    "dualSelf": false,
+    "exactExploit": true,
+    "softSamples": 0,
+    "exploit": false
+  },
+  "opponentFreeze": "policies/v91-ai.js + policies/v91-search.js",
+  "freezeTag": "v91",
+  "seed0": 20260711,
+  "checkpoints": [
+    {
+      "games": 10,
+      "liveWins": 4,
+      "liveWinRate": 0.4,
+      "ci95": {
+        "p": 0.4,
+        "lo": 0.16817758120350967,
+        "hi": 0.6873304525498135
+      },
+      "ms": 221584,
+      "gps": 0.045129612246371575
+    },
+    {
+      "games": 20,
+      "liveWins": 10,
+      "liveWinRate": 0.5,
+      "ci95": {
+        "p": 0.5,
+        "lo": 0.2992949144298199,
+        "hi": 0.70070508557018
+      },
+      "ms": 335257,
+      "gps": 0.059655726800633545
+    },
+    {
+      "games": 30,
+      "liveWins": 15,
+      "liveWinRate": 0.5,
+      "ci95": {
+        "p": 0.5,
+        "lo": 0.3315385122717376,
+        "hi": 0.6684614877282624
+      },
+      "ms": 510222,
+      "gps": 0.058797935016522224
+    },
+    {
+      "games": 40,
+      "liveWins": 20,
+      "liveWinRate": 0.5,
+      "ci95": {
+        "p": 0.5,
+        "lo": 0.3519927879709976,
+        "hi": 0.6480072120290024
+      },
+      "ms": 691578,
+      "gps": 0.057838739809537035
+    },
+    {
+      "games": 50,
+      "liveWins": 24,
+      "liveWinRate": 0.48,
+      "ci95": {
+        "p": 0.48,
+        "lo": 0.347969123955057,
+        "hi": 0.6148848774119157
+      },
+      "ms": 882630,
+      "gps": 0.056648878918686196
+    }
+  ]
+}
+GATE FAILED: liveWinRate=0.48 need >0.7

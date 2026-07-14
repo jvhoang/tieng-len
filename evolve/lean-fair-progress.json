@@ -1,0 +1,16 @@
+{
+  "latest": {
+    "g": 49,
+    "seed": 20500154,
+    "liveWin": true,
+    "liveSeat": 1,
+    "steps": 17,
+    "ms": 44,
+    "liveWins": 36,
+    "games": 50,
+    "wr": 0.72
+  },
+  "freeze": "v96",
+  "chall": "v97",
+  "bothSeats": true
+}

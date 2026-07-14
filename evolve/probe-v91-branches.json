@@ -1,0 +1,743 @@
+{
+  "generated": "2026-07-13T00:19:12Z",
+  "protocol": {
+    "freeze": "v90",
+    "freezeDiff": "grandmaster",
+    "liveDiff": "grandmaster",
+    "seed": 20260711,
+    "FREEZE_MS": 120,
+    "FREEZE_ITERS": 80,
+    "FREEZE_BR": 0,
+    "FREEZE_EXACT": 0,
+    "V8_MS": 160,
+    "V8_ITERS": 130,
+    "BR_TRIALS": 56,
+    "EXACT": 1,
+    "FL_ROOT": 0,
+    "COMBAT_ROOT": 0,
+    "DUAL_SELF": 0,
+    "target": 0.7,
+    "isolation": "tieng-len-probe-v91 workdirs (main search.js not edited for probes)"
+  },
+  "historical_ref": {
+    "v91_vs_v90_final": "35/50 WR=0.70 FAIL (prior dual attempt)",
+    "v91_vs_v90_rerun": "35/50 WR=0.70 FAIL"
+  },
+  "round1_n30": [
+    {
+      "name": "BASE",
+      "liveWins": 23,
+      "games": 30,
+      "liveWinRate": 0.7666666666666667,
+      "passed": true,
+      "ms": 524890,
+      "ci95": {
+        "p": 0.7666666666666667,
+        "lo": 0.5907132766967573,
+        "hi": 0.8820776078949878
+      },
+      "checkpoints": [
+        [
+          10,
+          8
+        ],
+        [
+          20,
+          17
+        ],
+        [
+          30,
+          23
+        ]
+      ],
+      "flRoot": false,
+      "combatRoot": false,
+      "timeMs": 160,
+      "brTrials": 56,
+      "round": 1,
+      "desc": "v9.1 baseline multiTie 0.004*min11, race 0.053, trash 0.015"
+    },
+    {
+      "name": "MT",
+      "liveWins": 23,
+      "games": 30,
+      "liveWinRate": 0.7666666666666667,
+      "passed": true,
+      "ms": 528920,
+      "ci95": {
+        "p": 0.7666666666666667,
+        "lo": 0.5907132766967573,
+        "hi": 0.8820776078949878
+      },
+      "checkpoints": [
+        [
+          10,
+          8
+        ],
+        [
+          20,
+          17
+        ],
+        [
+          30,
+          23
+        ]
+      ],
+      "flRoot": false,
+      "combatRoot": false,
+      "timeMs": 160,
+      "brTrials": 56,
+      "round": 1,
+      "desc": "multiTie 0.005*min(12)"
+    },
+    {
+      "name": "RACE",
+      "liveWins": 23,
+      "games": 30,
+      "liveWinRate": 0.7666666666666667,
+      "passed": true,
+      "ms": 529317,
+      "ci95": {
+        "p": 0.7666666666666667,
+        "lo": 0.5907132766967573,
+        "hi": 0.8820776078949878
+      },
+      "checkpoints": [
+        [
+          10,
+          8
+        ],
+        [
+          20,
+          17
+        ],
+        [
+          30,
+          23
+        ]
+      ],
+      "flRoot": false,
+      "combatRoot": false,
+      "timeMs": 160,
+      "brTrials": 56,
+      "round": 1,
+      "desc": "leafEval race 0.053\u21920.056"
+    },
+    {
+      "name": "TRASH",
+      "liveWins": 23,
+      "games": 30,
+      "liveWinRate": 0.7666666666666667,
+      "passed": true,
+      "ms": 524008,
+      "ci95": {
+        "p": 0.7666666666666667,
+        "lo": 0.5907132766967573,
+        "hi": 0.8820776078949878
+      },
+      "checkpoints": [
+        [
+          10,
+          8
+        ],
+        [
+          20,
+          17
+        ],
+        [
+          30,
+          23
+        ]
+      ],
+      "flRoot": false,
+      "combatRoot": false,
+      "timeMs": 160,
+      "brTrials": 56,
+      "round": 1,
+      "desc": "trashCount weight 0.015\u21920.020 (leaf+fl soft)"
+    },
+    {
+      "name": "FL_TRASH",
+      "liveWins": 23,
+      "games": 30,
+      "liveWinRate": 0.7666666666666667,
+      "passed": true,
+      "ms": 527810,
+      "ci95": {
+        "p": 0.7666666666666667,
+        "lo": 0.5907132766967573,
+        "hi": 0.8820776078949878
+      },
+      "checkpoints": [
+        [
+          10,
+          8
+        ],
+        [
+          20,
+          17
+        ],
+        [
+          30,
+          23
+        ]
+      ],
+      "flRoot": false,
+      "combatRoot": false,
+      "timeMs": 160,
+      "brTrials": 56,
+      "round": 1,
+      "desc": "aggressive free-lead trash shed (expertScore, candidates, hybrid soft)"
+    },
+    {
+      "name": "COMBAT",
+      "liveWins": 23,
+      "games": 30,
+      "liveWinRate": 0.7666666666666667,
+      "passed": true,
+      "ms": 459820,
+      "ci95": {
+        "p": 0.7666666666666667,
+        "lo": 0.5907132766967573,
+        "hi": 0.8820776078949878
+      },
+      "checkpoints": [
+        [
+          10,
+          8
+        ],
+        [
+          20,
+          17
+        ],
+        [
+          30,
+          23
+        ]
+      ],
+      "flRoot": false,
+      "combatRoot": false,
+      "timeMs": 160,
+      "brTrials": 56,
+      "round": 1,
+      "desc": "expert pass discipline + combat soft root (roots off so soft inactive)"
+    }
+  ],
+  "round2_n30": [
+    {
+      "name": "MB",
+      "liveWins": 23,
+      "games": 30,
+      "liveWinRate": 0.7666666666666667,
+      "passed": true,
+      "ms": 521513,
+      "ci95": {
+        "p": 0.7666666666666667,
+        "lo": 0.5907132766967573,
+        "hi": 0.8820776078949878
+      },
+      "checkpoints": [
+        [
+          10,
+          8
+        ],
+        [
+          20,
+          17
+        ],
+        [
+          30,
+          23
+        ]
+      ],
+      "flRoot": false,
+      "combatRoot": false,
+      "timeMs": 160,
+      "brTrials": 56,
+      "round": 2,
+      "desc": "strong multiBonus 0.028 + multiTie 0.012 + multi-win soft"
+    },
+    {
+      "name": "EXACT",
+      "liveWins": 23,
+      "games": 30,
+      "liveWinRate": 0.7666666666666667,
+      "passed": true,
+      "ms": 365016,
+      "ci95": {
+        "p": 0.7666666666666667,
+        "lo": 0.5907132766967573,
+        "hi": 0.8820776078949878
+      },
+      "checkpoints": [
+        [
+          10,
+          8
+        ],
+        [
+          20,
+          17
+        ],
+        [
+          30,
+          23
+        ]
+      ],
+      "flRoot": false,
+      "combatRoot": false,
+      "timeMs": 160,
+      "brTrials": 56,
+      "round": 2,
+      "desc": "exactEndgame total\u226420 + wallclock abort + exactMs +50%"
+    },
+    {
+      "name": "LOCK",
+      "liveWins": 23,
+      "games": 30,
+      "liveWinRate": 0.7666666666666667,
+      "passed": true,
+      "ms": 519838,
+      "ci95": {
+        "p": 0.7666666666666667,
+        "lo": 0.5907132766967573,
+        "hi": 0.8820776078949878
+      },
+      "checkpoints": [
+        [
+          10,
+          8
+        ],
+        [
+          20,
+          17
+        ],
+        [
+          30,
+          23
+        ]
+      ],
+      "flRoot": false,
+      "combatRoot": false,
+      "timeMs": 160,
+      "brTrials": 56,
+      "round": 2,
+      "desc": "stronger unanswerable lockBonus + mild race 0.055"
+    },
+    {
+      "name": "TWO",
+      "liveWins": 24,
+      "games": 30,
+      "liveWinRate": 0.8,
+      "passed": true,
+      "ms": 458546,
+      "ci95": {
+        "p": 0.8,
+        "lo": 0.6269395261897257,
+        "hi": 0.9049502189759876
+      },
+      "checkpoints": [
+        [
+          10,
+          8
+        ],
+        [
+          20,
+          17
+        ],
+        [
+          30,
+          24
+        ]
+      ],
+      "flRoot": false,
+      "combatRoot": false,
+      "timeMs": 160,
+      "brTrials": 56,
+      "round": 2,
+      "desc": "broader 2-tempo vs mid tops + contest more / soft-pass rarer"
+    },
+    {
+      "name": "TRASH_EARLY",
+      "liveWins": 23,
+      "games": 30,
+      "liveWinRate": 0.7666666666666667,
+      "passed": true,
+      "ms": 575327,
+      "ci95": {
+        "p": 0.7666666666666667,
+        "lo": 0.5907132766967573,
+        "hi": 0.8820776078949878
+      },
+      "checkpoints": [
+        [
+          10,
+          8
+        ],
+        [
+          20,
+          17
+        ],
+        [
+          30,
+          23
+        ]
+      ],
+      "flRoot": false,
+      "combatRoot": false,
+      "timeMs": 160,
+      "brTrials": 56,
+      "round": 2,
+      "desc": "freeLeadCandidates always trash + pickFreeLeadHard trash over high multi"
+    },
+    {
+      "name": "ROOTS",
+      "liveWins": 23,
+      "games": 30,
+      "liveWinRate": 0.7666666666666667,
+      "passed": true,
+      "ms": 518062,
+      "ci95": {
+        "p": 0.7666666666666667,
+        "lo": 0.5907132766967573,
+        "hi": 0.8820776078949878
+      },
+      "checkpoints": [
+        [
+          10,
+          8
+        ],
+        [
+          20,
+          17
+        ],
+        [
+          30,
+          23
+        ]
+      ],
+      "flRoot": true,
+      "combatRoot": true,
+      "timeMs": 160,
+      "brTrials": 56,
+      "round": 2,
+      "desc": "BASE search with FL_ROOT=1 COMBAT_ROOT=1"
+    }
+  ],
+  "confirmation": [
+    {
+      "name": "BASE50",
+      "liveWins": 35,
+      "games": 50,
+      "liveWinRate": 0.7,
+      "passed": false,
+      "ms": 926713,
+      "ci95": {
+        "p": 0.7,
+        "lo": 0.562493877226366,
+        "hi": 0.8089661091039063
+      },
+      "checkpoints": [
+        [
+          10,
+          8
+        ],
+        [
+          20,
+          17
+        ],
+        [
+          30,
+          23
+        ],
+        [
+          40,
+          30
+        ],
+        [
+          50,
+          35
+        ]
+      ],
+      "flRoot": false,
+      "combatRoot": false,
+      "timeMs": 160,
+      "brTrials": 56,
+      "round": "confirm",
+      "desc": "baseline N=50"
+    },
+    {
+      "name": "TWO50",
+      "liveWins": 36,
+      "games": 50,
+      "liveWinRate": 0.72,
+      "passed": true,
+      "ms": 853803,
+      "ci95": {
+        "p": 0.72,
+        "lo": 0.5833461285401033,
+        "hi": 0.8252598564231964
+      },
+      "checkpoints": [
+        [
+          10,
+          8
+        ],
+        [
+          20,
+          17
+        ],
+        [
+          30,
+          24
+        ],
+        [
+          40,
+          31
+        ],
+        [
+          50,
+          36
+        ]
+      ],
+      "flRoot": false,
+      "combatRoot": false,
+      "timeMs": 160,
+      "brTrials": 56,
+      "round": "confirm",
+      "desc": "TWO branch N=50"
+    },
+    {
+      "name": "TWO30b",
+      "liveWins": 24,
+      "games": 30,
+      "liveWinRate": 0.8,
+      "passed": true,
+      "ms": 423841,
+      "ci95": {
+        "p": 0.8,
+        "lo": 0.6269395261897257,
+        "hi": 0.9049502189759876
+      },
+      "checkpoints": [
+        [
+          10,
+          8
+        ],
+        [
+          20,
+          17
+        ],
+        [
+          30,
+          24
+        ]
+      ],
+      "flRoot": false,
+      "combatRoot": false,
+      "timeMs": 160,
+      "brTrials": 56,
+      "round": "confirm",
+      "desc": "TWO N=30 re-run (reproducibility)"
+    },
+    {
+      "name": "TWO_ROOTS",
+      "liveWins": 24,
+      "games": 30,
+      "liveWinRate": 0.8,
+      "passed": true,
+      "ms": 424369,
+      "ci95": {
+        "p": 0.8,
+        "lo": 0.6269395261897257,
+        "hi": 0.9049502189759876
+      },
+      "checkpoints": [
+        [
+          10,
+          8
+        ],
+        [
+          20,
+          17
+        ],
+        [
+          30,
+          24
+        ]
+      ],
+      "flRoot": true,
+      "combatRoot": true,
+      "timeMs": 160,
+      "brTrials": 56,
+      "round": "confirm",
+      "desc": "TWO + FL_ROOT=1 COMBAT_ROOT=1 N=30"
+    }
+  ],
+  "ranked": [
+    {
+      "name": "TWO30b",
+      "wins": 24,
+      "games": 30,
+      "wr": 0.8,
+      "passed": true,
+      "desc": "TWO N=30 re-run (reproducibility)"
+    },
+    {
+      "name": "TWO_ROOTS",
+      "wins": 24,
+      "games": 30,
+      "wr": 0.8,
+      "passed": true,
+      "desc": "TWO + FL_ROOT=1 COMBAT_ROOT=1 N=30"
+    },
+    {
+      "name": "TWO",
+      "wins": 24,
+      "games": 30,
+      "wr": 0.8,
+      "passed": true,
+      "desc": "broader 2-tempo vs mid tops + contest more / soft-pass rarer"
+    },
+    {
+      "name": "EXACT",
+      "wins": 23,
+      "games": 30,
+      "wr": 0.7666666666666667,
+      "passed": true,
+      "desc": "exactEndgame total\u226420 + wallclock abort + exactMs +50%"
+    },
+    {
+      "name": "COMBAT",
+      "wins": 23,
+      "games": 30,
+      "wr": 0.7666666666666667,
+      "passed": true,
+      "desc": "expert pass discipline + combat soft root (roots off so soft inactive)"
+    },
+    {
+      "name": "ROOTS",
+      "wins": 23,
+      "games": 30,
+      "wr": 0.7666666666666667,
+      "passed": true,
+      "desc": "BASE search with FL_ROOT=1 COMBAT_ROOT=1"
+    },
+    {
+      "name": "LOCK",
+      "wins": 23,
+      "games": 30,
+      "wr": 0.7666666666666667,
+      "passed": true,
+      "desc": "stronger unanswerable lockBonus + mild race 0.055"
+    },
+    {
+      "name": "MB",
+      "wins": 23,
+      "games": 30,
+      "wr": 0.7666666666666667,
+      "passed": true,
+      "desc": "strong multiBonus 0.028 + multiTie 0.012 + multi-win soft"
+    },
+    {
+      "name": "TRASH",
+      "wins": 23,
+      "games": 30,
+      "wr": 0.7666666666666667,
+      "passed": true,
+      "desc": "trashCount weight 0.015\u21920.020 (leaf+fl soft)"
+    },
+    {
+      "name": "BASE",
+      "wins": 23,
+      "games": 30,
+      "wr": 0.7666666666666667,
+      "passed": true,
+      "desc": "v9.1 baseline multiTie 0.004*min11, race 0.053, trash 0.015"
+    },
+    {
+      "name": "FL_TRASH",
+      "wins": 23,
+      "games": 30,
+      "wr": 0.7666666666666667,
+      "passed": true,
+      "desc": "aggressive free-lead trash shed (expertScore, candidates, hybrid soft)"
+    },
+    {
+      "name": "MT",
+      "wins": 23,
+      "games": 30,
+      "wr": 0.7666666666666667,
+      "passed": true,
+      "desc": "multiTie 0.005*min(12)"
+    },
+    {
+      "name": "RACE",
+      "wins": 23,
+      "games": 30,
+      "wr": 0.7666666666666667,
+      "passed": true,
+      "desc": "leafEval race 0.053\u21920.056"
+    },
+    {
+      "name": "TRASH_EARLY",
+      "wins": 23,
+      "games": 30,
+      "wr": 0.7666666666666667,
+      "passed": true,
+      "desc": "freeLeadCandidates always trash + pickFreeLeadHard trash over high multi"
+    },
+    {
+      "name": "TWO50",
+      "wins": 36,
+      "games": 50,
+      "wr": 0.72,
+      "passed": true,
+      "desc": "TWO branch N=50"
+    },
+    {
+      "name": "BASE50",
+      "wins": 35,
+      "games": 50,
+      "wr": 0.7,
+      "passed": false,
+      "desc": "baseline N=50"
+    }
+  ],
+  "best": {
+    "branch": "TWO",
+    "n30": "24/30 WR=0.80 (twice: r2 + TWO30b)",
+    "n50": "36/50 WR=0.72 PASS (vs BASE50 35/50 WR=0.70 FAIL)",
+    "delta_vs_base_n50": "+1 win"
+  },
+  "promote": {
+    "primary": "TWO \u2014 expertPolicy 2-tempo + pass discipline",
+    "secondary": null,
+    "do_not_promote": [
+      "MT",
+      "RACE",
+      "TRASH",
+      "FL_TRASH",
+      "COMBAT",
+      "MB",
+      "LOCK",
+      "TRASH_EARLY",
+      "EXACT (no WR gain)",
+      "ROOTS alone (no WR gain)"
+    ],
+    "exact_patch": {
+      "file": "search.js",
+      "changes": [
+        {
+          "where": "expertPolicy mid-top 2-tempo gate",
+          "from": "omin<=2 && handLen 5..8 && trashCount>=1",
+          "to": "omin<=3 && handLen 4..9 && (trashCount>=1 || control>=2)"
+        },
+        {
+          "where": "expertPolicy soft-pass / contest tail",
+          "from": "soft-pass handLen>=9 && curTop<10 && omin>=6; contest handLen>=8 && omin<=3",
+          "to": "always contest handLen<=7; soft-pass only handLen>=10 && curTop<9 && omin>=7; contest handLen>=8 && omin<=4"
+        }
+      ]
+    }
+  }
+}

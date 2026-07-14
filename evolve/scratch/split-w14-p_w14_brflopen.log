@@ -1,0 +1,9 @@
+=== START p_w14_brflopen 2026-07-14T05:18:41Z ===
+=== Fair DEV internal split ===
+freeze=v91 chall=p_w14_brflopen design g=0..11 check g=12..24
+DESIGN g0-11  id=12/24 ch=14/24=0.583 Δ+2  interest
+CHECK  g12-24  id=12/26 ch=15/26=0.577 Δ+3  check_ok
+FULL DEV (design+check)  id=24/50 ch=29/50=0.580 Δ+5  full_n.s.
+SPLIT GATE: PASS (may run full DEV for significance)
+wrote /Users/johnhoang/Developer/Grok/tieng-len/evolve/split-latest-p_w14_brflopen-vs-v91.json
+=== END p_w14_brflopen status=0 ===

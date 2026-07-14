@@ -1,0 +1,225 @@
+{"start":true,"freeze":"v91","chall":"p_pass","live":{"id":"v9.2-probe-pass","stamped":"2026-07-14T04:00:00Z","label":"Grandmaster v9.2-probe-pass (H_pass_E_play structure fold)"},"freezeBuild":{"id":"v9.1","stamped":"2026-07-13T02:50:38Z","label":"Grandmaster v9.1 (ladder freeze)"},"games":20,"seed0":20260711,"protocol":"fair-hidden-gm-BR-both-equal","opts":{"difficulty":"grandmaster","useSearch":true,"perfectInfo":false,"hiddenInfo":true,"timeMs":150,"iterations":60,"maxSims":120,"brTrials":16,"bestResponse":true,"exactExploit":false,"exploit":false,"softSamples":0,"maxBranch":12,"mode":"auto","strongSelf":false}}
+{"g":0,"seed":20260711,"liveWin":false,"steps":20,"ms":501,"liveWins":0,"games":1,"wr":0}
+{"g":1,"seed":20270684,"liveWin":false,"steps":22,"ms":525,"liveWins":0,"games":2,"wr":0}
+{"g":2,"seed":20280657,"liveWin":false,"steps":20,"ms":290,"liveWins":0,"games":3,"wr":0}
+{"g":3,"seed":20290630,"liveWin":false,"steps":20,"ms":163,"liveWins":0,"games":4,"wr":0}
+{"g":4,"seed":20300603,"liveWin":true,"steps":18,"ms":506,"liveWins":1,"games":5,"wr":0.2}
+{"g":5,"seed":20310576,"liveWin":false,"steps":14,"ms":212,"liveWins":1,"games":6,"wr":0.16666666666666666}
+{"g":6,"seed":20320549,"liveWin":true,"steps":11,"ms":163,"liveWins":2,"games":7,"wr":0.2857142857142857}
+{"g":7,"seed":20330522,"liveWin":false,"steps":14,"ms":454,"liveWins":2,"games":8,"wr":0.25}
+{"g":8,"seed":20340495,"liveWin":true,"steps":20,"ms":273,"liveWins":3,"games":9,"wr":0.3333333333333333}
+{"g":9,"seed":20350468,"liveWin":false,"steps":22,"ms":313,"liveWins":3,"games":10,"wr":0.3}
+{"g":10,"seed":20360441,"liveWin":false,"steps":18,"ms":436,"liveWins":3,"games":11,"wr":0.2727272727272727}
+{"g":11,"seed":20370414,"liveWin":true,"steps":20,"ms":219,"liveWins":4,"games":12,"wr":0.3333333333333333}
+{"g":12,"seed":20380387,"liveWin":true,"steps":16,"ms":400,"liveWins":5,"games":13,"wr":0.38461538461538464}
+{"g":13,"seed":20390360,"liveWin":false,"steps":12,"ms":467,"liveWins":5,"games":14,"wr":0.35714285714285715}
+{"g":14,"seed":20400333,"liveWin":false,"steps":15,"ms":358,"liveWins":5,"games":15,"wr":0.3333333333333333}
+{"g":15,"seed":20410306,"liveWin":false,"steps":11,"ms":195,"liveWins":5,"games":16,"wr":0.3125}
+{"g":16,"seed":20420279,"liveWin":true,"steps":20,"ms":430,"liveWins":6,"games":17,"wr":0.35294117647058826}
+{"g":17,"seed":20430252,"liveWin":false,"steps":16,"ms":261,"liveWins":6,"games":18,"wr":0.3333333333333333}
+{"g":18,"seed":20440225,"liveWin":false,"steps":17,"ms":452,"liveWins":6,"games":19,"wr":0.3157894736842105}
+{"g":19,"seed":20450198,"liveWin":true,"steps":14,"ms":206,"liveWins":7,"games":20,"wr":0.35}
+=== FINAL ===
+{
+  "protocol": "fair-hidden-gm-BR-both-equal",
+  "infoModel": "hidden",
+  "perfectInfo": false,
+  "hiddenInfo": true,
+  "brBoth": true,
+  "equalBudget": true,
+  "games": 20,
+  "liveWins": 7,
+  "freezeWins": 13,
+  "liveWinRate": 0.35,
+  "seed0": 20260711,
+  "ms": 6836,
+  "live": {
+    "id": "v9.2-probe-pass",
+    "stamped": "2026-07-14T04:00:00Z",
+    "label": "Grandmaster v9.2-probe-pass (H_pass_E_play structure fold)"
+  },
+  "freeze": {
+    "id": "v9.1",
+    "stamped": "2026-07-13T02:50:38Z",
+    "label": "Grandmaster v9.1 (ladder freeze)"
+  },
+  "freezeTag": "v91",
+  "challTag": "p_pass",
+  "opts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": false,
+    "hiddenInfo": true,
+    "timeMs": 150,
+    "iterations": 60,
+    "maxSims": 120,
+    "brTrials": 16,
+    "bestResponse": true,
+    "exactExploit": false,
+    "exploit": false,
+    "softSamples": 0,
+    "maxBranch": 12,
+    "mode": "auto",
+    "strongSelf": false
+  },
+  "perGame": [
+    {
+      "seed": 20260711,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 20,
+      "ms": 501
+    },
+    {
+      "seed": 20270684,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 22,
+      "ms": 525
+    },
+    {
+      "seed": 20280657,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 20,
+      "ms": 290
+    },
+    {
+      "seed": 20290630,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 20,
+      "ms": 163
+    },
+    {
+      "seed": 20300603,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 18,
+      "ms": 506
+    },
+    {
+      "seed": 20310576,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 14,
+      "ms": 212
+    },
+    {
+      "seed": 20320549,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 11,
+      "ms": 163
+    },
+    {
+      "seed": 20330522,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 14,
+      "ms": 454
+    },
+    {
+      "seed": 20340495,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 20,
+      "ms": 273
+    },
+    {
+      "seed": 20350468,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 22,
+      "ms": 313
+    },
+    {
+      "seed": 20360441,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 18,
+      "ms": 436
+    },
+    {
+      "seed": 20370414,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 20,
+      "ms": 219
+    },
+    {
+      "seed": 20380387,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 16,
+      "ms": 400
+    },
+    {
+      "seed": 20390360,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 12,
+      "ms": 467
+    },
+    {
+      "seed": 20400333,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 15,
+      "ms": 358
+    },
+    {
+      "seed": 20410306,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 11,
+      "ms": 195
+    },
+    {
+      "seed": 20420279,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 20,
+      "ms": 430
+    },
+    {
+      "seed": 20430252,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 16,
+      "ms": 261
+    },
+    {
+      "seed": 20440225,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 17,
+      "ms": 452
+    },
+    {
+      "seed": 20450198,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 14,
+      "ms": 206
+    }
+  ],
+  "lossSeeds": [
+    20260711,
+    20270684,
+    20280657,
+    20290630,
+    20310576,
+    20330522,
+    20350468,
+    20360441,
+    20390360,
+    20400333,
+    20410306,
+    20430252,
+    20440225
+  ],
+  "target": 0.7,
+  "passed": false
+}
+wrote /Users/johnhoang/Developer/Grok/tieng-len/evolve/probe-p_pass-vs-v91-fair-n20.json

@@ -1,0 +1,240 @@
+{
+  "protocol": "fair-hidden-gm-BR-both-equal",
+  "infoModel": "hidden",
+  "perfectInfo": false,
+  "hiddenInfo": true,
+  "brBoth": true,
+  "equalBudget": true,
+  "games": 26,
+  "liveWins": 17,
+  "freezeWins": 9,
+  "liveWinRate": 0.6538461538461539,
+  "seed0": 20260711,
+  "ms": 7038,
+  "live": {
+    "id": "v9.1-probe-p_w19_pairpass",
+    "stamped": "2026-07-14T05:51:35Z",
+    "label": "Grandmaster v9.1-probe p_w19_pairpass"
+  },
+  "freeze": {
+    "id": "v9.1",
+    "stamped": "2026-07-13T02:50:38Z",
+    "label": "Grandmaster v9.1 (ladder freeze)"
+  },
+  "freezeTag": "v91",
+  "challTag": "p_w19_pairpass",
+  "opts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": false,
+    "hiddenInfo": true,
+    "timeMs": 150,
+    "iterations": 60,
+    "maxSims": 120,
+    "brTrials": 12,
+    "bestResponse": true,
+    "exactExploit": false,
+    "exploit": true,
+    "softSamples": 0,
+    "maxBranch": 12,
+    "mode": "auto",
+    "strongSelf": false
+  },
+  "perGame": [
+    {
+      "seed": 20380387,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 16,
+      "ms": 468
+    },
+    {
+      "seed": 20380387,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 16,
+      "ms": 178
+    },
+    {
+      "seed": 20390360,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 17,
+      "ms": 342
+    },
+    {
+      "seed": 20390360,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 17,
+      "ms": 397
+    },
+    {
+      "seed": 20400333,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 15,
+      "ms": 211
+    },
+    {
+      "seed": 20400333,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 22,
+      "ms": 412
+    },
+    {
+      "seed": 20410306,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 17,
+      "ms": 185
+    },
+    {
+      "seed": 20410306,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 11,
+      "ms": 155
+    },
+    {
+      "seed": 20420279,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 20,
+      "ms": 316
+    },
+    {
+      "seed": 20420279,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 20,
+      "ms": 328
+    },
+    {
+      "seed": 20430252,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 16,
+      "ms": 235
+    },
+    {
+      "seed": 20430252,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 16,
+      "ms": 228
+    },
+    {
+      "seed": 20440225,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 17,
+      "ms": 170
+    },
+    {
+      "seed": 20440225,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 20,
+      "ms": 313
+    },
+    {
+      "seed": 20450198,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 14,
+      "ms": 208
+    },
+    {
+      "seed": 20450198,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 16,
+      "ms": 300
+    },
+    {
+      "seed": 20460171,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 19,
+      "ms": 78
+    },
+    {
+      "seed": 20460171,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 17,
+      "ms": 88
+    },
+    {
+      "seed": 20470144,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 24,
+      "ms": 442
+    },
+    {
+      "seed": 20470144,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 17,
+      "ms": 254
+    },
+    {
+      "seed": 20480117,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 18,
+      "ms": 247
+    },
+    {
+      "seed": 20480117,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 21,
+      "ms": 292
+    },
+    {
+      "seed": 20490090,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 15,
+      "ms": 286
+    },
+    {
+      "seed": 20490090,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 19,
+      "ms": 443
+    },
+    {
+      "seed": 20500063,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 17,
+      "ms": 229
+    },
+    {
+      "seed": 20500063,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 17,
+      "ms": 214
+    }
+  ],
+  "lossSeeds": [
+    20380387,
+    20390360,
+    20410306,
+    20420279,
+    20430252,
+    20450198,
+    20460171,
+    20490090,
+    20500063
+  ],
+  "target": 0.7,
+  "passed": false
+}

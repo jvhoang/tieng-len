@@ -1,0 +1,56 @@
+seed-duel live { id: 'v9.2',
+  stamped: '2026-07-13T06:13:02Z',
+  label: 'Grandmaster v9.2' } patch  freeze v91 seeds 23
+liveOpts { difficulty: 'grandmaster',
+  timeMs: 160,
+  iterations: 120,
+  maxSims: 320,
+  brTrials: 48,
+  bestResponse: true,
+  useSearch: true,
+  perfectInfo: true,
+  hiddenInfo: false,
+  maxBranch: 20,
+  dualSelf: false,
+  exactExploit: true,
+  mode: 'auto',
+  combatRoot: false,
+  flRoot: false,
+  softSamples: 0,
+  exploit: true }
+freezeOpts { difficulty: 'grandmaster',
+  useSearch: true,
+  perfectInfo: true,
+  hiddenInfo: false,
+  timeMs: 100,
+  iterations: 64,
+  maxSims: 160,
+  bestResponse: false,
+  maxBranch: 16,
+  mode: 'auto',
+  exactExploit: false,
+  exploit: false }
+{"seed":20270684,"liveWin":false,"liveSeat":0,"steps":24,"ms":15134}
+{"seed":20310576,"liveWin":false,"liveSeat":0,"steps":22,"ms":14214}
+{"seed":20350468,"liveWin":false,"liveSeat":0,"steps":22,"ms":36935}
+{"seed":20360441,"liveWin":false,"liveSeat":1,"steps":22,"ms":6259}
+{"seed":20380387,"liveWin":false,"liveSeat":1,"steps":15,"ms":5196}
+{"seed":20410306,"liveWin":false,"liveSeat":0,"steps":15,"ms":6273}
+{"seed":20450198,"liveWin":false,"liveSeat":0,"steps":17,"ms":28727}
+{"seed":20470144,"liveWin":false,"liveSeat":0,"steps":13,"ms":9870}
+{"seed":20480117,"liveWin":false,"liveSeat":1,"steps":18,"ms":3263}
+{"seed":20490090,"liveWin":false,"liveSeat":0,"steps":15,"ms":7558}
+{"seed":20510036,"liveWin":false,"liveSeat":0,"steps":21,"ms":25630}
+{"seed":20520009,"liveWin":false,"liveSeat":1,"steps":21,"ms":21594}
+{"seed":20539955,"liveWin":false,"liveSeat":1,"steps":22,"ms":7526}
+{"seed":20549928,"liveWin":false,"liveSeat":0,"steps":16,"ms":25878}
+{"seed":20559901,"liveWin":false,"liveSeat":1,"steps":20,"ms":21184}
+{"seed":20579847,"liveWin":false,"liveSeat":1,"steps":19,"ms":57652}
+{"seed":20599793,"liveWin":false,"liveSeat":1,"steps":16,"ms":23685}
+{"seed":20609766,"liveWin":false,"liveSeat":0,"steps":21,"ms":14594}
+{"seed":20659631,"liveWin":false,"liveSeat":1,"steps":18,"ms":2619}
+{"seed":20669604,"liveWin":false,"liveSeat":0,"steps":16,"ms":1973}
+{"seed":20689550,"liveWin":false,"liveSeat":0,"steps":22,"ms":40019}
+{"seed":20709496,"liveWin":false,"liveSeat":0,"steps":18,"ms":7520}
+{"seed":20719469,"liveWin":false,"liveSeat":1,"steps":24,"ms":24575}
+{"liveWins":0,"n":23,"rate":0}

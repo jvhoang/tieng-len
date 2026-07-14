@@ -1,6 +1,6 @@
 # PLAN — Fair dual ladder v9.1 → v11.0
 
-**Updated:** 2026-07-14T14:35Z
+**Updated:** 2026-07-14T15:38Z
 
 ## Locked protocol
 1. Hidden info only  
@@ -27,43 +27,35 @@ FORBIDDEN — do not relaunch. Scripts .DISABLED.
 | Rung | Live / freeze | Dual vs | Holdout A/B | Sum | Protocol |
 |------|---------------|---------|-------------:|----:|----------|
 | **v9.5** | `policies/v95-*` | freeze **v91** | **36 / 36** | **72** | T20 |
-| **v9.6** | `ai.js`/`search.js` ≡ `policies/v96-*` | freeze **v95** | **36 / 36** | **72** | **MS=0** T20 |
+| **v9.6** | `policies/v96-*` | freeze **v95** | **36 / 36** | **72** | **MS=0** T20 |
+| **v9.7** | `ai.js`/`search.js` ≡ `policies/v97-*` | freeze **v96** | **36 / 36** | **72** | **MS=0** dual-rerun |
 
-Lever v9.6: `fl_jpair` FREE pair-J over high T-J-Q seq (convert 20280747@0).
+Lever stack v9.7: pure convert-first ultra-multiset hard roots from freeze v96 identity 25/25  
+through `p_w76`…`p_w97` (combat + FREE). Final ship tag `p_w97_ex_fl7open`.
 
-## Intermediate bank (not freeze) → shipped
-| Tag | vs v95 MS0 | Notes |
+## Intermediate bank (not freeze) → shipped as v9.7
+| Tag | vs v96 MS0 | Notes |
 |-----|------------|-------|
-| `p_w71_ex_flseq4nineshed` | 35/36 | prior best bank |
-| **`p_w75_ex_fljpair`** | **36/36** | **SHIPPED as v9.6** |
+| identity | 25/25 | baseline |
+| … | … | pure stack |
+| **`p_w97_ex_fl7open`** | **36/36** | **SHIPPED as v9.7** |
 
 ## Live wiring (must hold)
-- `AI_BUILD.id === "v9.6"`
-- `search.js` exports/uses `pickFlJPair` + search-root `fl-jpair-hard`
+- `AI_BUILD.id === "v9.7"`
 - Dual evidence: `evolve/dual-primary.json`, `evolve/dual-rerun.json`, `SHIP_READY.md`
 
-## Stack (convert-first)
-combat: mulowg · pairhi · pairhi_wide · seqhi · sbc0 · maxedge · egunder · qpairclimb · seqhi_res · seqadj · seq5adj · seqmidunder  
-FREE: flvol · flshort5 · flhidetight · brseq3 · tripair · pairshed · lotesh · pairseq · twoshed · seqopen · pairseq3 · flpair88 · flmidshed · flegpair · flpair5 · flquad4lead · flpair6 · acejunder · seqhires13 · comkpeel · flseq5exact · flmidshort · flseq4nineshed · **fljpair**
-
-## Intermediate bank (post v9.6, vs freeze v96 MS=0)
-| Tag | A/B | Notes |
-|-----|-----|-------|
-| identity | 25/25 | baseline |
-| `p_w76_ex_acetrip_lowopen` | **26/25** | multi-ply 20260801@1 |
-| `p_w77_ex_fltrash3` | **27/25** | FREE trash3 20270774@1 |
-
-Ship v9.7 needs **36/36** vs freeze v96.
+## Stack (convert-first, post-v96)
+… prior combat/FREE stack … + com8underj · com8over5 · comseq567climb · flpair3open · fltopen · comjover3 · comseq567under · comseqtjq · **fl7open**
 
 ## Next
-1. **v9.7+** — pure 0-reverse converts on v9.6 freeze until next 0.1 rung  
+1. **v9.8+** — pure 0-reverse converts on v9.7 freeze until next 0.1 rung  
 2. Full-policy firstdiff + identity-diff before promote  
 3. Continue → **v11.0**  
 4. SoftN stays dead  
 
 ## Runner (ship protocol)
 ```bash
-FREEZE=v95 CHALL=v96 SOFT=0 MS=0 TRIALS=20 GAMES=25 BOTH_SEATS=1 \
+FREEZE=v96 CHALL=v97 SOFT=0 MS=0 TRIALS=20 GAMES=25 BOTH_SEATS=1 \
   SEED=20260801 node evolve/lean-fair-dual-n20.js
 ```
 

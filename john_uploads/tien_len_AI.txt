@@ -1,0 +1,63 @@
+Tien Len AI training - GOLD recommendations
+
+Series #1:
+MG_0498.PNG: AI free lead hinted 6 spades, that would break up my pair of 6’s. I should play A diamonds instead.
+IMG_0499.PNG: AI free lead hinted pair of 6’s, opponent 2 cards may potentially have a higher pair. the 2 hearts is a for sure win instead.
+IMG_0500.PNG: AI hinted to counter with Q hearts, that would break up my JQK straight, next care should be 2 clubs.
+IMG_0501.PNG: AI hinted to counter with pair of Q’s, That would break up my JQKA straight and leave me with 3 single cards. Pass is better. I can control later since I have 2 two’s.
+IMG_0502.PNG:  AI hinted to counter with 6 diamonds, that would break up my 5-6-7-8-9-10 straight, next card should be K clubs.
+IMG_0503.PNG: AI hinted to counter with 7-8-9-10 which would leave me with a 9 trash, rather it should be 9-10-J-Q which would leave me with a 7-8-9 straight and a higher J single (not considered trash like a single 9)
+IMG_0504.PNG: again, AI hinted to counter with 8 clubs, which would break up my 7-8-9 straight, next card should be J diamonds
+
+
+Series #2:
+IMG_0505.PNG: AI free lead hinted 4 hearts, which would break up my 3-4-5 straight, should be 8 clubs.
+IMG_0506.PNG: AI free lead hinted 6 card straight, not too bad, but a better once would be a rarer harder to beat 6-6-7-7-8-8, which then I would finish off with my final 3-4-5 straight for the win
+IMG_0507.PNG: AI free lead hinted at pair of 3’s, that would break up my 2-beater 334455, since it’s games first card and the lowest 3 needs to be used, just use the whole 334455 for the control
+IMG_0510.PNG:  AI hinted  to counter with Q-K-A, which would leave Q and K as singles. Since I have low 6-6 and 7-7 pairs, i will need to save my Q-Q and K-K to back up my low pairs, so I should pass
+IMG_0511.PNG: AI hinted to counter with 2-2, which are crucial to be saved for my singles of 4, 10, A. Best to pass
+IMG_0512.PNG: AI hinted to counter with 6 diamonds, which would break up my 6-6 pair, next card should be my single 10 hearts
+IMG_0513.PNG: AI hinted to counter with K hearts, which would break up my KK pair, next card should take control with a 2
+
+
+Series #3:
+IMG_0514.PNG: AI free lead hinted 9-10-J. I have  5 diamonds (should be next) and 10 clubs as loose trash that needs to be removed prior to 9-10-J, and I have high loose cards to back it up to take control. I risk not being in control with placing the 9-10-J first.
+IMG_0516.PNG: AI hinted A clubs, which will break up the A pair. my next moves should be 2 spades (take control), then pair of A (most likely stay in control), then finish with 9-10-J.
+IMG_0517.PNG:  AI free lead hinted 9-10-J-Q-K, which will leave a loose 9 trash, should just be 10-J-Q-K (take control), then 9 pair, followed by 2 pair (take control), and finish off with/ loose 7
+IMG_0518.PNG: AI free lead hinted 7 diamonds. do the for sure winning choices first with 2 clubs & 2 hearts pair  (near absolute  for sure control), then 7 diamonds for the win. 
+IMG_0519.PNG: AI hinted counter with 9-10-J, leaving me with loose 9 and Q. should counter with 10-J-Q, which saves the 9 pair.
+IMG_0520.PNG: AI hinted counter with 6 spades, which leaves me a 3 card straight 7-8-9 and loose 7 trash. Should be counter with 7, which leaves me with 4-card straight and no trash.
+IMG_0521.PNG: AI free lead hinted 7 pair, which will break up my 4-card straight and end up with 3 loose trash cards to go against opponents 1 card left. should be 6-7-8-9 straight, which leave me with only 1 loose card (a 7). My following move would then be 2 clubs (likely will take control), then finish off w/ that  trash 7.
+
+
+Series #4: (added 7/13/26)
+IMG_0523.PNG: AI hinted counter w/ 5 diamonds, breaking up my triplet, next loose card Q spade is better
+IMG_0524.PNG: AI hinted counter w/ 5 hearts, breaking up my pair, next loose card 10 clubs better
+IMG_0525.PNG: AI hinted counter w/ A hearts, breaking up my pair, next card 2 clubs for control is better
+IMG_0526.PNG: AI free lead hinted 8-9-10, leaving me potentially losing control in early game, getting rid of low pair of 5's better, plus i can back that up with my KK & AA
+IMG_0527.PNG: AI free lead hinted 8-9-10, potentially leaving me to lose control, following up the pair ladder with AA is more for sure control and win
+IMG_0528.PNG: AI hinted counter w/ pair of 2's, leaving me with low cards when opponent still has 8 cards left. next best is 3 hearts, which i can eventually control with my 2's
+IMG_0529.PNG: AI hinted counter with 10 clubs, breaking up my 10-J-Q, next best is A diamonds
+IMG_0530.PNG: AI free lead hinted 10-J-Q, risking losing control slightly, following up the single ladder w/ 2 diamond is more for sure control and win
+IMG_0531.PNG: AI free lead hinted 10 hearts, leaving me with a low 4 hearts with opponent having 9 cards left, that's an almost for sure game losing action. Should go 4 first. 
+IMG_0532.PNG: AI hinted counter K hearts, breaking up my K pair, leaving me more vulnerable especially with opponent only having 1 card left. go highest single first when opponent only has 1 card
+IMG_0533.PNG: AI hinted counter 4 hearts, breaking up my 4-5-6-7, next card should be 7 spades
+IMG_0534.PNG: AI hinted counter K spades, breaking up my Q-K-A and leaving Q as loose. next best is A hearts, which has higher chance for control, plus preserves Q-K-A straight
+IMG_0535.PNG: AI hinted free lead Q-K-A in early game, leaving me w/ lower junk. Need to preserve my highest cards to back up my trash later. next best is pair of 5's
+IMG_0536.PNG: AI hinted free lead pair of 3's, breaking up my 3-4-5 which can be backed up with my 8-9-10. next best is 3 clubs, which i will eventually control since I have 3 two's 
+IMG_0537.PNG: AI hinted counter 4 hearts, breaking up my 3-4-5, next best loose card is J diamonds
+IMG_0538.PNG: AI hinted free lead pair of A's, my 3-4-5 and 9-10-J will eventually need to be played, so would go 3-4-5 first, knowing that my left over A-A-2-2 can overcome almost anything rather than wasting the AA early on.
+IMG_0539.PNG: AI hinted free lead A clubs leaving me with a low 3 diamonds, which could be a for sure game losing action if they can beat my A. should go low then high when i have a few cards left and opponent has more cards than me.
+IMG_0540.PNG: AI hinted free lead pair of A's, i have many low trash cards that needs to go first (4 hearts), the A-A-2-2 can wait
+IMG_0541.PNG: AI hinted counter 5 hearts, breaking up my 5 pair, next loose card is J clubs (which will preserve my 10-J-Q-K straight)
+IMG_0542.PNG: AI hinted free lead pair of J's, should do lower pair of 5's first, then pair of J's
+IMG_0543.PNG: AI hinted free lead pair of A's, should be 8 hearts, see previous similar logic 
+IMG_0544.PNG: AI hinted counter A spades, breaking up my A-A, better with 2 diamond control
+IMG_0545.PNG: AI hinted free lead 678910 straight, leaving me w/ an 8 heart trash, better to split it up 6-7-8, followed by 8-9-10 
+IMG_0546.PNG: AI hinted counter pair of 4's, breaking up my 3-4-5 and 4-5-6 card straights. next card should be pair of 7's
+IMG_0547.PNG: AI hinted counter pair of 2's, i have too many lower cards to use and need the 2's for later. Best to pass
+IMG_0548.PNG: AI hinted free lead 3-4-5-6, which leaves me with 4 and 5 trash cards, should be 3-4-5 first, then 4-5-6 if able
+IMG_0549.PNG: AI hinted counter 6-7-8, leaving me with 6 and 9 trash cards. Better to do 7-8-9, which leaves me with no trash cards
+IMG_0550.PNG: AI hinted counter Q-K-A, those are my highest 3 cards and i have lots of lower cards, best to pass.
+IMG_0551.PNG: AI hinted counter 4-5-6, which breaks up my 4-5-6-7-8 straight and thus leaving me w/ 2 trash cards (7,8). next best is 10-J-Q, followed by Q-K-A
+IMG_0552.PNG: AI hinted counter 8 hearts, which breaks up my 6-7-8 straight and thus leaving me w/ 2 trash cards (6,7). next best is 9 spades (9 hearts extends my straight)

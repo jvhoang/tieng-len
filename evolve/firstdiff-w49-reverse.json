@@ -1,0 +1,102 @@
+{
+  "protocol": "fair-firstdiff-v1",
+  "freeze": "v95",
+  "chall": "p_w49_ex_maxedge",
+  "live": {
+    "id": "v9.1-probe-p_w49_ex_maxedge",
+    "stamped": "2026-07-14T09:46:04Z",
+    "label": "Grandmaster v9.1-probe p_w49_ex_maxedge"
+  },
+  "freezeBuild": {
+    "id": "v9.5",
+    "stamped": "2026-07-14T09:35:31Z",
+    "label": "Grandmaster v9.5 (fair dual sbc0)"
+  },
+  "opts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": false,
+    "hiddenInfo": true,
+    "timeMs": 200,
+    "iterations": 60,
+    "maxSims": 120,
+    "brTrials": 20,
+    "bestResponse": true,
+    "exactExploit": false,
+    "exploit": true,
+    "softSamples": 0,
+    "maxBranch": 12,
+    "mode": "auto",
+    "strongSelf": false
+  },
+  "nGames": 4,
+  "nDiverged": 2,
+  "divergeRate": 0.5,
+  "classCount": {
+    "combat_other": 2
+  },
+  "results": [
+    {
+      "seed": 20330612,
+      "liveSeat": 0,
+      "firstDiff": {
+        "step": 5,
+        "seat": 0,
+        "phase": "single",
+        "handLen": 11,
+        "omin": 10,
+        "curTop": 7,
+        "freeze": "AH",
+        "chall": "JC",
+        "freezeSig": "45",
+        "challSig": "35",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 3,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 6,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 20330612,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 12,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 24,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20400424,
+      "liveSeat": 0,
+      "firstDiff": {
+        "step": 6,
+        "seat": 0,
+        "phase": "single",
+        "handLen": 10,
+        "omin": 6,
+        "curTop": 2,
+        "freeze": "8H",
+        "chall": "QD",
+        "freezeSig": "21",
+        "challSig": "38",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 4,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 7,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 20400424,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 18,
+      "freezeWinIfNoDiff": true
+    }
+  ]
+}

@@ -1,0 +1,201 @@
+{
+  "protocol": "fair-hidden-gm-BR-both-equal",
+  "infoModel": "hidden",
+  "perfectInfo": false,
+  "hiddenInfo": true,
+  "brBoth": true,
+  "equalBudget": true,
+  "games": 20,
+  "liveWins": 8,
+  "freezeWins": 12,
+  "liveWinRate": 0.4,
+  "seed0": 20260711,
+  "ms": 9504,
+  "live": {
+    "id": "v9.2-probe-best",
+    "stamped": "2026-07-14T02:55:00Z",
+    "label": "Grandmaster v9.2-probe (STACK + structure package)"
+  },
+  "freeze": {
+    "id": "v9.1",
+    "stamped": "2026-07-13T02:50:38Z",
+    "label": "Grandmaster v9.1 (ladder freeze)"
+  },
+  "freezeTag": "v91",
+  "challTag": "p_best",
+  "opts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": false,
+    "hiddenInfo": true,
+    "timeMs": 200,
+    "iterations": 60,
+    "maxSims": 120,
+    "brTrials": 24,
+    "bestResponse": true,
+    "exactExploit": false,
+    "exploit": false,
+    "softSamples": 0,
+    "maxBranch": 12,
+    "mode": "auto",
+    "strongSelf": false
+  },
+  "perGame": [
+    {
+      "seed": 20260711,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 18,
+      "ms": 654
+    },
+    {
+      "seed": 20270684,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 22,
+      "ms": 690
+    },
+    {
+      "seed": 20280657,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 20,
+      "ms": 401
+    },
+    {
+      "seed": 20290630,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 20,
+      "ms": 223
+    },
+    {
+      "seed": 20300603,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 18,
+      "ms": 715
+    },
+    {
+      "seed": 20310576,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 14,
+      "ms": 297
+    },
+    {
+      "seed": 20320549,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 11,
+      "ms": 222
+    },
+    {
+      "seed": 20330522,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 14,
+      "ms": 628
+    },
+    {
+      "seed": 20340495,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 20,
+      "ms": 384
+    },
+    {
+      "seed": 20350468,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 22,
+      "ms": 411
+    },
+    {
+      "seed": 20360441,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 18,
+      "ms": 609
+    },
+    {
+      "seed": 20370414,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 20,
+      "ms": 301
+    },
+    {
+      "seed": 20380387,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 16,
+      "ms": 449
+    },
+    {
+      "seed": 20390360,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 12,
+      "ms": 643
+    },
+    {
+      "seed": 20400333,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 15,
+      "ms": 509
+    },
+    {
+      "seed": 20410306,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 11,
+      "ms": 641
+    },
+    {
+      "seed": 20420279,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 20,
+      "ms": 610
+    },
+    {
+      "seed": 20430252,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 7,
+      "ms": 230
+    },
+    {
+      "seed": 20440225,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 17,
+      "ms": 608
+    },
+    {
+      "seed": 20450198,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 14,
+      "ms": 262
+    }
+  ],
+  "lossSeeds": [
+    20260711,
+    20270684,
+    20280657,
+    20290630,
+    20310576,
+    20330522,
+    20350468,
+    20360441,
+    20390360,
+    20400333,
+    20410306,
+    20440225
+  ],
+  "target": 0.7,
+  "passed": false
+}

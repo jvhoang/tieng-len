@@ -1,0 +1,10 @@
+'use strict';
+const engine = require('../engine.js');
+const liveS = require('../policies/p_w69_ex_flmidshort-search.js');
+console.log('loaded');
+const s0 = engine.createGameState(2, 20260801);
+console.log('state', s0.phase, 'cp', s0.currentPlayer, 'hands', s0.players.map(p=>p.hand.length));
+const t0 = Date.now();
+const d = liveS.expertPolicy(s0, s0.currentPlayer);
+console.log('expert ms', Date.now()-t0);
+console.log('dec', JSON.stringify(d && {pass:!!d.pass, n:d.play&&d.play.length, reason:d.reason}).slice(0,200));

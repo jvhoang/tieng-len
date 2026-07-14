@@ -968,7 +968,7 @@
     var timeMs = opts.timeMs || 0;
     var perfectInfo = opts.perfectInfo === true;
     var rng = opts.rng || Math.random;
-    var strongSelf = opts.strongSelf !== false; // v8.6: shallowSelf for self by default
+    var strongSelf = opts.strongSelf === true || (opts.strongSelf !== false && (opts.timeMs == null || opts.timeMs >= 600));
     var t0 = Date.now();
 
     var hand = state.players[myIdx].hand;
@@ -2916,7 +2916,10 @@
 
     // Best-response MC FIRST on soft path (v8.6): models frozen expert, not
     // adversarial minimax. Alpha-beta early-return in v8.5 skipped BR and cost ~1%.
-    if (opts.bestResponse || (state.players.length === 2 && difficulty !== 'easy' && difficulty !== 'medium') || opts._softExploit) {
+    // Honor explicit bestResponse:false (hidden dual freeze seat / BR-off probes).
+    if (opts.bestResponse === false) {
+      // skip BR root
+    } else if (opts.bestResponse || (state.players.length === 2 && difficulty !== 'easy' && difficulty !== 'medium') || opts._softExploit) {
       var ominBR = oppMinHand(state, myIdx);
       var freeBR = !cur;
       var brTrials = opts.brTrials;
@@ -2924,21 +2927,30 @@
         if (opts.inBrowser) brTrials = freeBR || ominBR <= 2 ? 18 : 10;
         else brTrials = freeBR || ominBR <= 2 ? 96 : 56;
       }
-      // Extra trials when recovering from soft exploit — BR vs frozen is the soft solver
-      if (opts._softExploit && !opts.inBrowser) {
+      // Extra trials when recovering from soft exploit — skip if dual set brTrials.
+      if (opts._softExploit && !opts.inBrowser && opts.brTrials == null) {
         brTrials = Math.max(brTrials, freeBR ? 140 : 90);
       }
       var brTime = timeMs != null ? timeMs : (opts.inBrowser ? 800 : 2500);
+      // Dual budgets pass explicit timeMs — do not inflate to 1100/1800.
       if (!opts.inBrowser && (freeBR || ominBR <= 2 || opts._softExploit)) {
-        brTime = Math.max(brTime, opts._softExploit ? 1800 : 1100);
+        if (timeMs == null || timeMs <= 0) {
+          brTime = Math.max(brTime, opts._softExploit ? 1800 : 1100);
+        } else {
+          var cap = opts._softExploit ? Math.min(timeMs * 1.5, timeMs + 200) : timeMs;
+          brTime = Math.min(Math.max(brTime, 1), cap);
+        }
       }
+      var useStrongSelf = opts.strongSelf === true ||
+        (opts.strongSelf !== false && (opts.inBrowser || brTime >= 600));
+      var brBranch = maxBranch != null ? maxBranch : (freeBR ? 22 : 16);
       var br = bestResponseMove(state, myIdx, {
         trials: brTrials,
         timeMs: brTime,
-        maxBranch: freeBR ? 22 : 16,
+        maxBranch: brBranch,
         perfectInfo: perfectInfo,
         oppModel: 'strong',
-        strongSelf: true,
+        strongSelf: useStrongSelf,
         rng: rng
       });
       if (br && br.play !== undefined) {
@@ -3080,7 +3092,7 @@
     // MCTS / determinized (default for hard)
     var detN = opts.determinizations != null
       ? opts.determinizations
-      : (perfectInfo ? 1 : (difficulty === 'grandmaster' ? 24 : 12));
+      : (perfectInfo ? 1 : (timeMs != null && timeMs < 400 ? 4 : (difficulty === 'grandmaster' ? 12 : 8)));
     var mcts = determinizedMCTS(state, myIdx, {
       rng: rng,
       timeMs: timeMs || 0,

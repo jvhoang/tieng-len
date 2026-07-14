@@ -1,0 +1,86 @@
+{
+  "url": "https://api.github.com/repos/jvhoang/tieng-len/issues/102",
+  "repository_url": "https://api.github.com/repos/jvhoang/tieng-len",
+  "labels_url": "https://api.github.com/repos/jvhoang/tieng-len/issues/102/labels{/name}",
+  "comments_url": "https://api.github.com/repos/jvhoang/tieng-len/issues/102/comments",
+  "events_url": "https://api.github.com/repos/jvhoang/tieng-len/issues/102/events",
+  "html_url": "https://github.com/jvhoang/tieng-len/issues/102",
+  "id": 4866050018,
+  "node_id": "I_kwDOTIz2w88AAAABIgoH4g",
+  "number": 102,
+  "title": "playlog | 2p | human-win | 2026-07-12T08:38:10 | g_mrhjis69_ji8m3s52",
+  "user": {
+    "login": "jvhoang",
+    "id": 70288758,
+    "node_id": "MDQ6VXNlcjcwMjg4NzU4",
+    "avatar_url": "https://avatars.githubusercontent.com/u/70288758?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/jvhoang",
+    "html_url": "https://github.com/jvhoang",
+    "followers_url": "https://api.github.com/users/jvhoang/followers",
+    "following_url": "https://api.github.com/users/jvhoang/following{/other_user}",
+    "gists_url": "https://api.github.com/users/jvhoang/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/jvhoang/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/jvhoang/subscriptions",
+    "organizations_url": "https://api.github.com/users/jvhoang/orgs",
+    "repos_url": "https://api.github.com/users/jvhoang/repos",
+    "events_url": "https://api.github.com/users/jvhoang/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/jvhoang/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "labels": [
+    {
+      "id": 11486684160,
+      "node_id": "LA_kwDOTIz2w88AAAACrKjkAA",
+      "url": "https://api.github.com/repos/jvhoang/tieng-len/labels/play-log",
+      "name": "play-log",
+      "color": "c9a227",
+      "default": false,
+      "description": "Tiến Lên live play logs (auto-published for AI analysis)"
+    }
+  ],
+  "state": "open",
+  "locked": false,
+  "assignees": [
+
+  ],
+  "milestone": null,
+  "comments": 0,
+  "created_at": "2026-07-12T08:38:10Z",
+  "updated_at": "2026-07-12T08:38:10Z",
+  "closed_at": null,
+  "assignee": null,
+  "author_association": "OWNER",
+  "active_lock_reason": null,
+  "sub_issues_summary": {
+    "total": 0,
+    "completed": 0,
+    "percent_completed": 0
+  },
+  "issue_dependencies_summary": {
+    "blocked_by": 0,
+    "total_blocked_by": 0,
+    "blocking": 0,
+    "total_blocking": 0
+  },
+  "body": "<!-- TIENLEN_PLAYLOG_V1 -->\n\n**Mode:** vsAI · **AI:** grandmaster · **Human won:** true\n\n```json\n{\"schemaVersion\":1,\"id\":\"g_mrhjis69_ji8m3s52\",\"startedAt\":\"2026-07-12T08:37:27.201Z\",\"endedAt\":\"2026-07-12T08:38:10.449Z\",\"mode\":\"vsAI\",\"vsAI\":true,\"numPlayers\":2,\"humanSeats\":[0],\"aiSeats\":[1],\"aiDifficulty\":\"grandmaster\",\"aiBuild\":null,\"seed\":1783845447308,\"siteBuild\":\"20260711c\",\"env\":{\"schemaVersion\":1,\"capturedAt\":\"2026-07-12T08:37:27.201Z\",\"href\":\"file:///Users/johnhoang/Developer/Grok/tieng-len/index.html\",\"origin\":\"file://\",\"userAgent\":\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Safari/605.1.15\",\"language\":\"en-US\",\"screen\":{\"w\":1728,\"h\":1117}},\"deal\":{\"hands\":[[{\"rank\":12,\"suit\":3},{\"rank\":1,\"suit\":2},{\"rank\":12,\"suit\":0},{\"rank\":4,\"suit\":3},{\"rank\":8,\"suit\":1},{\"rank\":6,\"suit\":1},{\"rank\":9,\"suit\":2},{\"rank\":2,\"suit\":0},{\"rank\":5,\"suit\":0},{\"rank\":3,\"suit\":1},{\"rank\":10,\"suit\":1},{\"rank\":12,\"suit\":2},{\"rank\":7,\"suit\":2}],[{\"rank\":10,\"suit\":2},{\"rank\":9,\"suit\":0},{\"rank\":11,\"suit\":1},{\"rank\":5,\"suit\":3},{\"rank\":1,\"suit\":0},{\"rank\":3,\"suit\":3},{\"rank\":4,\"suit\":0},{\"rank\":6,\"suit\":0},{\"rank\":9,\"suit\":3},{\"rank\":11,\"suit\":0},{\"rank\":10,\"suit\":3},{\"rank\":11,\"suit\":3},{\"rank\":10,\"suit\":0}]],\"firstPlayer\":1,\"firstLeadCard\":{\"rank\":1,\"suit\":0},\"isFirstLead\":true},\"openingSnapshot\":[{\"seat\":0,\"hand\":[{\"rank\":12,\"suit\":3},{\"rank\":1,\"suit\":2},{\"rank\":12,\"suit\":0},{\"rank\":4,\"suit\":3},{\"rank\":8,\"suit\":1},{\"rank\":6,\"suit\":1},{\"rank\":9,\"suit\":2},{\"rank\":2,\"suit\":0},{\"rank\":5,\"suit\":0},{\"rank\":3,\"suit\":1},{\"rank\":10,\"suit\":1},{\"rank\":12,\"suit\":2},{\"rank\":7,\"suit\":2}],\"handSize\":13,\"passed\":false,\"finished\":false},{\"seat\":1,\"hand\":[{\"rank\":10,\"suit\":2},{\"rank\":9,\"suit\":0},{\"rank\":11,\"suit\":1},{\"rank\":5,\"suit\":3},{\"rank\":1,\"suit\":0},{\"rank\":3,\"suit\":3},{\"rank\":4,\"suit\":0},{\"rank\":6,\"suit\":0},{\"rank\":9,\"suit\":3},{\"rank\":11,\"suit\":0},{\"rank\":10,\"suit\":3},{\"rank\":11,\"suit\":3},{\"rank\":10,\"suit\":0}],\"handSize\":13,\"passed\":false,\"finished\":false}],\"events\":[{\"i\":0,\"t\":0,\"wall\":\"2026-07-12T08:37:27.201Z\",\"type\":\"game_start\",\"actor\":\"system\",\"seat\":null,\"handSizes\":[13,13],\"currentPlayer\":1,\"isFirstLead\":true,\"firstLeadCard\":{\"rank\":1,\"suit\":0}},{\"i\":1,\"t\":1,\"wall\":\"2026-07-12T08:37:27.202Z\",\"type\":\"play\",\"seat\":1,\"actor\":\"ai\",\"cards\":[{\"rank\":1,\"suit\":0}],\"cardsSig\":\"4\",\"combo\":{\"type\":\"single\",\"cards\":[{\"rank\":1,\"suit\":0}],\"top\":{\"rank\":1,\"suit\":0},\"size\":1},\"handBefore\":[{\"rank\":10,\"suit\":2},{\"rank\":9,\"suit\":0},{\"rank\":11,\"suit\":1},{\"rank\":5,\"suit\":3},{\"rank\":1,\"suit\":0},{\"rank\":3,\"suit\":3},{\"rank\":4,\"suit\":0},{\"rank\":6,\"suit\":0},{\"rank\":9,\"suit\":3},{\"rank\":11,\"suit\":0},{\"rank\":10,\"suit\":3},{\"rank\":11,\"suit\":3},{\"rank\":10,\"suit\":0}],\"handSizesBefore\":[13,13],\"handSizesAfter\":[13,12],\"currentComboBefore\":null,\"currentComboAfter\":{\"type\":\"single\",\"cards\":[{\"rank\":1,\"suit\":0}],\"top\":{\"rank\":1,\"suit\":0},\"size\":1},\"currentPlayerBefore\":1,\"currentPlayerAfter\":0,\"isFirstLead\":true,\"passedFlagsBefore\":[false,false],\"finishedFlagsAfter\":[false,false],\"legalsCount\":1,\"legals\":[[{\"rank\":1,\"suit\":0}]],\"publicHistoryLen\":0,\"humanThinkMs\":null,\"ai\":{\"thinkMs\":0,\"stats\":null,\"fallbackUsed\":true,\"error\":null,\"fallbackReason\":\"null-free-lead\",\"choice\":[{\"rank\":1,\"suit\":0}],\"difficulty\":\"grandmaster\"},\"note\":null,\"roundOver\":false,\"finishOrder\":[]},{\"i\":2,\"t\":24707,\"wall\":\"2026-07-12T08:37:51.908Z\",\"type\":\"play\",\"seat\":0,\"actor\":\"human\",\"cards\":[{\"rank\":12,\"suit\":3}],\"cardsSig\":\"51\",\"combo\":{\"type\":\"single\",\"cards\":[{\"rank\":12,\"suit\":3}],\"top\":{\"rank\":12,\"suit\":3},\"size\":1},\"handBefore\":[{\"rank\":12,\"suit\":3},{\"rank\":1,\"suit\":2},{\"rank\":12,\"suit\":0},{\"rank\":4,\"suit\":3},{\"rank\":8,\"suit\":1},{\"rank\":6,\"suit\":1},{\"rank\":9,\"suit\":2},{\"rank\":2,\"suit\":0},{\"rank\":5,\"suit\":0},{\"rank\":3,\"suit\":1},{\"rank\":10,\"suit\":1},{\"rank\":12,\"suit\":2},{\"rank\":7,\"suit\":2}],\"handSizesBefore\":[13,12],\"handSizesAfter\":[12,12],\"currentComboBefore\":{\"type\":\"single\",\"cards\":[{\"rank\":1,\"suit\":0}],\"top\":{\"rank\":1,\"suit\":0},\"size\":1},\"currentComboAfter\":{\"type\":\"single\",\"cards\":[{\"rank\":12,\"suit\":3}],\"top\":{\"rank\":12,\"suit\":3},\"size\":1},\"currentPlayerBefore\":0,\"currentPlayerAfter\":1,\"isFirstLead\":false,\"passedFlagsBefore\":[false,false],\"finishedFlagsAfter\":[false,false],\"legalsCount\":13,\"legals\":[[{\"rank\":12,\"suit\":3}],[{\"rank\":1,\"suit\":2}],[{\"rank\":12,\"suit\":0}],[{\"rank\":4,\"suit\":3}],[{\"rank\":8,\"suit\":1}],[{\"rank\":6,\"suit\":1}],[{\"rank\":9,\"suit\":2}],[{\"rank\":2,\"suit\":0}],[{\"rank\":5,\"suit\":0}],[{\"rank\":3,\"suit\":1}],[{\"rank\":10,\"suit\":1}],[{\"rank\":12,\"suit\":2}],[{\"rank\":7,\"suit\":2}]],\"publicHistoryLen\":1,\"humanThinkMs\":24706,\"ai\":null,\"note\":null,\"roundOver\":false,\"finishOrder\":[]},{\"i\":3,\"t\":24993,\"wall\":\"2026-07-12T08:37:52.194Z\",\"type\":\"pass\",\"seat\":1,\"actor\":\"ai\",\"cards\":null,\"cardsSig\":\"PASS\",\"combo\":null,\"handBefore\":[{\"rank\":10,\"suit\":2},{\"rank\":9,\"suit\":0},{\"rank\":11,\"suit\":1},{\"rank\":5,\"suit\":3},{\"rank\":3,\"suit\":3},{\"rank\":4,\"suit\":0},{\"rank\":6,\"suit\":0},{\"rank\":9,\"suit\":3},{\"rank\":11,\"suit\":0},{\"rank\":10,\"suit\":3},{\"rank\":11,\"suit\":3},{\"rank\":10,\"suit\":0}],\"handSizesBefore\":[12,12],\"handSizesAfter\":[12,12],\"currentComboBefore\":{\"type\":\"single\",\"cards\":[{\"rank\":12,\"suit\":3}],\"top\":{\"rank\":12,\"suit\":3},\"size\":1},\"currentComboAfter\":null,\"currentPlayerBefore\":1,\"currentPlayerAfter\":0,\"isFirstLead\":false,\"passedFlagsBefore\":[false,false],\"finishedFlagsAfter\":[false,false],\"legalsCount\":9,\"legals\":[[{\"rank\":9,\"suit\":0},{\"rank\":9,\"suit\":3},{\"rank\":10,\"suit\":2},{\"rank\":10,\"suit\":3},{\"rank\":11,\"suit\":1},{\"rank\":11,\"suit\":0}],[{\"rank\":9,\"suit\":0},{\"rank\":9,\"suit\":3},{\"rank\":10,\"suit\":2},{\"rank\":10,\"suit\":3},{\"rank\":11,\"suit\":1},{\"rank\":11,\"suit\":3}],[{\"rank\":9,\"suit\":0},{\"rank\":9,\"suit\":3},{\"rank\":10,\"suit\":2},{\"rank\":10,\"suit\":3},{\"rank\":11,\"suit\":0},{\"rank\":11,\"suit\":3}],[{\"rank\":9,\"suit\":0},{\"rank\":9,\"suit\":3},{\"rank\":10,\"suit\":2},{\"rank\":10,\"suit\":0},{\"rank\":11,\"suit\":1},{\"rank\":11,\"suit\":0}],[{\"rank\":9,\"suit\":0},{\"rank\":9,\"suit\":3},{\"rank\":10,\"suit\":2},{\"rank\":10,\"suit\":0},{\"rank\":11,\"suit\":1},{\"rank\":11,\"suit\":3}],[{\"rank\":9,\"suit\":0},{\"rank\":9,\"suit\":3},{\"rank\":10,\"suit\":2},{\"rank\":10,\"suit\":0},{\"rank\":11,\"suit\":0},{\"rank\":11,\"suit\":3}],[{\"rank\":9,\"suit\":0},{\"rank\":9,\"suit\":3},{\"rank\":10,\"suit\":3},{\"rank\":10,\"suit\":0},{\"rank\":11,\"suit\":1},{\"rank\":11,\"suit\":0}],[{\"rank\":9,\"suit\":0},{\"rank\":9,\"suit\":3},{\"rank\":10,\"suit\":3},{\"rank\":10,\"suit\":0},{\"rank\":11,\"suit\":1},{\"rank\":11,\"suit\":3}],[{\"rank\":9,\"suit\":0},{\"rank\":9,\"suit\":3},{\"rank\":10,\"suit\":3},{\"rank\":10,\"suit\":0},{\"rank\":11,\"suit\":0},{\"rank\":11,\"suit\":3}]],\"publicHistoryLen\":2,\"humanThinkMs\":null,\"ai\":{\"thinkMs\":0,\"stats\":null,\"fallbackUsed\":false,\"error\":null,\"choice\":null,\"difficulty\":\"grandmaster\"},\"note\":null,\"roundOver\":false,\"finishOrder\":[]},{\"i\":4,\"t\":32499,\"wall\":\"2026-07-12T08:37:59.700Z\",\"type\":\"play\",\"seat\":0,\"actor\":\"human\",\"cards\":[{\"rank\":1,\"suit\":2},{\"rank\":4,\"suit\":3},{\"rank\":8,\"suit\":1},{\"rank\":6,\"suit\":1},{\"rank\":9,\"suit\":2},{\"rank\":2,\"suit\":0},{\"rank\":5,\"suit\":0},{\"rank\":3,\"suit\":1},{\"rank\":10,\"suit\":1},{\"rank\":7,\"suit\":2}],\"cardsSig\":\"6,8,13,19,20,25,30,33,38,41\",\"combo\":{\"type\":\"seq\",\"cards\":[{\"rank\":10,\"suit\":1},{\"rank\":9,\"suit\":2},{\"rank\":8,\"suit\":1},{\"rank\":7,\"suit\":2},{\"rank\":6,\"suit\":1},{\"rank\":5,\"suit\":0},{\"rank\":4,\"suit\":3},{\"rank\":3,\"suit\":1},{\"rank\":2,\"suit\":0},{\"rank\":1,\"suit\":2}],\"top\":{\"rank\":10,\"suit\":1},\"size\":10},\"handBefore\":[{\"rank\":1,\"suit\":2},{\"rank\":12,\"suit\":0},{\"rank\":4,\"suit\":3},{\"rank\":8,\"suit\":1},{\"rank\":6,\"suit\":1},{\"rank\":9,\"suit\":2},{\"rank\":2,\"suit\":0},{\"rank\":5,\"suit\":0},{\"rank\":3,\"suit\":1},{\"rank\":10,\"suit\":1},{\"rank\":12,\"suit\":2},{\"rank\":7,\"suit\":2}],\"handSizesBefore\":[12,12],\"handSizesAfter\":[2,12],\"currentComboBefore\":null,\"currentComboAfter\":{\"type\":\"seq\",\"cards\":[{\"rank\":10,\"suit\":1},{\"rank\":9,\"suit\":2},{\"rank\":8,\"suit\":1},{\"rank\":7,\"suit\":2},{\"rank\":6,\"suit\":1},{\"rank\":5,\"suit\":0},{\"rank\":4,\"suit\":3},{\"rank\":3,\"suit\":1},{\"rank\":2,\"suit\":0},{\"rank\":1,\"suit\":2}],\"top\":{\"rank\":10,\"suit\":1},\"size\":10},\"currentPlayerBefore\":0,\"currentPlayerAfter\":1,\"isFirstLead\":false,\"passedFlagsBefore\":[false,false],\"finishedFlagsAfter\":[false,false],\"legalsCount\":49,\"legals\":[[{\"rank\":1,\"suit\":2}],[{\"rank\":12,\"suit\":0}],[{\"rank\":4,\"suit\":3}],[{\"rank\":8,\"suit\":1}],[{\"rank\":6,\"suit\":1}],[{\"rank\":9,\"suit\":2}],[{\"rank\":2,\"suit\":0}],[{\"rank\":5,\"suit\":0}],[{\"rank\":3,\"suit\":1}],[{\"rank\":10,\"suit\":1}],[{\"rank\":12,\"suit\":2}],[{\"rank\":7,\"suit\":2}],[{\"rank\":12,\"suit\":0},{\"rank\":12,\"suit\":2}],[{\"rank\":1,\"suit\":2},{\"rank\":2,\"suit\":0},{\"rank\":3,\"suit\":1}],[{\"rank\":2,\"suit\":0},{\"rank\":3,\"suit\":1},{\"rank\":4,\"suit\":3}],[{\"rank\":3,\"suit\":1},{\"rank\":4,\"suit\":3},{\"rank\":5,\"suit\":0}],[{\"rank\":4,\"suit\":3},{\"rank\":5,\"suit\":0},{\"rank\":6,\"suit\":1}],[{\"rank\":5,\"suit\":0},{\"rank\":6,\"suit\":1},{\"rank\":7,\"suit\":2}],[{\"rank\":6,\"suit\":1},{\"rank\":7,\"suit\":2},{\"rank\":8,\"suit\":1}],[{\"rank\":7,\"suit\":2},{\"rank\":8,\"suit\":1},{\"rank\":9,\"suit\":2}],[{\"rank\":8,\"suit\":1},{\"rank\":9,\"suit\":2},{\"rank\":10,\"suit\":1}],[{\"rank\":1,\"suit\":2},{\"rank\":2,\"suit\":0},{\"rank\":3,\"suit\":1},{\"rank\":4,\"suit\":3}],[{\"rank\":2,\"suit\":0},{\"rank\":3,\"suit\":1},{\"rank\":4,\"suit\":3},{\"rank\":5,\"suit\":0}],[{\"rank\":3,\"suit\":1},{\"rank\":4,\"suit\":3},{\"rank\":5,\"suit\":0},{\"rank\":6,\"suit\":1}]],\"publicHistoryLen\":3,\"humanThinkMs\":7506,\"ai\":null,\"note\":null,\"roundOver\":false,\"finishOrder\":[]},{\"i\":5,\"t\":32783,\"wall\":\"2026-07-12T08:37:59.984Z\",\"type\":\"pass\",\"seat\":1,\"actor\":\"ai\",\"cards\":null,\"cardsSig\":\"PASS\",\"combo\":null,\"handBefore\":[{\"rank\":10,\"suit\":2},{\"rank\":9,\"suit\":0},{\"rank\":11,\"suit\":1},{\"rank\":5,\"suit\":3},{\"rank\":3,\"suit\":3},{\"rank\":4,\"suit\":0},{\"rank\":6,\"suit\":0},{\"rank\":9,\"suit\":3},{\"rank\":11,\"suit\":0},{\"rank\":10,\"suit\":3},{\"rank\":11,\"suit\":3},{\"rank\":10,\"suit\":0}],\"handSizesBefore\":[2,12],\"handSizesAfter\":[2,12],\"currentComboBefore\":{\"type\":\"seq\",\"cards\":[{\"rank\":10,\"suit\":1},{\"rank\":9,\"suit\":2},{\"rank\":8,\"suit\":1},{\"rank\":7,\"suit\":2},{\"rank\":6,\"suit\":1},{\"rank\":5,\"suit\":0},{\"rank\":4,\"suit\":3},{\"rank\":3,\"suit\":1},{\"rank\":2,\"suit\":0},{\"rank\":1,\"suit\":2}],\"top\":{\"rank\":10,\"suit\":1},\"size\":10},\"currentComboAfter\":null,\"currentPlayerBefore\":1,\"currentPlayerAfter\":0,\"isFirstLead\":false,\"passedFlagsBefore\":[false,false],\"finishedFlagsAfter\":[false,false],\"legalsCount\":0,\"legals\":[],\"publicHistoryLen\":4,\"humanThinkMs\":null,\"ai\":{\"thinkMs\":0,\"stats\":null,\"fallbackUsed\":false,\"error\":null,\"reason\":\"no-legals\"},\"note\":null,\"roundOver\":false,\"finishOrder\":[]},{\"i\":6,\"t\":43248,\"wall\":\"2026-07-12T08:38:10.449Z\",\"type\":\"play\",\"seat\":0,\"actor\":\"human\",\"cards\":[{\"rank\":12,\"suit\":0},{\"rank\":12,\"suit\":2}],\"cardsSig\":\"48,50\",\"combo\":{\"type\":\"pair\",\"cards\":[{\"rank\":12,\"suit\":2},{\"rank\":12,\"suit\":0}],\"top\":{\"rank\":12,\"suit\":2},\"size\":2},\"handBefore\":[{\"rank\":12,\"suit\":0},{\"rank\":12,\"suit\":2}],\"handSizesBefore\":[2,12],\"handSizesAfter\":[0,12],\"currentComboBefore\":null,\"currentComboAfter\":{\"type\":\"pair\",\"cards\":[{\"rank\":12,\"suit\":2},{\"rank\":12,\"suit\":0}],\"top\":{\"rank\":12,\"suit\":2},\"size\":2},\"currentPlayerBefore\":0,\"currentPlayerAfter\":1,\"isFirstLead\":false,\"passedFlagsBefore\":[false,false],\"finishedFlagsAfter\":[true,false],\"legalsCount\":3,\"legals\":[[{\"rank\":12,\"suit\":0}],[{\"rank\":12,\"suit\":2}],[{\"rank\":12,\"suit\":0},{\"rank\":12,\"suit\":2}]],\"publicHistoryLen\":5,\"humanThinkMs\":10464,\"ai\":null,\"note\":null,\"roundOver\":true,\"finishOrder\":[0]},{\"i\":7,\"t\":43248,\"wall\":\"2026-07-12T08:38:10.449Z\",\"type\":\"game_end\",\"actor\":\"system\",\"result\":{\"finishOrder\":[0],\"loser\":1,\"winner\":0,\"humanWon\":true,\"abandoned\":false,\"reason\":null,\"steps\":6,\"durationMs\":43248,\"eventCount\":7}}],\"result\":{\"finishOrder\":[0],\"loser\":1,\"winner\":0,\"humanWon\":true,\"abandoned\":false,\"reason\":null,\"steps\":6,\"durationMs\":43248,\"eventCount\":7},\"tags\":[\"newRound\"],\"notes\":\"\"}\n```\n",
+  "closed_by": null,
+  "reactions": {
+    "url": "https://api.github.com/repos/jvhoang/tieng-len/issues/102/reactions",
+    "total_count": 0,
+    "+1": 0,
+    "-1": 0,
+    "laugh": 0,
+    "hooray": 0,
+    "confused": 0,
+    "heart": 0,
+    "rocket": 0,
+    "eyes": 0
+  },
+  "timeline_url": "https://api.github.com/repos/jvhoang/tieng-len/issues/102/timeline",
+  "performed_via_github_app": null,
+  "state_reason": null,
+  "pinned_comment": null
+}

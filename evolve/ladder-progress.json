@@ -1,0 +1,16 @@
+{
+  "latest": {
+    "games": 50,
+    "liveWins": 27,
+    "liveWinRate": 0.54,
+    "ci95": {
+      "p": 0.54,
+      "lo": 0.40398634328388083,
+      "hi": 0.6703056539821737
+    },
+    "ms": 14902,
+    "gps": 3.355254328278084
+  },
+  "freeze": "v91",
+  "freezeDiff": "grandmaster"
+}

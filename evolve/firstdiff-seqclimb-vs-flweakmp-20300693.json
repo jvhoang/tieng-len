@@ -1,0 +1,84 @@
+{
+  "protocol": "fair-firstdiff-v1",
+  "freeze": "p_w25_ex_flweakmp",
+  "chall": "p_w26_ex_seqclimb",
+  "live": {
+    "id": "v9.1-probe-p_w26_ex_seqclimb",
+    "stamped": "2026-07-14T05:38:20Z",
+    "label": "Grandmaster v9.1-probe p_w26_ex_seqclimb"
+  },
+  "freezeBuild": {
+    "id": "v9.1-probe-p_w25_ex_flweakmp",
+    "stamped": "2026-07-14T05:38:20Z",
+    "label": "Grandmaster v9.1-probe p_w25_ex_flweakmp"
+  },
+  "opts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": false,
+    "hiddenInfo": true,
+    "timeMs": 200,
+    "iterations": 60,
+    "maxSims": 120,
+    "brTrials": 20,
+    "bestResponse": true,
+    "exactExploit": false,
+    "exploit": true,
+    "softSamples": 0,
+    "maxBranch": 12,
+    "mode": "auto",
+    "strongSelf": false
+  },
+  "nGames": 2,
+  "nDiverged": 2,
+  "divergeRate": 1,
+  "classCount": {
+    "combat_other": 2
+  },
+  "results": [
+    {
+      "seed": 20300693,
+      "liveSeat": 0,
+      "firstDiff": {
+        "step": 8,
+        "seat": 0,
+        "phase": "pair",
+        "handLen": 10,
+        "omin": 8,
+        "curTop": 0,
+        "freeze": "AS AD",
+        "chall": "7C 7S",
+        "freezeSig": "44,46",
+        "challSig": "16,19",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 5,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 9,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 20300693,
+      "liveSeat": 1,
+      "firstDiff": {
+        "step": 1,
+        "seat": 1,
+        "phase": "single",
+        "handLen": 13,
+        "omin": 12,
+        "curTop": 0,
+        "freeze": "QS",
+        "chall": "JH",
+        "freezeSig": "36",
+        "challSig": "33",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 1,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 2,
+      "freezeWinIfNoDiff": null
+    }
+  ]
+}

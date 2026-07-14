@@ -1,0 +1,72 @@
+{
+  "protocol": "fair-holdout-v1",
+  "freeze": "v91",
+  "chall": "p_w10_brflo_g2r",
+  "partitions": {
+    "dev": {
+      "seed0": 20260711,
+      "games": "25",
+      "role": "DEV (biased — design only)"
+    },
+    "dev_val": {
+      "seed0": 20260715,
+      "games": "25",
+      "role": "DEV_VAL (selection only — not ship)"
+    },
+    "holdout_A": {
+      "seed0": 20260801,
+      "games": "25",
+      "role": "HOLDOUT_A (primary ship)"
+    },
+    "holdout_B": {
+      "seed0": 20260802,
+      "games": "25",
+      "role": "HOLDOUT_B (re-run ship)"
+    }
+  },
+  "rows": {
+    "dev": {
+      "summary": {
+        "label": "DEV (biased — design only)",
+        "seed0": 20260711,
+        "n": 50,
+        "idWins": 25,
+        "idWr": 0.5,
+        "chWins": 31,
+        "wr": 0.62,
+        "delta": 6,
+        "pValVsHalf": 0.05946022627971814,
+        "wilson95": [
+          0.4815019502239357,
+          0.7413740415742278
+        ],
+        "significant05": false,
+        "shipAbs": false,
+        "shipDelta": true,
+        "ship": false
+      },
+      "idFile": "eval-id-v91-dev-s20260711-n50.json",
+      "chFile": "eval-ch-p_w10_brflo_g2r-dev-s20260711-n50.json",
+      "id": {
+        "liveWins": 25,
+        "games": 50,
+        "wr": 0.5,
+        "seed0": 20260711
+      },
+      "ch": {
+        "liveWins": 31,
+        "games": 50,
+        "wr": 0.62,
+        "seed0": 20260711,
+        "build": {
+          "id": "v9.1-probe-p_w10_brflo_g2r",
+          "stamped": "2026-07-13T02:50:38Z",
+          "label": "Grandmaster v9.1-probe p_w10_brflo_g2r"
+        }
+      }
+    }
+  },
+  "ship": false,
+  "shipRule": "holdout_A.WR>0.70 && holdout_B.WR>0.70 && both Δid≥+2",
+  "selectionRule": "DEV wins≥32 & Δ≥2 and DEV_VAL Δ≥2 before holdout"
+}

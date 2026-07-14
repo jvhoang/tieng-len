@@ -1,0 +1,86 @@
+[
+  {
+    "seed": 20330522,
+    "liveSeat": 0,
+    "steps": 0,
+    "cur": "FREE",
+    "handLen": 13,
+    "hand": "4d Ks 3d Qd 4c Th 3h Ah 2c 4h 5h 6c Qh",
+    "oppLen": 13,
+    "freeze": "3d",
+    "mintop": "3d 3h",
+    "isFreeLead": true,
+    "curType": null
+  },
+  {
+    "seed": 20400333,
+    "liveSeat": 0,
+    "steps": -1,
+    "note": "no diff"
+  },
+  {
+    "seed": 20410306,
+    "liveSeat": 0,
+    "steps": 3,
+    "cur": "FREE",
+    "handLen": 10,
+    "hand": "9h 4h 6h Js 4c Kc 2h Jd 8s As",
+    "oppLen": 10,
+    "freeze": "4h 4c",
+    "mintop": "4c",
+    "isFreeLead": true,
+    "curType": null
+  },
+  {
+    "seed": 20420279,
+    "liveSeat": 0,
+    "steps": 6,
+    "cur": "single:3s",
+    "handLen": 9,
+    "hand": "9s Qd Qs As Js Ts Kc 8d Th",
+    "oppLen": 8,
+    "freeze": "As",
+    "mintop": "Ts",
+    "isFreeLead": false,
+    "curType": "single"
+  },
+  {
+    "seed": 20440225,
+    "liveSeat": 1,
+    "steps": 1,
+    "cur": "single:3c",
+    "handLen": 13,
+    "hand": "Qd Ac 5s Jd Js 8d 9c 7s 5h 2h 6s 8c 7c",
+    "oppLen": 12,
+    "freeze": "Qd",
+    "mintop": "5s",
+    "isFreeLead": false,
+    "curType": "single"
+  },
+  {
+    "seed": 20470144,
+    "liveSeat": 1,
+    "steps": 2,
+    "cur": "single:5s",
+    "handLen": 12,
+    "hand": "3h Ac 2s 5c 5h Td Kd 2d 7c 6s Ks Qh",
+    "oppLen": 12,
+    "freeze": "Td",
+    "mintop": "6s",
+    "isFreeLead": false,
+    "curType": "single"
+  },
+  {
+    "seed": 20500063,
+    "liveSeat": 1,
+    "steps": 3,
+    "cur": "single:Jd",
+    "handLen": 12,
+    "hand": "Qs 9s 4h 8c 2d 7c Kh Js 3h Jc 3d Ac",
+    "oppLen": 11,
+    "freeze": "Qs",
+    "mintop": "Js",
+    "isFreeLead": false,
+    "curType": "single"
+  }
+]

@@ -1,0 +1,41 @@
+seed-duel live { id: 'v9.1',
+  stamped: '2026-07-13T02:02:24Z',
+  label: 'Grandmaster v9.1' } seeds 8
+liveOpts { difficulty: 'grandmaster',
+  timeMs: 120,
+  iterations: 90,
+  maxSims: 320,
+  brTrials: 40,
+  bestResponse: true,
+  useSearch: true,
+  perfectInfo: true,
+  hiddenInfo: false,
+  maxBranch: 20,
+  dualSelf: false,
+  exactExploit: true,
+  mode: 'auto',
+  combatRoot: false,
+  flRoot: false,
+  softSamples: 0,
+  exploit: true }
+freezeOpts { difficulty: 'grandmaster',
+  useSearch: true,
+  perfectInfo: true,
+  hiddenInfo: false,
+  timeMs: 80,
+  iterations: 48,
+  maxSims: 160,
+  bestResponse: false,
+  maxBranch: 16,
+  mode: 'auto',
+  exactExploit: false,
+  exploit: false }
+{"seed":20310576,"liveWin":false,"liveSeat":0,"steps":18,"ms":17846}
+{"seed":20320549,"liveWin":false,"liveSeat":1,"steps":26,"ms":18673}
+{"seed":20350468,"liveWin":false,"liveSeat":0,"steps":20,"ms":44231}
+{"seed":20380387,"liveWin":false,"liveSeat":1,"steps":5,"ms":2342}
+{"seed":20470144,"liveWin":false,"liveSeat":0,"steps":13,"ms":9112}
+{"seed":20490090,"liveWin":false,"liveSeat":0,"steps":15,"ms":7128}
+{"seed":20510036,"liveWin":false,"liveSeat":0,"steps":23,"ms":33376}
+{"seed":20539955,"liveWin":false,"liveSeat":1,"steps":22,"ms":3776}
+{"liveWins":0,"n":8,"rate":0}

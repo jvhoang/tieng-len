@@ -1,0 +1,221 @@
+#!/bin/bash
+set -u
+SCRATCH=/var/folders/sq/9sj87lh90pvg6yjc6lt30wsw0000gn/T/grok-goal-2452caa32616/implementer
+ROOT=/Users/johnhoang/Developer/Grok/tieng-len
+LOG="$SCRATCH/softN-variants-run.log"
+FLAG="$SCRATCH/softN-variants-done.flag"
+cd "$ROOT" || exit 1
+
+real_bench_pids() {
+  ps -ax -o pid=,command= | awk '/^[ ]*[0-9]+[ ]+node evolve\/bench-ladder\.js( |$)/ {print $1}'
+}
+log() { echo "$@" | tee -a "$LOG"; }
+
+echo "PIPELINE_START $(date -u +%Y-%m-%dT%H:%M:%SZ)" | tee "$LOG"
+
+wait_clear() {
+  local start=$(date +%s) clear_since=0
+  while true; do
+    local elapsed=$(( $(date +%s) - start ))
+    local pids; pids=$(real_bench_pids)
+    local lock; lock=$(cat MAIN-BENCH-LOCK.txt 2>/dev/null || echo '')
+    if [ -n "$pids" ]; then
+      clear_since=0
+      log "[wait ${elapsed}s] real node pids: $pids lock=$lock"
+      sleep 20; continue
+    fi
+    if echo "$lock" | grep -q '^LOCKED' && ! echo "$lock" | grep -q 'STACK-softN-variants'; then
+      clear_since=0
+      log "[wait ${elapsed}s] lock held: $lock"
+      sleep 15; continue
+    fi
+    if [ $clear_since -eq 0 ]; then clear_since=$(date +%s); fi
+    local settled=$(( $(date +%s) - clear_since ))
+    if [ $settled -ge 12 ]; then
+      log "[wait ${elapsed}s] MAIN CLEAR settled ${settled}s $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+      return 0
+    fi
+    log "[wait ${elapsed}s] clear settling ${settled}s"
+    sleep 3
+  done
+}
+
+install_variant() {
+  local N=$1
+  local SRC="$SCRATCH/probes/STACK_softN${N}"
+  cp "$SRC/search.js" search.js
+  cp "$SRC/ai.js" ai.js
+  python3 -c "
+import re, datetime
+p='ai.js'
+t=open(p).read()
+stamp=datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+t=re.sub(r\"stamped:\\s*'[^']*'\", f\"stamped: '{stamp}'\", t, count=1)
+t=re.sub(r\"label:\\s*'[^']*'\", \"label: 'Grandmaster v9.2 (STACK softN${N})'\", t, count=1)
+open(p,'w').write(t)
+s=open('search.js').read()
+assert f': ${N}; // STACK default ${N}' in s, 'softN default missing'
+print('installed softN${N}', stamp)
+"
+}
+
+run_variant() {
+  local N=$1
+  local OUT="v92-stack-softN${N}-n50.json"
+  if [ -f "evolve/$OUT" ] && node -e "const j=require('./evolve/$OUT'); process.exit(j.games===50&&j.live&&String(j.live.label||'').includes('softN${N}')?0:1)" 2>/dev/null; then
+    log "softN${N} complete result exists — skip"
+    node -e "const j=require('./evolve/$OUT'); console.log('EXISTING softN${N}:', j.liveWins+'/'+j.games, 'WR='+j.liveWinRate);" | tee -a "$LOG"
+    return 0
+  fi
+  log ""
+  log "=== softN${N} install + dual N=50 seed 20260711 MS280 BR96 expert-cheap ==="
+  echo "LOCKED STACK-softN-variants $(date -u +%Y-%m-%dT%H:%M:%SZ) pid=$$ N=${N}" > MAIN-BENCH-LOCK.txt
+  if [ -n "$(real_bench_pids)" ]; then
+    log "concurrent bench — wait"
+    wait_clear
+    echo "LOCKED STACK-softN-variants $(date -u +%Y-%m-%dT%H:%M:%SZ) pid=$$ N=${N}" > MAIN-BENCH-LOCK.txt
+  fi
+  install_variant "$N"
+  node -e "require('./search.js'); const a=require('./ai.js'); console.log('load', a.AI_BUILD);" | tee -a "$LOG"
+  local attempt=1
+  while [ $attempt -le 4 ]; do
+    log "softN${N} attempt $attempt"
+    : > "evolve/v92-stack-softN${N}-n50.log"
+    TIENLEN_FREEZE=v91 TIENLEN_FREEZE_DIFF=grandmaster TIENLEN_V8_DIFF=grandmaster \
+    TIENLEN_BENCH_GAMES=50 TIENLEN_TARGET=0.70 TIENLEN_BENCH_SEED=20260711 \
+    TIENLEN_FREEZE_MS=120 TIENLEN_FREEZE_ITERS=80 TIENLEN_FREEZE_SIMS=160 \
+    TIENLEN_FREEZE_BR=0 TIENLEN_FREEZE_EXACT=1 \
+    TIENLEN_V8_MS=280 TIENLEN_V8_ITERS=200 TIENLEN_V8_SIMS=480 \
+    TIENLEN_BR_TRIALS=96 TIENLEN_V8_BRANCH=24 TIENLEN_EXACT=1 TIENLEN_BR=1 \
+    TIENLEN_SOFT_SAMPLES=0 TIENLEN_BR_MODEL=expert TIENLEN_V8_PERFECT=1 TIENLEN_FREEZE_PERFECT=1 \
+    TIENLEN_BENCH_OUT="$OUT" TIENLEN_SCRATCH=evolve \
+    node evolve/bench-ladder.js 2>&1 | tee -a "$LOG" | tee "evolve/v92-stack-softN${N}-n50.log"
+    if [ -f "evolve/$OUT" ] && node -e "const j=require('./evolve/$OUT'); process.exit(j.games===50?0:1)" 2>/dev/null; then
+      node -e "const j=require('./evolve/$OUT'); console.log('RESULT softN${N}:', j.liveWins+'/'+j.games, 'WR='+j.liveWinRate, 'passed='+j.passed, 'label=', j.live&&j.live.label, 'protocol=', j.protocol);" | tee -a "$LOG"
+      cp "evolve/$OUT" "$SCRATCH/$OUT" 2>/dev/null || true
+      return 0
+    fi
+    log "softN${N} attempt $attempt incomplete — wait clear and retry"
+    wait_clear
+    echo "LOCKED STACK-softN-variants $(date -u +%Y-%m-%dT%H:%M:%SZ) pid=$$ N=${N} retry=$attempt" > MAIN-BENCH-LOCK.txt
+    install_variant "$N"
+    attempt=$((attempt+1))
+  done
+  log "FAILED softN${N} after retries"
+  return 1
+}
+
+wait_clear
+echo "LOCKED STACK-softN-variants $(date -u +%Y-%m-%dT%H:%M:%SZ) pid=$$" > MAIN-BENCH-LOCK.txt
+log "Claimed MAIN-BENCH-LOCK"
+cp search.js "search.js.bak-pre-softN-$(date +%s)" 2>/dev/null || true
+cp ai.js "ai.js.bak-pre-softN-$(date +%s)" 2>/dev/null || true
+log "Baseline STACK softN10: 35/50=0.70"
+
+run_variant 14
+run_variant 16
+
+python3 -c '
+import json
+rows=[]
+for name,path in [
+  ("softN10-n50-STACK", "/var/folders/sq/9sj87lh90pvg6yjc6lt30wsw0000gn/T/grok-goal-2452caa32616/implementer/probes/n50-STACK/v92-n50-STACK.json"),
+  ("softN10-reconfirm", "evolve/v92-stack-primary-reconfirm.json"),
+  ("softN10-s12", "evolve/v92-stack-rerun-s12.json"),
+  ("softN14", "evolve/v92-stack-softN14-n50.json"),
+  ("softN16", "evolve/v92-stack-softN16-n50.json"),
+]:
+  try:
+    d=json.load(open(path))
+    rows.append((name, d["liveWinRate"], d["liveWins"], d["games"], d.get("passed"), (d.get("live") or {}).get("label")))
+  except Exception as e:
+    rows.append((name, None, None, None, None, str(e)))
+print("=== ALL WRs ===")
+best=None
+for r in rows:
+  print(f"{r[0]}: {r[2]}/{r[3]} WR={r[1]} passed={r[4]} label={r[5]}")
+  if r[1] is not None and r[1] > 0.70 and r[0] in ("softN14","softN16"):
+    if best is None or r[1] > best[1]:
+      best=r
+print("BEST softN14/16 >0.70:", best)
+open("/var/folders/sq/9sj87lh90pvg6yjc6lt30wsw0000gn/T/grok-goal-2452caa32616/implementer/softN-best.txt","w").write(repr(best))
+' | tee -a "$LOG"
+
+winner=$(python3 -c '
+import json
+cands=[]
+for n in (14,16):
+  try:
+    d=json.load(open(f"evolve/v92-stack-softN{n}-n50.json"))
+    if d.get("games")==50 and d["liveWinRate"]>0.70:
+      cands.append((d["liveWinRate"], n))
+  except Exception:
+    pass
+print(sorted(cands, reverse=True)[0][1] if cands else "")
+')
+
+if [ -n "$winner" ]; then
+  log "WINNER softN${winner} >0.70"
+  install_variant "$winner"
+  WR=$(node -e "const j=require('./evolve/v92-stack-softN${winner}-n50.json');console.log(j.liveWins+'/'+j.games+'='+j.liveWinRate)")
+  N14=$(node -e "try{const j=require('./evolve/v92-stack-softN14-n50.json');console.log(j.liveWins+'/'+j.games+'='+j.liveWinRate)}catch(e){console.log('n/a')}")
+  N16=$(node -e "try{const j=require('./evolve/v92-stack-softN16-n50.json');console.log(j.liveWins+'/'+j.games+'='+j.liveWinRate)}catch(e){console.log('n/a')}")
+  cat > SHIP_READY.md <<EOF
+# SHIP READY — STACK softN${winner}
+
+- **Variant**: STACK with softSamples default N=${winner}
+- **Primary dual**: seed 20260711, MS280, BR96, N=50, BR_MODEL=expert (freeze-expert-cheap)
+- **Result**: ${WR} (need >0.70)
+- **Baseline softN10**: 35/50=0.70
+- **softN14**: ${N14}
+- **softN16**: ${N16}
+- **Installed on main**: search.js + ai.js stamped STACK softN${winner}
+- **Date**: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+EOF
+  log "Wrote SHIP_READY.md"
+  log "=== Dual seed 20260712 re-run softN${winner} ==="
+  TIENLEN_FREEZE=v91 TIENLEN_FREEZE_DIFF=grandmaster TIENLEN_V8_DIFF=grandmaster \
+  TIENLEN_BENCH_GAMES=50 TIENLEN_TARGET=0.70 TIENLEN_BENCH_SEED=20260712 \
+  TIENLEN_FREEZE_MS=120 TIENLEN_FREEZE_ITERS=80 TIENLEN_FREEZE_SIMS=160 \
+  TIENLEN_FREEZE_BR=0 TIENLEN_FREEZE_EXACT=1 \
+  TIENLEN_V8_MS=280 TIENLEN_V8_ITERS=200 TIENLEN_V8_SIMS=480 \
+  TIENLEN_BR_TRIALS=96 TIENLEN_V8_BRANCH=24 TIENLEN_EXACT=1 TIENLEN_BR=1 \
+  TIENLEN_SOFT_SAMPLES=0 TIENLEN_BR_MODEL=expert TIENLEN_V8_PERFECT=1 TIENLEN_FREEZE_PERFECT=1 \
+  TIENLEN_BENCH_OUT="v92-stack-softN${winner}-s12.json" TIENLEN_SCRATCH=evolve \
+  node evolve/bench-ladder.js 2>&1 | tee -a "$LOG" | tee "evolve/v92-stack-softN${winner}-s12.log"
+  if [ -f "evolve/v92-stack-softN${winner}-s12.json" ]; then
+    S12=$(node -e "const j=require('./evolve/v92-stack-softN${winner}-s12.json');console.log(j.liveWins+'/'+j.games+'='+j.liveWinRate)")
+    echo "" >> SHIP_READY.md
+    echo "## Seed 20260712 dual re-run" >> SHIP_READY.md
+    echo "- Result: ${S12}" >> SHIP_READY.md
+    log "S12 softN${winner}: $S12"
+  fi
+else
+  log "Neither softN14 nor softN16 >0.70 — restore STACK softN10"
+  cp "$SCRATCH/probes/n50-STACK/search.js" search.js
+  python3 -c '
+import re, datetime, shutil
+shutil.copy("/var/folders/sq/9sj87lh90pvg6yjc6lt30wsw0000gn/T/grok-goal-2452caa32616/implementer/probes/n50-STACK/ai.js", "ai.js")
+t=open("ai.js").read()
+stamp=datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+t=re.sub(r"stamped:\s*'\''[^'\'']*'\''", f"stamped: '\''{stamp}'\''", t, count=1)
+t=re.sub(r"label:\s*'\''[^'\'']*'\''", "label: '\''Grandmaster v9.2 (STACK exact+softN10)'\''", t, count=1)
+open("ai.js","w").write(t)
+print("restored STACK softN10")
+'
+fi
+
+echo "RELEASED STACK-softN-variants $(date -u +%Y-%m-%dT%H:%M:%SZ)" > MAIN-BENCH-LOCK.txt
+echo "PIPELINE_DONE $(date -u +%Y-%m-%dT%H:%M:%SZ)" | tee -a "$LOG" | tee "$FLAG"
+log "=== FINAL SUMMARY ==="
+python3 -c '
+import json,glob,os
+for p in sorted(glob.glob("evolve/v92-stack*.json")) + [
+  "/var/folders/sq/9sj87lh90pvg6yjc6lt30wsw0000gn/T/grok-goal-2452caa32616/implementer/probes/n50-STACK/v92-n50-STACK.json"]:
+  try:
+    d=json.load(open(p))
+    print(f"{os.path.basename(p)}: {d.get(\"liveWins\")}/{d.get(\"games\")} WR={d.get(\"liveWinRate\")} seed={d.get(\"seed0\")} label={(d.get(\"live\") or {}).get(\"label\")}")
+  except Exception as e:
+    print(p, e)
+' | tee -a "$LOG"
+node -e "console.log(require('./ai.js').AI_BUILD)" | tee -a "$LOG"

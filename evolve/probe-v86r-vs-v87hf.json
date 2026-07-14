@@ -1,0 +1,99 @@
+{
+  "mode": "2p-h2h-single-deal-continuous",
+  "protocol": "grandmaster-vs-grandmaster",
+  "games": 10,
+  "liveWins": 8,
+  "freezeWins": 2,
+  "liveWinRate": 0.8,
+  "v80Wins": 8,
+  "v80WinRate": 0.8,
+  "ci95": {
+    "p": 0.8,
+    "lo": 0.49015684672072346,
+    "hi": 0.9433190520193067
+  },
+  "target": 0.7,
+  "passed": true,
+  "ms": 230481,
+  "live": {
+    "id": "v8.6",
+    "stamped": "2026-07-12T12:30:00-07:00",
+    "label": "Grandmaster v8.6 (GM-strengthened)"
+  },
+  "freeze": {
+    "id": "v8.7-hybrid-fl",
+    "stamped": "2026-07-12T11:00:00-07:00",
+    "label": "Grandmaster v8.7 (ladder baseline freeze)"
+  },
+  "v80": {
+    "id": "v8.6",
+    "stamped": "2026-07-12T12:30:00-07:00",
+    "label": "Grandmaster v8.6 (GM-strengthened)"
+  },
+  "v80Opts": {
+    "difficulty": "grandmaster",
+    "timeMs": 150,
+    "iterations": 120,
+    "maxSims": 320,
+    "brTrials": 32,
+    "bestResponse": true,
+    "useSearch": true,
+    "perfectInfo": true,
+    "hiddenInfo": false,
+    "maxBranch": 20,
+    "dualSelf": false,
+    "exactExploit": true,
+    "mode": "auto",
+    "combatRoot": false,
+    "flRoot": false,
+    "softSamples": 0,
+    "exploit": true
+  },
+  "freezeOpts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": true,
+    "hiddenInfo": false,
+    "timeMs": 120,
+    "iterations": 80,
+    "maxSims": 160,
+    "bestResponse": false,
+    "maxBranch": 16,
+    "mode": "auto",
+    "combatRoot": false,
+    "flRoot": false,
+    "dualSelf": false,
+    "exactExploit": false,
+    "softSamples": 0,
+    "exploit": false
+  },
+  "opponentFreeze": "policies/v87hf-ai.js + policies/v87hf-search.js",
+  "freezeTag": "v87hf",
+  "seed0": 20260711,
+  "checkpoints": [
+    {
+      "games": 5,
+      "liveWins": 5,
+      "liveWinRate": 1,
+      "ci95": {
+        "p": 1,
+        "lo": 0.565508505247919,
+        "hi": 1
+      },
+      "ms": 126953,
+      "gps": 0.03938465416335179
+    },
+    {
+      "games": 10,
+      "liveWins": 8,
+      "liveWinRate": 0.8,
+      "ci95": {
+        "p": 0.8,
+        "lo": 0.49015684672072346,
+        "hi": 0.9433190520193067
+      },
+      "ms": 230481,
+      "gps": 0.04338752435124804
+    }
+  ]
+}

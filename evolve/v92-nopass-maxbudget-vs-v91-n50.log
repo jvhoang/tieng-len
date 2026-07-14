@@ -1,0 +1,46 @@
+=== live vs freeze v91 games=50 target=0.7 ===
+live build { id: 'v9.2',
+  stamped: '2026-07-13T18:30:00Z',
+  label: 'Grandmaster v9.2 (NOPASS+race+maxBudget)' }
+freeze build { id: 'v9.1',
+  stamped: '2026-07-13T02:50:38Z',
+  label: 'Grandmaster v9.1 (ladder freeze)' }
+live opts { difficulty: 'grandmaster',
+  timeMs: 280,
+  iterations: 200,
+  maxSims: 480,
+  brTrials: 96,
+  bestResponse: true,
+  useSearch: true,
+  perfectInfo: true,
+  hiddenInfo: false,
+  maxBranch: 24,
+  dualSelf: false,
+  exactExploit: true,
+  mode: 'auto',
+  combatRoot: false,
+  flRoot: false,
+  softSamples: 0,
+  exploit: true }
+freeze opts { difficulty: 'grandmaster',
+  useSearch: true,
+  perfectInfo: true,
+  hiddenInfo: false,
+  timeMs: 120,
+  iterations: 80,
+  maxSims: 160,
+  bestResponse: false,
+  maxBranch: 16,
+  mode: 'auto',
+  combatRoot: false,
+  flRoot: false,
+  dualSelf: false,
+  exactExploit: true,
+  softSamples: 0,
+  exploit: false }
+opponentFreeze policies/v91-ai.js + search
+protocol { freezeDifficulty: 'grandmaster',
+  liveDifficulty: 'grandmaster',
+  brModel: 'freeze-expert-cheap' }
+{"games":10,"liveWins":6,"liveWinRate":0.6,"ci95":{"p":0.6,"lo":0.3126695474501863,"hi":0.8318224187964901},"ms":237994,"gps":0.042017865996621766}
+{"slowGame":11,"seed":20370414,"ms":66707,"win":true}

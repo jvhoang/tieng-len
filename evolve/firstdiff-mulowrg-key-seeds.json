@@ -1,0 +1,92 @@
+{
+  "protocol": "fair-firstdiff-v1",
+  "freeze": "p_w26_ex_seqclimb",
+  "chall": "p_w29_ex_mulow_rg",
+  "live": {
+    "id": "v9.1-probe-p_w29_ex_mulow_rg",
+    "stamped": "2026-07-14T05:38:20Z",
+    "label": "Grandmaster v9.1-probe p_w29_ex_mulow_rg"
+  },
+  "freezeBuild": {
+    "id": "v9.1-probe-p_w26_ex_seqclimb",
+    "stamped": "2026-07-14T05:38:20Z",
+    "label": "Grandmaster v9.1-probe p_w26_ex_seqclimb"
+  },
+  "opts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": false,
+    "hiddenInfo": true,
+    "timeMs": 200,
+    "iterations": 60,
+    "maxSims": 120,
+    "brTrials": 20,
+    "bestResponse": true,
+    "exactExploit": false,
+    "exploit": true,
+    "softSamples": 0,
+    "maxBranch": 12,
+    "mode": "auto",
+    "strongSelf": false
+  },
+  "nGames": 6,
+  "nDiverged": 0,
+  "divergeRate": 0,
+  "classCount": {},
+  "results": [
+    {
+      "seed": 20270774,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 11,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 23,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20270774,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 12,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 23,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20460262,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 17,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20460262,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 8,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 17,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20440315,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 5,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 10,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20440315,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 5,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 10,
+      "freezeWinIfNoDiff": true
+    }
+  ]
+}

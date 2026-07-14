@@ -1,0 +1,97 @@
+{
+  "mode": "2p-h2h-single-deal-continuous",
+  "games": 100,
+  "v80Wins": 78,
+  "v75Wins": 22,
+  "v80WinRate": 0.78,
+  "ci95": {
+    "p": 0.78,
+    "lo": 0.689294652849997,
+    "hi": 0.849988254963442
+  },
+  "target": 0.75,
+  "passed": true,
+  "ms": 492945,
+  "v80": {
+    "id": "v8.5-anti-expert",
+    "stamped": "2026-07-12T01:00:00-07:00",
+    "label": "Grandmaster v8.5"
+  },
+  "v75": {
+    "id": "v7.5-human-counterfactual",
+    "stamped": "2026-07-11T12:00:00-07:00",
+    "label": "Grandmaster v7.5"
+  },
+  "v80Opts": {
+    "difficulty": "hard",
+    "timeMs": 140,
+    "iterations": 160,
+    "maxSims": 320,
+    "brTrials": 90,
+    "bestResponse": true,
+    "useSearch": true,
+    "perfectInfo": true,
+    "hiddenInfo": false,
+    "maxBranch": 20,
+    "dualSelf": true,
+    "exactExploit": true,
+    "mode": "auto"
+  },
+  "v75Opts": {
+    "difficulty": "easy",
+    "iterations": 0,
+    "mode": "expert"
+  },
+  "opponentFreeze": "policies/v75-ai.js + policies/v75-search.js",
+  "seed0": 20260711,
+  "checkpoints": [
+    {
+      "games": 25,
+      "v80Wins": 22,
+      "v80WinRate": 0.88,
+      "ci95": {
+        "p": 0.88,
+        "lo": 0.7004380781662651,
+        "hi": 0.9583325864293191
+      },
+      "ms": 133879,
+      "gps": 0.18673578380477895
+    },
+    {
+      "games": 50,
+      "v80Wins": 42,
+      "v80WinRate": 0.84,
+      "ci95": {
+        "p": 0.84,
+        "lo": 0.7148551903823401,
+        "hi": 0.9166267863791231
+      },
+      "ms": 264810,
+      "gps": 0.18881462180431252
+    },
+    {
+      "games": 75,
+      "v80Wins": 59,
+      "v80WinRate": 0.7866666666666666,
+      "ci95": {
+        "p": 0.7866666666666666,
+        "lo": 0.6811982171013852,
+        "hi": 0.86419913657992
+      },
+      "ms": 383461,
+      "gps": 0.19558703492662877
+    },
+    {
+      "games": 100,
+      "v80Wins": 78,
+      "v80WinRate": 0.78,
+      "ci95": {
+        "p": 0.78,
+        "lo": 0.689294652849997,
+        "hi": 0.849988254963442
+      },
+      "ms": 492944,
+      "gps": 0.20286279983121813
+    }
+  ]
+}

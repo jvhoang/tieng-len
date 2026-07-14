@@ -1,0 +1,17 @@
+start Mon Jul 13 07:11:12 UTC 2026
+=== BASE losses 07:11:12 ===
+{"liveWins":0,"n":23,"rate":0}
+=== NOPASS losses 07:18:01 ===
+{"liveWins":1,"n":23,"rate":0.043478260869565216}
+=== LADDER losses 07:24:08 ===
+{"liveWins":1,"n":23,"rate":0.043478260869565216}
+BASE wins among losses 0 / 23
+NOPASS absWins 1 [20450198] flips_vs_base [20450198]
+LADDER absWins 1 [20450198] flips_vs_base [20450198]
+cands []
+=== BASE wins20 ===
+{"liveWins":12,"n":13,"rate":0.9230769230769231}
+BASE L 0 / 23 W 12 / 13
+NOPASS: Lflips=[20450198] Wregs=[] net=1 PASS=False
+LADDER: Lflips=[20450198] Wregs=[] net=1 PASS=False
+RECOV_DONE

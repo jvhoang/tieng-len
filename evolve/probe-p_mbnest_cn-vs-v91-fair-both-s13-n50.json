@@ -1,0 +1,426 @@
+{
+  "protocol": "fair-hidden-gm-BR-both-equal",
+  "infoModel": "hidden",
+  "perfectInfo": false,
+  "hiddenInfo": true,
+  "brBoth": true,
+  "equalBudget": true,
+  "games": 50,
+  "liveWins": 23,
+  "freezeWins": 27,
+  "liveWinRate": 0.46,
+  "seed0": 20260713,
+  "ms": 18952,
+  "live": {
+    "id": "v9.1-probe-mbnest_cn",
+    "stamped": "2026-07-13T02:50:38Z",
+    "label": "Grandmaster v9.1-probe mbnest_cn"
+  },
+  "freeze": {
+    "id": "v9.1",
+    "stamped": "2026-07-13T02:50:38Z",
+    "label": "Grandmaster v9.1 (ladder freeze)"
+  },
+  "freezeTag": "v91",
+  "challTag": "p_mbnest_cn",
+  "opts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": false,
+    "hiddenInfo": true,
+    "timeMs": 150,
+    "iterations": 60,
+    "maxSims": 120,
+    "brTrials": 12,
+    "bestResponse": true,
+    "exactExploit": false,
+    "exploit": true,
+    "softSamples": 4,
+    "maxBranch": 12,
+    "mode": "auto",
+    "strongSelf": false
+  },
+  "perGame": [
+    {
+      "seed": 20260713,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 20,
+      "ms": 478
+    },
+    {
+      "seed": 20260713,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 17,
+      "ms": 277
+    },
+    {
+      "seed": 20270686,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 17,
+      "ms": 642
+    },
+    {
+      "seed": 20270686,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 19,
+      "ms": 535
+    },
+    {
+      "seed": 20280659,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 21,
+      "ms": 315
+    },
+    {
+      "seed": 20280659,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 21,
+      "ms": 863
+    },
+    {
+      "seed": 20290632,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 28,
+      "ms": 385
+    },
+    {
+      "seed": 20290632,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 24,
+      "ms": 516
+    },
+    {
+      "seed": 20300605,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 20,
+      "ms": 294
+    },
+    {
+      "seed": 20300605,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 22,
+      "ms": 392
+    },
+    {
+      "seed": 20310578,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 16,
+      "ms": 138
+    },
+    {
+      "seed": 20310578,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 18,
+      "ms": 160
+    },
+    {
+      "seed": 20320551,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 25,
+      "ms": 260
+    },
+    {
+      "seed": 20320551,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 20,
+      "ms": 294
+    },
+    {
+      "seed": 20330524,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 19,
+      "ms": 345
+    },
+    {
+      "seed": 20330524,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 21,
+      "ms": 529
+    },
+    {
+      "seed": 20340497,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 21,
+      "ms": 787
+    },
+    {
+      "seed": 20340497,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 21,
+      "ms": 778
+    },
+    {
+      "seed": 20350470,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 21,
+      "ms": 699
+    },
+    {
+      "seed": 20350470,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 24,
+      "ms": 332
+    },
+    {
+      "seed": 20360443,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 24,
+      "ms": 477
+    },
+    {
+      "seed": 20360443,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 22,
+      "ms": 326
+    },
+    {
+      "seed": 20370416,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 19,
+      "ms": 278
+    },
+    {
+      "seed": 20370416,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 19,
+      "ms": 155
+    },
+    {
+      "seed": 20380389,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 14,
+      "ms": 337
+    },
+    {
+      "seed": 20380389,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 16,
+      "ms": 302
+    },
+    {
+      "seed": 20390362,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 16,
+      "ms": 337
+    },
+    {
+      "seed": 20390362,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 16,
+      "ms": 293
+    },
+    {
+      "seed": 20400335,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 24,
+      "ms": 444
+    },
+    {
+      "seed": 20400335,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 24,
+      "ms": 321
+    },
+    {
+      "seed": 20410308,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 17,
+      "ms": 208
+    },
+    {
+      "seed": 20410308,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 19,
+      "ms": 174
+    },
+    {
+      "seed": 20420281,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 22,
+      "ms": 527
+    },
+    {
+      "seed": 20420281,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 27,
+      "ms": 138
+    },
+    {
+      "seed": 20430254,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 19,
+      "ms": 421
+    },
+    {
+      "seed": 20430254,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 14,
+      "ms": 263
+    },
+    {
+      "seed": 20440227,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 16,
+      "ms": 204
+    },
+    {
+      "seed": 20440227,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 14,
+      "ms": 207
+    },
+    {
+      "seed": 20450200,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 21,
+      "ms": 249
+    },
+    {
+      "seed": 20450200,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 13,
+      "ms": 150
+    },
+    {
+      "seed": 20460173,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 32,
+      "ms": 270
+    },
+    {
+      "seed": 20460173,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 28,
+      "ms": 550
+    },
+    {
+      "seed": 20470146,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 25,
+      "ms": 300
+    },
+    {
+      "seed": 20470146,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 22,
+      "ms": 403
+    },
+    {
+      "seed": 20480119,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 18,
+      "ms": 370
+    },
+    {
+      "seed": 20480119,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 18,
+      "ms": 289
+    },
+    {
+      "seed": 20490092,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 21,
+      "ms": 166
+    },
+    {
+      "seed": 20490092,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 21,
+      "ms": 361
+    },
+    {
+      "seed": 20500065,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 21,
+      "ms": 638
+    },
+    {
+      "seed": 20500065,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 25,
+      "ms": 752
+    }
+  ],
+  "lossSeeds": [
+    20260713,
+    20260713,
+    20270686,
+    20280659,
+    20290632,
+    20300605,
+    20310578,
+    20320551,
+    20320551,
+    20330524,
+    20340497,
+    20360443,
+    20370416,
+    20380389,
+    20390362,
+    20400335,
+    20410308,
+    20420281,
+    20420281,
+    20430254,
+    20430254,
+    20440227,
+    20450200,
+    20460173,
+    20480119,
+    20490092,
+    20500065
+  ],
+  "target": 0.7,
+  "passed": false
+}

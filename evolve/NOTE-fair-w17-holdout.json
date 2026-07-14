@@ -1,0 +1,24 @@
+{
+  "holdouts": [
+    {
+      "part": "A",
+      "seed": 20260801,
+      "id": 25,
+      "ch": 26,
+      "d": 1,
+      "wr": 0.52,
+      "ship": false
+    },
+    {
+      "part": "B",
+      "seed": 20260802,
+      "id": 25,
+      "ch": 26,
+      "d": 1,
+      "wr": 0.52,
+      "ship": false
+    }
+  ],
+  "chall": "p_w17_brfltrash",
+  "protocol": "fair T20 BOTH"
+}

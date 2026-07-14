@@ -1,0 +1,49 @@
+# Fair dual probe rollup
+Generated
+
+| File | W/N | WR | Tag |
+|------|----:|---:|-----|
+| v91-maxbudget-vs-v91-n50.json | 34/50 | 0.68 | v9.1 |
+| v91-ultrabudget-vs-v91-n50.json | 34/50 | 0.68 | v9.1 |
+| v92-br160-vs-v91-n50.json | 34/50 | 0.68 | v9.2 |
+| v92-maxbudget-vs-v91-rerun.json | 34/50 | 0.68 | v9.2 |
+| v92-race-maxbudget-vs-v91-n50.json | 34/50 | 0.68 | v9.2 |
+| v92-two-omin2-vs-v91-primary.json | 34/50 | 0.68 | v9.2 |
+| v92-multitie-maxbudget-vs-v91-n50.json | 33/50 | 0.66 | v9.2 |
+| v92-residual-mt-vs-v91-n50.json | 33/50 | 0.66 | v9.2 |
+| v92-vs-v91-final.json | 33/50 | 0.66 | v9.2 |
+| v92-gold-surgical-vs-v91-n50.json | 31/50 | 0.62 | v9.2 |
+| v92-series1-vs-v91-primary.json | 28/50 | 0.56 | v9.2 |
+| v92-gold-vs-v91.json | 27/50 | 0.54 | v9.2 |
+| v92-series2-vs-v91.json | 27/50 | 0.54 | v9.2 |
+| v92-softcost-vs-v91.json | 27/50 | 0.54 | v9.2 |
+| v92-p15-vs-v91.json | 24/50 | 0.48 | v9.2 |
+| gold-surgical-vs-v91-fair-hb-n20.json | 9/20 | 0.45 | custom |
+| v92-p15b-vs-v91.json | 22/50 | 0.44 | v9.2 |
+| v92-p15c-vs-v91.json | 22/50 | 0.44 | v9.2 |
+| gold-surgical-vs-v91-fair-hb-n50.json | 20/50 | 0.40 | custom |
+| gold-surgical-vs-v91-fair-n50.json | 20/50 | 0.40 | custom |
+| gold-surgical-vs-v91-fair-n20.json | 8/20 | 0.40 | custom |
+| identity-v91-fair-hb-n20.json | 8/20 | 0.40 | v91 |
+| p_best-vs-v91-fair-hb-n20.json | 8/20 | 0.40 | p_best |
+| probe-p_minb-vs-v91-fair-n20.json | 8/20 | 0.40 | p_minb |
+| probe-p_minb-vs-v91-fair-n20.json | 8/20 | 0.40 | p_minb |
+| stack-v92-vs-v91-fair-hb-n20.json | 8/20 | 0.40 | v92 |
+| stack-v92-vs-v91-fair-n20.json | 8/20 | 0.40 | v92 |
+| struct-flshort-vs-v91-fair-n20.json | 8/20 | 0.40 | custom |
+| struct-fltrash-vs-v91-fair-n20.json | 8/20 | 0.40 | custom |
+| struct-order-vs-v91-fair-n20.json | 8/20 | 0.40 | custom |
+| v94-vs-v91-fair-n20.json | 8/20 | 0.40 | v94 |
+| identity-v91-fair-n50-rebal.json | 19/50 | 0.38 | v91 |
+| identity-v91-fair-n50.json | 19/50 | 0.38 | v91 |
+| struct-order-vs-v91-fair-n50.json | 19/50 | 0.38 | custom |
+| combat-struct-vs-v91-fair-n20.json | 7/20 | 0.35 | custom |
+| fl-short-vs-v91-fair-n20.json | 7/20 | 0.35 | custom |
+| identity-v91-fair-det-n20.json | 7/20 | 0.35 | v91 |
+| identity-v91-fair-n20.json | 7/20 | 0.35 | v91 |
+| probe-p_flhyb-vs-v91-fair-n20.json | 7/20 | 0.35 | p_flhyb |
+| probe-p_flhyb-vs-v91-fair-n20.json | 7/20 | 0.35 | p_flhyb |
+| probe-p_pass-vs-v91-fair-n20.json | 7/20 | 0.35 | p_pass |
+| probe-p_pass-vs-v91-fair-n20.json | 7/20 | 0.35 | p_pass |
+| probe-p_two-vs-v91-fair-n20.json | 7/20 | 0.35 | p_two |
+| probe-p_two-vs-v91-fair-n20.json | 7/20 | 0.35 | p_two |

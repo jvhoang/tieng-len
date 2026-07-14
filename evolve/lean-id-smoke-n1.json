@@ -1,0 +1,57 @@
+{
+  "protocol": "fair-hidden-gm-BR-both-equal",
+  "infoModel": "hidden",
+  "perfectInfo": false,
+  "hiddenInfo": true,
+  "brBoth": true,
+  "equalBudget": true,
+  "games": 1,
+  "liveWins": 0,
+  "freezeWins": 1,
+  "liveWinRate": 0,
+  "seed0": 20260711,
+  "ms": 249,
+  "live": {
+    "id": "v9.1",
+    "stamped": "2026-07-13T02:50:38Z",
+    "label": "Grandmaster v9.1 (ladder freeze)"
+  },
+  "freeze": {
+    "id": "v9.1",
+    "stamped": "2026-07-13T02:50:38Z",
+    "label": "Grandmaster v9.1 (ladder freeze)"
+  },
+  "freezeTag": "v91",
+  "challTag": "v91",
+  "opts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": false,
+    "hiddenInfo": true,
+    "timeMs": 100,
+    "iterations": 60,
+    "maxSims": 120,
+    "brTrials": 8,
+    "bestResponse": true,
+    "exactExploit": false,
+    "exploit": false,
+    "softSamples": 0,
+    "maxBranch": 12,
+    "mode": "auto",
+    "strongSelf": false
+  },
+  "perGame": [
+    {
+      "seed": 20260711,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 18,
+      "ms": 248
+    }
+  ],
+  "lossSeeds": [
+    20260711
+  ],
+  "target": 0.7,
+  "passed": false
+}

@@ -1,0 +1,326 @@
+{
+  "protocol": "fair-firstdiff-v1",
+  "freeze": "p_w26_ex_seqclimb",
+  "chall": "p_w28_ex_mulow",
+  "live": {
+    "id": "v9.1-probe-p_w28_ex_mulow",
+    "stamped": "2026-07-14T05:38:20Z",
+    "label": "Grandmaster v9.1-probe p_w28_ex_mulow"
+  },
+  "freezeBuild": {
+    "id": "v9.1-probe-p_w26_ex_seqclimb",
+    "stamped": "2026-07-14T05:38:20Z",
+    "label": "Grandmaster v9.1-probe p_w26_ex_seqclimb"
+  },
+  "opts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": false,
+    "hiddenInfo": true,
+    "timeMs": 150,
+    "iterations": 60,
+    "maxSims": 120,
+    "brTrials": 12,
+    "bestResponse": true,
+    "exactExploit": false,
+    "exploit": true,
+    "softSamples": 0,
+    "maxBranch": 12,
+    "mode": "auto",
+    "strongSelf": false
+  },
+  "nGames": 26,
+  "nDiverged": 4,
+  "divergeRate": 0.15384615384615385,
+  "classCount": {
+    "combat_other": 4
+  },
+  "results": [
+    {
+      "seed": 20380387,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 8,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 16,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20380387,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 8,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 16,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20390360,
+      "liveSeat": 0,
+      "firstDiff": {
+        "step": 2,
+        "seat": 0,
+        "phase": "pair",
+        "handLen": 11,
+        "omin": 11,
+        "curTop": 3,
+        "freeze": "9S 9H",
+        "chall": "8S 8H",
+        "freezeSig": "24,25",
+        "challSig": "20,21",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 2,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 3,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 20390360,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 8,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 17,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20400333,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 8,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 15,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20400333,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 7,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 15,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20410306,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 8,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 17,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20410306,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 17,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20420279,
+      "liveSeat": 0,
+      "firstDiff": {
+        "step": 2,
+        "seat": 0,
+        "phase": "pair",
+        "handLen": 11,
+        "omin": 11,
+        "curTop": 1,
+        "freeze": "KH KC",
+        "chall": "TC TD",
+        "freezeSig": "41,43",
+        "challSig": "30,31",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 2,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 3,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 20420279,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 19,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20430252,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 4,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 7,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20430252,
+      "liveSeat": 1,
+      "firstDiff": {
+        "step": 1,
+        "seat": 1,
+        "phase": "seq",
+        "handLen": 13,
+        "omin": 9,
+        "curTop": 3,
+        "freeze": "5H 6H 7C 8H",
+        "chall": "4S 5H 6H 7C",
+        "freezeSig": "9,13,19,21",
+        "challSig": "4,9,13,19",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 1,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 2,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 20440225,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 17,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20440225,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 8,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 17,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20450198,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 8,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 16,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20450198,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 8,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 16,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20460171,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 8,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 17,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20460171,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 17,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20470144,
+      "liveSeat": 0,
+      "firstDiff": {
+        "step": 1,
+        "seat": 0,
+        "phase": "pair",
+        "handLen": 13,
+        "omin": 11,
+        "curTop": 0,
+        "freeze": "AH AD",
+        "chall": "4H 4S",
+        "freezeSig": "45,46",
+        "challSig": "4,5",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 1,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 2,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 20470144,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 17,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20480117,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 18,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20480117,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 18,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20490090,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 19,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20490090,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 10,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 19,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20500063,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 17,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20500063,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 8,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 17,
+      "freezeWinIfNoDiff": false
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "mode": "2p-h2h-single-deal-continuous",
+  "protocol": "live-vs-freeze-expert",
+  "games": 25,
+  "liveWins": 23,
+  "freezeWins": 2,
+  "liveWinRate": 0.92,
+  "v80Wins": 23,
+  "v80WinRate": 0.92,
+  "ci95": {
+    "p": 0.92,
+    "lo": 0.7503348787704218,
+    "hi": 0.9777800663089081
+  },
+  "target": 0.7,
+  "passed": true,
+  "ms": 269524,
+  "live": {
+    "id": "v9.1",
+    "stamped": "2026-07-12T21:57:45Z",
+    "label": "Grandmaster v9.1"
+  },
+  "freeze": {
+    "id": "v9.0",
+    "stamped": "2026-07-12T20:10:01Z",
+    "label": "Grandmaster v9.0 (ladder freeze)"
+  },
+  "v80": {
+    "id": "v9.1",
+    "stamped": "2026-07-12T21:57:45Z",
+    "label": "Grandmaster v9.1"
+  },
+  "v80Opts": {
+    "difficulty": "hard",
+    "timeMs": 100,
+    "iterations": 120,
+    "maxSims": 320,
+    "brTrials": 48,
+    "bestResponse": true,
+    "useSearch": true,
+    "perfectInfo": true,
+    "hiddenInfo": false,
+    "maxBranch": 20,
+    "dualSelf": false,
+    "exactExploit": true,
+    "mode": "auto",
+    "combatRoot": false,
+    "flRoot": false,
+    "softSamples": 0,
+    "exploit": true
+  },
+  "freezeOpts": {
+    "difficulty": "easy",
+    "iterations": 0,
+    "mode": "expert"
+  },
+  "opponentFreeze": "policies/v90-ai.js + policies/v90-search.js",
+  "freezeTag": "v90",
+  "seed0": 20260711,
+  "checkpoints": [
+    {
+      "games": 10,
+      "liveWins": 10,
+      "liveWinRate": 1,
+      "ci95": {
+        "p": 1,
+        "lo": 0.7224598312333834,
+        "hi": 1
+      },
+      "ms": 167875,
+      "gps": 0.05956813104988831
+    },
+    {
+      "games": 20,
+      "liveWins": 19,
+      "liveWinRate": 0.95,
+      "ci95": {
+        "p": 0.95,
+        "lo": 0.7638641064874331,
+        "hi": 0.9911187805671267
+      },
+      "ms": 235580,
+      "gps": 0.08489685032685287
+    },
+    {
+      "games": 25,
+      "liveWins": 23,
+      "liveWinRate": 0.92,
+      "ci95": {
+        "p": 0.92,
+        "lo": 0.7503348787704218,
+        "hi": 0.9777800663089081
+      },
+      "ms": 269524,
+      "gps": 0.09275611819355604
+    }
+  ]
+}

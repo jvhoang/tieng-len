@@ -1,0 +1,89 @@
+{
+  "protocol": "fair-firstdiff-v1",
+  "freeze": "p_w26_ex_seqclimb",
+  "chall": "p_w28_ex_mulow",
+  "live": {
+    "id": "v9.1-probe-p_w28_ex_mulow",
+    "stamped": "2026-07-14T05:38:20Z",
+    "label": "Grandmaster v9.1-probe p_w28_ex_mulow"
+  },
+  "freezeBuild": {
+    "id": "v9.1-probe-p_w26_ex_seqclimb",
+    "stamped": "2026-07-14T05:38:20Z",
+    "label": "Grandmaster v9.1-probe p_w26_ex_seqclimb"
+  },
+  "opts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": false,
+    "hiddenInfo": true,
+    "timeMs": 200,
+    "iterations": 60,
+    "maxSims": 120,
+    "brTrials": 20,
+    "bestResponse": true,
+    "exactExploit": false,
+    "exploit": true,
+    "softSamples": 0,
+    "maxBranch": 12,
+    "mode": "auto",
+    "strongSelf": false
+  },
+  "nGames": 4,
+  "nDiverged": 1,
+  "divergeRate": 0.25,
+  "classCount": {
+    "combat_other": 1
+  },
+  "results": [
+    {
+      "seed": 20460262,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 17,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20460262,
+      "liveSeat": 1,
+      "firstDiff": {
+        "step": 1,
+        "seat": 1,
+        "phase": "seq",
+        "handLen": 13,
+        "omin": 10,
+        "curTop": 2,
+        "freeze": "8H 9S TH",
+        "chall": "5S 6D 7S",
+        "freezeSig": "21,24,29",
+        "challSig": "8,14,16",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 1,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 2,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 20440315,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 5,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 10,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20440315,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 5,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 10,
+      "freezeWinIfNoDiff": true
+    }
+  ]
+}

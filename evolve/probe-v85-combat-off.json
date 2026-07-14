@@ -1,0 +1,70 @@
+{
+  "mode": "2p-h2h-single-deal-continuous",
+  "games": 25,
+  "liveWins": 23,
+  "freezeWins": 2,
+  "liveWinRate": 0.92,
+  "v80Wins": 23,
+  "v80WinRate": 0.92,
+  "ci95": {
+    "p": 0.92,
+    "lo": 0.7503348787704218,
+    "hi": 0.9777800663089081
+  },
+  "target": 0.7,
+  "passed": true,
+  "ms": 315719,
+  "live": {
+    "id": "v8.5",
+    "stamped": "2026-07-12T12:00:00-07:00",
+    "label": "Grandmaster v8.5"
+  },
+  "freeze": {
+    "id": "v8.7-hybrid-fl",
+    "stamped": "2026-07-12T11:00:00-07:00",
+    "label": "Grandmaster v8.7 (ladder baseline freeze)"
+  },
+  "v80": {
+    "id": "v8.5",
+    "stamped": "2026-07-12T12:00:00-07:00",
+    "label": "Grandmaster v8.5"
+  },
+  "v80Opts": {
+    "difficulty": "hard",
+    "timeMs": 100,
+    "iterations": 160,
+    "maxSims": 320,
+    "brTrials": 48,
+    "bestResponse": true,
+    "useSearch": true,
+    "perfectInfo": true,
+    "hiddenInfo": false,
+    "maxBranch": 20,
+    "dualSelf": true,
+    "exactExploit": true,
+    "mode": "auto",
+    "combatRoot": false
+  },
+  "freezeOpts": {
+    "difficulty": "easy",
+    "iterations": 0,
+    "mode": "expert"
+  },
+  "opponentFreeze": "policies/v87hf-ai.js + policies/v87hf-search.js",
+  "freezeTag": "v87hf",
+  "seed0": 20260711,
+  "checkpoints": [
+    {
+      "games": 25,
+      "liveWins": 23,
+      "liveWinRate": 0.92,
+      "ci95": {
+        "p": 0.92,
+        "lo": 0.7503348787704218,
+        "hi": 0.9777800663089081
+      },
+      "ms": 315717,
+      "gps": 0.07918483958735197
+    }
+  ]
+}

@@ -1,12 +1,18 @@
 /**
  * Live AI vs frozen prior champion — continuous 2p single-deal bench.
  *
- * Default (user): N≥50, WR>0.70, seed 20260711, grandmaster vs grandmaster.
+ * Default (user): N≥50, WR>0.70, seed 20260711, grandmaster vs grandmaster,
+ * **HIDDEN INFO only** (never perfect-info for ladder ship gates).
  *
  *   TIENLEN_FREEZE=v90 TIENLEN_BENCH_GAMES=50 TIENLEN_TARGET=0.70 \
  *   TIENLEN_BENCH_SEED=20260711 TIENLEN_FREEZE_DIFF=grandmaster \
  *   TIENLEN_V8_DIFF=grandmaster TIENLEN_BENCH_OUT=v91-vs-v90-final.json \
  *   node evolve/bench-ladder.js
+ *
+ * Info model (2026-07-14 user rule):
+ *   perfectInfo=false, hiddenInfo=true for BOTH seats by default.
+ *   Opt-in perfect only for debug: TIENLEN_V8_PERFECT=1 / TIENLEN_FREEZE_PERFECT=1
+ *   (must not be used for ship gates).
  *
  * Optional: TIENLEN_FREEZE_DIFF=expert for fast expert-policy opponent.
  */
@@ -29,6 +35,14 @@ const search = (function () {
   return require('../search.js');
 })();
 const freeze = require('../policies/' + freezeTag + '-ai.js');
+// Freeze search (for BR inject on freeze seat + expertPolicy leaf model)
+const freezeSearch = (function () {
+  try {
+    return require('../policies/' + freezeTag + '-search.js');
+  } catch (e) {
+    return null;
+  }
+})();
 
 var _oppMemo = Object.create(null);
 var _oppMemoN = 0;
@@ -65,61 +79,78 @@ function _stateKey(state, seat) {
   return key;
 }
 
-/** Freeze seat opts — default grandmaster (search) of frozen policy. */
+/** Freeze seat opts — grandmaster of frozen policy. HIDDEN INFO. BR ON by default. */
 function freezeOpts() {
   const diff = process.env.TIENLEN_FREEZE_DIFF || 'grandmaster';
   if (diff === 'expert' || diff === 'easy') {
     return { difficulty: 'easy', iterations: 0, mode: 'expert' };
   }
-  const perfect = process.env.TIENLEN_FREEZE_PERFECT !== '0';
+  // Ship duals: always hidden. Perfect only if explicitly TIENLEN_FREEZE_PERFECT=1 (debug).
+  const perfect = process.env.TIENLEN_FREEZE_PERFECT === '1';
+  // Fair dual (user 2026-07-14): freeze BR ON by default — same search class as live GM.
+  // Old FREEZE_BR=0 made live win from harness, not code skill. Opt out: TIENLEN_FREEZE_BR=0.
+  const freezeBr = process.env.TIENLEN_FREEZE_BR !== '0';
   return {
     difficulty: diff,
     useSearch: true,
     perfectInfo: perfect,
     hiddenInfo: !perfect,
-    // Slightly lower budgets than live so gates remain discriminative but still GM
-    timeMs: parseInt(process.env.TIENLEN_FREEZE_MS || '120', 10),
-    iterations: parseInt(process.env.TIENLEN_FREEZE_ITERS || '80', 10),
-    maxSims: parseInt(process.env.TIENLEN_FREEZE_SIMS || '160', 10),
-    bestResponse: process.env.TIENLEN_FREEZE_BR === '1',
-    maxBranch: parseInt(process.env.TIENLEN_FREEZE_BRANCH || '16', 10),
+    // Prefer equal budgets with live (see EQUAL_BUDGET / defaults below).
+    timeMs: parseInt(process.env.TIENLEN_FREEZE_MS || '200', 10),
+    iterations: parseInt(process.env.TIENLEN_FREEZE_ITERS || '120', 10),
+    maxSims: parseInt(process.env.TIENLEN_FREEZE_SIMS || '240', 10),
+    bestResponse: freezeBr,
+    maxBranch: parseInt(process.env.TIENLEN_FREEZE_BRANCH || '20', 10),
     mode: process.env.TIENLEN_FREEZE_MODE || 'auto',
     combatRoot: process.env.TIENLEN_FREEZE_COMBAT_ROOT === '1',
     flRoot: process.env.TIENLEN_FREEZE_FL_ROOT === '1',
     dualSelf: process.env.TIENLEN_FREEZE_DUAL_SELF === '1',
-    exactExploit: process.env.TIENLEN_FREEZE_EXACT !== '0',
-    softSamples: parseInt(process.env.TIENLEN_FREEZE_SOFT_SAMPLES || '0', 10),
-    exploit: process.env.TIENLEN_FREEZE_EXPLOIT === '1'
+    // exactExploit is a perfect-info path — default OFF under hidden dual
+    exactExploit: process.env.TIENLEN_FREEZE_EXACT === '1',
+    softSamples: parseInt(
+      process.env.TIENLEN_FREEZE_SOFT_SAMPLES != null
+        ? process.env.TIENLEN_FREEZE_SOFT_SAMPLES
+        : (process.env.TIENLEN_SOFT_SAMPLES || '6'),
+      10
+    ),
+    exploit: process.env.TIENLEN_FREEZE_EXPLOIT !== '0',
+    brTrials: parseInt(process.env.TIENLEN_FREEZE_BR_TRIALS || process.env.TIENLEN_BR_TRIALS || '32', 10)
   };
 }
 
 /**
  * Live BR/exploit opponent model of freeze.
- * Default (v9.2+): low-budget freeze GRANDMASTER — dual N50 evidence
- *   BR_GM_MODEL 40/50 vs freeze-expert-cheap STACK ceiling 35/50.
- * Opt out: TIENLEN_BR_MODEL=expert for legacy freeze-expert-cheap.
+ * Under hidden-info dual: model freeze as low-budget hidden GM (not perfect).
+ * Opt out: TIENLEN_BR_MODEL=expert for pure expert.
  * Env: TIENLEN_BR_OPP_MS (40), TIENLEN_BR_OPP_ITERS (20), TIENLEN_BR_OPP_SIMS (40),
  *      TIENLEN_BR_OPP_BRANCH (12).
  */
 function freezeBrGmOpts() {
+  // BR opp model must match dual info model (hidden by default).
+  const perfect = process.env.TIENLEN_BR_OPP_PERFECT === '1';
   return {
     difficulty: 'grandmaster',
     useSearch: true,
-    perfectInfo: true,
-    hiddenInfo: false,
+    perfectInfo: perfect,
+    hiddenInfo: !perfect,
     timeMs: parseInt(process.env.TIENLEN_BR_OPP_MS || '40', 10),
     iterations: parseInt(process.env.TIENLEN_BR_OPP_ITERS || '20', 10),
     maxSims: parseInt(process.env.TIENLEN_BR_OPP_SIMS || '40', 10),
     bestResponse: false,
     maxBranch: parseInt(process.env.TIENLEN_BR_OPP_BRANCH || '12', 10),
-    exactExploit: true,
+    exactExploit: process.env.TIENLEN_BR_OPP_EXACT === '1',
     exploit: false,
     mode: 'auto'
   };
 }
 
 function freezeExpertMove(state, seat) {
-  var useExpert = process.env.TIENLEN_BR_MODEL === 'expert';
+  // BR *playout* opponent model (NOT seat difficulty).
+  // Seats stay grandmaster+BR. Default playout leaf = freeze expertPolicy
+  // (fast; avoids recursive getAIMove→search inside every BR trial).
+  // TIENLEN_BR_MODEL=grandmaster uses low-budget freeze GM (slow under hidden).
+  var brModel = process.env.TIENLEN_BR_MODEL || 'expert';
+  var useExpert = brModel !== 'gm' && brModel !== 'grandmaster';
   var opts = useExpert ? null : freezeBrGmOpts();
   var key = useExpert
     ? ('E|' + _stateKey(state, seat))
@@ -134,7 +165,13 @@ function freezeExpertMove(state, seat) {
   var mv;
   try {
     if (useExpert) {
-      mv = freeze.getAIMove(state, seat, { difficulty: 'easy', iterations: 0, mode: 'expert' });
+      // Prefer pure expertPolicy (no getAIMove recursion)
+      if (freezeSearch && typeof freezeSearch.expertPolicy === 'function') {
+        var dec = freezeSearch.expertPolicy(state, seat);
+        mv = dec && dec.pass ? null : (dec && dec.play != null ? dec.play : null);
+      } else {
+        mv = freeze.getAIMove(state, seat, { difficulty: 'easy', iterations: 0, mode: 'expert' });
+      }
     } else {
       try {
         mv = freeze.getAIMove(state, seat, opts);
@@ -192,12 +229,16 @@ function freezeMove(state, seat) {
   return mv2;
 }
 
-if (search.setExploitOpponent) {
-  // Live BR models freeze via low-budget grandmaster by default (see freezeExpertMove).
-  search.setExploitOpponent(function (state, seat) {
-    return freezeExpertMove(state, seat);
-  });
+function injectBrOpp(searchMod) {
+  if (searchMod && searchMod.setExploitOpponent) {
+    searchMod.setExploitOpponent(function (state, seat) {
+      return freezeExpertMove(state, seat);
+    });
+  }
 }
+// Both seats' search modules need inject when BR-on both (fair dual).
+injectBrOpp(search);
+injectBrOpp(freezeSearch);
 
 function wilsonCI(wins, n, z) {
   z = z || 1.96;
@@ -235,25 +276,28 @@ function apply(state, cp, choice) {
 }
 
 function liveOpts() {
-  const perfect = process.env.TIENLEN_V8_PERFECT !== '0';
+  // Ship duals: always hidden. Perfect only if explicitly TIENLEN_V8_PERFECT=1 (debug).
+  const perfect = process.env.TIENLEN_V8_PERFECT === '1';
   return {
-    // Grandmaster + exploit/BR vs freeze grandmaster (user protocol)
+    // Fair dual defaults match freeze seat (same BR class + similar budget).
+    // Override only for deliberate asymmetry experiments.
     difficulty: process.env.TIENLEN_V8_DIFF || 'grandmaster',
-    timeMs: parseInt(process.env.TIENLEN_V8_MS || '150', 10),
+    timeMs: parseInt(process.env.TIENLEN_V8_MS || '200', 10),
     iterations: parseInt(process.env.TIENLEN_V8_ITERS || '120', 10),
-    maxSims: parseInt(process.env.TIENLEN_V8_SIMS || '320', 10),
-    brTrials: parseInt(process.env.TIENLEN_BR_TRIALS || '48', 10),
+    maxSims: parseInt(process.env.TIENLEN_V8_SIMS || '240', 10),
+    brTrials: parseInt(process.env.TIENLEN_BR_TRIALS || '32', 10),
     bestResponse: process.env.TIENLEN_BR !== '0',
     useSearch: true,
     perfectInfo: perfect,
     hiddenInfo: !perfect,
     maxBranch: parseInt(process.env.TIENLEN_V8_BRANCH || '20', 10),
     dualSelf: process.env.TIENLEN_DUAL_SELF === '1',
-    exactExploit: process.env.TIENLEN_EXACT !== '0',
+    // exactExploit needs perfect-info; default OFF under hidden dual
+    exactExploit: process.env.TIENLEN_EXACT === '1',
     mode: process.env.TIENLEN_V8_MODE || 'auto',
     combatRoot: process.env.TIENLEN_COMBAT_ROOT === '1',
     flRoot: process.env.TIENLEN_FL_ROOT === '1',
-    softSamples: parseInt(process.env.TIENLEN_SOFT_SAMPLES || '0', 10),
+    softSamples: parseInt(process.env.TIENLEN_SOFT_SAMPLES || '6', 10),
     exploit: process.env.TIENLEN_EXPLOIT !== '0'
   };
 }
@@ -312,8 +356,27 @@ function main() {
   const scratch = process.env.TIENLEN_SCRATCH || path.join(__dirname);
   const target = parseFloat(process.env.TIENLEN_TARGET || '0.70');
   const outName = process.env.TIENLEN_BENCH_OUT || ('ladder-vs-' + freezeTag + '-final.json');
+  // Honest ladder (2026-07-14): absolute WR>target alone is insufficient after BR-GM.
+  // Optional identity baseline JSON: require liveWins >= identity.liveWins + minDeltaWins.
+  const identityPath = process.env.TIENLEN_IDENTITY_BASELINE || '';
+  const minDeltaWins = parseInt(process.env.TIENLEN_MIN_DELTA_WINS || '2', 10);
+  // Equal-budget dual: freeze matches live MS/iters/sims/branch (isolates policy, not clock).
+  const equalBudget = process.env.TIENLEN_EQUAL_BUDGET === '1';
   const fOpts = freezeOpts();
   const lOpts = liveOpts();
+  if (equalBudget) {
+    fOpts.timeMs = lOpts.timeMs;
+    fOpts.iterations = lOpts.iterations;
+    fOpts.maxSims = lOpts.maxSims;
+    fOpts.maxBranch = lOpts.maxBranch;
+    // Fair equal dual: match BR/exploit/soft too (unless freeze BR explicitly off).
+    if (process.env.TIENLEN_FREEZE_BR !== '0') {
+      fOpts.bestResponse = lOpts.bestResponse;
+      fOpts.brTrials = lOpts.brTrials;
+      fOpts.exploit = lOpts.exploit;
+      fOpts.softSamples = lOpts.softSamples;
+    }
+  }
 
   console.log('=== live vs freeze ' + freezeTag + ' games=' + games + ' target=' + target + ' ===');
   console.log('live build', live.AI_BUILD);
@@ -321,13 +384,30 @@ function main() {
   console.log('live opts', lOpts);
   console.log('freeze opts', fOpts);
   console.log('opponentFreeze policies/' + freezeTag + '-ai.js + search');
-  var brModelLabel = process.env.TIENLEN_BR_MODEL === 'expert'
-    ? 'freeze-expert-cheap'
-    : 'freeze-grandmaster-low-budget-40ms-20it';
+  var brModelEnv = process.env.TIENLEN_BR_MODEL || 'expert';
+  var brModelLabel = (brModelEnv === 'gm' || brModelEnv === 'grandmaster')
+    ? 'freeze-grandmaster-low-budget-40ms-20it'
+    : 'freeze-expertPolicy-leaf';
+  if (lOpts.perfectInfo || fOpts.perfectInfo) {
+    console.error('FATAL: perfectInfo enabled — dual testing must be HIDDEN INFO (user rule 2026-07-14).');
+    console.error('Unset TIENLEN_V8_PERFECT / TIENLEN_FREEZE_PERFECT, or set TIENLEN_ALLOW_PERFECT=1 only for debug.');
+    if (process.env.TIENLEN_ALLOW_PERFECT !== '1') {
+      process.exit(3);
+    }
+    console.warn('WARNING: TIENLEN_ALLOW_PERFECT=1 — continuing perfect dual (NOT a ship gate)');
+  }
   console.log('protocol', {
     freezeDifficulty: fOpts.difficulty,
     liveDifficulty: lOpts.difficulty,
-    brModel: brModelLabel
+    infoModel: (lOpts.perfectInfo || fOpts.perfectInfo) ? 'PERFECT (debug only)' : 'HIDDEN (ship)',
+    livePerfect: !!lOpts.perfectInfo,
+    freezePerfect: !!fOpts.perfectInfo,
+    liveHidden: !!lOpts.hiddenInfo,
+    freezeHidden: !!fOpts.hiddenInfo,
+    brModel: brModelLabel,
+    equalBudget: equalBudget,
+    identityBaseline: identityPath || null,
+    minDeltaWins: identityPath ? minDeltaWins : null
   });
 
   let liveWins = 0;
@@ -380,11 +460,32 @@ function main() {
     }
   }
 
+  var absPassed = (liveWins / games) > target;
+  var identity = null;
+  var deltaWins = null;
+  var identityPassed = true;
+  if (identityPath) {
+    try {
+      identity = JSON.parse(fs.readFileSync(identityPath, 'utf8'));
+      var baseWins = identity.liveWins != null ? identity.liveWins : 0;
+      deltaWins = liveWins - baseWins;
+      identityPassed = deltaWins >= minDeltaWins;
+    } catch (eId) {
+      console.error('IDENTITY BASELINE LOAD FAILED:', identityPath, eId && eId.message);
+      identityPassed = false;
+    }
+  }
+  // Honest ship: absolute WR>target AND (if baseline provided) +minDeltaWins vs identity.
+  var passed = absPassed && identityPassed;
+
   const final = {
     mode: '2p-h2h-single-deal-continuous',
     protocol: (fOpts.mode === 'expert' || fOpts.difficulty === 'easy')
       ? 'live-vs-freeze-expert'
       : 'grandmaster-vs-grandmaster',
+    infoModel: (lOpts.perfectInfo || fOpts.perfectInfo) ? 'perfect' : 'hidden',
+    perfectInfo: !!(lOpts.perfectInfo || fOpts.perfectInfo),
+    hiddenInfo: !!(lOpts.hiddenInfo && fOpts.hiddenInfo),
     games: games,
     liveWins: liveWins,
     freezeWins: games - liveWins,
@@ -395,7 +496,17 @@ function main() {
     ci95: wilsonCI(liveWins, games),
     target: target,
     // Strictly greater than target (e.g. >0.70 → need ≥36/50)
-    passed: (liveWins / games) > target,
+    absPassed: absPassed,
+    // Honest ladder: optional identity delta (see TIENLEN_IDENTITY_BASELINE)
+    identityBaseline: identityPath || null,
+    identityLiveWins: identity ? identity.liveWins : null,
+    identityLiveWinRate: identity ? identity.liveWinRate : null,
+    deltaWins: deltaWins,
+    minDeltaWins: identityPath ? minDeltaWins : null,
+    identityPassed: identityPath ? identityPassed : null,
+    equalBudget: equalBudget,
+    // Ship gate: abs WR + identity delta when baseline set
+    passed: passed,
     ms: Date.now() - t0,
     live: live.AI_BUILD,
     freeze: freeze.AI_BUILD,
@@ -418,10 +529,21 @@ function main() {
   } catch (e) { /* ignore */ }
 
   if (!final.passed) {
-    console.error('GATE FAILED: liveWinRate=' + final.liveWinRate + ' need >' + target);
+    if (!absPassed) {
+      console.error('GATE FAILED: liveWinRate=' + final.liveWinRate + ' need >' + target);
+    } else if (identityPath && !identityPassed) {
+      console.error(
+        'GATE FAILED (identity-delta): liveWins=' + liveWins +
+        ' identity=' + (identity && identity.liveWins) +
+        ' delta=' + deltaWins + ' need >=' + minDeltaWins +
+        ' (absolute WR alone is not enough after BR-GM budget asymmetry)'
+      );
+    }
     process.exit(2);
   }
-  console.log('GATE PASSED');
+  console.log('GATE PASSED' + (identityPath
+    ? (' (abs WR + identity delta +' + deltaWins + ' >= ' + minDeltaWins + ')')
+    : ' (abs WR only — set TIENLEN_IDENTITY_BASELINE for honest ship)'));
 }
 
 main();

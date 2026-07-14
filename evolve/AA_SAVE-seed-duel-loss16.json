@@ -1,0 +1,141 @@
+{
+  "probe": "AA_SAVE",
+  "liveWins": 3,
+  "n": 16,
+  "rate": 0.1875,
+  "ms": 62629,
+  "per": [
+    {
+      "seed": 20290630,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 15,
+      "ms": 1805
+    },
+    {
+      "seed": 20310576,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 14,
+      "ms": 1497
+    },
+    {
+      "seed": 20320549,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 27,
+      "ms": 10997
+    },
+    {
+      "seed": 20350468,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 26,
+      "ms": 4192
+    },
+    {
+      "seed": 20380387,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 5,
+      "ms": 1588
+    },
+    {
+      "seed": 20470144,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 17,
+      "ms": 6356
+    },
+    {
+      "seed": 20490090,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 19,
+      "ms": 5967
+    },
+    {
+      "seed": 20539955,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 20,
+      "ms": 1559
+    },
+    {
+      "seed": 20549928,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 12,
+      "ms": 223
+    },
+    {
+      "seed": 20559901,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 20,
+      "ms": 5428
+    },
+    {
+      "seed": 20599793,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 23,
+      "ms": 8888
+    },
+    {
+      "seed": 20609766,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 19,
+      "ms": 5766
+    },
+    {
+      "seed": 20659631,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 18,
+      "ms": 1545
+    },
+    {
+      "seed": 20669604,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 16,
+      "ms": 2640
+    },
+    {
+      "seed": 20689550,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 20,
+      "ms": 978
+    },
+    {
+      "seed": 20709496,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 18,
+      "ms": 3195
+    }
+  ],
+  "flips": [
+    20290630,
+    20320549,
+    20599793
+  ],
+  "stillLoss": [
+    20310576,
+    20350468,
+    20380387,
+    20470144,
+    20490090,
+    20539955,
+    20549928,
+    20559901,
+    20609766,
+    20659631,
+    20669604,
+    20689550,
+    20709496
+  ]
+}

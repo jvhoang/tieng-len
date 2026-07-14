@@ -1,0 +1,313 @@
+{
+  "protocol": "w27-holdout-AB-residual-v1",
+  "date": "2026-07-14",
+  "chall": "p_w26_ex_seqclimb",
+  "freeze": "v91",
+  "priorChall": "p_w25_ex_flweakmp",
+  "identityFiles": {
+    "A": "evolve/holdout-A-id-t20-w24-climbtax.json",
+    "B": "evolve/holdout-B-id-t20-w24-climbtax.json"
+  },
+  "challFiles": {
+    "A": "evolve/holdout-A-ch-t20-w26-seqclimb.json",
+    "B": "evolve/holdout-B-ch-t20-w26-seqclimb.json"
+  },
+  "priorChallFiles": {
+    "A": "evolve/holdout-A-ch-t20-w25-flweakmp.json",
+    "B": "evolve/holdout-B-ch-t20-w25-flweakmp.json"
+  },
+  "firstdiffFiles": {
+    "A": "evolve/firstdiff-w27-seqclimb-residual-holdoutA.json",
+    "B": "evolve/firstdiff-w27-seqclimb-residual-holdoutB.json",
+    "seqVsFlHoldoutIdenticalA": "implementer/w26/firstdiff-seqclimb-vs-flweakmp-holdout-identical.json"
+  },
+  "note": "evolve/NOTE-w27-holdout-residual.md",
+  "probeDesign": "evolve/NOTE-w27-2budget.md",
+  "opts": { "ms": 200, "brTrials": 20, "softSamples": 0 },
+  "summary": {
+    "seqclimbWinsA": 27,
+    "seqclimbWinsB": 27,
+    "identityWinsA": 25,
+    "identityWinsB": 25,
+    "flweakmpWinsA": 27,
+    "flweakmpWinsB": 26,
+    "residualLossesA": 23,
+    "residualLossesB": 23,
+    "residualLossesAB": 46,
+    "bothLoseA": 22,
+    "bothLoseB": 20,
+    "bothLoseAB": 42,
+    "freezeIdenticalLossesA": 14,
+    "freezeIdenticalLossesB": 13,
+    "freezeIdenticalLossesAB": 27,
+    "freezeIdenticalRateResidualA": 0.6087,
+    "freezeIdenticalRateResidualB": 0.5652,
+    "freezeIdenticalRateResidualAB": 0.5870,
+    "freezeIdenticalRateBothLoseA": 0.6364,
+    "freezeIdenticalRateBothLoseB": 0.65,
+    "freezeIdenticalRateBothLoseAB": 0.6429,
+    "divergedStillLossesA": 8,
+    "divergedStillLossesB": 7,
+    "divergedStillLossesAB": 15,
+    "newLossesA": 1,
+    "newLossesB": 3,
+    "newLossesAB": 4,
+    "winFlipsVsIdentityA": 3,
+    "winFlipsVsIdentityB": 5,
+    "outcomeFlipsVsFlweakmpA": 0,
+    "outcomeFlipsVsFlweakmpB": 1,
+    "flweakmpFreezeIdenticalRateResidualA": 0.6957,
+    "seqclimbVsFlweakmpPathIdenticalOnFlFreezeIdMass": 0.875,
+    "seqclimbVsFlweakmpPathDivergeRateOnFlFreezeIdMass": 0.125
+  },
+  "seed20300693": {
+    "flipped": false,
+    "seat0": { "id": true, "flweakmp": true, "seqclimb": true, "firstdiffVsV91": false },
+    "seat1": {
+      "id": false,
+      "flweakmp": false,
+      "seqclimb": false,
+      "firstdiffVsV91": false,
+      "freezeIdenticalResidual": true,
+      "mode": "UNIQUE_MULTI_CLIMB_JH_QS_KS",
+      "note": "Soft multi tax dual-null at root when only one same-type multi legal; later PASS on 777/888 legally forced"
+    }
+  },
+  "multiTaxDivergeStillLoss": [
+    {
+      "seed": 20280747,
+      "seat": 1,
+      "holdout": "A",
+      "freeze": "TS JS QC KH",
+      "chall": "6S 7S 8H 9C",
+      "phase": "seq"
+    },
+    {
+      "seed": 20400423,
+      "seat": 1,
+      "holdout": "A",
+      "freeze": "TD JC QS",
+      "chall": "8S 9H TS",
+      "phase": "seq"
+    },
+    {
+      "seed": 20460261,
+      "seat": 1,
+      "holdout": "A",
+      "freeze": "TS JC QS KD",
+      "chall": "8S 9D TS JC",
+      "phase": "seq"
+    },
+    {
+      "seed": 20420370,
+      "seat": 0,
+      "holdout": "B",
+      "freeze": "QC KC AS",
+      "chall": "9D TD JS",
+      "phase": "seq"
+    }
+  ],
+  "bothLoseA": {
+    "freezeIdentical": [
+      { "seed": 20270774, "seat": 0, "steps": 23, "mode": "2_ON_ACE+DEAL" },
+      { "seed": 20290720, "seat": 1, "steps": 18, "mode": "FL_LONG_SEQ+STUCK" },
+      { "seed": 20300693, "seat": 1, "steps": 9, "mode": "SEQ_CLIMB_UNIQUE", "anchor": "JH QS KS", "primary": true },
+      { "seed": 20310666, "seat": 1, "steps": 22, "mode": "OVERPASS_MULTI" },
+      { "seed": 20340585, "seat": 0, "steps": 21, "mode": "SEQ_ANSWER_THEN_KKK" },
+      { "seed": 20350558, "seat": 1, "steps": 19, "mode": "EARLY_22_BURN" },
+      { "seed": 20370504, "seat": 0, "steps": 20, "mode": "22_THEN_JHK_FL" },
+      { "seed": 20390450, "seat": 1, "steps": 14, "mode": "FL_SEQ+QKA" },
+      { "seed": 20410396, "seat": 1, "steps": 19, "mode": "HIGH_SEQ_CLIMB" },
+      { "seed": 20420369, "seat": 0, "steps": 22, "mode": "PAIR_LADDER_PASS" },
+      { "seed": 20430342, "seat": 1, "steps": 17, "mode": "MEGA_SEQ_BURN" },
+      { "seed": 20470234, "seat": 0, "steps": 23, "mode": "HIGH_SEQ_CLIMB" },
+      { "seed": 20480207, "seat": 0, "steps": 21, "mode": "SINGLE_CLIMB+2" },
+      { "seed": 20490180, "seat": 1, "steps": 20, "mode": "AC_CLIMB+2" }
+    ],
+    "divergedStill": [
+      {
+        "seed": 20280747,
+        "seat": 1,
+        "steps": 10,
+        "firstDiff": { "step": 6, "phase": "seq", "class": "combat_other", "freeze": "TS JS QC KH", "chall": "6S 7S 8H 9C" },
+        "multiTax": true
+      },
+      {
+        "seed": 20330612,
+        "seat": 1,
+        "steps": 24,
+        "firstDiff": { "step": 6, "phase": "FREE", "class": "FL_other", "freeze": "KH KC", "chall": "5S" }
+      },
+      {
+        "seed": 20380477,
+        "seat": 0,
+        "steps": 18,
+        "firstDiff": { "step": 0, "phase": "FREE", "class": "FL_other", "freeze": "3H 4D 5H 6H", "chall": "3C 3H" }
+      },
+      {
+        "seed": 20400423,
+        "seat": 1,
+        "steps": 23,
+        "firstDiff": { "step": 1, "phase": "seq", "class": "combat_other", "freeze": "TD JC QS", "chall": "8S 9H TS" },
+        "multiTax": true
+      },
+      {
+        "seed": 20440315,
+        "seat": 0,
+        "steps": 10,
+        "firstDiff": { "step": 0, "phase": "FREE", "class": "FL_other", "freeze": "3S 4C 5D", "chall": "3S" },
+        "note": "flweakmp target; still deal-doomed"
+      },
+      {
+        "seed": 20450288,
+        "seat": 1,
+        "steps": 25,
+        "firstDiff": { "step": 1, "phase": "single", "class": "combat_other", "freeze": "TC", "chall": "8D" }
+      },
+      {
+        "seed": 20460261,
+        "seat": 1,
+        "steps": 19,
+        "firstDiff": { "step": 1, "phase": "seq", "class": "combat_other", "freeze": "TS JC QS KD", "chall": "8S 9D TS JC" },
+        "multiTax": true
+      },
+      {
+        "seed": 20500153,
+        "seat": 0,
+        "steps": 16,
+        "firstDiff": {
+          "step": 0,
+          "phase": "FREE",
+          "class": "FL_other",
+          "freeze": "3H 4H 5C 6H 7S 8D 9D TC JC QS",
+          "chall": "3H 4H 5C 6H 7S 8D"
+        }
+      }
+    ]
+  },
+  "bothLoseB": {
+    "freezeIdentical": [
+      { "seed": 20280748, "seat": 1, "steps": 23 },
+      { "seed": 20290721, "seat": 0, "steps": 23 },
+      { "seed": 20310667, "seat": 0, "steps": 17 },
+      { "seed": 20330613, "seat": 1, "steps": 16 },
+      { "seed": 20360532, "seat": 1, "steps": 21 },
+      { "seed": 20380478, "seat": 1, "steps": 23 },
+      { "seed": 20390451, "seat": 1, "steps": 20 },
+      { "seed": 20400424, "seat": 1, "steps": 19 },
+      { "seed": 20410397, "seat": 1, "steps": 21 },
+      { "seed": 20430343, "seat": 1, "steps": 22 },
+      { "seed": 20440316, "seat": 0, "steps": 20 },
+      { "seed": 20450289, "seat": 1, "steps": 16 },
+      { "seed": 20470235, "seat": 0, "steps": 18 }
+    ],
+    "divergedStill": [
+      {
+        "seed": 20260802,
+        "seat": 0,
+        "steps": 17,
+        "firstDiff": { "step": 3, "phase": "FREE", "class": "FL_other", "freeze": "3H 3C", "chall": "4D" }
+      },
+      {
+        "seed": 20270775,
+        "seat": 1,
+        "steps": 20,
+        "firstDiff": { "step": 0, "phase": "FREE", "class": "FL_other", "freeze": "3S", "chall": "3C 3S" }
+      },
+      {
+        "seed": 20300694,
+        "seat": 1,
+        "steps": 22,
+        "firstDiff": { "step": 2, "phase": "single", "class": "combat_other", "freeze": "QS", "chall": "6S" }
+      },
+      {
+        "seed": 20340586,
+        "seat": 0,
+        "steps": 18,
+        "firstDiff": { "step": 8, "phase": "single", "class": "combat_other", "freeze": "KD", "chall": "9C" }
+      },
+      {
+        "seed": 20350559,
+        "seat": 0,
+        "steps": 18,
+        "firstDiff": { "step": 0, "phase": "FREE", "class": "FL_other", "freeze": "3H", "chall": "3C 3H" }
+      },
+      {
+        "seed": 20420370,
+        "seat": 0,
+        "steps": 15,
+        "firstDiff": { "step": 1, "phase": "seq", "class": "combat_other", "freeze": "QC KC AS", "chall": "9D TD JS" },
+        "multiTax": true
+      },
+      {
+        "seed": 20480208,
+        "seat": 0,
+        "steps": 21,
+        "firstDiff": { "step": 3, "phase": "FREE", "class": "FL_other", "freeze": "3C 4C 5H", "chall": "KC KH" }
+      }
+    ]
+  },
+  "newLosses": {
+    "A": [{ "seed": 20320639, "seat": 0 }],
+    "B": [
+      { "seed": 20320640, "seat": 1 },
+      { "seed": 20400424, "seat": 0 },
+      { "seed": 20470235, "seat": 1 }
+    ]
+  },
+  "winFlipsVsIdentity": {
+    "A": [
+      { "seed": 20260801, "seat": 0 },
+      { "seed": 20320639, "seat": 1 },
+      { "seed": 20360531, "seat": 1 }
+    ],
+    "B": [
+      { "seed": 20320640, "seat": 0 },
+      { "seed": 20370505, "seat": 1 },
+      { "seed": 20460262, "seat": 0 },
+      { "seed": 20490181, "seat": 0 },
+      { "seed": 20500154, "seat": 0, "onlyFlweakmpFlip": true }
+    ]
+  },
+  "leversTop3": [
+    {
+      "rank": 1,
+      "tag": "p_w27_ex_ctrl2hi",
+      "axis": "single-2 for control when min-beat is high structure-break",
+      "class": "expertPolicy+guards+BR reinject triple mirror",
+      "expectedDeltaHoldout": "+1..+3"
+    },
+    {
+      "rank": 2,
+      "tag": "p_w27_ex_climbx",
+      "axis": "expensive reclass multiBurnsHighResidual climbs in cheapLegals",
+      "class": "playIsExpensive/cheapLegals",
+      "expectedDeltaHoldout": "+0..+2"
+    },
+    {
+      "rank": 3,
+      "tag": "p_w27_ex_loosehard",
+      "axis": "hard filter cheap singles to sbc<8 when any loose exists",
+      "class": "expertPolicy combat cheap path",
+      "expectedDeltaHoldout": "+0..+2"
+    }
+  ],
+  "bestW27Probe": {
+    "tag": "p_w27_ex_ctrl2hi",
+    "base": "p_w26_ex_seqclimb",
+    "loci": [
+      "pickCtrl2Hi helper near cheapLegals/structureBreakCost",
+      "expertPolicy after Ace+2 before cheap short-circuit ~L458-487",
+      "enforcePolicyGuards combat before cheap force ~L855-875",
+      "bestResponseMove combat cand reinject after cheap strip ~L1153-1157"
+    ],
+    "designNote": "evolve/NOTE-w27-2budget.md",
+    "forbidden": ["SoftN", "W16_pass", "BR_multionly", "smash2_expert_only"]
+  },
+  "decision": {
+    "promote": false,
+    "softN": "FORBIDDEN",
+    "bestHoldoutPackage": "p_w26_ex_seqclimb",
+    "oneProbe": "p_w27_ex_ctrl2hi"
+  }
+}

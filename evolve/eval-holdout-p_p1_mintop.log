@@ -1,0 +1,17 @@
+=== Fair dual holdout eval ===
+freeze=v91 chall=p_p1_mintop MS=150 TRIALS=12 SOFT=4
+Protocol: evolve/NOTE-fair-eval-protocol.md
+
+--- running dev DEV (biased — design only) ---
+DEV (biased — design only)           seed0=20260711  id=25/50=0.500  ch=32/50=0.640  Δ+7  CI95=[0.50,0.76]  p<0.05  dev_only
+--- running holdout_A HOLDOUT_A (primary ship) ---
+HOLDOUT_A (primary ship)             seed0=20260801  id=25/50=0.500  ch=21/50=0.420  Δ-4  CI95=[0.29,0.56]  n.s.  no_ship
+--- running holdout_B HOLDOUT_B (re-run ship) ---
+HOLDOUT_B (re-run ship)              seed0=20260802  id=25/50=0.500  ch=25/50=0.500  Δ+0  CI95=[0.37,0.63]  n.s.  no_ship
+
+=== SHIP DECISION (holdout only) ===
+holdout_A 0.420 Δ-4 FAIL
+holdout_B 0.500 Δ0 FAIL
+SHIP: NO
+wrote /Users/johnhoang/Developer/Grok/tieng-len/evolve/eval-holdout-p_p1_mintop-vs-v91-1784001994349.json
+wrote /Users/johnhoang/Developer/Grok/tieng-len/evolve/eval-holdout-latest-p_p1_mintop-vs-v91.json

@@ -1,0 +1,89 @@
+{
+  "protocol": "fair-firstdiff-v1",
+  "freeze": "v95",
+  "chall": "p_w48_ex_pairkeep",
+  "live": {
+    "id": "v9.1-probe-p_w48_ex_pairkeep",
+    "stamped": "2026-07-14T09:40:05Z",
+    "label": "Grandmaster v9.1-probe p_w48_ex_pairkeep"
+  },
+  "freezeBuild": {
+    "id": "v9.5",
+    "stamped": "2026-07-14T09:35:31Z",
+    "label": "Grandmaster v9.5 (fair dual sbc0)"
+  },
+  "opts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": false,
+    "hiddenInfo": true,
+    "timeMs": 200,
+    "iterations": 60,
+    "maxSims": 120,
+    "brTrials": 20,
+    "bestResponse": true,
+    "exactExploit": false,
+    "exploit": true,
+    "softSamples": 0,
+    "maxBranch": 12,
+    "mode": "auto",
+    "strongSelf": false
+  },
+  "nGames": 4,
+  "nDiverged": 1,
+  "divergeRate": 0.25,
+  "classCount": {
+    "combat_other": 1
+  },
+  "results": [
+    {
+      "seed": 20470235,
+      "liveSeat": 0,
+      "firstDiff": {
+        "step": 4,
+        "seat": 0,
+        "phase": "single",
+        "handLen": 10,
+        "omin": 9,
+        "curTop": 1,
+        "freeze": "AC",
+        "chall": "QD",
+        "freezeSig": "47",
+        "challSig": "38",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 3,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 5,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 20470235,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 10,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 20,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20370505,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 13,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 26,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20370505,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 13,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 26,
+      "freezeWinIfNoDiff": false
+    }
+  ]
+}

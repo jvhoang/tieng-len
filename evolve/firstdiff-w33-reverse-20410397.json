@@ -1,0 +1,71 @@
+{
+  "protocol": "fair-firstdiff-v1",
+  "freeze": "p_w32_ex_flshort5",
+  "chall": "p_w33_ex_flvolfix",
+  "live": {
+    "id": "v9.1-probe-p_w33_ex_flvolfix",
+    "stamped": "2026-07-14T08:00:00Z",
+    "label": "Grandmaster v9.1-probe p_w33_ex_flvolfix"
+  },
+  "freezeBuild": {
+    "id": "v9.1-probe-p_w32_ex_flshort5",
+    "stamped": "2026-07-14T07:40:00Z",
+    "label": "Grandmaster v9.1-probe p_w32_ex_flshort5"
+  },
+  "opts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": false,
+    "hiddenInfo": true,
+    "timeMs": 200,
+    "iterations": 60,
+    "maxSims": 120,
+    "brTrials": 20,
+    "bestResponse": true,
+    "exactExploit": false,
+    "exploit": true,
+    "softSamples": 0,
+    "maxBranch": 12,
+    "mode": "auto",
+    "strongSelf": false
+  },
+  "nGames": 2,
+  "nDiverged": 1,
+  "divergeRate": 0.5,
+  "classCount": {
+    "FL_other": 1
+  },
+  "results": [
+    {
+      "seed": 20410397,
+      "liveSeat": 0,
+      "firstDiff": {
+        "step": 0,
+        "seat": 0,
+        "phase": "FREE",
+        "handLen": 13,
+        "omin": 13,
+        "curTop": null,
+        "freeze": "3D 3S",
+        "chall": "3S 4H 5D 6C",
+        "freezeSig": "0,2",
+        "challSig": "0,5,10,15",
+        "same": false,
+        "class": "FL_other"
+      },
+      "pathLen": 1,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 1,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 20410397,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 10,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 21,
+      "freezeWinIfNoDiff": false
+    }
+  ]
+}

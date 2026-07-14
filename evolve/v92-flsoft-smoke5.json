@@ -1,0 +1,135 @@
+{
+  "mode": "2p-h2h-single-deal-continuous",
+  "protocol": "grandmaster-vs-grandmaster",
+  "games": 5,
+  "liveWins": 1,
+  "freezeWins": 4,
+  "liveWinRate": 0.2,
+  "v80Wins": 1,
+  "v80WinRate": 0.2,
+  "ci95": {
+    "p": 0.2,
+    "lo": 0.036223160969787456,
+    "hi": 0.6244717358814612
+  },
+  "target": 0.7,
+  "passed": false,
+  "ms": 83115,
+  "live": {
+    "id": "v9.2",
+    "stamped": "2026-07-13T12:00:00Z",
+    "label": "Grandmaster v9.2 (P1–P5)"
+  },
+  "freeze": {
+    "id": "v9.1",
+    "stamped": "2026-07-13T02:50:38Z",
+    "label": "Grandmaster v9.1 (ladder freeze)"
+  },
+  "v80": {
+    "id": "v9.2",
+    "stamped": "2026-07-13T12:00:00Z",
+    "label": "Grandmaster v9.2 (P1–P5)"
+  },
+  "v80Opts": {
+    "difficulty": "grandmaster",
+    "timeMs": 160,
+    "iterations": 120,
+    "maxSims": 320,
+    "brTrials": 48,
+    "bestResponse": true,
+    "useSearch": true,
+    "perfectInfo": true,
+    "hiddenInfo": false,
+    "maxBranch": 20,
+    "dualSelf": false,
+    "exactExploit": true,
+    "mode": "auto",
+    "combatRoot": false,
+    "flRoot": false,
+    "softSamples": 0,
+    "exploit": true
+  },
+  "freezeOpts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": true,
+    "hiddenInfo": false,
+    "timeMs": 100,
+    "iterations": 80,
+    "maxSims": 160,
+    "bestResponse": false,
+    "maxBranch": 16,
+    "mode": "auto",
+    "combatRoot": false,
+    "flRoot": false,
+    "dualSelf": false,
+    "exactExploit": true,
+    "softSamples": 0,
+    "exploit": false
+  },
+  "opponentFreeze": "policies/v91-ai.js + policies/v91-search.js",
+  "freezeTag": "v91",
+  "seed0": 20260711,
+  "checkpoints": [
+    {
+      "games": 5,
+      "liveWins": 1,
+      "liveWinRate": 0.2,
+      "ci95": {
+        "p": 0.2,
+        "lo": 0.036223160969787456,
+        "hi": 0.6244717358814612
+      },
+      "ms": 83115,
+      "gps": 0.06015761294591831
+    }
+  ],
+  "perGame": [
+    {
+      "g": 0,
+      "seed": 20260711,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 22,
+      "ms": 23727
+    },
+    {
+      "g": 1,
+      "seed": 20270684,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 24,
+      "ms": 13478
+    },
+    {
+      "g": 2,
+      "seed": 20280657,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 15,
+      "ms": 17436
+    },
+    {
+      "g": 3,
+      "seed": 20290630,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 16,
+      "ms": 19257
+    },
+    {
+      "g": 4,
+      "seed": 20300603,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 15,
+      "ms": 9213
+    }
+  ],
+  "lossSeeds": [
+    20260711,
+    20270684,
+    20290630,
+    20300603
+  ]
+}

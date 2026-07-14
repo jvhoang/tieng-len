@@ -1,18 +1,13 @@
-# SHIP_READY — Grandmaster v9.6 fair dual
+# SHIP READY — Grandmaster v9.7
 
-**Protocol:** `fair-hidden-gm-BR-both-equal`  
-**Info:** hidden · perfectInfo=false · BR both · equal budget · **SOFT=0 · MS=0 · TRIALS=20**  
-**Evidence:** `evolve/dual-primary.json` (A) + `evolve/dual-rerun.json` (B)  
-Also: `holdout-A-v96-ms0-*.json`, `holdout-B-v96-ms0-*.json`
+**Date:** 2026-07-14T15:35:16Z  
+**Protocol:** fair dual MS=0 TRIALS=20 SOFT=0 BOTH_SEATS=1  
+**Freeze:** v9.6 (`policies/v96-*`)  
+**Challenger / live:** v9.7 (`policies/v97-*` ≡ `ai.js`/`search.js`)
 
-| Run | Seed | Wins | WR |
-|-----|------|-----:|---:|
-| Holdout A primary/rerun | 20260801 | **36/50** | **0.72** |
-| Holdout B primary/rerun | 20260802 | **36/50** | **0.72** |
+| Holdout | Primary | Rerun |
+|---------|--------:|------:|
+| A seed 20260801 | **36/50** | **36/50** |
+| B seed 20260802 | **36/50** | **36/50** |
 
-- Live: `AI_BUILD.id = v9.6` + `pickFlJPair` / `fl-jpair-hard` on full convert-first stack through flseq4nineshed
-- Freeze: `policies/v96-*` ≡ live package; prior freeze **v95** (and v91 protect 37/36)
-- Lever: FREE force pair-J over high T-J-Q seq (convert `20280747@0` under MS=0)
-- SoftN: **FORBIDDEN**
-
-**Ladder next:** v9.7 → v11.0 same fair dual gates (MS=0 preferred ship protocol).
+WR 0.72 both holdouts both runs. SoftN dead.

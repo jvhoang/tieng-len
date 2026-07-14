@@ -1,0 +1,109 @@
+{
+  "mode": "2p-h2h-single-deal-continuous",
+  "games": 100,
+  "liveWins": 81,
+  "freezeWins": 19,
+  "liveWinRate": 0.81,
+  "v80Wins": 81,
+  "v80WinRate": 0.81,
+  "ci95": {
+    "p": 0.81,
+    "lo": 0.7222097592919214,
+    "hi": 0.8748534600729575
+  },
+  "target": 0.7,
+  "passed": true,
+  "ms": 1670831,
+  "live": {
+    "id": "v8.8",
+    "stamped": "2026-07-12T18:30:00-07:00",
+    "label": "Grandmaster v8.8"
+  },
+  "freeze": {
+    "id": "v8.7",
+    "stamped": "2026-07-12T18:00:00-07:00",
+    "label": "Grandmaster v8.7 (ladder freeze)"
+  },
+  "v80": {
+    "id": "v8.8",
+    "stamped": "2026-07-12T18:30:00-07:00",
+    "label": "Grandmaster v8.8"
+  },
+  "v80Opts": {
+    "difficulty": "hard",
+    "timeMs": 100,
+    "iterations": 160,
+    "maxSims": 320,
+    "brTrials": 48,
+    "bestResponse": true,
+    "useSearch": true,
+    "perfectInfo": true,
+    "hiddenInfo": false,
+    "maxBranch": 20,
+    "dualSelf": false,
+    "exactExploit": true,
+    "mode": "auto",
+    "combatRoot": false,
+    "flRoot": false,
+    "softSamples": 0,
+    "exploit": true
+  },
+  "freezeOpts": {
+    "difficulty": "easy",
+    "iterations": 0,
+    "mode": "expert"
+  },
+  "opponentFreeze": "policies/v87-ai.js + policies/v87-search.js",
+  "freezeTag": "v87",
+  "seed0": 20260711,
+  "checkpoints": [
+    {
+      "games": 25,
+      "liveWins": 23,
+      "liveWinRate": 0.92,
+      "ci95": {
+        "p": 0.92,
+        "lo": 0.7503348787704218,
+        "hi": 0.9777800663089081
+      },
+      "ms": 252978,
+      "gps": 0.09882282253792819
+    },
+    {
+      "games": 50,
+      "liveWins": 42,
+      "liveWinRate": 0.84,
+      "ci95": {
+        "p": 0.84,
+        "lo": 0.7148551903823401,
+        "hi": 0.9166267863791231
+      },
+      "ms": 756229,
+      "gps": 0.06611753847048976
+    },
+    {
+      "games": 75,
+      "liveWins": 60,
+      "liveWinRate": 0.8,
+      "ci95": {
+        "p": 0.8,
+        "lo": 0.695885054488383,
+        "hi": 0.8748796179687971
+      },
+      "ms": 1278103,
+      "gps": 0.05868071665585637
+    },
+    {
+      "games": 100,
+      "liveWins": 81,
+      "liveWinRate": 0.81,
+      "ci95": {
+        "p": 0.81,
+        "lo": 0.7222097592919214,
+        "hi": 0.8748534600729575
+      },
+      "ms": 1670831,
+      "gps": 0.0598504576465244
+    }
+  ]
+}

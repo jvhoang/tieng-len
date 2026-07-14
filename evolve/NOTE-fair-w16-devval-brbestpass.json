@@ -1,0 +1,17 @@
+{
+  "partition": "DEV_VAL",
+  "seed0": 20260715,
+  "budget": "MS200 TRIALS20 SOFT0",
+  "idWins": 25,
+  "chWins": 24,
+  "delta": -1,
+  "pass": false,
+  "good": [],
+  "bad": [
+    [
+      20290634,
+      0
+    ]
+  ],
+  "chall": "p_w16_brbestpass"
+}

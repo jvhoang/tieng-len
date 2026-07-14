@@ -1,0 +1,36 @@
+seed-duel live { id: 'v9.2',
+  stamped: '2026-07-13T06:13:02Z',
+  label: 'Grandmaster v9.2' } patch TRASHFL,STRUCT freeze v91 seeds 23
+liveOpts { difficulty: 'grandmaster',
+  timeMs: 140,
+  iterations: 100,
+  maxSims: 320,
+  brTrials: 40,
+  bestResponse: true,
+  useSearch: true,
+  perfectInfo: true,
+  hiddenInfo: false,
+  maxBranch: 20,
+  dualSelf: false,
+  exactExploit: true,
+  mode: 'auto',
+  combatRoot: false,
+  flRoot: false,
+  softSamples: 0,
+  exploit: true }
+freezeOpts { difficulty: 'grandmaster',
+  useSearch: true,
+  perfectInfo: true,
+  hiddenInfo: false,
+  timeMs: 100,
+  iterations: 64,
+  maxSims: 160,
+  bestResponse: false,
+  maxBranch: 16,
+  mode: 'auto',
+  exactExploit: false,
+  exploit: false }
+{"seed":20260711,"liveWin":true,"liveSeat":1,"steps":23,"ms":24856}
+{"seed":20310576,"liveWin":false,"liveSeat":0,"steps":22,"ms":14586}
+{"seed":20320549,"liveWin":true,"liveSeat":1,"steps":23,"ms":58081}
+{"seed":20360441,"liveWin":false,"liveSeat":1,"steps":22,"ms":6047}

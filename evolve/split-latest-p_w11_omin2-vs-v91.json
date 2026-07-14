@@ -1,0 +1,36 @@
+{
+  "protocol": "fair-dev-internal-split-v1",
+  "freeze": "v91",
+  "chall": "p_w11_omin2",
+  "seed0": 20260711,
+  "gamesDesign": 12,
+  "gamesCheck": 13,
+  "design": {
+    "label": "DESIGN g0-11",
+    "n": 24,
+    "idWins": 12,
+    "chWins": 14,
+    "wr": 0.5833333333333334,
+    "delta": 2,
+    "passInterest": true
+  },
+  "check": {
+    "label": "CHECK  g12-24",
+    "n": 26,
+    "idWins": 12,
+    "chWins": 17,
+    "wr": 0.6538461538461539,
+    "delta": 5,
+    "passInterest": true
+  },
+  "full": {
+    "label": "FULL DEV (design+check)",
+    "n": 50,
+    "idWins": 24,
+    "chWins": 31,
+    "wr": 0.62,
+    "delta": 7
+  },
+  "splitPass": true,
+  "note": "Does not burn DEV_VAL or holdout. Full DEV ≥32 still required before DEV_VAL."
+}

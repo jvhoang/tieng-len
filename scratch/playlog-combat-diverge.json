@@ -1,0 +1,278 @@
+{
+  "meta": {
+    "source": "/Users/johnhoang/Developer/Grok/tieng-len/john_uploads/tienlen-playlogs-1784002833123.json",
+    "exportedAt": "2026-07-14T04:20:33.101Z",
+    "games": 179,
+    "analyzedAt": "2026-07-14T06:45:00Z",
+    "scope": "actor=human; type play|pass; human always seat 0 in this export",
+    "basePackage": "p_w17_brfltrash (BR free-lead trash/pair only — zero combat axis)",
+    "softN": "forbidden",
+    "duals": "not run",
+    "method": {
+      "exactGrep": [
+        "human actor events = 1389",
+        "human pass (type+seat+actor multiline) = 213",
+        "human play = 1389 - 213 = 1176",
+        "currentComboBefore null (all seats free-lead) = 894",
+        "total pass all actors = 734"
+      ],
+      "freeCombatSplit": "scaled from prior export playlog-strategy-inference.json free/combat rates on human decisions (504/714 of 1218) applied to 1389; consistency-checked vs free-lead null count 894",
+      "structureClasses": "event-sampled combat plays/passes + prior CF div classes (playlog-strategy-inference / playlog-human-vs-live-divs) scaled; full sbc census script at evolve/_tmp_playlog_combat_diverge.py for re-run",
+      "reRun": "python3 evolve/_tmp_playlog_combat_diverge.py  # writes exact sbc/pattern counts"
+    }
+  },
+  "counts": {
+    "humanPlayPass": 1389,
+    "humanPlay": 1176,
+    "humanPass": 213,
+    "freeLead": 575,
+    "freeLeadPlay": 575,
+    "freeLeadPass": 0,
+    "combat": 814,
+    "combatPlay": 601,
+    "combatPass": 213,
+    "combatSharePct": 58.6,
+    "freeLeadSharePct": 41.4,
+    "games": 179,
+    "freeLeadAllSeats_currentComboBeforeNull": 894,
+    "note_freeCombat": "freeLead/combat split uses prior ratio (41.4/58.6); combatPass exact 213; combatPlay=combat-213; freeLead=humanPlayPass-combat"
+  },
+  "combatStructure": {
+    "structurePreserving_looseSingle": {
+      "estimate": 280,
+      "method": "majority of combat single answers with hand count==1 at played rank; sample g_mrk08snv first combat chose pair-break instead; prior residual hBetter 186 favors preserve",
+      "confidence": "medium"
+    },
+    "structurePreserving_minSbcBeat": {
+      "estimate": 320,
+      "method": "min-sbc among cheap is expert default + human often matches; subset of combat plays",
+      "confidence": "medium"
+    },
+    "structureBreaking_pairBreak": {
+      "estimate": 90,
+      "method": "sample: g_mrk08snv i=3 human 6♥ from pair-of-6 when loose 8♥ legal; scale from H_overkill / break samples",
+      "confidence": "medium-low"
+    },
+    "structureBreaking_minBeatHighSbc": {
+      "estimate": 70,
+      "method": "min-rank beat that still pair-breaks when no looser lower single",
+      "confidence": "medium-low"
+    },
+    "passWithAnyLegal": {
+      "estimate": 95,
+      "method": "sample 5 human passes: 2 forced (legalsCount=0), 1 with legal seq, 2 pending; prior H_pass_E_play=30 of combat divs; human pass 213 total → ~40-50% forced",
+      "confidence": "medium",
+      "forcedPass_legals0_estimate": 118,
+      "passWithLegal_estimate": 95
+    },
+    "passWithCheapLegal": {
+      "estimate": 55,
+      "method": "subset of passWithLegal where legal is non-2 non-bomb; expertPolicy NEVER passes when cheap exists — pure residual",
+      "confidence": "medium-low"
+    },
+    "twoForControl": {
+      "estimate": 60,
+      "method": "prior H_2_E_non2=53 scaled ×1.14; playlog gold Ace-climb / mid-top 2-tempo",
+      "confidence": "medium"
+    },
+    "passSave2s": {
+      "estimate": 40,
+      "method": "human passes with rank-12 in hand + non-empty legals; samples @9095 (22 in hand vs pair6), @41823 (2 in hand vs long seq)",
+      "confidence": "medium-low"
+    }
+  },
+  "top5HumanPatternClasses": [
+    {
+      "rank": 1,
+      "pattern": "combat_struct_preserve_loose_single_or_min_sbc_beat",
+      "count_estimate": 320,
+      "shareOfCombat_pct": 39.3,
+      "exampleGameIds": [
+        "g_mriwwj6w_26fce1tp",
+        "g_mriwt9t9_r6o1gcsp",
+        "g_mriwqrjo_6lz7mni3",
+        "g_mrk08snv_pgi0xvst",
+        "g_mrjzqrhs_j5ip9wec"
+      ],
+      "examples": [
+        {
+          "gameId": "g_mriwwj6w_26fce1tp",
+          "note": "prior CF: human residual multi / structure answers mid combat"
+        },
+        {
+          "gameId": "g_mrk08snv_pgi0xvst",
+          "i": 3,
+          "note": "counter-example also present: pair-break 6 when loose 8 legal — structure not universal"
+        }
+      ],
+      "w17Coverage": "UNCOVERED_combat_residual"
+    },
+    {
+      "rank": 2,
+      "pattern": "combat_pass_forced_no_legal",
+      "count_estimate": 118,
+      "shareOfCombat_pct": 14.5,
+      "exampleGameIds": [
+        "g_mrjzqrhs_j5ip9wec",
+        "g_mrjy1s88_s8pgegei"
+      ],
+      "examples": [
+        {
+          "gameId": "near g_mrjzqrhs",
+          "line": 6864,
+          "facing": "pair AA",
+          "legalsCount": 0
+        },
+        {
+          "line": 24954,
+          "facing": "seq K-Q-J",
+          "legalsCount": 0,
+          "handHas2s": true
+        }
+      ],
+      "w17Coverage": "N/A_forced (not a policy residual)"
+    },
+    {
+      "rank": 3,
+      "pattern": "combat_pass_with_legal",
+      "count_estimate": 95,
+      "shareOfCombat_pct": 11.7,
+      "exampleGameIds": [
+        "g_mrjzqrhs_j5ip9wec",
+        "g_mriwwj6w_26fce1tp",
+        "g_mriwt9t9_r6o1gcsp"
+      ],
+      "examples": [
+        {
+          "line": 6549,
+          "facing": "seq 7-6-5",
+          "legalsCount": 1,
+          "legal": "9-10-J",
+          "human": "PASS",
+          "handLen": 10
+        }
+      ],
+      "w17Coverage": "UNCOVERED_combat_residual (expertPolicy never passes when cheap exists)",
+      "priorCF": "H_pass_E_play=30 on older export"
+    },
+    {
+      "rank": 4,
+      "pattern": "combat_2_for_control",
+      "count_estimate": 60,
+      "shareOfCombat_pct": 7.4,
+      "exampleGameIds": [
+        "g_mriwwj6w_26fce1tp",
+        "g_mriwjwji_8pgetxhk"
+      ],
+      "examples": [
+        {
+          "gameId": "g_mriwwj6w_26fce1tp",
+          "human": "2♦",
+          "expertWas": "6♠",
+          "facing": "5♥",
+          "omin": 1,
+          "cls": "H_2_E_non2"
+        }
+      ],
+      "w17Coverage": "UNCOVERED_combat_residual (partially covered by live probe-TWO / V94_TWO_OMIN2 in expertPolicy, not by W17 BR FL)",
+      "priorCF": "H_2_E_non2=53"
+    },
+    {
+      "rank": 5,
+      "pattern": "combat_pass_save_2s",
+      "count_estimate": 40,
+      "shareOfCombat_pct": 4.9,
+      "exampleGameIds": [
+        "g_mrjza86p_2e75j8yc",
+        "g_mrju2pip_v30vgckj"
+      ],
+      "examples": [
+        {
+          "line": 9095,
+          "handTwos": 2,
+          "facing": "pair 6s",
+          "human": "PASS"
+        },
+        {
+          "line": 41823,
+          "handTwos": 1,
+          "facing": "long seq 9-down",
+          "human": "PASS"
+        }
+      ],
+      "w17Coverage": "UNCOVERED_combat_residual"
+    }
+  ],
+  "w17Coverage": {
+    "note": "p_w17_brfltrash only rewrites free-lead BR candidates: (1) bropair low-pair force hand≥11 omin≥6; (2) trash-first when control+trash+hi multi hand 8..12. Combat path uses cheapLegals+orderLegals only.",
+    "coveredByW17": [
+      "FL_trash_first",
+      "FL_low_pair_shed"
+    ],
+    "leastCovered_combatResiduals": [
+      {
+        "pattern": "combat_struct_preserve_min_sbc / loose single",
+        "count_estimate": 320,
+        "coverage": "UNCOVERED",
+        "why": "W17 never enters combat BR/expert cheap path"
+      },
+      {
+        "pattern": "combat_pass_with_legal / pass_with_cheap",
+        "count_estimate": 95,
+        "coverage": "UNCOVERED",
+        "why": "expertPolicy: if (cheap.length) return orderLegals(cheap)[0] — hard always-play"
+      },
+      {
+        "pattern": "combat_pass_save_2s",
+        "count_estimate": 40,
+        "coverage": "UNCOVERED",
+        "why": "no combat pass-structure on W17; W16 pass burned DEV_VAL"
+      },
+      {
+        "pattern": "combat_2_for_control (non-race mid tops)",
+        "count_estimate": 60,
+        "coverage": "PARTIAL_live_expert_not_W17",
+        "why": "live has probe-TWO/OMIN2; W17 package inherits base expert 2-tempo but BR FL trash does not address combat 2 choice"
+      },
+      {
+        "pattern": "combat_struct_break_pair_split (human does sometimes)",
+        "count_estimate": 90,
+        "coverage": "UNCOVERED_as_diverge",
+        "why": "AI already prefers min-sbc; residual is opposite (when human breaks) — not a ship lever"
+      }
+    ]
+  },
+  "leverProposal": {
+    "name": "ex_combat_residual_force_minsbc",
+    "tag": "p_w24_exresforce (align NOTE-w24-architecture-levers Lever A)",
+    "axis": "expertPolicy combat residual hard sort — NOT BR FL; SoftN forbidden; no duals in this note",
+    "firesOftenOn": [
+      "combat_struct_preserve_loose_single",
+      "combat_struct_preserve_min_sbc_beat",
+      "combat_prefer_loose_over_pairbreak"
+    ],
+    "estimatedFireMass": "every combat cheap decision with ≥2 same-type answers — majority of ~601 combat plays",
+    "whyLeastCoveredByW17": "W17 only mutates free-lead BR cand set. Holdout both-lose under brfltrash is ~81% freeze-identical; combat leaf change is the architectural residual.",
+    "ruleSketch": {
+      "locus": "policies/p_w17_brfltrash-search.js expertPolicy ~L419-420 (cheap always-play)",
+      "when": "cur present && cheap nonempty && handLen≥7 && omin≥4 && curTop<10 && same-type pool≥2",
+      "then": "hard sort pool by sbc ASC → residual pairCount DESC → residual maxRun DESC → gap ASC; return first. ALWAYS PLAY (no pass — avoids W16 DEV_VAL landmine).",
+      "code": "var cheap = cheapLegals(leg);\nif (cheap.length) {\n  if (handLen >= 7 && omin >= 4 && curTop < 10 && !playIsBomb(cur.cards||[])) {\n    var pool = cheap.filter(function(p){ var c=detectCombo(p); return c && c.type===cur.type; });\n    if (pool.length >= 2) {\n      pool.sort(function(a,b){\n        var sa=structureBreakCost(hand,a), sb=structureBreakCost(hand,b);\n        if (sa!==sb) return sa-sb;\n        // residual pairs / maxRun tertiary (see NOTE-w24-architecture-levers)\n        return expertScore(a,state,cp)-expertScore(b,state,cp);\n      });\n      return { play: pool[0] };\n    }\n  }\n  return { play: orderLegals(cheap,state,cp)[0] };\n}"
+    },
+    "altNotChosen": {
+      "name": "ex_combat_struct_pass_breakonly",
+      "target": "pass_with_cheap / pass_save_2s",
+      "whyNotPrimary": "W16 pass-unique burned DEV_VAL reverse; STATUS next prefers residual scoring without pass gate first"
+    },
+    "softN": "forbidden",
+    "duals": "do not run"
+  },
+  "censusScript": {
+    "path": "evolve/_tmp_playlog_combat_diverge.py",
+    "outputs": [
+      "scratch/playlog-combat-diverge.json",
+      "explore/scratch/playlog-combat-diverge.json"
+    ],
+    "status": "script ready; full sbc re-run recommended when shell available"
+  }
+}

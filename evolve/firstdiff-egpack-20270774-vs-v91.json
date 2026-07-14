@@ -1,0 +1,71 @@
+{
+  "protocol": "fair-firstdiff-v1",
+  "freeze": "v91",
+  "chall": "p_w30_ex_egpack",
+  "live": {
+    "id": "v9.1-probe-p_w30_ex_egpack",
+    "stamped": "2026-07-14T05:38:20Z",
+    "label": "Grandmaster v9.1-probe p_w30_ex_egpack"
+  },
+  "freezeBuild": {
+    "id": "v9.1",
+    "stamped": "2026-07-13T02:50:38Z",
+    "label": "Grandmaster v9.1 (ladder freeze)"
+  },
+  "opts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": false,
+    "hiddenInfo": true,
+    "timeMs": 200,
+    "iterations": 60,
+    "maxSims": 120,
+    "brTrials": 20,
+    "bestResponse": true,
+    "exactExploit": false,
+    "exploit": true,
+    "softSamples": 0,
+    "maxBranch": 12,
+    "mode": "auto",
+    "strongSelf": false
+  },
+  "nGames": 2,
+  "nDiverged": 1,
+  "divergeRate": 0.5,
+  "classCount": {
+    "combat_other": 1
+  },
+  "results": [
+    {
+      "seed": 20270774,
+      "liveSeat": 0,
+      "firstDiff": {
+        "step": 1,
+        "seat": 0,
+        "phase": "seq",
+        "handLen": 13,
+        "omin": 10,
+        "curTop": 2,
+        "freeze": "8D 9D TD",
+        "chall": "3C 4C 5D",
+        "freezeSig": "22,26,30",
+        "challSig": "3,7,10",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 1,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 2,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 20270774,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 12,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 23,
+      "freezeWinIfNoDiff": true
+    }
+  ]
+}

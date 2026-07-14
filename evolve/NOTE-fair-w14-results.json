@@ -1,0 +1,40 @@
+{
+  "splits": [
+    {
+      "tag": "p_w14_brflopen",
+      "des_d": 2,
+      "chk_d": 3,
+      "full_ch": 29,
+      "splitPass": true
+    },
+    {
+      "tag": "p_w14_brlmulti",
+      "des_d": 2,
+      "chk_d": 4,
+      "full_ch": 30,
+      "splitPass": true
+    },
+    {
+      "tag": "p_w14_bropair",
+      "des_d": 2,
+      "chk_d": 4,
+      "full_ch": 30,
+      "splitPass": true
+    },
+    {
+      "tag": "p_w14_bropair5",
+      "des_d": 2,
+      "chk_d": 4,
+      "full_ch": 30,
+      "splitPass": true
+    }
+  ],
+  "t20": {
+    "brflopen": "30/50 d+5",
+    "bropair": "31/50 d+6",
+    "brlmulti": "31/50 d+6",
+    "bropair5": "31/50 d+6",
+    "id": "25/50"
+  },
+  "note": "split PASS; full DEV T20 max 31 < 32 significance gate; no DEV_VAL burn"
+}

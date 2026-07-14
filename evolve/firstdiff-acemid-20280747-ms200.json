@@ -1,0 +1,71 @@
+{
+  "protocol": "fair-firstdiff-v1",
+  "freeze": "p_w71_ex_flseq4nineshed",
+  "chall": "p_w74_ex_acemid",
+  "live": {
+    "id": "v9.1-probe-p_w74_ex_acemid",
+    "stamped": "2026-07-14T16:00:00Z",
+    "label": "Grandmaster v9.1-probe p_w74_ex_acemid"
+  },
+  "freezeBuild": {
+    "id": "v9.1-probe-p_w71_ex_flseq4nineshed",
+    "stamped": "2026-07-14T14:50:00Z",
+    "label": "Grandmaster v9.1-probe p_w71_ex_flseq4nineshed"
+  },
+  "opts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": false,
+    "hiddenInfo": true,
+    "timeMs": 200,
+    "iterations": 60,
+    "maxSims": 120,
+    "brTrials": 20,
+    "bestResponse": true,
+    "exactExploit": false,
+    "exploit": true,
+    "softSamples": 0,
+    "maxBranch": 12,
+    "mode": "auto",
+    "strongSelf": false
+  },
+  "nGames": 2,
+  "nDiverged": 1,
+  "divergeRate": 0.5,
+  "classCount": {
+    "combat_other": 1
+  },
+  "results": [
+    {
+      "seed": 20280747,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 18,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20280747,
+      "liveSeat": 1,
+      "firstDiff": {
+        "step": 4,
+        "seat": 1,
+        "phase": "single",
+        "handLen": 11,
+        "omin": 11,
+        "curTop": 5,
+        "freeze": "AC",
+        "chall": "TS",
+        "freezeSig": "47",
+        "challSig": "28",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 3,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 5,
+      "freezeWinIfNoDiff": null
+    }
+  ]
+}

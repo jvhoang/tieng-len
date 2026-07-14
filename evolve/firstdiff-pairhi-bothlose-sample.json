@@ -1,0 +1,188 @@
+{
+  "protocol": "fair-firstdiff-v1",
+  "freeze": "v91",
+  "chall": "p_w30_ex_pairhi",
+  "live": {
+    "id": "v9.1-probe-p_w30_ex_pairhi",
+    "stamped": "2026-07-14T05:38:20Z",
+    "label": "Grandmaster v9.1-probe p_w30_ex_pairhi"
+  },
+  "freezeBuild": {
+    "id": "v9.1",
+    "stamped": "2026-07-13T02:50:38Z",
+    "label": "Grandmaster v9.1 (ladder freeze)"
+  },
+  "opts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": false,
+    "hiddenInfo": true,
+    "timeMs": 200,
+    "iterations": 60,
+    "maxSims": 120,
+    "brTrials": 20,
+    "bestResponse": true,
+    "exactExploit": false,
+    "exploit": true,
+    "softSamples": 0,
+    "maxBranch": 12,
+    "mode": "auto",
+    "strongSelf": false
+  },
+  "nGames": 12,
+  "nDiverged": 3,
+  "divergeRate": 0.25,
+  "classCount": {
+    "combat_other": 2,
+    "FL_other": 1
+  },
+  "results": [
+    {
+      "seed": 20310666,
+      "liveSeat": 0,
+      "firstDiff": {
+        "step": 1,
+        "seat": 0,
+        "phase": "pair",
+        "handLen": 13,
+        "omin": 11,
+        "curTop": 0,
+        "freeze": "TC TS",
+        "chall": "6C 6S",
+        "freezeSig": "28,31",
+        "challSig": "12,15",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 1,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 2,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 20310666,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 11,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 22,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20290720,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 18,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20290720,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 18,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20390451,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 10,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 20,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20390451,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 10,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 20,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20350558,
+      "liveSeat": 0,
+      "firstDiff": {
+        "step": 2,
+        "seat": 0,
+        "phase": "pair",
+        "handLen": 11,
+        "omin": 11,
+        "curTop": 0,
+        "freeze": "AC AS",
+        "chall": "4H 4D",
+        "freezeSig": "44,47",
+        "challSig": "5,6",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 2,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 3,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 20350558,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 19,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20470234,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 11,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 23,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20470234,
+      "liveSeat": 1,
+      "firstDiff": {
+        "step": 0,
+        "seat": 1,
+        "phase": "FREE",
+        "handLen": 13,
+        "omin": 13,
+        "curTop": null,
+        "freeze": "3S 4H 5D 6S",
+        "chall": "3S 4H 5D 6S 7C 8S",
+        "freezeSig": "0,5,10,12",
+        "challSig": "0,5,10,12,19,20",
+        "same": false,
+        "class": "FL_other"
+      },
+      "pathLen": 1,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 1,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 20300693,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 5,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 9,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20300693,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 4,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 9,
+      "freezeWinIfNoDiff": false
+    }
+  ]
+}

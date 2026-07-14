@@ -1,0 +1,73 @@
+{
+  "mode": "2p-h2h-single-deal-continuous",
+  "games": 50,
+  "v80Wins": 40,
+  "v75Wins": 10,
+  "v80WinRate": 0.8,
+  "ci95": {
+    "p": 0.8,
+    "lo": 0.6696262789551477,
+    "hi": 0.8875637005402611
+  },
+  "target": 0.75,
+  "passed": true,
+  "ms": 310278,
+  "v80": {
+    "id": "v8.2-br-soft-exploit",
+    "stamped": "2026-07-11T21:00:00-07:00",
+    "label": "Grandmaster v8.2"
+  },
+  "v75": {
+    "id": "v7.5-human-counterfactual",
+    "stamped": "2026-07-11T12:00:00-07:00",
+    "label": "Grandmaster v7.5"
+  },
+  "v80Opts": {
+    "difficulty": "hard",
+    "timeMs": 100,
+    "iterations": 160,
+    "maxSims": 320,
+    "brTrials": 64,
+    "bestResponse": true,
+    "useSearch": true,
+    "perfectInfo": true,
+    "hiddenInfo": false,
+    "maxBranch": 20,
+    "dualSelf": true,
+    "exactExploit": true,
+    "mode": "auto"
+  },
+  "v75Opts": {
+    "difficulty": "easy",
+    "iterations": 0,
+    "mode": "expert"
+  },
+  "opponentFreeze": "policies/v75-ai.js + policies/v75-search.js",
+  "seed0": 20260711,
+  "checkpoints": [
+    {
+      "games": 25,
+      "v80Wins": 21,
+      "v80WinRate": 0.84,
+      "ci95": {
+        "p": 0.84,
+        "lo": 0.6534598601976184,
+        "hi": 0.9359665239142201
+      },
+      "ms": 155410,
+      "gps": 0.16086480921433627
+    },
+    {
+      "games": 50,
+      "v80Wins": 40,
+      "v80WinRate": 0.8,
+      "ci95": {
+        "p": 0.8,
+        "lo": 0.6696262789551477,
+        "hi": 0.8875637005402611
+      },
+      "ms": 310278,
+      "gps": 0.16114581117578428
+    }
+  ]
+}

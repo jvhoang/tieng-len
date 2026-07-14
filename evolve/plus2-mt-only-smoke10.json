@@ -1,0 +1,187 @@
+{
+  "mode": "2p-h2h-single-deal-continuous",
+  "protocol": "grandmaster-vs-grandmaster",
+  "games": 10,
+  "liveWins": 6,
+  "freezeWins": 4,
+  "liveWinRate": 0.6,
+  "v80Wins": 6,
+  "v80WinRate": 0.6,
+  "ci95": {
+    "p": 0.6,
+    "lo": 0.3126695474501863,
+    "hi": 0.8318224187964901
+  },
+  "target": 0.5,
+  "passed": true,
+  "ms": 291524,
+  "live": {
+    "id": "v9.2",
+    "stamped": "2026-07-13T17:30:00Z",
+    "label": "Grandmaster v9.2 (maxBudget pure-v91)"
+  },
+  "freeze": {
+    "id": "v9.1",
+    "stamped": "2026-07-13T02:50:38Z",
+    "label": "Grandmaster v9.1 (ladder freeze)"
+  },
+  "v80": {
+    "id": "v9.2",
+    "stamped": "2026-07-13T17:30:00Z",
+    "label": "Grandmaster v9.2 (maxBudget pure-v91)"
+  },
+  "v80Opts": {
+    "difficulty": "grandmaster",
+    "timeMs": 280,
+    "iterations": 200,
+    "maxSims": 480,
+    "brTrials": 96,
+    "bestResponse": true,
+    "useSearch": true,
+    "perfectInfo": true,
+    "hiddenInfo": false,
+    "maxBranch": 24,
+    "dualSelf": false,
+    "exactExploit": true,
+    "mode": "auto",
+    "combatRoot": false,
+    "flRoot": false,
+    "softSamples": 0,
+    "exploit": true
+  },
+  "freezeOpts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": true,
+    "hiddenInfo": false,
+    "timeMs": 120,
+    "iterations": 80,
+    "maxSims": 160,
+    "bestResponse": false,
+    "maxBranch": 16,
+    "mode": "auto",
+    "combatRoot": false,
+    "flRoot": false,
+    "dualSelf": false,
+    "exactExploit": true,
+    "softSamples": 0,
+    "exploit": false
+  },
+  "opponentFreeze": "policies/v91-ai.js + policies/v91-search.js",
+  "freezeTag": "v91",
+  "seed0": 20260711,
+  "checkpoints": [
+    {
+      "games": 5,
+      "liveWins": 4,
+      "liveWinRate": 0.8,
+      "ci95": {
+        "p": 0.8,
+        "lo": 0.37552826411853885,
+        "hi": 0.9637768390302125
+      },
+      "ms": 104606,
+      "gps": 0.04779840544519435
+    },
+    {
+      "games": 10,
+      "liveWins": 6,
+      "liveWinRate": 0.6,
+      "ci95": {
+        "p": 0.6,
+        "lo": 0.3126695474501863,
+        "hi": 0.8318224187964901
+      },
+      "ms": 291524,
+      "gps": 0.03430249310519889
+    }
+  ],
+  "perGame": [
+    {
+      "g": 0,
+      "seed": 20260711,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 21,
+      "ms": 36298
+    },
+    {
+      "g": 1,
+      "seed": 20270684,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 17,
+      "ms": 26254
+    },
+    {
+      "g": 2,
+      "seed": 20280657,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 15,
+      "ms": 24358
+    },
+    {
+      "g": 3,
+      "seed": 20290630,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 22,
+      "ms": 7701
+    },
+    {
+      "g": 4,
+      "seed": 20300603,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 18,
+      "ms": 9991
+    },
+    {
+      "g": 5,
+      "seed": 20310576,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 18,
+      "ms": 28383
+    },
+    {
+      "g": 6,
+      "seed": 20320549,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 26,
+      "ms": 30686
+    },
+    {
+      "g": 7,
+      "seed": 20330522,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 21,
+      "ms": 24236
+    },
+    {
+      "g": 8,
+      "seed": 20340495,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 20,
+      "ms": 32036
+    },
+    {
+      "g": 9,
+      "seed": 20350468,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 20,
+      "ms": 71573
+    }
+  ],
+  "lossSeeds": [
+    20290630,
+    20310576,
+    20320549,
+    20350468
+  ]
+}

@@ -1,0 +1,562 @@
+{
+  "mode": "2p-h2h-single-deal-continuous",
+  "protocol": "grandmaster-vs-grandmaster",
+  "games": 50,
+  "liveWins": 27,
+  "freezeWins": 23,
+  "liveWinRate": 0.54,
+  "v80Wins": 27,
+  "v80WinRate": 0.54,
+  "ci95": {
+    "p": 0.54,
+    "lo": 0.40398634328388083,
+    "hi": 0.6703056539821737
+  },
+  "target": 0.7,
+  "passed": false,
+  "ms": 924838,
+  "live": {
+    "id": "v9.2",
+    "stamped": "2026-07-13T07:15:52Z",
+    "label": "Grandmaster v9.2"
+  },
+  "freeze": {
+    "id": "v9.1",
+    "stamped": "2026-07-13T02:50:38Z",
+    "label": "Grandmaster v9.1 (ladder freeze)"
+  },
+  "v80": {
+    "id": "v9.2",
+    "stamped": "2026-07-13T07:15:52Z",
+    "label": "Grandmaster v9.2"
+  },
+  "v80Opts": {
+    "difficulty": "grandmaster",
+    "timeMs": 180,
+    "iterations": 140,
+    "maxSims": 320,
+    "brTrials": 56,
+    "bestResponse": true,
+    "useSearch": true,
+    "perfectInfo": true,
+    "hiddenInfo": false,
+    "maxBranch": 20,
+    "dualSelf": false,
+    "exactExploit": true,
+    "mode": "auto",
+    "combatRoot": false,
+    "flRoot": false,
+    "softSamples": 0,
+    "exploit": true
+  },
+  "freezeOpts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": true,
+    "hiddenInfo": false,
+    "timeMs": 100,
+    "iterations": 64,
+    "maxSims": 160,
+    "bestResponse": false,
+    "maxBranch": 16,
+    "mode": "auto",
+    "combatRoot": false,
+    "flRoot": false,
+    "dualSelf": false,
+    "exactExploit": false,
+    "softSamples": 0,
+    "exploit": false
+  },
+  "opponentFreeze": "policies/v91-ai.js + policies/v91-search.js",
+  "freezeTag": "v91",
+  "seed0": 20260711,
+  "checkpoints": [
+    {
+      "games": 10,
+      "liveWins": 6,
+      "liveWinRate": 0.6,
+      "ci95": {
+        "p": 0.6,
+        "lo": 0.3126695474501863,
+        "hi": 0.8318224187964901
+      },
+      "ms": 227336,
+      "gps": 0.043987753809339475
+    },
+    {
+      "games": 20,
+      "liveWins": 13,
+      "liveWinRate": 0.65,
+      "ci95": {
+        "p": 0.65,
+        "lo": 0.43285051021946475,
+        "hi": 0.8188104521320554
+      },
+      "ms": 359344,
+      "gps": 0.055656974932098494
+    },
+    {
+      "games": 30,
+      "liveWins": 16,
+      "liveWinRate": 0.5333333333333333,
+      "ci95": {
+        "p": 0.5333333333333333,
+        "lo": 0.36142013281525043,
+        "hi": 0.6976787277587176
+      },
+      "ms": 508990,
+      "gps": 0.05894025422896324
+    },
+    {
+      "games": 40,
+      "liveWins": 22,
+      "liveWinRate": 0.55,
+      "ci95": {
+        "p": 0.55,
+        "lo": 0.3982882988844078,
+        "hi": 0.6929492471905531
+      },
+      "ms": 715096,
+      "gps": 0.055936545582691
+    },
+    {
+      "games": 50,
+      "liveWins": 27,
+      "liveWinRate": 0.54,
+      "ci95": {
+        "p": 0.54,
+        "lo": 0.40398634328388083,
+        "hi": 0.6703056539821737
+      },
+      "ms": 924837,
+      "gps": 0.054063580933721295
+    }
+  ],
+  "perGame": [
+    {
+      "g": 0,
+      "seed": 20260711,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 24,
+      "ms": 38592
+    },
+    {
+      "g": 1,
+      "seed": 20270684,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 24,
+      "ms": 10195
+    },
+    {
+      "g": 2,
+      "seed": 20280657,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 15,
+      "ms": 15489
+    },
+    {
+      "g": 3,
+      "seed": 20290630,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 17,
+      "ms": 15568
+    },
+    {
+      "g": 4,
+      "seed": 20300603,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 18,
+      "ms": 7092
+    },
+    {
+      "g": 5,
+      "seed": 20310576,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 12,
+      "ms": 11299
+    },
+    {
+      "g": 6,
+      "seed": 20320549,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 23,
+      "ms": 57994
+    },
+    {
+      "g": 7,
+      "seed": 20330522,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 23,
+      "ms": 15074
+    },
+    {
+      "g": 8,
+      "seed": 20340495,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 20,
+      "ms": 17533
+    },
+    {
+      "g": 9,
+      "seed": 20350468,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 22,
+      "ms": 38497
+    },
+    {
+      "g": 10,
+      "seed": 20360441,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 22,
+      "ms": 6380
+    },
+    {
+      "g": 11,
+      "seed": 20370414,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 20,
+      "ms": 51829
+    },
+    {
+      "g": 12,
+      "seed": 20380387,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 5,
+      "ms": 2299
+    },
+    {
+      "g": 13,
+      "seed": 20390360,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 17,
+      "ms": 5022
+    },
+    {
+      "g": 14,
+      "seed": 20400333,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 20,
+      "ms": 15657
+    },
+    {
+      "g": 15,
+      "seed": 20410306,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 15,
+      "ms": 6346
+    },
+    {
+      "g": 16,
+      "seed": 20420279,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 14,
+      "ms": 25511
+    },
+    {
+      "g": 17,
+      "seed": 20430252,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 7,
+      "ms": 3273
+    },
+    {
+      "g": 18,
+      "seed": 20440225,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 26,
+      "ms": 13905
+    },
+    {
+      "g": 19,
+      "seed": 20450198,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 12,
+      "ms": 1786
+    },
+    {
+      "g": 20,
+      "seed": 20460171,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 21,
+      "ms": 13367
+    },
+    {
+      "g": 21,
+      "seed": 20470144,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 13,
+      "ms": 9956
+    },
+    {
+      "g": 22,
+      "seed": 20480117,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 18,
+      "ms": 3220
+    },
+    {
+      "g": 23,
+      "seed": 20490090,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 15,
+      "ms": 7625
+    },
+    {
+      "g": 24,
+      "seed": 20500063,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 28,
+      "ms": 25214
+    },
+    {
+      "g": 25,
+      "seed": 20510036,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 21,
+      "ms": 25386
+    },
+    {
+      "g": 26,
+      "seed": 20520009,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 21,
+      "ms": 21336
+    },
+    {
+      "g": 27,
+      "seed": 20529982,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 16,
+      "ms": 10783
+    },
+    {
+      "g": 28,
+      "seed": 20539955,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 22,
+      "ms": 7739
+    },
+    {
+      "g": 29,
+      "seed": 20549928,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 20,
+      "ms": 25018
+    },
+    {
+      "g": 30,
+      "seed": 20559901,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 20,
+      "ms": 20873
+    },
+    {
+      "g": 31,
+      "seed": 20569874,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 17,
+      "ms": 3621
+    },
+    {
+      "g": 32,
+      "seed": 20579847,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 19,
+      "ms": 57844
+    },
+    {
+      "g": 33,
+      "seed": 20589820,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 19,
+      "ms": 10079
+    },
+    {
+      "g": 34,
+      "seed": 20599793,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 16,
+      "ms": 24842
+    },
+    {
+      "g": 35,
+      "seed": 20609766,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 21,
+      "ms": 14160
+    },
+    {
+      "g": 36,
+      "seed": 20619739,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 16,
+      "ms": 4753
+    },
+    {
+      "g": 37,
+      "seed": 20629712,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 16,
+      "ms": 20265
+    },
+    {
+      "g": 38,
+      "seed": 20639685,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 14,
+      "ms": 35556
+    },
+    {
+      "g": 39,
+      "seed": 20649658,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 21,
+      "ms": 14111
+    },
+    {
+      "g": 40,
+      "seed": 20659631,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 18,
+      "ms": 2453
+    },
+    {
+      "g": 41,
+      "seed": 20669604,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 16,
+      "ms": 1922
+    },
+    {
+      "g": 42,
+      "seed": 20679577,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 14,
+      "ms": 11983
+    },
+    {
+      "g": 43,
+      "seed": 20689550,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 22,
+      "ms": 39043
+    },
+    {
+      "g": 44,
+      "seed": 20699523,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 10,
+      "ms": 5678
+    },
+    {
+      "g": 45,
+      "seed": 20709496,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 18,
+      "ms": 7601
+    },
+    {
+      "g": 46,
+      "seed": 20719469,
+      "liveWin": false,
+      "liveSeat": 1,
+      "steps": 24,
+      "ms": 25959
+    },
+    {
+      "g": 47,
+      "seed": 20729442,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 11,
+      "ms": 1528
+    },
+    {
+      "g": 48,
+      "seed": 20739415,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 23,
+      "ms": 61372
+    },
+    {
+      "g": 49,
+      "seed": 20749388,
+      "liveWin": true,
+      "liveSeat": 0,
+      "steps": 20,
+      "ms": 52202
+    }
+  ],
+  "lossSeeds": [
+    20260711,
+    20270684,
+    20310576,
+    20350468,
+    20360441,
+    20380387,
+    20410306,
+    20470144,
+    20480117,
+    20490090,
+    20510036,
+    20520009,
+    20539955,
+    20549928,
+    20559901,
+    20579847,
+    20599793,
+    20609766,
+    20659631,
+    20669604,
+    20689550,
+    20709496,
+    20719469
+  ]
+}

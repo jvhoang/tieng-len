@@ -1,0 +1,97 @@
+{
+  "mode": "2p-h2h-single-deal-continuous",
+  "games": 100,
+  "v80Wins": 84,
+  "v75Wins": 16,
+  "v80WinRate": 0.84,
+  "ci95": {
+    "p": 0.84,
+    "lo": 0.7557955544110558,
+    "hi": 0.8990479765052628
+  },
+  "target": 0.7,
+  "passed": true,
+  "ms": 637877,
+  "v80": {
+    "id": "v8.4-hybrid-tempo",
+    "stamped": "2026-07-11T23:00:00-07:00",
+    "label": "Grandmaster v8.4"
+  },
+  "v75": {
+    "id": "v7.5-human-counterfactual",
+    "stamped": "2026-07-11T12:00:00-07:00",
+    "label": "Grandmaster v7.5"
+  },
+  "v80Opts": {
+    "difficulty": "hard",
+    "timeMs": 100,
+    "iterations": 160,
+    "maxSims": 320,
+    "brTrials": 72,
+    "bestResponse": true,
+    "useSearch": true,
+    "perfectInfo": true,
+    "hiddenInfo": false,
+    "maxBranch": 20,
+    "dualSelf": true,
+    "exactExploit": true,
+    "mode": "auto"
+  },
+  "v75Opts": {
+    "difficulty": "easy",
+    "iterations": 0,
+    "mode": "expert"
+  },
+  "opponentFreeze": "policies/v75-ai.js + policies/v75-search.js",
+  "seed0": 314159,
+  "checkpoints": [
+    {
+      "games": 25,
+      "v80Wins": 22,
+      "v80WinRate": 0.88,
+      "ci95": {
+        "p": 0.88,
+        "lo": 0.7004380781662651,
+        "hi": 0.9583325864293191
+      },
+      "ms": 190783,
+      "gps": 0.13103892904504072
+    },
+    {
+      "games": 50,
+      "v80Wins": 40,
+      "v80WinRate": 0.8,
+      "ci95": {
+        "p": 0.8,
+        "lo": 0.6696262789551477,
+        "hi": 0.8875637005402611
+      },
+      "ms": 389058,
+      "gps": 0.12851554266973048
+    },
+    {
+      "games": 75,
+      "v80Wins": 63,
+      "v80WinRate": 0.84,
+      "ci95": {
+        "p": 0.84,
+        "lo": 0.7408308420225468,
+        "hi": 0.9060357867622572
+      },
+      "ms": 483536,
+      "gps": 0.15510737566592767
+    },
+    {
+      "games": 100,
+      "v80Wins": 84,
+      "v80WinRate": 0.84,
+      "ci95": {
+        "p": 0.84,
+        "lo": 0.7557955544110558,
+        "hi": 0.8990479765052628
+      },
+      "ms": 637876,
+      "gps": 0.156770281371301
+    }
+  ]
+}

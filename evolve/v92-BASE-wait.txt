@@ -1,0 +1,7 @@
+COMPLETED_AT=2026-07-13T05:20:25Z
+50
+{"seed":20719469,"liveWin":true,"liveSeat":1,"steps":19,"ms":5151}
+{"seed":20729442,"liveWin":true,"liveSeat":0,"steps":11,"ms":1100}
+{"seed":20739415,"liveWin":true,"liveSeat":1,"steps":23,"ms":35300}
+{"seed":20749388,"liveWin":true,"liveSeat":0,"steps":24,"ms":52289}
+{"liveWins":34,"n":50,"rate":0.68}

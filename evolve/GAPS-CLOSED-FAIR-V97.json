@@ -1,0 +1,12 @@
+{
+  "ship": "v9.7",
+  "vs": "v96",
+  "protocol": "MS=0 TRIALS=20 SOFT=0 dual-rerun",
+  "A": 36,
+  "B": 36,
+  "primary": true,
+  "rerun": true,
+  "softN": "FORBIDDEN",
+  "finalBank": "p_w97_ex_fl7open",
+  "stackFrom": "identity 25/25 vs freeze v96"
+}

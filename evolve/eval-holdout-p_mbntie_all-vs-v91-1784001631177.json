@@ -1,0 +1,128 @@
+{
+  "protocol": "fair-holdout-v1",
+  "freeze": "v91",
+  "chall": "p_mbntie_all",
+  "partitions": {
+    "dev": {
+      "seed0": 20260711,
+      "games": "25",
+      "role": "DEV (biased — design only)"
+    },
+    "holdout_A": {
+      "seed0": 20260801,
+      "games": "25",
+      "role": "HOLDOUT_A (primary ship)"
+    },
+    "holdout_B": {
+      "seed0": 20260802,
+      "games": "25",
+      "role": "HOLDOUT_B (re-run ship)"
+    }
+  },
+  "rows": {
+    "dev": {
+      "summary": {
+        "label": "DEV (biased — design only)",
+        "seed0": 20260711,
+        "n": 50,
+        "idWins": 25,
+        "idWr": 0.5,
+        "chWins": 37,
+        "wr": 0.74,
+        "delta": 12,
+        "shipAbs": true,
+        "shipDelta": true,
+        "ship": true
+      },
+      "idFile": "eval-id-v91-dev-s20260711-n50.json",
+      "chFile": "eval-ch-p_mbntie_all-dev-s20260711-n50.json",
+      "id": {
+        "liveWins": 25,
+        "games": 50,
+        "wr": 0.5,
+        "seed0": 20260711
+      },
+      "ch": {
+        "liveWins": 37,
+        "games": 50,
+        "wr": 0.74,
+        "seed0": 20260711,
+        "build": {
+          "id": "v9.1-probe-mbntie_all",
+          "stamped": "2026-07-13T02:50:38Z",
+          "label": "Grandmaster v9.1-probe mbntie_all"
+        }
+      }
+    },
+    "holdout_A": {
+      "summary": {
+        "label": "HOLDOUT_A (primary ship)",
+        "seed0": 20260801,
+        "n": 50,
+        "idWins": 25,
+        "idWr": 0.5,
+        "chWins": 24,
+        "wr": 0.48,
+        "delta": -1,
+        "shipAbs": false,
+        "shipDelta": false,
+        "ship": false
+      },
+      "idFile": "eval-id-v91-holdout_A-s20260801-n50.json",
+      "chFile": "eval-ch-p_mbntie_all-holdout_A-s20260801-n50.json",
+      "id": {
+        "liveWins": 25,
+        "games": 50,
+        "wr": 0.5,
+        "seed0": 20260801
+      },
+      "ch": {
+        "liveWins": 24,
+        "games": 50,
+        "wr": 0.48,
+        "seed0": 20260801,
+        "build": {
+          "id": "v9.1-probe-mbntie_all",
+          "stamped": "2026-07-13T02:50:38Z",
+          "label": "Grandmaster v9.1-probe mbntie_all"
+        }
+      }
+    },
+    "holdout_B": {
+      "summary": {
+        "label": "HOLDOUT_B (re-run ship)",
+        "seed0": 20260802,
+        "n": 50,
+        "idWins": 25,
+        "idWr": 0.5,
+        "chWins": 29,
+        "wr": 0.58,
+        "delta": 4,
+        "shipAbs": false,
+        "shipDelta": true,
+        "ship": false
+      },
+      "idFile": "eval-id-v91-holdout_B-s20260802-n50.json",
+      "chFile": "eval-ch-p_mbntie_all-holdout_B-s20260802-n50.json",
+      "id": {
+        "liveWins": 25,
+        "games": 50,
+        "wr": 0.5,
+        "seed0": 20260802
+      },
+      "ch": {
+        "liveWins": 29,
+        "games": 50,
+        "wr": 0.58,
+        "seed0": 20260802,
+        "build": {
+          "id": "v9.1-probe-mbntie_all",
+          "stamped": "2026-07-13T02:50:38Z",
+          "label": "Grandmaster v9.1-probe mbntie_all"
+        }
+      }
+    }
+  },
+  "ship": false,
+  "shipRule": "holdout_A.WR>0.70 && holdout_B.WR>0.70 && both Δid≥+2"
+}

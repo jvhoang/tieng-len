@@ -1,0 +1,295 @@
+{
+  "protocol": "fair-firstdiff-v1",
+  "freeze": "v91",
+  "chall": "p_w14_bropair",
+  "live": {
+    "id": "v9.1-probe-p_w14_bropair",
+    "stamped": "2026-07-14T05:18:06Z",
+    "label": "Grandmaster v9.1-probe p_w14_bropair"
+  },
+  "freezeBuild": {
+    "id": "v9.1",
+    "stamped": "2026-07-13T02:50:38Z",
+    "label": "Grandmaster v9.1 (ladder freeze)"
+  },
+  "opts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": false,
+    "hiddenInfo": true,
+    "timeMs": 150,
+    "iterations": 60,
+    "maxSims": 120,
+    "brTrials": 12,
+    "bestResponse": true,
+    "exactExploit": false,
+    "exploit": true,
+    "softSamples": 0,
+    "maxBranch": 12,
+    "mode": "auto",
+    "strongSelf": false
+  },
+  "nGames": 24,
+  "nDiverged": 3,
+  "divergeRate": 0.125,
+  "classCount": {
+    "FL_other": 3
+  },
+  "results": [
+    {
+      "seed": 20260711,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 10,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 20,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20260711,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 10,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 20,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20270684,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 11,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 22,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20270684,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 11,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 22,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20280657,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 18,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20280657,
+      "liveSeat": 1,
+      "firstDiff": {
+        "step": 0,
+        "seat": 1,
+        "phase": "FREE",
+        "handLen": 13,
+        "omin": 13,
+        "curTop": null,
+        "freeze": "3S 4D 5S",
+        "chall": "3C 3S",
+        "freezeSig": "0,6,8",
+        "challSig": "0,3",
+        "same": false,
+        "class": "FL_other"
+      },
+      "pathLen": 1,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 1,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 20290630,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 10,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 20,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20290630,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 10,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 20,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20300603,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 18,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20300603,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 18,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20310576,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 7,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 14,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20310576,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 7,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 14,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20320549,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 5,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 11,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20320549,
+      "liveSeat": 1,
+      "firstDiff": {
+        "step": 0,
+        "seat": 1,
+        "phase": "FREE",
+        "handLen": 13,
+        "omin": 13,
+        "curTop": null,
+        "freeze": "3S 4H 5H",
+        "chall": "3S 3H",
+        "freezeSig": "0,5,9",
+        "challSig": "0,1",
+        "same": false,
+        "class": "FL_other"
+      },
+      "pathLen": 1,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 1,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 20330522,
+      "liveSeat": 0,
+      "firstDiff": {
+        "step": 0,
+        "seat": 0,
+        "phase": "FREE",
+        "handLen": 13,
+        "omin": 13,
+        "curTop": null,
+        "freeze": "3H",
+        "chall": "3H 3D",
+        "freezeSig": "1",
+        "challSig": "1,2",
+        "same": false,
+        "class": "FL_other"
+      },
+      "pathLen": 1,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 1,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 20330522,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 7,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 14,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20340495,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 10,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 20,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20340495,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 10,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 20,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20350468,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 11,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 22,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20350468,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 11,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 22,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20360441,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 18,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20360441,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 18,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 20370414,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 10,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 20,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20370414,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 10,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 20,
+      "freezeWinIfNoDiff": false
+    }
+  ]
+}

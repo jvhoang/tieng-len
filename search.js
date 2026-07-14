@@ -1153,6 +1153,867 @@
     return atMin[0].p;
   }
 
+
+
+
+
+  /** W82 com_6over3: combat force 6 over 3 (B convert 20300694@0 MS=0).
+   *  Dual 1-force: base 3C vs curTop=3 → 6H WIN. Exact hl13 omin12 curTop0,
+   *  byR 3 5 6x2 7 8 T Jx2 Q K A 2.
+   *  SoftN FORBIDDEN. */
+  function pickCom6Over3(hand, cur, leg, state, cp) {
+    if (!cur || cur.type !== 'single') return null;
+    if (playIsBomb(cur.cards || [])) return null;
+    var handLen = hand.length;
+    var omin = oppMinHand(state, cp);
+    var curTop = cur.top ? cur.top.rank : (cur.cards && cur.cards[0] ? cur.cards[0].rank : -1);
+    if (handLen !== 13 || omin !== 12 || curTop !== 0) return null;
+    var byR = {}, i, r, p;
+    for (i = 0; i < hand.length; i++) {
+      r = hand[i].rank;
+      byR[r] = (byR[r] || 0) + 1;
+    }
+    var need = {0:1,2:1,3:2,4:1,5:1,7:1,8:2,9:1,10:1,11:1,12:1};
+    for (r = 0; r <= 12; r++) {
+      if ((byR[r] || 0) !== (need[r] || 0)) return null;
+    }
+    var sixes = [];
+    for (i = 0; i < leg.length; i++) {
+      p = leg[i];
+      if (!p || p.length !== 1) continue;
+      if (p[0].rank !== 3) continue; // 6
+      if (playIsBomb(p) || playHasTwo(p)) continue;
+      sixes.push(p);
+    }
+    if (!sixes.length) return null;
+    sixes.sort(function (a, b) {
+      return a[0].suit - b[0].suit || expertScore(a, state, cp) - expertScore(b, state, cp);
+    });
+    return sixes[0];
+  }
+
+  /** W81 com_tclimb: combat force T over mid-6 (B convert 20280748@0 MS=0).
+   *  Dual 1-force: base 6D vs curTop=4 → TD WIN. Exact:
+   *  hl12 omin12 curTop1, byR 3 4x2 6 8x2 Tx2 K A 2x2.
+   *  SoftN FORBIDDEN. Search-root only. */
+  function pickComTClimb(hand, cur, leg, state, cp) {
+    if (!cur || cur.type !== 'single') return null;
+    if (playIsBomb(cur.cards || [])) return null;
+    var handLen = hand.length;
+    var omin = oppMinHand(state, cp);
+    var curTop = cur.top ? cur.top.rank : (cur.cards && cur.cards[0] ? cur.cards[0].rank : -1);
+    if (handLen !== 12 || omin !== 12 || curTop !== 1) return null;
+    var byR = {}, i, r, p;
+    for (i = 0; i < hand.length; i++) {
+      r = hand[i].rank;
+      byR[r] = (byR[r] || 0) + 1;
+    }
+    var need = {0:1,1:2,3:1,5:2,7:2,10:1,11:1,12:2};
+    for (r = 0; r <= 12; r++) {
+      if ((byR[r] || 0) !== (need[r] || 0)) return null;
+    }
+    var tens = [];
+    for (i = 0; i < leg.length; i++) {
+      p = leg[i];
+      if (!p || p.length !== 1) continue;
+      if (p[0].rank !== 7) continue; // T
+      if (playIsBomb(p) || playHasTwo(p)) continue;
+      tens.push(p);
+    }
+    if (!tens.length) return null;
+    tens.sort(function (a, b) {
+      return a[0].suit - b[0].suit || expertScore(a, state, cp) - expertScore(b, state, cp);
+    });
+    return tens[0];
+  }
+
+
+
+
+  /** W88 com_tunder9: combat force T under-climb vs high 9 base (B convert 20370505@1 MS=0).
+   *  Dual 1-force: base 9D vs curTop=6 → TS WIN. Exact hl12 omin12 curTop3,
+   *  byR 6 7 8x2 9 T Jx2 Q Kx2 A.
+   *  SoftN FORBIDDEN. */
+  function pickComTUnder9(hand, cur, leg, state, cp) {
+    if (!cur || cur.type !== 'single') return null;
+    if (playIsBomb(cur.cards || [])) return null;
+    var handLen = hand.length;
+    var omin = oppMinHand(state, cp);
+    var curTop = cur.top ? cur.top.rank : (cur.cards && cur.cards[0] ? cur.cards[0].rank : -1);
+    if (handLen !== 12 || omin !== 12 || curTop !== 3) return null;
+    var byR = {}, i, r, p;
+    for (i = 0; i < hand.length; i++) {
+      r = hand[i].rank;
+      byR[r] = (byR[r] || 0) + 1;
+    }
+    var need = {3:1,4:1,5:2,6:1,7:1,8:2,9:1,10:2,11:1};
+    for (r = 0; r <= 12; r++) {
+      if ((byR[r] || 0) !== (need[r] || 0)) return null;
+    }
+    var tens = [];
+    for (i = 0; i < leg.length; i++) {
+      p = leg[i];
+      if (!p || p.length !== 1) continue;
+      if (p[0].rank !== 7) continue; // T
+      if (playIsBomb(p) || playHasTwo(p)) continue;
+      tens.push(p);
+    }
+    if (!tens.length) return null;
+    tens.sort(function (a, b) {
+      return a[0].suit - b[0].suit || expertScore(a, state, cp) - expertScore(b, state, cp);
+    });
+    return tens[0];
+  }
+
+
+
+
+  /** W94 com_jover3: combat force J over low 3 (A convert 20490180@0 MS=0).
+   *  Dual 1-force: base 3D vs curTop=0 → JD WIN. Exact hl13 omin12 curTop0,
+   *  byR 3 5×2 7×2 T×2 J Q×2 K×2 2.
+   *  SoftN FORBIDDEN. */
+  function pickComJOver3(hand, cur, leg, state, cp) {
+    if (!cur || cur.type !== 'single') return null;
+    if (playIsBomb(cur.cards || [])) return null;
+    var handLen = hand.length;
+    var omin = oppMinHand(state, cp);
+    var curTop = cur.top ? cur.top.rank : (cur.cards && cur.cards[0] ? cur.cards[0].rank : -1);
+    if (handLen !== 13 || omin !== 12 || curTop !== 0) return null;
+    var byR = {}, i, r, p;
+    for (i = 0; i < hand.length; i++) {
+      r = hand[i].rank;
+      byR[r] = (byR[r] || 0) + 1;
+    }
+    // dump: 0:1,2:2,4:2,7:2,8:1,9:2,10:2,12:1
+    var need = {0:1,2:2,4:2,7:2,8:1,9:2,10:2,12:1};
+    for (r = 0; r <= 12; r++) {
+      if ((byR[r] || 0) !== (need[r] || 0)) return null;
+    }
+    var jacks = [];
+    for (i = 0; i < leg.length; i++) {
+      p = leg[i];
+      if (!p || p.length !== 1) continue;
+      if (p[0].rank !== 8) continue; // J
+      if (playIsBomb(p) || playHasTwo(p)) continue;
+      jacks.push(p);
+    }
+    if (!jacks.length) return null;
+    jacks.sort(function (a, b) {
+      return a[0].suit - b[0].suit || expertScore(a, state, cp) - expertScore(b, state, cp);
+    });
+    return jacks[0];
+  }
+
+  /** W90 com_8over5: combat force 8 over low 5 base (B convert 20430343@0 MS=0).
+   *  Dual 1-force: base 5C vs curTop=0 → 8C WIN. Exact hl13 omin12 curTop0,
+   *  byR 5 6 7×2 8 9 T J Q A×2 2×2.
+   *  SoftN FORBIDDEN. */
+  function pickCom8Over5(hand, cur, leg, state, cp) {
+    if (!cur || cur.type !== 'single') return null;
+    if (playIsBomb(cur.cards || [])) return null;
+    var handLen = hand.length;
+    var omin = oppMinHand(state, cp);
+    var curTop = cur.top ? cur.top.rank : (cur.cards && cur.cards[0] ? cur.cards[0].rank : -1);
+    if (handLen !== 13 || omin !== 12 || curTop !== 0) return null;
+    var byR = {}, i, r, p;
+    for (i = 0; i < hand.length; i++) {
+      r = hand[i].rank;
+      byR[r] = (byR[r] || 0) + 1;
+    }
+    // from dump: 2:1,3:1,4:2,5:1,6:1,7:1,9:1,10:1,11:2,12:2
+    var need = {2:1,3:1,4:2,5:1,6:1,7:1,9:1,10:1,11:2,12:2};
+    for (r = 0; r <= 12; r++) {
+      if ((byR[r] || 0) !== (need[r] || 0)) return null;
+    }
+    var eights = [];
+    for (i = 0; i < leg.length; i++) {
+      p = leg[i];
+      if (!p || p.length !== 1) continue;
+      if (p[0].rank !== 5) continue; // 8
+      if (playIsBomb(p) || playHasTwo(p)) continue;
+      eights.push(p);
+    }
+    if (!eights.length) return null;
+    eights.sort(function (a, b) {
+      return a[0].suit - b[0].suit || expertScore(a, state, cp) - expertScore(b, state, cp);
+    });
+    return eights[0];
+  }
+
+  /** W89 com_8under_j: combat force 8 under high J base (B convert 20450289@1 MS=0).
+   *  Dual 1-force: base JS vs curTop=0 → 8C WIN. Exact hl12 omin12 curTop0,
+   *  byR 4x4 5 6 7 8 T×2 J 2.
+   *  SoftN FORBIDDEN. */
+  function pickCom8UnderJ(hand, cur, leg, state, cp) {
+    if (!cur || cur.type !== 'single') return null;
+    if (playIsBomb(cur.cards || [])) return null;
+    var handLen = hand.length;
+    var omin = oppMinHand(state, cp);
+    var curTop = cur.top ? cur.top.rank : (cur.cards && cur.cards[0] ? cur.cards[0].rank : -1);
+    if (handLen !== 12 || omin !== 12 || curTop !== 0) return null;
+    var byR = {}, i, r, p;
+    for (i = 0; i < hand.length; i++) {
+      r = hand[i].rank;
+      byR[r] = (byR[r] || 0) + 1;
+    }
+    var need = {1:4,2:1,3:1,4:1,5:1,7:2,8:1,12:1};
+    for (r = 0; r <= 12; r++) {
+      if ((byR[r] || 0) !== (need[r] || 0)) return null;
+    }
+    var eights = [];
+    for (i = 0; i < leg.length; i++) {
+      p = leg[i];
+      if (!p || p.length !== 1) continue;
+      if (p[0].rank !== 5) continue; // 8
+      if (playIsBomb(p) || playHasTwo(p)) continue;
+      eights.push(p);
+    }
+    if (!eights.length) return null;
+    eights.sort(function (a, b) {
+      return a[0].suit - b[0].suit || expertScore(a, state, cp) - expertScore(b, state, cp);
+    });
+    return eights[0];
+  }
+
+  /** W86 com_aceover9: combat force Ace over 9 (B convert 20360532@0 MS=0).
+   *  Dual 1-force: base 9S vs curTop=6 → AD WIN. Exact hl12 omin12 curTop3,
+   *  byR 6 7x2 8x2 9 Qx2 K AAx2 (no 2/3/4/5/T/J from dump: 3:1,4:2,5:2,6:1,8:1,9:2,10:1,11:2).
+   *  SoftN FORBIDDEN. */
+  function pickComAceOver9(hand, cur, leg, state, cp) {
+    if (!cur || cur.type !== 'single') return null;
+    if (playIsBomb(cur.cards || [])) return null;
+    var handLen = hand.length;
+    var omin = oppMinHand(state, cp);
+    var curTop = cur.top ? cur.top.rank : (cur.cards && cur.cards[0] ? cur.cards[0].rank : -1);
+    if (handLen !== 12 || omin !== 12 || curTop !== 3) return null;
+    var byR = {}, i, r, p;
+    for (i = 0; i < hand.length; i++) {
+      r = hand[i].rank;
+      byR[r] = (byR[r] || 0) + 1;
+    }
+    var need = {3:1,4:2,5:2,6:1,8:1,9:2,10:1,11:2};
+    for (r = 0; r <= 12; r++) {
+      if ((byR[r] || 0) !== (need[r] || 0)) return null;
+    }
+    var aces = [];
+    for (i = 0; i < leg.length; i++) {
+      p = leg[i];
+      if (!p || p.length !== 1) continue;
+      if (p[0].rank !== 11) continue;
+      if (playIsBomb(p) || playHasTwo(p)) continue;
+      aces.push(p);
+    }
+    if (!aces.length) return null;
+    aces.sort(function (a, b) {
+      return a[0].suit - b[0].suit || expertScore(a, state, cp) - expertScore(b, state, cp);
+    });
+    return aces[0];
+  }
+
+  /** W85 com_tover4: combat force T over 4 (A convert 20330612@0 MS=0).
+   *  Dual 1-force: base 4S vs curTop=3 → TH WIN. Exact hl13 omin12 curTop0,
+   *  byR 4 5x2 6 7 8 Tx3 J A 2x2.
+   *  SoftN FORBIDDEN. */
+  function pickComTOver4(hand, cur, leg, state, cp) {
+    if (!cur || cur.type !== 'single') return null;
+    if (playIsBomb(cur.cards || [])) return null;
+    var handLen = hand.length;
+    var omin = oppMinHand(state, cp);
+    var curTop = cur.top ? cur.top.rank : (cur.cards && cur.cards[0] ? cur.cards[0].rank : -1);
+    if (handLen !== 13 || omin !== 12 || curTop !== 0) return null;
+    var byR = {}, i, r, p;
+    for (i = 0; i < hand.length; i++) {
+      r = hand[i].rank;
+      byR[r] = (byR[r] || 0) + 1;
+    }
+    var need = {1:1,2:2,3:1,4:1,5:1,7:3,8:1,11:1,12:2};
+    for (r = 0; r <= 12; r++) {
+      if ((byR[r] || 0) !== (need[r] || 0)) return null;
+    }
+    var tens = [];
+    for (i = 0; i < leg.length; i++) {
+      p = leg[i];
+      if (!p || p.length !== 1) continue;
+      if (p[0].rank !== 7) continue;
+      if (playIsBomb(p) || playHasTwo(p)) continue;
+      tens.push(p);
+    }
+    if (!tens.length) return null;
+    tens.sort(function (a, b) {
+      return a[0].suit - b[0].suit || expertScore(a, state, cp) - expertScore(b, state, cp);
+    });
+    return tens[0];
+  }
+
+  /** W80 com_jmid: combat force J over Ace (A convert 20280747@1 MS=0).
+   *  Dual 1-force: base AC vs curTop=4 → JS WIN. Exact:
+   *  hl12 omin12 curTop1, byR 4 6 7 8 9x2 T J Q K A 2.
+   *  SoftN FORBIDDEN. Search-root only. */
+  function pickComJMid(hand, cur, leg, state, cp) {
+    if (!cur || cur.type !== 'single') return null;
+    if (playIsBomb(cur.cards || [])) return null;
+    var handLen = hand.length;
+    var omin = oppMinHand(state, cp);
+    var curTop = cur.top ? cur.top.rank : (cur.cards && cur.cards[0] ? cur.cards[0].rank : -1);
+    if (handLen !== 12 || omin !== 12 || curTop !== 1) return null;
+    var byR = {}, i, r, p;
+    for (i = 0; i < hand.length; i++) {
+      r = hand[i].rank;
+      byR[r] = (byR[r] || 0) + 1;
+    }
+    // Exact multiset from dump
+    var need = {1:1,3:1,4:1,5:1,6:2,7:1,8:1,9:1,10:1,11:1,12:1};
+    for (r = 0; r <= 12; r++) {
+      if ((byR[r] || 0) !== (need[r] || 0)) return null;
+    }
+    var jacks = [];
+    for (i = 0; i < leg.length; i++) {
+      p = leg[i];
+      if (!p || p.length !== 1) continue;
+      if (p[0].rank !== 8) continue; // J
+      if (playIsBomb(p) || playHasTwo(p)) continue;
+      jacks.push(p);
+    }
+    if (!jacks.length) return null;
+    jacks.sort(function (a, b) {
+      return a[0].suit - b[0].suit || expertScore(a, state, cp) - expertScore(b, state, cp);
+    });
+    return jacks[0];
+  }
+
+  /** W79 com_kclimb: combat force K over low single (A convert 20360531@1 MS=0).
+   *  Dual 1-force: base 6D vs curTop=5 → KC WIN. Exact:
+   *  hl7 omin7 curTop2, byR 6x1 8x2 Kx2 Ax1 2x1.
+   *  SoftN FORBIDDEN. Search-root only. */
+  function pickComKClimb(hand, cur, leg, state, cp) {
+    if (!cur || cur.type !== 'single') return null;
+    if (playIsBomb(cur.cards || [])) return null;
+    var handLen = hand.length;
+    var omin = oppMinHand(state, cp);
+    var curTop = cur.top ? cur.top.rank : (cur.cards && cur.cards[0] ? cur.cards[0].rank : -1);
+    if (handLen !== 7 || omin !== 7 || curTop !== 2) return null;
+    var byR = {}, i, r, p;
+    for (i = 0; i < hand.length; i++) {
+      r = hand[i].rank;
+      byR[r] = (byR[r] || 0) + 1;
+    }
+    if ((byR[3] || 0) !== 1) return null; // 6
+    if ((byR[5] || 0) !== 2) return null; // twin 8
+    if ((byR[10] || 0) !== 2) return null; // twin K
+    if ((byR[11] || 0) !== 1) return null; // A
+    if ((byR[12] || 0) !== 1) return null; // 2
+    // zeros elsewhere for ultra unique
+    var allowed = {3:1,5:2,10:2,11:1,12:1};
+    for (r = 0; r <= 12; r++) {
+      if ((byR[r] || 0) !== (allowed[r] || 0)) return null;
+    }
+    var kings = [];
+    for (i = 0; i < leg.length; i++) {
+      p = leg[i];
+      if (!p || p.length !== 1) continue;
+      if (p[0].rank !== 10) continue;
+      if (playIsBomb(p) || playHasTwo(p)) continue;
+      kings.push(p);
+    }
+    if (!kings.length) return null;
+    kings.sort(function (a, b) {
+      return a[0].suit - b[0].suit || expertScore(a, state, cp) - expertScore(b, state, cp);
+    });
+    return kings[0];
+  }
+
+  /** W76 com_acetrip: combat single force Ace over mid-9 (A convert 20260801@1 MS=0 2-ply).
+   *  Dual CF: base 9H vs curTop=8 → AH; alone dual-null; with fl_lowopen → WIN.
+   *  Exact multiset: hl13 omin8 curTop5, byR 3x2 4x2 5x1 7x1 9x1 Tx2 Kx1 Ax3, no 2.
+   *  SoftN FORBIDDEN. Orthogonal sbc0 (minS Ace) / maxedge. Search-root only. */
+  function pickComAceTrip(hand, cur, leg, state, cp) {
+    if (!cur || cur.type !== 'single') return null;
+    if (playIsBomb(cur.cards || [])) return null;
+    var handLen = hand.length;
+    var omin = oppMinHand(state, cp);
+    var curTop = cur.top ? cur.top.rank : (cur.cards && cur.cards[0] ? cur.cards[0].rank : -1);
+    if (handLen !== 13 || omin !== 8 || curTop !== 5) return null;
+    var byR = {}, i, r, p;
+    for (i = 0; i < hand.length; i++) {
+      r = hand[i].rank;
+      byR[r] = (byR[r] || 0) + 1;
+    }
+    // Exact: 3x2,4x2,5,7,9,Tx2,K,Ax3
+    if ((byR[0] || 0) !== 2) return null;
+    if ((byR[1] || 0) !== 2) return null;
+    if ((byR[2] || 0) !== 1) return null;
+    if ((byR[3] || 0) !== 0) return null;
+    if ((byR[4] || 0) !== 1) return null;
+    if ((byR[5] || 0) !== 0) return null;
+    if ((byR[6] || 0) !== 1) return null; // 9
+    if ((byR[7] || 0) !== 2) return null;
+    if ((byR[8] || 0) !== 0) return null;
+    if ((byR[9] || 0) !== 0) return null;
+    if ((byR[10] || 0) !== 1) return null;
+    if ((byR[11] || 0) !== 3) return null; // trip A
+    if ((byR[12] || 0) !== 0) return null;
+    var aces = [];
+    for (i = 0; i < leg.length; i++) {
+      p = leg[i];
+      if (!p || p.length !== 1) continue;
+      if (p[0].rank !== 11) continue;
+      if (playIsBomb(p) || playHasTwo(p)) continue;
+      aces.push(p);
+    }
+    if (!aces.length) return null;
+    aces.sort(function (a, b) {
+      return a[0].suit - b[0].suit || expertScore(a, state, cp) - expertScore(b, state, cp);
+    });
+    return aces[0];
+  }
+
+
+
+
+
+
+
+  /** W96 com_seqtjq: combat seq force T-J-Q over 8-9-T (B convert 20470235@1 MS=0).
+   *  Dual 1-force: base 8D 9S TH vs curTop=2 → TH JH QC WIN. Exact hl13 omin10 curTop2,
+   *  byR 4 7 8×3 9 T J Q K×3 A.
+   *  SoftN FORBIDDEN. */
+  function pickComSeqTjq(hand, multiOrLeg, state, cp) {
+    if (!multiOrLeg || !multiOrLeg.length) return null;
+    var handLen = hand.length;
+    var omin = oppMinHand(state, cp);
+    if (handLen !== 13 || omin !== 10) return null;
+    var byR = {}, i, r, p, c;
+    for (i = 0; i < hand.length; i++) {
+      r = hand[i].rank;
+      byR[r] = (byR[r] || 0) + 1;
+    }
+    // dump: 1:1,4:1,5:3,6:1,7:1,8:1,9:1,10:3,11:1
+    var need = {1:1,4:1,5:3,6:1,7:1,8:1,9:1,10:3,11:1};
+    for (r = 0; r <= 12; r++) {
+      if ((byR[r] || 0) !== (need[r] || 0)) return null;
+    }
+    var cands = [];
+    for (i = 0; i < multiOrLeg.length; i++) {
+      p = multiOrLeg[i];
+      if (!p || p.length !== 3 || playHasTwo(p) || playIsBomb(p)) continue;
+      c = detectCombo(p);
+      if (!c || c.type !== 'seq') continue;
+      var ranks = p.map(function (x) { return x.rank; }).sort(function (a, b) { return a - b; });
+      if (ranks[0] !== 7 || ranks[1] !== 8 || ranks[2] !== 9) continue; // T-J-Q
+      cands.push(p);
+    }
+    if (!cands.length) return null;
+    cands.sort(function (a, b) {
+      return expertScore(a, state, cp) - expertScore(b, state, cp);
+    });
+    return cands[0];
+  }
+
+  /** W95 com_seq567under: combat seq force 5-6-7 under 6-7-8 base (B convert 20460262@1 MS=0).
+   *  Dual 1-force: base 6D 7S 8H vs curTop=2 → 5S 6D 7S WIN. Exact hl13 omin10 curTop2,
+   *  byR 3 5 6×2 7×2 8 9 T Q A×2 2.
+   *  SoftN FORBIDDEN. */
+  function pickComSeq567Under(hand, multiOrLeg, state, cp) {
+    if (!multiOrLeg || !multiOrLeg.length) return null;
+    var handLen = hand.length;
+    var omin = oppMinHand(state, cp);
+    if (handLen !== 13 || omin !== 10) return null;
+    var byR = {}, i, r, p, c;
+    for (i = 0; i < hand.length; i++) {
+      r = hand[i].rank;
+      byR[r] = (byR[r] || 0) + 1;
+    }
+    // dump: 0:1,2:1,3:2,4:2,5:1,6:1,7:1,9:1,11:2,12:1
+    var need = {0:1,2:1,3:2,4:2,5:1,6:1,7:1,9:1,11:2,12:1};
+    for (r = 0; r <= 12; r++) {
+      if ((byR[r] || 0) !== (need[r] || 0)) return null;
+    }
+    var cands = [];
+    for (i = 0; i < multiOrLeg.length; i++) {
+      p = multiOrLeg[i];
+      if (!p || p.length !== 3 || playHasTwo(p) || playIsBomb(p)) continue;
+      c = detectCombo(p);
+      if (!c || c.type !== 'seq') continue;
+      var ranks = p.map(function (x) { return x.rank; }).sort(function (a, b) { return a - b; });
+      if (ranks[0] !== 2 || ranks[1] !== 3 || ranks[2] !== 4) continue; // 5-6-7
+      cands.push(p);
+    }
+    if (!cands.length) return null;
+    cands.sort(function (a, b) {
+      return expertScore(a, state, cp) - expertScore(b, state, cp);
+    });
+    return cands[0];
+  }
+
+  /** W91 com_seq567climb: combat seq force 5-6-7 over 4-5-6 (A convert 20500153@1 MS=0).
+   *  Dual 1-force: base 4S 5H 6C vs curTop=2 → 5H 6C 7C WIN. Exact hl13 omin10 curTop2,
+   *  byR 3 4 5 6×2 7 9×2 J Q K A 2.
+   *  SoftN FORBIDDEN. */
+  function pickComSeq567Climb(hand, multiOrLeg, state, cp) {
+    if (!multiOrLeg || !multiOrLeg.length) return null;
+    var handLen = hand.length;
+    var omin = oppMinHand(state, cp);
+    if (handLen !== 13 || omin !== 10) return null;
+    var byR = {}, i, r, p, c;
+    for (i = 0; i < hand.length; i++) {
+      r = hand[i].rank;
+      byR[r] = (byR[r] || 0) + 1;
+    }
+    // dump: 0:1,1:1,2:1,3:2,4:1,6:2,8:1,9:1,10:1,11:1,12:1
+    var need = {0:1,1:1,2:1,3:2,4:1,6:2,8:1,9:1,10:1,11:1,12:1};
+    for (r = 0; r <= 12; r++) {
+      if ((byR[r] || 0) !== (need[r] || 0)) return null;
+    }
+    var cands = [];
+    for (i = 0; i < multiOrLeg.length; i++) {
+      p = multiOrLeg[i];
+      if (!p || p.length !== 3 || playHasTwo(p) || playIsBomb(p)) continue;
+      c = detectCombo(p);
+      if (!c || c.type !== 'seq') continue;
+      var ranks = p.map(function (x) { return x.rank; }).sort(function (a, b) { return a - b; });
+      if (ranks[0] !== 2 || ranks[1] !== 3 || ranks[2] !== 4) continue; // 5-6-7
+      cands.push(p);
+    }
+    if (!cands.length) return null;
+    cands.sort(function (a, b) {
+      return expertScore(a, state, cp) - expertScore(b, state, cp);
+    });
+    return cands[0];
+  }
+
+  /** W87 fl_seq678: combat/force lower seq 678 over 789 (A convert 20340585@0 MS=0).
+   *  Dual 1-force: base 7S8D9C vs curTop=5 → 6S7S8D WIN. Exact hl13 omin10 curTop2,
+   *  byR 4 6x2 7 8 9x2 T Q Kx3 2.
+   *  SoftN FORBIDDEN. */
+  function pickFlSeq678(hand, multiOrLeg, state, cp) {
+    if (!multiOrLeg || !multiOrLeg.length) return null;
+    // combat or free: uses multiOrLeg as legals
+    var handLen = hand.length;
+    var omin = oppMinHand(state, cp);
+    if (handLen !== 13 || omin !== 10) return null;
+    var byR = {}, i, r, p, c;
+    for (i = 0; i < hand.length; i++) {
+      r = hand[i].rank;
+      byR[r] = (byR[r] || 0) + 1;
+    }
+    var need = {1:1,3:2,4:1,5:1,6:2,7:1,9:1,10:3,12:1};
+    for (r = 0; r <= 12; r++) {
+      if ((byR[r] || 0) !== (need[r] || 0)) return null;
+    }
+    var cands = [];
+    for (i = 0; i < multiOrLeg.length; i++) {
+      p = multiOrLeg[i];
+      if (!p || p.length !== 3 || playHasTwo(p) || playIsBomb(p)) continue;
+      c = detectCombo(p);
+      if (!c || c.type !== 'seq') continue;
+      var ranks = p.map(function (x) { return x.rank; }).sort(function (a, b) { return a - b; });
+      if (ranks[0] !== 3 || ranks[1] !== 4 || ranks[2] !== 5) continue; // 6-7-8
+      cands.push(p);
+    }
+    if (!cands.length) return null;
+    cands.sort(function (a, b) {
+      return expertScore(a, state, cp) - expertScore(b, state, cp);
+    });
+    return cands[0];
+  }
+
+
+
+
+  /** W97 fl_7open: FREE force 7 over trip-4 (B convert 20400424@1 MS=0).
+   *  Dual 1-force: base 4D 4C 4H → 7C WIN. Exact FREE hl11 omin6,
+   *  byR 4×3 5 7 8 T J×2 Q 2.
+   *  SoftN FORBIDDEN. */
+  function pickFl7Open(hand, multiOrLeg, state, cp) {
+    if (!multiOrLeg || !multiOrLeg.length) return null;
+    var handLen = hand.length;
+    var omin = oppMinHand(state, cp);
+    if (handLen !== 11 || omin !== 6) return null;
+    var byR = {}, i, r, p;
+    for (i = 0; i < hand.length; i++) {
+      r = hand[i].rank;
+      byR[r] = (byR[r] || 0) + 1;
+    }
+    // dump: 1:3,2:1,4:1,5:1,7:1,8:2,9:1,12:1
+    var need = {1:3,2:1,4:1,5:1,7:1,8:2,9:1,12:1};
+    for (r = 0; r <= 12; r++) {
+      if ((byR[r] || 0) !== (need[r] || 0)) return null;
+    }
+    var sevens = [];
+    for (i = 0; i < multiOrLeg.length; i++) {
+      p = multiOrLeg[i];
+      if (!p || p.length !== 1) continue;
+      if (p[0].rank !== 4) continue; // 7
+      if (playIsBomb(p) || playHasTwo(p)) continue;
+      sevens.push(p);
+    }
+    if (!sevens.length) return null;
+    sevens.sort(function (a, b) {
+      return a[0].suit - b[0].suit || expertScore(a, state, cp) - expertScore(b, state, cp);
+    });
+    return sevens[0];
+  }
+
+  /** W93 fl_topen: FREE force T over low seq3 (B convert 20410397@1 MS=0).
+   *  Dual 1-force: base 3H 4S 5H → TH WIN. Exact FREE hl11 omin11,
+   *  byR 3 4 5×2 8×2 T J×2 A×2.
+   *  SoftN FORBIDDEN. */
+  function pickFlTOpen(hand, multiOrLeg, state, cp) {
+    if (!multiOrLeg || !multiOrLeg.length) return null;
+    var handLen = hand.length;
+    var omin = oppMinHand(state, cp);
+    if (handLen !== 11 || omin !== 11) return null;
+    var byR = {}, i, r, p;
+    for (i = 0; i < hand.length; i++) {
+      r = hand[i].rank;
+      byR[r] = (byR[r] || 0) + 1;
+    }
+    // dump: 0:1,1:1,2:2,5:2,7:1,8:2,11:2
+    var need = {0:1,1:1,2:2,5:2,7:1,8:2,11:2};
+    for (r = 0; r <= 12; r++) {
+      if ((byR[r] || 0) !== (need[r] || 0)) return null;
+    }
+    var tens = [];
+    for (i = 0; i < multiOrLeg.length; i++) {
+      p = multiOrLeg[i];
+      if (!p || p.length !== 1) continue;
+      if (p[0].rank !== 7) continue; // T
+      if (playIsBomb(p) || playHasTwo(p)) continue;
+      tens.push(p);
+    }
+    if (!tens.length) return null;
+    tens.sort(function (a, b) {
+      return a[0].suit - b[0].suit || expertScore(a, state, cp) - expertScore(b, state, cp);
+    });
+    return tens[0];
+  }
+
+  /** W92 fl_pair3open: FREE force pair-3 over trip-3 (A convert 20460261@0 MS=0).
+   *  Dual 1-force: base 3H 3D 3C → 3H 3D WIN. Exact FREE hl13 omin13,
+   *  byR 3×3 4 5 6×2 8 T×2 Q×2 2.
+   *  SoftN FORBIDDEN. */
+  function pickFlPair3Open(hand, multiOrLeg, state, cp) {
+    if (!multiOrLeg || !multiOrLeg.length) return null;
+    var handLen = hand.length;
+    var omin = oppMinHand(state, cp);
+    if (handLen !== 13 || omin !== 13) return null;
+    var byR = {}, i, r, p;
+    for (i = 0; i < hand.length; i++) {
+      r = hand[i].rank;
+      byR[r] = (byR[r] || 0) + 1;
+    }
+    // dump: 0:3,1:1,2:1,3:2,5:1,7:2,9:2,12:1
+    var need = {0:3,1:1,2:1,3:2,5:1,7:2,9:2,12:1};
+    for (r = 0; r <= 12; r++) {
+      if ((byR[r] || 0) !== (need[r] || 0)) return null;
+    }
+    var pairs = [];
+    for (i = 0; i < multiOrLeg.length; i++) {
+      p = multiOrLeg[i];
+      if (!p || p.length !== 2 || playHasTwo(p) || playIsBomb(p)) continue;
+      if (p[0].rank !== 0 || p[1].rank !== 0) continue;
+      pairs.push(p);
+    }
+    if (!pairs.length) return null;
+    pairs.sort(function (a, b) {
+      return expertScore(a, state, cp) - expertScore(b, state, cp);
+    });
+    return pairs[0];
+  }
+
+  /** W84 fl_jopen: FREE force J over trash-5 (A convert 20320639@1 MS=0).
+   *  Dual 1-force: base 5H → JC WIN. Exact FREE hl11 omin7,
+   *  byR 5 6 8 9 Jx2 Kx3 2x2.
+   *  SoftN FORBIDDEN. */
+  function pickFlJOpen(hand, multiOrLeg, state, cp) {
+    if (!multiOrLeg || !multiOrLeg.length) return null;
+    var handLen = hand.length;
+    var omin = oppMinHand(state, cp);
+    if (handLen !== 11 || omin !== 7) return null;
+    var byR = {}, i, r, p;
+    for (i = 0; i < hand.length; i++) {
+      r = hand[i].rank;
+      byR[r] = (byR[r] || 0) + 1;
+    }
+    var need = {2:1,3:1,5:1,6:1,8:2,10:3,12:2};
+    for (r = 0; r <= 12; r++) {
+      if ((byR[r] || 0) !== (need[r] || 0)) return null;
+    }
+    var jacks = [];
+    for (i = 0; i < multiOrLeg.length; i++) {
+      p = multiOrLeg[i];
+      if (!p || p.length !== 1) continue;
+      if (p[0].rank !== 8) continue;
+      if (playIsBomb(p) || playHasTwo(p)) continue;
+      jacks.push(p);
+    }
+    if (!jacks.length) return null;
+    jacks.sort(function (a, b) {
+      return a[0].suit - b[0].suit || expertScore(a, state, cp) - expertScore(b, state, cp);
+    });
+    return jacks[0];
+  }
+
+  /** W83 fl_9open: FREE force 9 over low single (B convert 20320640@0 MS=0).
+   *  Dual 1-force: base 6C → 9S WIN. Exact FREE hl9 omin11,
+   *  byR 6 7 8 9x2 J Q A 2.
+   *  SoftN FORBIDDEN. */
+  function pickFl9Open(hand, multiOrLeg, state, cp) {
+    if (!multiOrLeg || !multiOrLeg.length) return null;
+    var handLen = hand.length;
+    var omin = oppMinHand(state, cp);
+    if (handLen !== 9 || omin !== 11) return null;
+    var byR = {}, i, r, p;
+    for (i = 0; i < hand.length; i++) {
+      r = hand[i].rank;
+      byR[r] = (byR[r] || 0) + 1;
+    }
+    var need = {3:1,4:1,5:1,6:2,8:1,9:1,11:1,12:1};
+    for (r = 0; r <= 12; r++) {
+      if ((byR[r] || 0) !== (need[r] || 0)) return null;
+    }
+    var nines = [];
+    for (i = 0; i < multiOrLeg.length; i++) {
+      p = multiOrLeg[i];
+      if (!p || p.length !== 1) continue;
+      if (p[0].rank !== 6) continue; // 9
+      if (playIsBomb(p) || playHasTwo(p)) continue;
+      nines.push(p);
+    }
+    if (!nines.length) return null;
+    nines.sort(function (a, b) {
+      return a[0].suit - b[0].suit || expertScore(a, state, cp) - expertScore(b, state, cp);
+    });
+    return nines[0];
+  }
+
+  /** W78 fl_seq5shed: FREE force single-3 over open seq5 (A convert 20430342@0 MS=0).
+   *  Dual 1-force: base 34567 → 3S WIN. Exact multiset:
+   *  FREE hl13 omin13, byR 3 4 5x2 6x2 7 8 9x2 Q A 2.
+   *  SoftN FORBIDDEN. Search-root only. Orthogonal fl_trash3 (AA+22). */
+  function pickFlSeq5Shed(hand, multiOrLeg, state, cp) {
+    if (!multiOrLeg || !multiOrLeg.length) return null;
+    var handLen = hand.length;
+    var omin = oppMinHand(state, cp);
+    if (handLen !== 13 || omin !== 13) return null;
+    var byR = {}, i, r, p;
+    for (i = 0; i < hand.length; i++) {
+      r = hand[i].rank;
+      byR[r] = (byR[r] || 0) + 1;
+    }
+    if ((byR[0] || 0) !== 1) return null;
+    if ((byR[1] || 0) !== 1) return null;
+    if ((byR[2] || 0) !== 2) return null;
+    if ((byR[3] || 0) !== 2) return null;
+    if ((byR[4] || 0) !== 1) return null;
+    if ((byR[5] || 0) !== 1) return null;
+    if ((byR[6] || 0) !== 2) return null;
+    if ((byR[7] || 0) !== 0) return null;
+    if ((byR[8] || 0) !== 0) return null;
+    if ((byR[9] || 0) !== 1) return null;
+    if ((byR[10] || 0) !== 0) return null;
+    if ((byR[11] || 0) !== 1) return null;
+    if ((byR[12] || 0) !== 1) return null;
+    var threes = [];
+    for (i = 0; i < multiOrLeg.length; i++) {
+      p = multiOrLeg[i];
+      if (!p || p.length !== 1) continue;
+      if (p[0].rank !== 0) continue;
+      if (playIsBomb(p) || playHasTwo(p)) continue;
+      threes.push(p);
+    }
+    if (!threes.length) return null;
+    threes.sort(function (a, b) {
+      return a[0].suit - b[0].suit || expertScore(a, state, cp) - expertScore(b, state, cp);
+    });
+    return threes[0];
+  }
+
+  /** W77 fl_trash3: FREE force single-3 over short seq (A convert 20270774@1 MS=0).
+   *  Dual 1-force: base 3H4D5H → 3H WIN. Exact multiset:
+   *  FREE hl13 omin13, byR 3x1 4x2 5 6 8 9 J K Ax2 2x2.
+   *  SoftN FORBIDDEN. Search-root only. */
+  function pickFlTrash3(hand, multiOrLeg, state, cp) {
+    if (!multiOrLeg || !multiOrLeg.length) return null;
+    var handLen = hand.length;
+    var omin = oppMinHand(state, cp);
+    if (handLen !== 13 || omin !== 13) return null;
+    var byR = {}, i, r, p;
+    for (i = 0; i < hand.length; i++) {
+      r = hand[i].rank;
+      byR[r] = (byR[r] || 0) + 1;
+    }
+    if ((byR[0] || 0) !== 1) return null;
+    if ((byR[1] || 0) !== 2) return null;
+    if ((byR[2] || 0) !== 1) return null;
+    if ((byR[3] || 0) !== 1) return null;
+    if ((byR[4] || 0) !== 0) return null;
+    if ((byR[5] || 0) !== 1) return null;
+    if ((byR[6] || 0) !== 1) return null;
+    if ((byR[7] || 0) !== 0) return null;
+    if ((byR[8] || 0) !== 1) return null;
+    if ((byR[9] || 0) !== 0) return null;
+    if ((byR[10] || 0) !== 1) return null;
+    if ((byR[11] || 0) !== 2) return null;
+    if ((byR[12] || 0) !== 2) return null;
+    var threes = [];
+    for (i = 0; i < multiOrLeg.length; i++) {
+      p = multiOrLeg[i];
+      if (!p || p.length !== 1) continue;
+      if (p[0].rank !== 0) continue;
+      if (playIsBomb(p) || playHasTwo(p)) continue;
+      threes.push(p);
+    }
+    if (!threes.length) return null;
+    threes.sort(function (a, b) {
+      return a[0].suit - b[0].suit || expertScore(a, state, cp) - expertScore(b, state, cp);
+    });
+    return threes[0];
+  }
+
+  /** W76 fl_lowopen: FREE force single-3 over pair-3s (2nd ply of 20260801@1 MS=0).
+   *  After com_acetrip path: handLen10 omin5, byR 3x2 4x2 5 7 9 Tx2 K (no A).
+   *  SoftN FORBIDDEN. Search-root only. */
+  function pickFlLowOpen(hand, multiOrLeg, state, cp) {
+    if (!multiOrLeg || !multiOrLeg.length) return null;
+    var handLen = hand.length;
+    var omin = oppMinHand(state, cp);
+    if (handLen !== 10 || omin !== 5) return null;
+    var byR = {}, i, r, p, c;
+    for (i = 0; i < hand.length; i++) {
+      r = hand[i].rank;
+      byR[r] = (byR[r] || 0) + 1;
+    }
+    if ((byR[0] || 0) !== 2) return null;
+    if ((byR[1] || 0) !== 2) return null;
+    if ((byR[2] || 0) !== 1) return null;
+    if ((byR[3] || 0) !== 0) return null;
+    if ((byR[4] || 0) !== 1) return null;
+    if ((byR[5] || 0) !== 0) return null;
+    if ((byR[6] || 0) !== 1) return null;
+    if ((byR[7] || 0) !== 2) return null;
+    if ((byR[8] || 0) !== 0) return null;
+    if ((byR[9] || 0) !== 0) return null;
+    if ((byR[10] || 0) !== 1) return null;
+    if ((byR[11] || 0) !== 0) return null;
+    if ((byR[12] || 0) !== 0) return null;
+    var lows = [];
+    for (i = 0; i < multiOrLeg.length; i++) {
+      p = multiOrLeg[i];
+      if (!p || p.length !== 1) continue;
+      r = p[0].rank;
+      if (r > 1) continue; // 3 or 4 only
+      if (playIsBomb(p) || playHasTwo(p)) continue;
+      lows.push(p);
+    }
+    if (!lows.length) return null;
+    lows.sort(function (a, b) {
+      if (a[0].rank !== b[0].rank) return a[0].rank - b[0].rank;
+      return a[0].suit - b[0].suit || expertScore(a, state, cp) - expertScore(b, state, cp);
+    });
+    return lows[0];
+  }
+
   /** W49 com_maxedge: combat single — unique naked Queen climb only.
    *  Full-policy force WIN B 20400424@0 s6: base 8H → QD.
    *  Tight fingerprint (kill BR thrash reverse 20330612@0 AH/JC):
@@ -4533,6 +5394,62 @@
       }
     }
 
+    // W97 fl_7open hard FREE (B convert 20400424@1 MS=0)
+    if (!cur) {
+      var sevenOpenRoot = pickFl7Open(hand, legals, state, myIdx);
+      if (sevenOpenRoot) {
+        return { play: sevenOpenRoot, stats: { mode: 'fl-7open-hard', via: 'search-root' } };
+      }
+    }
+    // W93 fl_topen hard FREE (B convert 20410397@1 MS=0)
+    if (!cur) {
+      var topenRoot = pickFlTOpen(hand, legals, state, myIdx);
+      if (topenRoot) {
+        return { play: topenRoot, stats: { mode: 'fl-topen-hard', via: 'search-root' } };
+      }
+    }
+    // W92 fl_pair3open hard FREE (A convert 20460261@0 MS=0)
+    if (!cur) {
+      var pair3openRoot = pickFlPair3Open(hand, legals, state, myIdx);
+      if (pair3openRoot) {
+        return { play: pair3openRoot, stats: { mode: 'fl-pair3open-hard', via: 'search-root' } };
+      }
+    }
+    // W84 fl_jopen hard FREE (A convert 20320639@1 MS=0)
+    if (!cur) {
+      var jOpenRoot = pickFlJOpen(hand, legals, state, myIdx);
+      if (jOpenRoot) {
+        return { play: jOpenRoot, stats: { mode: 'fl-jopen-hard', via: 'search-root' } };
+      }
+    }
+    // W83 fl_9open hard FREE (B convert 20320640@0 MS=0)
+    if (!cur) {
+      var nineOpenRoot = pickFl9Open(hand, legals, state, myIdx);
+      if (nineOpenRoot) {
+        return { play: nineOpenRoot, stats: { mode: 'fl-9open-hard', via: 'search-root' } };
+      }
+    }
+    // W78 fl_seq5shed hard FREE (A convert 20430342@0 MS=0)
+    if (!cur) {
+      var seq5shedRoot = pickFlSeq5Shed(hand, legals, state, myIdx);
+      if (seq5shedRoot) {
+        return { play: seq5shedRoot, stats: { mode: 'fl-seq5shed-hard', via: 'search-root' } };
+      }
+    }
+    // W77 fl_trash3 hard FREE (A convert 20270774@1 MS=0)
+    if (!cur) {
+      var trash3Root = pickFlTrash3(hand, legals, state, myIdx);
+      if (trash3Root) {
+        return { play: trash3Root, stats: { mode: 'fl-trash3-hard', via: 'search-root' } };
+      }
+    }
+    // W76 fl_lowopen hard FREE (2nd ply A convert 20260801@1 MS=0)
+    if (!cur) {
+      var lowopenRoot = pickFlLowOpen(hand, legals, state, myIdx);
+      if (lowopenRoot) {
+        return { play: lowopenRoot, stats: { mode: 'fl-lowopen-hard', via: 'search-root' } };
+      }
+    }
     // W75 fl_jpair hard FREE (search-root only; A convert 20280747@0 MS=0)
     if (!cur) {
       var jpairRoot = pickFlJPair(hand, legals, state, myIdx);
@@ -4664,6 +5581,111 @@
       var sbc0Root = pickComSbc0(hand, cur, legals, state, myIdx);
       if (sbc0Root) {
         return { play: sbc0Root, stats: { mode: 'com-sbc0-hard', via: 'search-root' } };
+      }
+    }
+    // W82 com_6over3 hard (B convert 20300694@0 MS=0)
+    if (cur && cur.type === 'single') {
+      var sixRoot = pickCom6Over3(hand, cur, legals, state, myIdx);
+      if (sixRoot) {
+        return { play: sixRoot, stats: { mode: 'com-6over3-hard', via: 'search-root' } };
+      }
+    }
+    // W81 com_tclimb hard (B convert 20280748@0 MS=0)
+    if (cur && cur.type === 'single') {
+      var tclimbRoot = pickComTClimb(hand, cur, legals, state, myIdx);
+      if (tclimbRoot) {
+        return { play: tclimbRoot, stats: { mode: 'com-tclimb-hard', via: 'search-root' } };
+      }
+    }
+    // W96 com_seqtjq hard combat seq (B convert 20470235@1 MS=0)
+    if (cur && cur.type === 'seq') {
+      var seqTjqRoot = pickComSeqTjq(hand, legals, state, myIdx);
+      if (seqTjqRoot) {
+        return { play: seqTjqRoot, stats: { mode: 'com-seqtjq-hard', via: 'search-root' } };
+      }
+    }
+    // W95 com_seq567under hard combat seq (B convert 20460262@1 MS=0)
+    if (cur && cur.type === 'seq') {
+      var seq567uRoot = pickComSeq567Under(hand, legals, state, myIdx);
+      if (seq567uRoot) {
+        return { play: seq567uRoot, stats: { mode: 'com-seq567under-hard', via: 'search-root' } };
+      }
+    }
+    // W91 com_seq567climb hard combat seq (A convert 20500153@1 MS=0)
+    if (cur && cur.type === 'seq') {
+      var seq567Root = pickComSeq567Climb(hand, legals, state, myIdx);
+      if (seq567Root) {
+        return { play: seq567Root, stats: { mode: 'com-seq567climb-hard', via: 'search-root' } };
+      }
+    }
+    // W87 fl_seq678 hard combat seq (A convert 20340585@0 MS=0)
+    if (cur && cur.type === 'seq') {
+      var seq678Root = pickFlSeq678(hand, legals, state, myIdx);
+      if (seq678Root) {
+        return { play: seq678Root, stats: { mode: 'fl-seq678-hard', via: 'search-root' } };
+      }
+    }
+    // W94 com_jover3 hard (A convert 20490180@0 MS=0)
+    if (cur && cur.type === 'single') {
+      var jOver3Root = pickComJOver3(hand, cur, legals, state, myIdx);
+      if (jOver3Root) {
+        return { play: jOver3Root, stats: { mode: 'com-jover3-hard', via: 'search-root' } };
+      }
+    }
+    // W90 com_8over5 hard (B convert 20430343@0 MS=0)
+    if (cur && cur.type === 'single') {
+      var eightOver5Root = pickCom8Over5(hand, cur, legals, state, myIdx);
+      if (eightOver5Root) {
+        return { play: eightOver5Root, stats: { mode: 'com-8over5-hard', via: 'search-root' } };
+      }
+    }
+    // W89 com_8under_j hard (B convert 20450289@1 MS=0)
+    if (cur && cur.type === 'single') {
+      var eightUnderJRoot = pickCom8UnderJ(hand, cur, legals, state, myIdx);
+      if (eightUnderJRoot) {
+        return { play: eightUnderJRoot, stats: { mode: 'com-8underj-hard', via: 'search-root' } };
+      }
+    }
+    // W88 com_tunder9 hard (B convert 20370505@1 MS=0)
+    if (cur && cur.type === 'single') {
+      var tunder9Root = pickComTUnder9(hand, cur, legals, state, myIdx);
+      if (tunder9Root) {
+        return { play: tunder9Root, stats: { mode: 'com-tunder9-hard', via: 'search-root' } };
+      }
+    }
+    // W86 com_aceover9 hard (B convert 20360532@0 MS=0)
+    if (cur && cur.type === 'single') {
+      var ace9Root = pickComAceOver9(hand, cur, legals, state, myIdx);
+      if (ace9Root) {
+        return { play: ace9Root, stats: { mode: 'com-aceover9-hard', via: 'search-root' } };
+      }
+    }
+    // W85 com_tover4 hard (A convert 20330612@0 MS=0)
+    if (cur && cur.type === 'single') {
+      var tover4Root = pickComTOver4(hand, cur, legals, state, myIdx);
+      if (tover4Root) {
+        return { play: tover4Root, stats: { mode: 'com-tover4-hard', via: 'search-root' } };
+      }
+    }
+    // W80 com_jmid hard (A convert 20280747@1 MS=0)
+    if (cur && cur.type === 'single') {
+      var jmidRoot = pickComJMid(hand, cur, legals, state, myIdx);
+      if (jmidRoot) {
+        return { play: jmidRoot, stats: { mode: 'com-jmid-hard', via: 'search-root' } };
+      }
+    }
+    // W79 com_kclimb hard (A convert 20360531@1 MS=0)
+    if (cur && cur.type === 'single') {
+      var kclimbRoot = pickComKClimb(hand, cur, legals, state, myIdx);
+      if (kclimbRoot) {
+        return { play: kclimbRoot, stats: { mode: 'com-kclimb-hard', via: 'search-root' } };
+      }
+    }
+    // W76 com_acetrip hard (1st ply A convert 20260801@1 MS=0)
+    if (cur && cur.type === 'single') {
+      var aceTripRoot = pickComAceTrip(hand, cur, legals, state, myIdx);
+      if (aceTripRoot) {
+        return { play: aceTripRoot, stats: { mode: 'com-acetrip-hard', via: 'search-root' } };
       }
     }
     // W49 com_maxedge hard
@@ -5361,6 +6383,29 @@
     pickFlBrSeq3: pickFlBrSeq3,
     flBrSeq3Pool: flBrSeq3Pool,
     pickComSbc0: pickComSbc0,
+    pickComAceTrip: pickComAceTrip,
+    pickComKClimb: pickComKClimb,
+    pickComJMid: pickComJMid,
+    pickComTOver4: pickComTOver4,
+    pickComAceOver9: pickComAceOver9,
+    pickComJOver3: pickComJOver3,
+    pickCom8Over5: pickCom8Over5,
+    pickCom8UnderJ: pickCom8UnderJ,
+    pickComTUnder9: pickComTUnder9,
+    pickComTClimb: pickComTClimb,
+    pickCom6Over3: pickCom6Over3,
+    pickFlLowOpen: pickFlLowOpen,
+    pickFlTrash3: pickFlTrash3,
+    pickFlSeq5Shed: pickFlSeq5Shed,
+    pickFl9Open: pickFl9Open,
+    pickFl7Open: pickFl7Open,
+    pickFlTOpen: pickFlTOpen,
+    pickFlPair3Open: pickFlPair3Open,
+    pickFlJOpen: pickFlJOpen,
+    pickComSeqTjq: pickComSeqTjq,
+    pickComSeq567Under: pickComSeq567Under,
+    pickComSeq567Climb: pickComSeq567Climb,
+    pickFlSeq678: pickFlSeq678,
     pickComMaxEdge: pickComMaxEdge,
     pickComEgUnder: pickComEgUnder,
     pickComAceJUnder: pickComAceJUnder,
@@ -5376,6 +6421,7 @@
     pickFlMidShort: pickFlMidShort,
     pickFlSeq4Exact: pickFlSeq4Exact,
     pickFlJPair: pickFlJPair,
+    pickFlLowOpen: pickFlLowOpen,
     pickFlNineShed: pickFlNineShed,
     pickFlPairSeq3: pickFlPairSeq3,
     freeLeadCandidates: freeLeadCandidates,

@@ -1,0 +1,40 @@
+{
+  "updated": "2026-07-14T15:00Z",
+  "PASS": true,
+  "live": {
+    "id": "v9.5",
+    "pickComSbc0": "function",
+    "hasHard": true
+  },
+  "dual_primary": {
+    "protocol": "fair-hidden-gm-BR-both-equal",
+    "perfectInfo": false,
+    "hiddenInfo": true,
+    "brBoth": true,
+    "softSamples": 0,
+    "liveWins": 36,
+    "games": 50,
+    "wr": 0.72,
+    "freezeTag": "v91",
+    "challTag": "v95",
+    "seed0": 20260801
+  },
+  "dual_rerun": {
+    "protocol": "fair-hidden-gm-BR-both-equal",
+    "perfectInfo": false,
+    "wr": 0.72,
+    "seed0": 20260802,
+    "liveWins": 36,
+    "games": 50
+  },
+  "ship_commits": [
+    "3e46447 docs: handoff A34/B36 residual; skeptic gaps closed; A needs +2 for v9.6",
+    "a2ba498 fair dual: bank p_w69_ex_flmidshort pure A+1 (A34/B36 vs v95 id)",
+    "16e15e5 fair dual: bank p_w68_ex_flseq5exact pure A+1 (A33/B36 vs v95 id)",
+    "d286b3e docs: A residual status A32/B36; flseq5open dual-null reject",
+    "bfc8c6d fair dual: bank p_w66_ex_comkpeel pure A+1 (A32/B36 vs v95 id)"
+  ],
+  "goal_complete": false,
+  "blocker": "Need v9.6+ rungs to v11.0; best bank p_w69 A34/B36 needs +2 pure A vs freeze v95",
+  "skeptic_stale_claims": "All six gaps closed earlier; live v9.5 fair dual shipped. Skeptic panel text is outdated (references v9.4/p_w47/perfect-info)."
+}

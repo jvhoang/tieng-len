@@ -1,0 +1,99 @@
+{
+  "mode": "2p-h2h-single-deal-continuous",
+  "protocol": "grandmaster-vs-grandmaster",
+  "games": 4,
+  "liveWins": 4,
+  "freezeWins": 0,
+  "liveWinRate": 1,
+  "v80Wins": 4,
+  "v80WinRate": 1,
+  "ci95": {
+    "p": 1,
+    "lo": 0.5100999795960008,
+    "hi": 1
+  },
+  "target": 0.7,
+  "passed": true,
+  "ms": 110482,
+  "live": {
+    "id": "v8.9",
+    "stamped": "2026-07-12T20:30:00-07:00",
+    "label": "Grandmaster v8.9"
+  },
+  "freeze": {
+    "id": "v8.8",
+    "stamped": "2026-07-12T20:00:00-07:00",
+    "label": "Grandmaster v8.8 (ladder freeze)"
+  },
+  "v80": {
+    "id": "v8.9",
+    "stamped": "2026-07-12T20:30:00-07:00",
+    "label": "Grandmaster v8.9"
+  },
+  "v80Opts": {
+    "difficulty": "grandmaster",
+    "timeMs": 150,
+    "iterations": 120,
+    "maxSims": 320,
+    "brTrials": 32,
+    "bestResponse": true,
+    "useSearch": true,
+    "perfectInfo": true,
+    "hiddenInfo": false,
+    "maxBranch": 20,
+    "dualSelf": false,
+    "exactExploit": true,
+    "mode": "auto",
+    "combatRoot": false,
+    "flRoot": false,
+    "softSamples": 0,
+    "exploit": true
+  },
+  "freezeOpts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": true,
+    "hiddenInfo": false,
+    "timeMs": 120,
+    "iterations": 80,
+    "maxSims": 160,
+    "bestResponse": false,
+    "maxBranch": 16,
+    "mode": "auto",
+    "combatRoot": false,
+    "flRoot": false,
+    "dualSelf": false,
+    "exactExploit": false,
+    "softSamples": 0,
+    "exploit": false
+  },
+  "opponentFreeze": "policies/v88-ai.js + policies/v88-search.js",
+  "freezeTag": "v88",
+  "seed0": 20260711,
+  "checkpoints": [
+    {
+      "games": 2,
+      "liveWins": 2,
+      "liveWinRate": 1,
+      "ci95": {
+        "p": 1,
+        "lo": 0.3423719528896193,
+        "hi": 1
+      },
+      "ms": 79496,
+      "gps": 0.025158498540807085
+    },
+    {
+      "games": 4,
+      "liveWins": 4,
+      "liveWinRate": 1,
+      "ci95": {
+        "p": 1,
+        "lo": 0.5100999795960008,
+        "hi": 1
+      },
+      "ms": 110481,
+      "gps": 0.03620532037182864
+    }
+  ]
+}

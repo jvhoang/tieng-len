@@ -1,0 +1,56 @@
+{
+  "protocol": "fair-firstdiff-v1",
+  "freeze": "p_w65_ex_seqhires13",
+  "chall": "p_w66_ex_flkquad",
+  "live": {
+    "id": "v9.1-probe-p_w66_ex_flkquad",
+    "stamped": "2026-07-14T10:26:39Z",
+    "label": "Grandmaster v9.1-probe p_w66_ex_flkquad"
+  },
+  "freezeBuild": {
+    "id": "v9.1-probe-p_w65_ex_seqhires13",
+    "stamped": "2026-07-14T10:26:39Z",
+    "label": "Grandmaster v9.1-probe p_w65_ex_seqhires13"
+  },
+  "opts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": false,
+    "hiddenInfo": true,
+    "timeMs": 200,
+    "iterations": 60,
+    "maxSims": 120,
+    "brTrials": 20,
+    "bestResponse": true,
+    "exactExploit": false,
+    "exploit": true,
+    "softSamples": 0,
+    "maxBranch": 12,
+    "mode": "auto",
+    "strongSelf": false
+  },
+  "nGames": 2,
+  "nDiverged": 0,
+  "divergeRate": 0,
+  "classCount": {},
+  "results": [
+    {
+      "seed": 20330612,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 12,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 24,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20330612,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 12,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 24,
+      "freezeWinIfNoDiff": false
+    }
+  ]
+}

@@ -907,7 +907,8 @@ function getAIMove(state, myIdx, opts = {}) {
         dualSelf: opts.dualSelf,
         bestResponse: opts.bestResponse,
         alphaBeta: opts.alphaBeta,
-        brTrials: opts.brTrials
+        brTrials: opts.brTrials,
+        strongSelf: opts.strongSelf
       };
       const result = searchMod.searchMove(state, myIdx, searchOpts);
       _lastSearchStats = result && result.stats ? result.stats : null;

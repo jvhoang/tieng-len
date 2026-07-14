@@ -1,0 +1,64 @@
+{
+  "protocol": "fair-hidden-gm-BR-both-equal",
+  "infoModel": "hidden",
+  "perfectInfo": false,
+  "hiddenInfo": true,
+  "brBoth": true,
+  "equalBudget": true,
+  "games": 2,
+  "liveWins": 1,
+  "freezeWins": 1,
+  "liveWinRate": 0.5,
+  "seed0": 20500154,
+  "ms": 553,
+  "live": {
+    "id": "v9.1-probe-p_w52_ex_seqopen",
+    "stamped": "2026-07-14T10:16:26Z",
+    "label": "Grandmaster v9.1-probe p_w52_ex_seqopen"
+  },
+  "freeze": {
+    "id": "v9.5",
+    "stamped": "2026-07-14T09:35:31Z",
+    "label": "Grandmaster v9.5 (fair dual sbc0)"
+  },
+  "freezeTag": "v95",
+  "challTag": "p_w52_ex_seqopen",
+  "opts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": false,
+    "hiddenInfo": true,
+    "timeMs": 200,
+    "iterations": 60,
+    "maxSims": 120,
+    "brTrials": 20,
+    "bestResponse": true,
+    "exactExploit": false,
+    "exploit": true,
+    "softSamples": 0,
+    "maxBranch": 12,
+    "mode": "auto",
+    "strongSelf": false
+  },
+  "perGame": [
+    {
+      "seed": 20500154,
+      "liveWin": false,
+      "liveSeat": 0,
+      "steps": 19,
+      "ms": 497
+    },
+    {
+      "seed": 20500154,
+      "liveWin": true,
+      "liveSeat": 1,
+      "steps": 17,
+      "ms": 52
+    }
+  ],
+  "lossSeeds": [
+    20500154
+  ],
+  "target": 0.7,
+  "passed": false
+}

@@ -1,0 +1,9 @@
+=== START SOFT0 p_w13_brresband 2026-07-14T05:09:49Z ===
+=== Fair DEV internal split ===
+freeze=v91 chall=p_w13_brresband design g=0..11 check g=12..24
+DESIGN g0-11  id=12/24 ch=12/24=0.500 Δ+0  weak
+CHECK  g12-24  id=12/26 ch=13/26=0.500 Δ+1  check_ok
+FULL DEV (design+check)  id=24/50 ch=25/50=0.500 Δ+1  full_n.s.
+SPLIT GATE: FAIL (discard / redesign)
+wrote /Users/johnhoang/Developer/Grok/tieng-len/evolve/split-latest-p_w13_brresband-vs-v91.json
+=== END SOFT0 p_w13_brresband status=2 ===
