@@ -1,6 +1,7 @@
 # STATUS — Fair dual ladder (resumable handoff)
 
-**Updated:** 2026-07-14T10:08Z  
+**Updated:** 2026-07-14T10:14Z  
+**Prev:** 2026-07-14T10:08Z  
 **Live / freeze:** **v9.5** ≡ `policies/v95-*` ≡ live `ai.js`/`search.js` (**SHIPPED** fair dual)  
 **SoftN:** **DEAD**  
 **Git:** main ≡ gh-pages
@@ -29,6 +30,9 @@ See `{SCRATCH}/audit-v95-round2/REBUTTAL.txt`:
 ## Stack
 combat: mulowg · pairhi · pairhi_wide · seqhi · sbc0 · maxedge · egunder · **seqhires**  
 FREE: flvol · flshort5 · flhidetight · brseq3 · tripair · pairshed · lotesh · pairseq · twoshed
+
+## W52
+`com_aceunder` **REJECT** dual-null (NOTE-fair-w52-aceunder-reject.md).
 
 ## Next
 1. Base `p_w51_ex_seqhires`  
