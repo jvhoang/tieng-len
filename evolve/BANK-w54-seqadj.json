@@ -1,0 +1,18 @@
+{
+  "tag": "p_w54_ex_seqadj",
+  "base": "p_w53_ex_pairseq3",
+  "lever": "seqadj mulowg-band adjacent climb seq4",
+  "convert": "A 20310666@0 3456\u21924567",
+  "vs_v95_id": {
+    "A": 26,
+    "B": 30,
+    "rev": []
+  },
+  "vs_v91": {
+    "A": 36,
+    "B": 36,
+    "sum": 72
+  },
+  "ship_v96": false,
+  "stack": "A 25\u219226, B 25\u219230 pure vs v95 id"
+}
