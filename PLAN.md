@@ -57,11 +57,17 @@ FORBIDDEN — do not relaunch. Scripts .DISABLED.
 - Dual evidence (legacy): `evolve/dual-primary.json`, `evolve/dual-rerun.json`
 - Dual evidence (new): `evolve/fresh-dual-*.json` + `evolve/seed-sets/ship-*.json`
 
-## Next
-1. **Baseline fresh-seed eval:** live v9.7 vs freeze v9.6 (+ freeze identity control)  
-2. Climb toward real skill on **fresh seeds** (not fixed-holdout convert farming alone)  
-3. Ship **v9.8+** only under fresh-seed gates → **v11.0**  
-4. SoftN stays dead  
+## Residual handoff (2026-07-14) — goal incomplete
+Fresh-seed baseline **v97 vs v96 = 25/50+25/50 (Δ0)**.  
+Structural transfer probes (p_t1, p_t2a, p_t2b) **reverse or dual-null**.  
+Documented: `evolve/NOTE-fair-residual-handoff-v97.md`.  
+**v11.0 not shipped.** Live remains **v9.7**. SoftN dead.
+
+## Next (resume)
+1. Multi-seed pattern mine with **held-out second seed set** before package  
+2. Ship **v9.8+** only under fresh-seed gates → **v11.0**  
+3. SoftN stays dead  
+4. No fixed HOLDOUT_A/B ship duals
 
 ## Runner (ship protocol — anti-overfit)
 ```bash
