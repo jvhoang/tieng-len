@@ -1,0 +1,19 @@
+{
+  "tag": "p_w59_ex_flmidshed",
+  "base": "p_w58_ex_flpair88",
+  "lever": "fl_midshed FREE short midhand pair-9 → low single",
+  "convert": "B 20460262@0 99→6H",
+  "vs_v95_id": {
+    "A": 29,
+    "B": 32,
+    "new": ["20460262@0"],
+    "rev": []
+  },
+  "vs_v91": {
+    "A": 36,
+    "B": 37,
+    "sum": 73
+  },
+  "ship_v96": false,
+  "stack": "A 29 flat, B 31→32 pure vs v95 id"
+}

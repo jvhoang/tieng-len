@@ -1,35 +1,26 @@
 # STATUS — Fair dual ladder (resumable handoff)
 
-**Updated:** 2026-07-14T10:59Z  
-**Live / freeze:** **v9.5** fair dual SHIPPED (36/36 vs v91)  
-**SoftN:** **DEAD** — rogue softN14/16 n50 cancelled; no process; scripts DISABLED  
+**Updated:** 2026-07-14T11:08Z  
+**Live / freeze:** **v9.5** fair dual SHIPPED (36/36 vs v91) — commit `2a29964`  
+**SoftN:** **DEAD**  
+**Best bank:** `p_w59_ex_flmidshed` **A29/B32** vs freeze v95 (0.58/0.64)
 
-## SoftN rogue quit
-- Subagent `019f5d42-0b43-7da3-8825-964c4ce33b81` (`STACK softN14 and softN16 N50`)
-- status=**cancelled** · force_killed · reconfirmed dead  
-- Flags: `evolve/SOFTN-FORBIDDEN.flag`, `evolve/SOFTN-ROGUE-QUIT.confirmed`
-
-## Shipped
-| Rung | vs | A/B |
-|------|----|----:|
-| **v9.5** | v91 | **36/36** |
+## Skeptic gaps — CLOSED (re-proved)
+`{SCRATCH}/skeptic-close/GAPS-CLOSED.json` → **PASS: true**
+- live AI_BUILD **v9.5** + `pickComSbc0` + `com-sbc0-hard`
+- fair dual primary/rerun **36/36 WR 0.72** vs v91 (hidden BR-both SOFT=0)
+- policies/v95-* tracked; ship commit `2a29964`; live ≡ v95 (require-path only)
 
 ## Stack toward v9.6 (vs freeze **v95** identity 25/25)
 | Tag | A | B | vs v91 |
 |-----|--:|--:|--------|
-| seqadj | 26 | 30 | 36/36 |
-| seq5adj | 27 | 30 | 36/37 |
-| seqmidunder | 28 | 30 | 36/37 |
-| qpairclimb | 28 | 31 | 36/37 |
-| **flpair88** | **29** | **31** | **36/38** |
+| flpair88 | 29 | 31 | 36/38 |
+| **flmidshed** | **29** | **32** | **36/37** |
 
-**Gap:** need **36/36 vs v95**. Now **A29/B31** (0.58/0.62). ~+7 A and +5 B pure.
+**Gap:** need **36/36 vs v95**. ~+7 A and +4 B pure remaining.
 
-## Best bank
-`policies/p_w58_ex_flpair88-*` — pure 0-reverse stack.
-
-## Rejects this session
-- fl_pairpeel (dual-null + reverse A20430342)
+## SoftN
+Rogue softN14/16 n50 cancelled/dead. Do not relaunch.
 
 ## Next
-Base `p_w58_ex_flpair88`; more pure A+B converts; freeze v9.6 only at dual >0.70 vs v95. SoftN never.
+Base `p_w59_ex_flmidshed`; more pure converts; freeze v9.6 only at dual >0.70 vs v95.
