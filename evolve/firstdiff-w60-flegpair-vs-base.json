@@ -1,0 +1,71 @@
+{
+  "protocol": "fair-firstdiff-v1",
+  "freeze": "p_w59_ex_flmidshed",
+  "chall": "p_w60_ex_flegpair",
+  "live": {
+    "id": "v9.1-probe-p_w60_ex_flegpair",
+    "stamped": "2026-07-14T10:26:39Z",
+    "label": "Grandmaster v9.1-probe p_w60_ex_flegpair"
+  },
+  "freezeBuild": {
+    "id": "v9.1-probe-p_w59_ex_flmidshed",
+    "stamped": "2026-07-14T10:26:39Z",
+    "label": "Grandmaster v9.1-probe p_w59_ex_flmidshed"
+  },
+  "opts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": false,
+    "hiddenInfo": true,
+    "timeMs": 200,
+    "iterations": 60,
+    "maxSims": 120,
+    "brTrials": 20,
+    "bestResponse": true,
+    "exactExploit": false,
+    "exploit": true,
+    "softSamples": 0,
+    "maxBranch": 12,
+    "mode": "auto",
+    "strongSelf": false
+  },
+  "nGames": 2,
+  "nDiverged": 1,
+  "divergeRate": 0.5,
+  "classCount": {
+    "combat_other": 1
+  },
+  "results": [
+    {
+      "seed": 20490180,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 10,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 20,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20490180,
+      "liveSeat": 1,
+      "firstDiff": {
+        "step": 6,
+        "seat": 1,
+        "phase": "single",
+        "handLen": 10,
+        "omin": 10,
+        "curTop": 12,
+        "freeze": "2D",
+        "chall": "2C",
+        "freezeSig": "50",
+        "challSig": "51",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 4,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 7,
+      "freezeWinIfNoDiff": null
+    }
+  ]
+}

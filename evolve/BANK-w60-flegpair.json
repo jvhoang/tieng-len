@@ -1,0 +1,19 @@
+{
+  "tag": "p_w60_ex_flegpair",
+  "base": "p_w59_ex_flmidshed",
+  "lever": "fl_egpair FREE endgame dual-pair force mid single 8",
+  "convert": "A 20490180@1 99→8H",
+  "vs_v95_id": {
+    "A": 30,
+    "B": 32,
+    "new": ["20490180@1"],
+    "rev": []
+  },
+  "vs_v91": {
+    "A": 37,
+    "B": 37,
+    "sum": 74
+  },
+  "ship_v96": false,
+  "stack": "A 29→30, B 32 flat pure vs v95 id"
+}
