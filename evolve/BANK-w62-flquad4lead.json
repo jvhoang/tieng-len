@@ -1,0 +1,19 @@
+{
+  "tag": "p_w62_ex_flquad4lead",
+  "base": "p_w61_ex_flpair5",
+  "lever": "fl_quad4lead FREE open trash-3 with quad-4s",
+  "convert": "B 20450289@1 seq5→3H",
+  "vs_v95_id": {
+    "A": 30,
+    "B": 34,
+    "new": ["20450289@1"],
+    "rev": []
+  },
+  "vs_v91": {
+    "A": 37,
+    "B": 38,
+    "sum": 75
+  },
+  "ship_v96": false,
+  "stack": "A 30 flat, B 33→34 pure vs v95 id"
+}

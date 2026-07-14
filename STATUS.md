@@ -1,24 +1,25 @@
 # STATUS — Fair dual ladder (resumable handoff)
 
-**Updated:** 2026-07-14T11:20Z  
-**Live / freeze:** **v9.5** fair dual SHIPPED (36/36 vs v91) — commit `2a29964`  
+**Updated:** 2026-07-14T11:24Z  
+**Live / freeze:** **v9.5** fair dual SHIPPED (36/36 vs v91) — `2a29964`  
 **SoftN:** **DEAD**  
-**Best bank:** `p_w61_ex_flpair5` **A30/B33** vs freeze v95 (0.60/0.66)
+**Best bank:** `p_w62_ex_flquad4lead` **A30/B34** vs freeze v95 (0.60/0.68)
 
-## Skeptic gaps — CLOSED (re-proved)
-`{SCRATCH}/skeptic-close/GAPS-CLOSED.json` → **PASS: true** for v9.5 ship claims  
-(live v9.5 + pickComSbc0 + fair dual 0.72/0.72 + policies/v95 + gh-pages)
+## Skeptic gaps (v9.5) — CLOSED
+`{SCRATCH}/skeptic-close/GAPS-CLOSED.json` PASS  
+live v9.5 + pickComSbc0 + fair dual 0.72/0.72 + policies/v95 + gh-pages
 
 ## Goal gap (honest)
-Ladder goal is **v11.0**. Shipped **v9.5** only. Best intermediate bank A30/B33 vs freeze v95 — need 36/36 for **v9.6**, then continue 0.1 rungs.
+Full goal = ladder to **v11.0**. Only **v9.5** fair dual shipped.  
+Best bank A30/B34 vs v95 — need **36/36** for **v9.6**, then continue 0.1 rungs.
 
-## Stack toward v9.6 (vs freeze **v95** identity 25/25)
+## Stack toward v9.6
 | Tag | A | B | vs v91 |
 |-----|--:|--:|--------|
-| flegpair | 30 | 32 | 37/37 |
-| **flpair5** | **30** | **33** | **37/38** |
+| flpair5 | 30 | 33 | 37/38 |
+| **flquad4lead** | **30** | **34** | **37/38** |
 
-**Gap:** ~+6 A and +3 B pure remaining for v9.6.
+**Gap:** ~+6 A, +2 B pure for v9.6.
 
 ## Next
-Base `p_w61_ex_flpair5`; more pure converts; freeze v9.6 only at dual >0.70 vs v95. SoftN never.
+Base `p_w62_ex_flquad4lead`; more pure A+B converts; SoftN never.
