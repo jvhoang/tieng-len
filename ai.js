@@ -15,16 +15,9 @@
 /** Shown on title screen — bump when shipping AI behavior changes. */
 const AI_BUILD = {
   id: "v9.4",
-  stamped: "2026-07-14T01:40:33Z",
+  stamped: "2026-07-14T01:40:51Z",
   label: "Grandmaster v9.4"
 };
-
-if (typeof window !== 'undefined') {
-  window.TIENLEN_AI_BUILD = AI_BUILD;
-  window.TienLenAI = window.TienLenAI || {};
-  window.TienLenAI.AI_BUILD = AI_BUILD;
-}
-
 
 if (typeof window !== 'undefined') {
   window.TIENLEN_AI_BUILD = AI_BUILD;
