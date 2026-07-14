@@ -1,0 +1,19 @@
+{
+  "tag": "p_w68_ex_flseq5exact",
+  "base": "p_w66_ex_comkpeel",
+  "lever": "fl_seq5exact FREE exact length-5 seq (not maxL)",
+  "convert": "A 20360531@0 345→34567",
+  "vs_v95_id": {
+    "A": 33,
+    "B": 36,
+    "new": ["20360531@0"],
+    "rev": []
+  },
+  "vs_v91": {
+    "A": 36,
+    "B": 37,
+    "sum": 73
+  },
+  "ship_v96": false,
+  "stack": "A 32→33, B 36 flat; B>0.70; A needs +3 more"
+}
