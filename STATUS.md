@@ -30,7 +30,7 @@ Identity baseline: **25/25**
 | `p_w84_ex_fljopen` | 31 | 28 | 20320639@1 FREE J (A) |
 | `p_w85_ex_comtover4` | 32 | 28 | 20330612@0 combat T (A) |
 | `p_w86_ex_comaceover9` | 32 | 29 | 20360532@0 combat Ace (B) |
-| **`p_w87_ex_flseq678`** | **33** | **29** | **20340585@0 combat seq678 (A)** |
+| `p_w87_ex_flseq678` | 33 | 29 | **20340585@0 combat seq678 (A)** |
 
 **Ship bar v9.7:** A≥**36** · B≥**36** → need **+3 A** and **+7 B** pure.  
 
