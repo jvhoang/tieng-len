@@ -40,9 +40,10 @@ FREE: flvol · flshort5 · flhidetight · brseq3 · tripair · pairshed · lotes
 Forbidden. Rogue softN14/16 cancelled. Do not relaunch.
 
 ## Next (ladder continues → v11.0)
-1. Next freeze target: **v9.6** must dual-pass fair vs freeze **v95** (N≥50 both holdouts WR>0.70).  
-2. Data-first residual on B/A losses under v95; one lever at a time.  
-3. Gold series 1–3 non-negotiable. SoftN stays dead.
+1. Next freeze target: **v9.6** must dual-pass fair vs freeze **v95** (holdout A+B WR>0.70).  
+2. Residual under v95: A 14 / B 14 losses — see `evolve/NOTE-fair-w48-residual.md` + scratch `w48/`.  
+3. Dual-safe CF under BASE=v95 FREEZE=v95: 22 non-pass converts (FREE longer-open + combat climb dominate); **20320640@1 stale**; prefer uniqueness-gated structure only.  
+4. Gold series 1–3 non-negotiable. SoftN stays dead.
 
 ## Evidence
 `NOTE-fair-w47-results.md`, `SHIP_READY.md`,  
