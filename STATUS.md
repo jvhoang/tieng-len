@@ -38,6 +38,9 @@ FREE: flvol · flshort5 · flhidetight · brseq3 · tripair · pairshed · lotes
 3. Then freeze **v9.6**, stamp live, dual-primary/rerun, commit main + gh-pages.  
 4. SoftN never. Full-policy firstdiff before code (pairkeep/maxedge thrash lessons).
 
+## W50 note
+`sbc0wide` REJECT — target convert is anti-SBC climb (AC sbc13 > KD sbc5). See `NOTE-fair-w50-sbc0wide-reject.md`.
+
 ## Evidence
 `SHIP_READY.md`, `evolve/dual-primary.json`, `evolve/dual-rerun.json`,  
 `policies/v95-*`, live `ai.js`/`search.js`,  
