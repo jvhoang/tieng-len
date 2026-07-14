@@ -1,0 +1,20 @@
+{
+  "tag": "p_w47_ex_sbc0",
+  "base": "p_w45_ex_twoshed",
+  "holdoutA": {
+    "wins": 36,
+    "wr": 0.72,
+    "n": 50
+  },
+  "holdoutB": {
+    "wins": 36,
+    "wr": 0.72,
+    "n": 50
+  },
+  "sum": 72,
+  "ship": true,
+  "convert": "20270775@1 QH\u2192AD unique minS=0 Ace-only",
+  "reverse": [],
+  "softN": "FORBIDDEN",
+  "protocol": "SOFT=0 T20 BOTH n=50 fair dual"
+}

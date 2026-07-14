@@ -1,25 +1,51 @@
-# STATUS — Dual protocol honesty check (paused hollow rungs)
+# STATUS — Fair dual ladder (resumable handoff)
 
-**Updated:** 2026-07-14T02:05Z
+**Updated:** 2026-07-14T18:50Z  
+**Live AI:** Grandmaster **v9.5** (fair dual sbc0) — **SHIPPED**  
+**Design freeze (prior):** **v9.1**  
+**New freeze:** **v9.5** ≡ `policies/v95-*` ≡ live `ai.js`/`search.js`  
+**SoftN:** **DEAD**
 
-## User report (gold)
-- Human still wins **>90%** vs latest GM
-- Mild improvement only across v9.2→v9.4
-- Hints sometimes better than opponent GM (e.g. 2-tempo)
-- Suspicious flat **40/50** primary duals
+## PRIMARY GOLD
+`john_uploads/tien_len_AI.txt` + IMG_0498–0552 + `tienlen-playlogs-1784002833123.json`
 
-## Confirmed by data
-Primary seed `20260711` loss set is **byte-identical** across:
-v9.2 ship · v9.3 **identity** · v9.3 residual-mt · v9.4 TWO_OMIN2 · v9.5 combat-BR
+## Ladder (fair dual only)
 
-→ After BR-GM, dual **>70% is mostly budget asymmetry (280 vs 120 + BR-on vs BR-off)**, not policy skill.
+| Rung | Tag | Holdout A/B | Sum | Ship notes |
+|------|-----|-------------:|----:|------------|
+| **v9.5 LIVE** | **`v95` / `p_w47_ex_sbc0`** | **36 / 36** | **72** | fair hidden BR-both SOFT=0 T20 vs freeze **v91** |
+| bank prior | `p_w45_ex_twoshed` | 36 / 35 | 71 | base of sbc0 |
+| discard | `p_w46_ex_sbcuniq` | 34 / 34 | 68 | thrash |
+| invalidated | v9.2–v9.4 | — | — | perfect-info harness, not fair dual |
 
-See `evolve/NOTE-dual-protocol-suspicion.md`.
+Ship WR **strict >0.70**: **A YES (0.72)** · **B YES (0.72)** · Δid **+22** both.
 
-## Immediate policy
-- **Do not ship further 0.1 rungs** solely on absolute WR>0.70 under current asymmetric dual.
-- Require **+2 wins vs identity baseline** on same seed0 before ship.
-- Align human CF / playlog gates with dual work.
+## Live wiring (verifier-critical)
+- `ai.js` AI_BUILD.id = **`v9.5`**
+- `search.js` contains **`pickComSbc0`** + **`com-sbc0-hard`**
+- `policies/v95-{ai,search}.js` freeze copy (policy-relative requires)
+- Bank alias: `policies/p_w47_ex_sbc0-*`
 
-## Still running
-v9.5 dual re-run may complete for evidence only — do not auto-ship without identity-delta proof.
+## Dual artifacts (fair)
+- `{SCRATCH}/dual-primary.json` ← HOLDOUT_A seed0=20260801 36/50
+- `{SCRATCH}/dual-rerun.json` ← HOLDOUT_B seed0=20260802 36/50
+- `evolve/holdout-{A,B}-ch-t20-v95-fair.json`
+- `SHIP_READY.md` (fair dual — replaces perfect-info v9.4 note)
+
+## Stack (convert-first, SoftN dead)
+combat: mulowg · pairhi · pairhi_wide · seqhi · **sbc0**  
+FREE: flvol · flshort5 · flhidetight · brseq3 · tripair · pairshed · lotesh · pairseq · twoshed
+
+## SoftN
+Forbidden. Rogue softN14/16 cancelled. Do not relaunch.
+
+## Next (ladder continues → v11.0)
+1. Next freeze target: **v9.6** must dual-pass fair vs freeze **v95** (N≥50 both holdouts WR>0.70).  
+2. Data-first residual on B/A losses under v95; one lever at a time.  
+3. Gold series 1–3 non-negotiable. SoftN stays dead.
+
+## Evidence
+`NOTE-fair-w47-results.md`, `SHIP_READY.md`,  
+`policies/v95-*`, live `ai.js`/`search.js`,  
+`evolve/dual-primary.json`, `evolve/dual-rerun.json`,  
+scratch `ship-v95/`

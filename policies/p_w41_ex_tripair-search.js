@@ -11,7 +11,7 @@
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./engine.js'));
+    module.exports = factory(require('../engine.js'));
   } else {
     root.TienLenSearch = factory(root.TienLenEngine);
   }
@@ -283,188 +283,6 @@
   /** W36 flhidetight: FREE defer high pair for low shed single (gold 0538/0540).
    *  CF 20290721@0 s5: QQ → 9D WIN. Not limited to analyzeHand.trash (9 often non-trash). */
 
-  /** W45 fl_twoshed: FREE double-2 + **naked** low pair → single split (no low seq3).
-   *  Dual-safe CF A 20370504@0: base/AI 33; force 3H WIN vs v91.
-   *  Reverse kill 20390451: three 2s + **triple** 333 — must NOT split triples (count≥3).
-   *  Gates: FREE, handLen≥12, omin≥10, twos≥2, pair rank count **exactly 2**, top≤3,
-   *  no seq3 top≤5. Orthogonal to pairshed/pairseq/lotesh/tripair. */
-  function pickFlTwoShed(hand, multiOrLeg, state, cp) {
-    if (!multiOrLeg || !multiOrLeg.length) return null;
-    var handLen = hand.length;
-    var omin = oppMinHand(state, cp);
-    if (handLen < 12) return null;
-    if (omin < 10) return null;
-    var info = analyzeHand(hand);
-    if (info.twos < 2) return null;
-    // Count ranks in hand for naked-pair check
-    var byR = {}, i, p, c, top, r;
-    for (i = 0; i < hand.length; i++) {
-      r = hand[i].rank;
-      byR[r] = (byR[r] || 0) + 1;
-    }
-    var lowPairRank = -1, hasSeq3 = false, singles = [];
-    for (i = 0; i < multiOrLeg.length; i++) {
-      p = multiOrLeg[i];
-      if (!p || playIsExpensive(p) || playHasTwo(p) || playIsBomb(p)) continue;
-      c = detectCombo(p);
-      if (!c) continue;
-      top = topRank(p);
-      if (c.type === 'pair' && top <= 3) {
-        // Naked pair only: hand count for that rank must be exactly 2
-        if (byR[p[0].rank] === 2) {
-          if (lowPairRank < 0 || p[0].rank < lowPairRank) lowPairRank = p[0].rank;
-        }
-      }
-      if (c.type === 'seq' && p.length === 3 && top <= 5) hasSeq3 = true;
-      if (c.type === 'single' && p[0].rank <= 3) singles.push(p);
-    }
-    if (lowPairRank < 0 || hasSeq3 || !singles.length) return null;
-    if (byR[lowPairRank] !== 2) return null;
-    var split = singles.filter(function (s) { return s[0].rank === lowPairRank; });
-    if (!split.length) return null;
-    split.sort(function (a, b) { return a[0].suit - b[0].suit; });
-    return split[0];
-  }
-
-  /** W44 fl_pairseq: FREE low pair → residual 3-seq ONLY with residual **quad** power.
-   *  Dual-safe CF A 20320639@0: 33→345 WIN with four 7s left. Without quad, same force
-   *  reverses other openings (holdout thrash). Tight gate kills reverse family.
-   *  Gates: FREE, handLen≥12, omin≥10, pair top≤3, seq3 top≤5, some rank count≥4,
-   *  not tripair (≥2 low triples). */
-  function pickFlPairSeq(hand, multiOrLeg, state, cp) {
-    if (!multiOrLeg || !multiOrLeg.length) return null;
-    var handLen = hand.length;
-    var omin = oppMinHand(state, cp);
-    if (handLen < 12) return null;
-    if (omin < 10) return null;
-    // Residual power: at least one rank with ≥4 cards (quad / bomb structure)
-    var byR = {}, i, p, c, top, r, hasQuad = false;
-    for (i = 0; i < hand.length; i++) {
-      r = hand[i].rank;
-      byR[r] = (byR[r] || 0) + 1;
-      if (byR[r] >= 4) hasQuad = true;
-    }
-    if (!hasQuad) return null;
-    var tripRanks = {};
-    var lowPairs = 0, seqs = [];
-    for (i = 0; i < multiOrLeg.length; i++) {
-      p = multiOrLeg[i];
-      if (!p || playIsExpensive(p) || playHasTwo(p) || playIsBomb(p)) continue;
-      c = detectCombo(p);
-      if (!c) continue;
-      top = topRank(p);
-      if (c.type === 'triple' && top <= 4) tripRanks[p[0].rank] = true;
-      if (c.type === 'pair' && top <= 3) lowPairs++;
-      if (c.type === 'seq' && p.length === 3 && top <= 5) seqs.push(p);
-    }
-    var nTrip = 0;
-    for (r in tripRanks) if (tripRanks.hasOwnProperty(r)) nTrip++;
-    if (nTrip >= 2) return null;
-    if (!lowPairs || !seqs.length) return null;
-    seqs.sort(function (a, b) {
-      var ta = topRank(a), tb = topRank(b);
-      if (ta !== tb) return ta - tb;
-      return structureBreakCost(hand, a) - structureBreakCost(hand, b);
-    });
-    return seqs[0];
-  }
-
-  /** W43 fl_lotesh: FREE late high-single → low trash shed (gold 0531/0539).
-   *  Dual-safe CF B 20280748@1 s9: expert 4D; free-lead soft-root search plays JH and loses.
-   *  Force 4D/5D/7D dual-safe WIN vs v91. No multi in hand.
-   *  Gates: FREE, handLen 6–8, omin 4–7, single J+, low single rank≤5 (3–8),
-   *  residual 2 or A/K control. Return min-rank low single. */
-  function pickFlLotesh(hand, multiOrLeg, state, cp) {
-    if (!multiOrLeg || !multiOrLeg.length) return null;
-    var handLen = hand.length;
-    var omin = oppMinHand(state, cp);
-    if (handLen < 6 || handLen > 8) return null;
-    if (omin < 4 || omin > 7) return null;
-    var info = analyzeHand(hand);
-    if (!(info.twos >= 1 || info.control >= 1)) return null;
-    var hasHi = false, lowSing = [], multiN = 0, i, p, c;
-    for (i = 0; i < multiOrLeg.length; i++) {
-      p = multiOrLeg[i];
-      if (!p) continue;
-      if (p.length >= 2 && !playIsExpensive(p) && !playHasTwo(p) && !playIsBomb(p)) multiN++;
-      if (playIsExpensive(p) || playHasTwo(p) || playIsBomb(p)) continue;
-      c = detectCombo(p);
-      if (!c || c.type !== 'single') continue;
-      if (p[0].rank >= 9) hasHi = true; // J+
-      if (p[0].rank <= 5) lowSing.push(p); // 3–8
-    }
-    // Late single-only thrash: require no cheap multi (else multi-always owns)
-    if (multiN > 0) return null;
-    if (!hasHi || !lowSing.length) return null;
-    lowSing.sort(function (a, b) {
-      return a[0].rank - b[0].rank || a[0].suit - b[0].suit;
-    });
-    return lowSing[0];
-  }
-
-  function flLoteshPool(hand, multiOrLeg, state, cp) {
-    if (!pickFlLotesh(hand, multiOrLeg, state, cp)) return [];
-    var pool = [], i, p, c;
-    for (i = 0; i < multiOrLeg.length; i++) {
-      p = multiOrLeg[i];
-      if (!p || playIsExpensive(p) || playHasTwo(p) || playIsBomb(p)) continue;
-      c = detectCombo(p);
-      if (c && c.type === 'single' && p[0].rank <= 5) pool.push(p);
-    }
-    return pool;
-  }
-
-  /** W42 fl_pairshed: FREE high pair K+ → low single when hidefer blocked by mid-seq.
-   *  Dual-safe CF B 20480208@0 s3: BR plays KK; force 3C/4C WIN vs v91.
-   *  hidefer/brfltrash miss because 345 form a run (not analyzeHand.trash).
-   *  brseq3 multi-only then BR scores KK over 345. Restore low singles.
-   *  Gates: FREE, handLen 9–12, omin≥8, twos≥1, pair top≥K(10), single rank≤4. */
-  function pickFlPairShed(hand, multiOrLeg, state, cp) {
-    if (!multiOrLeg || !multiOrLeg.length) return null;
-    var handLen = hand.length;
-    var omin = oppMinHand(state, cp);
-    if (handLen < 9 || handLen > 12) return null;
-    if (omin < 8) return null;
-    var info = analyzeHand(hand);
-    if (info.twos < 1) return null;
-    var hiPairs = 0, lowSing = [], i, p, c, top;
-    for (i = 0; i < multiOrLeg.length; i++) {
-      p = multiOrLeg[i];
-      if (!p || playIsExpensive(p) || playHasTwo(p) || playIsBomb(p)) continue;
-      c = detectCombo(p);
-      if (!c) continue;
-      top = topRank(p);
-      if (c.type === 'pair' && top >= 10) hiPairs++; // K+
-      else if (c.type === 'single' && p[0].rank <= 4) lowSing.push(p); // 3–7
-    }
-    if (!hiPairs || !lowSing.length) return null;
-    // Do not override tripair / low triple volume (leave those levers)
-    var hasLowTrip = false, j, pj, cj;
-    for (j = 0; j < multiOrLeg.length; j++) {
-      pj = multiOrLeg[j];
-      if (!pj || playIsExpensive(pj)) continue;
-      cj = detectCombo(pj);
-      if (cj && cj.type === 'triple' && topRank(pj) <= 4) { hasLowTrip = true; break; }
-    }
-    if (hasLowTrip) return null;
-    lowSing.sort(function (a, b) {
-      return a[0].rank - b[0].rank || a[0].suit - b[0].suit;
-    });
-    return lowSing[0];
-  }
-
-  function flPairShedPool(hand, multiOrLeg, state, cp) {
-    if (!pickFlPairShed(hand, multiOrLeg, state, cp)) return [];
-    var pool = [], i, p, c;
-    for (i = 0; i < multiOrLeg.length; i++) {
-      p = multiOrLeg[i];
-      if (!p || playIsExpensive(p) || playHasTwo(p) || playIsBomb(p)) continue;
-      c = detectCombo(p);
-      if (c && c.type === 'single' && p[0].rank <= 4) pool.push(p);
-    }
-    return pool;
-  }
-
   /** W41 fl_tripair: FREE low triple → pair when ≥2 low triple ranks (pair ladder).
    *  Dual-safe CF B 20370505@0 s5: base 333 → force 33/44 WIN vs v91.
    *  Anti-flvol residual: multi-always dumps whole triple; gold prefers pair steps.
@@ -621,47 +439,6 @@
       return a[0].suit - b[0].suit;
     });
     return lowSingles[0];
-  }
-
-  /** W47 com_sbc0: combat single UNIQUE true-loose Ace (minS===0) only.
-   *  W46 sbcuniq thrash A34/B34. W47a gates killed early thrash but A reverse
-   *  20270774@0 vs v91: base 6C → KH (hl10 omin6 curTop3). Convert 20270775@1 QH→AD.
-   *  Gates (firstdiff-locked vs v91 path): unique minS===0, secondS≥4, handLen 7–11,
-   *  omin 2–8, curTop≥5, pick.rank===11 (Ace only — kills K/mid false fires), never 2.
-   *  Orthogonal to mulowg/pairhi/seqhi. SoftN FORBIDDEN. */
-  function pickComSbc0(hand, cur, leg, state, cp) {
-    if (!cur || cur.type !== 'single') return null;
-    if (playIsBomb(cur.cards || [])) return null;
-    var handLen = hand.length;
-    var omin = oppMinHand(state, cp);
-    var curTop = cur.top ? cur.top.rank : 0;
-    // Convert: hl9 omin~3–6 curTop7. Reverse 20270774@0: curTop3 KH.
-    if (handLen < 7 || handLen > 11) return null;
-    if (omin < 2 || omin > 8) return null;
-    if (curTop < 5) return null;
-    var rows = [], i, p, minS, secondS, atMin;
-    for (i = 0; i < leg.length; i++) {
-      p = leg[i];
-      if (!p || p.length !== 1) continue;
-      if (p[0].rank === 12) continue; // never auto-force 2
-      rows.push({ p: p, sbc: structureBreakCost(hand, p), rank: p[0].rank });
-    }
-    if (rows.length < 2) return null;
-    minS = rows[0].sbc;
-    for (i = 1; i < rows.length; i++) if (rows[i].sbc < minS) minS = rows[i].sbc;
-    // Only true-loose unique min (convert AD sbc0).
-    if (minS !== 0) return null;
-    atMin = [];
-    secondS = 999;
-    for (i = 0; i < rows.length; i++) {
-      if (rows[i].sbc === minS) atMin.push(rows[i]);
-      else if (rows[i].sbc < secondS) secondS = rows[i].sbc;
-    }
-    if (atMin.length !== 1) return null; // uniqueness lock
-    if (secondS - minS < 4) return null; // structure gap
-    // Ace-only: keep QH→AD convert; kill 6C→KH reverse (rank 10).
-    if (atMin[0].rank !== 11) return null;
-    return atMin[0].p;
   }
 
   /** W34 seqhi: combat seq residual-max when mulowg band does NOT fire.
@@ -1089,10 +866,6 @@
       return { pass: true }; // v9.1 pass disc (ladder-tuned)
     }
 
-    // W47 com_sbc0: unique min-SBC==0 combat single (before multi combat; orthogonal)
-    var sbc0 = pickComSbc0(hand, cur, leg, state, cp);
-    if (sbc0) return { play: sbc0 };
-
     // W34 seqhi: residual-max combat seq (before pairhi/mulowg; mulowg band disjoint via minT>3)
     var sh = pickSeqHi(hand, cur, leg, state, cp);
     if (sh) return { play: sh };
@@ -1347,18 +1120,9 @@
       // W32 flshort5 BEFORE flvol: mega-seq ≥7 → len-5 (flvol volume would re-pick mega)
       var fls = pickFlShort(hand, multi, state, cp);
       if (fls) return fls;
-      // W41 fl_tripair FIRST (pairseq must not steal dual-triple seats)
+      // W41 fl_tripair: ≥2 low triples → split to pair (before flvol volume dumps triple)
       var ftp = pickFlTriPair(hand, multi, state, cp);
       if (ftp) return ftp;
-      // W45 fl_twoshed: double-2 + low pair → single (before pairseq/flvol)
-      var fts = pickFlTwoShed(hand, multi.length ? multi.concat(leg) : leg, state, cp);
-      if (fts) return fts;
-      // W44 fl_pairseq: low pair → residual 3-seq only (opening)
-      var fpsq = pickFlPairSeq(hand, multi.length ? multi.concat(leg) : leg, state, cp);
-      if (fpsq) return fpsq;
-      // W42 fl_pairshed: high pair K+ → low single (scan full leg; multi-only would hide singles)
-      var fps = pickFlPairShed(hand, leg, state, cp);
-      if (fps) return fps;
       // W31 flvol: low naked pair → volume multi (before multi-always min-top)
       var flv = pickFlVol(hand, multi, state, cp);
       if (flv) return flv;
@@ -1424,10 +1188,6 @@
       }
       return multiPick;
     }
-
-    // W43 fl_lotesh: late high→low before trash/mid-block (expert already; search overrides)
-    var flot = pickFlLotesh(hand, leg, state, cp);
-    if (flot) return flot;
 
     // No multi: dump trash if any — but never lonely 3-5 open midgame without control
     // (human-log #35: free-lead 4s surrendered structure)
@@ -1808,37 +1568,12 @@
           forcedLP = false;
         }
       }
-      // W41 fl_tripair BR FIRST
+      // W41 fl_tripair BR: strip FREE pool to split-pairs when ≥2 low triples
       if (!cur && !(shortBR && shortBR.length)) {
         var tripBR = flTriPairPool(hand, fullMultiBR.length ? fullMultiBR : leg, state, myIdx);
         if (tripBR.length) {
           leg = tripBR;
           forcedLP = false;
-        }
-      }
-      // W44 fl_pairseq BR: strip to residual 3-seq pool when low pair + seq3
-      if (!cur && !(shortBR && shortBR.length) && !(tripBR && tripBR.length)) {
-        var pairseqPick = pickFlPairSeq(hand, fullMultiBR.length ? fullMultiBR.concat(leg) : leg, state, myIdx);
-        if (pairseqPick) {
-          var seqPool = [], iSP, pSP, cSP;
-          var scan = fullMultiBR.length ? fullMultiBR : leg;
-          for (iSP = 0; iSP < scan.length; iSP++) {
-            pSP = scan[iSP];
-            if (!pSP || playIsExpensive(pSP) || playHasTwo(pSP)) continue;
-            cSP = detectCombo(pSP);
-            if (cSP && cSP.type === 'seq' && pSP.length === 3 && topRank(pSP) <= 5) seqPool.push(pSP);
-          }
-          for (iSP = 0; iSP < leg.length; iSP++) {
-            pSP = leg[iSP];
-            if (!pSP || playIsExpensive(pSP) || playHasTwo(pSP)) continue;
-            cSP = detectCombo(pSP);
-            if (cSP && cSP.type === 'seq' && pSP.length === 3 && topRank(pSP) <= 5) {
-              var sigSP = playSig(pSP), dupSP = false, iD;
-              for (iD = 0; iD < seqPool.length; iD++) if (playSig(seqPool[iD]) === sigSP) { dupSP = true; break; }
-              if (!dupSP) seqPool.push(pSP);
-            }
-          }
-          if (seqPool.length) { leg = seqPool; forcedLP = false; }
         }
       }
       // W31 flvol: override forcedLP when volume multi exists vs low naked pair
@@ -1861,27 +1596,6 @@
         }
         if (multiOnly.length) {
           leg = multiOnly;
-          forcedLP = false;
-        }
-      }
-      // W42 fl_pairshed BR: AFTER brseq3 multi-only — reintroduce low singles when hi pair K+
-      // would otherwise win BR (convert 20480208 KK). Uses full legal set for single pool.
-      if (!cur && !(tripBR && tripBR.length) && !(shortBR && shortBR.length)) {
-        var fullLegPS = getLegalPlays(hand, null, state.players[myIdx].passed,
-          state.isFirstLead, state.firstLeadCard);
-        var shedBR = flPairShedPool(hand, fullLegPS.length ? fullLegPS : leg, state, myIdx);
-        if (shedBR.length) {
-          leg = shedBR;
-          forcedLP = false;
-        }
-      }
-      // W43 fl_lotesh BR: FREE late high→low — strip pool to low singles when gates fire
-      if (!cur && !(tripBR && tripBR.length) && !(shortBR && shortBR.length) && !(shedBR && shedBR.length)) {
-        var fullLegLT = getLegalPlays(hand, null, state.players[myIdx].passed,
-          state.isFirstLead, state.firstLeadCard);
-        var loteshBR = flLoteshPool(hand, fullLegLT.length ? fullLegLT : leg, state, myIdx);
-        if (loteshBR.length) {
-          leg = loteshBR;
           forcedLP = false;
         }
       }
@@ -1951,11 +1665,6 @@
     } else {
       var ch = cheapLegals(leg);
       if (ch.length) leg = ch;
-      // W47 com_sbc0 BR: strip combat singles to unique min-SBC==0 play
-      var sbc0BR = pickComSbc0(hand, cur, leg, state, myIdx);
-      if (sbc0BR) {
-        leg = [sbc0BR];
-      } else
       // W34 seqhi: BR strip to max-top seq pool (complement mulowg min band)
       var shBR = pickSeqHi(hand, cur, leg, state, myIdx);
       if (shBR) {
@@ -3505,41 +3214,6 @@
         return { play: hideRoot, stats: { mode: 'flhidetight-hard', via: 'search-root' } };
       }
     }
-    // W41 tripair hard before pairseq at search-root
-    if (!cur) {
-      var tripRoot = pickFlTriPair(hand, legals, state, myIdx);
-      if (tripRoot) {
-        return { play: tripRoot, stats: { mode: 'fl-tripair-hard', via: 'search-root' } };
-      }
-    }
-    // W45 fl_twoshed hard: double-2 + low pair → single split
-    if (!cur) {
-      var twoshedRoot = pickFlTwoShed(hand, legals, state, myIdx);
-      if (twoshedRoot) {
-        return { play: twoshedRoot, stats: { mode: 'fl-twoshed-hard', via: 'search-root' } };
-      }
-    }
-    // W44 fl_pairseq: low pair → residual 3-seq (search plays naked 33)
-    if (!cur) {
-      var pairseqRoot = pickFlPairSeq(hand, legals, state, myIdx);
-      if (pairseqRoot) {
-        return { play: pairseqRoot, stats: { mode: 'fl-pairseq-hard', via: 'search-root' } };
-      }
-    }
-    // W43 fl_lotesh ONLY (do NOT hoist pairshed to search-root — reverse 20460262 AA→3)
-    if (!cur) {
-      var loteshRoot = pickFlLotesh(hand, legals, state, myIdx);
-      if (loteshRoot) {
-        return { play: loteshRoot, stats: { mode: 'fl-lotesh-hard', via: 'search-root' } };
-      }
-    }
-    // W47 com_sbc0 hard before exact-endgame (search/exact prefer mid sbc over unique loose 0)
-    if (cur && cur.type === 'single') {
-      var sbc0Root = pickComSbc0(hand, cur, legals, state, myIdx);
-      if (sbc0Root) {
-        return { play: sbc0Root, stats: { mode: 'com-sbc0-hard', via: 'search-root' } };
-      }
-    }
 
     // Exact 2p endgame when few cards left
     var exact = exactEndgameMove(state, myIdx);
@@ -3817,9 +3491,6 @@
         if (flBest.length === 1 && ominFL === 1 && flBest[0].rank < 10) {
           flBest = pickFreeLeadHard(legals, state, myIdx);
         }
-        // W43 fl_lotesh: free-lead soft-root scores high singles; hard override dual-safe low shed
-        var loteshRoot = pickFlLotesh(state.players[myIdx].hand, legals, state, myIdx);
-        if (loteshRoot) flBest = loteshRoot;
         return {
           play: flBest,
           stats: {
@@ -3828,7 +3499,7 @@
             top: flDetails.slice(0, 6),
             ms: Date.now() - flT0,
             perfectInfo: true,
-            via: loteshRoot ? 'fl-lotesh-hard' : 'fl-soft-root-v2'
+            via: 'fl-soft-root-v2'
           }
         };
       }
@@ -4148,17 +3819,10 @@
     enforcePolicyGuards: enforcePolicyGuards,
     pickFreeLeadHard: pickFreeLeadHard,
     pickFlHidefer: pickFlHidefer,
-    pickFlTwoShed: pickFlTwoShed,
-    pickFlPairSeq: pickFlPairSeq,
-    pickFlLotesh: pickFlLotesh,
-    flLoteshPool: flLoteshPool,
-    pickFlPairShed: pickFlPairShed,
-    flPairShedPool: flPairShedPool,
     pickFlTriPair: pickFlTriPair,
     flTriPairPool: flTriPairPool,
     pickFlBrSeq3: pickFlBrSeq3,
     flBrSeq3Pool: flBrSeq3Pool,
-    pickComSbc0: pickComSbc0,
     freeLeadCandidates: freeLeadCandidates,
     analyzeHand: analyzeHand,
     endgamePick: endgamePick,

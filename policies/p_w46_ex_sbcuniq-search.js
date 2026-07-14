@@ -11,7 +11,7 @@
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./engine.js'));
+    module.exports = factory(require('../engine.js'));
   } else {
     root.TienLenSearch = factory(root.TienLenEngine);
   }
@@ -623,23 +623,18 @@
     return lowSingles[0];
   }
 
-  /** W47 com_sbc0: combat single UNIQUE true-loose Ace (minS===0) only.
-   *  W46 sbcuniq thrash A34/B34. W47a gates killed early thrash but A reverse
-   *  20270774@0 vs v91: base 6C → KH (hl10 omin6 curTop3). Convert 20270775@1 QH→AD.
-   *  Gates (firstdiff-locked vs v91 path): unique minS===0, secondS≥4, handLen 7–11,
-   *  omin 2–8, curTop≥5, pick.rank===11 (Ace only — kills K/mid false fires), never 2.
-   *  Orthogonal to mulowg/pairhi/seqhi. SoftN FORBIDDEN. */
-  function pickComSbc0(hand, cur, leg, state, cp) {
+  /** W46 com_sbcuniq: combat single with UNIQUE min structureBreakCost.
+   *  Dual-safe CF B 20270775@1 s8: base QH (sbc5) → force AD (unique sbc0) WIN vs v91.
+   *  Orthogonal to mulowg/pairhi/seqhi (multi only). Never force 2s.
+   *  Gates: combat single, ≥2 non-2 singles, unique min SBC, handLen 6–13, omin 2–12. */
+  function pickComSbcUniq(hand, cur, leg, state, cp) {
     if (!cur || cur.type !== 'single') return null;
     if (playIsBomb(cur.cards || [])) return null;
     var handLen = hand.length;
     var omin = oppMinHand(state, cp);
-    var curTop = cur.top ? cur.top.rank : 0;
-    // Convert: hl9 omin~3–6 curTop7. Reverse 20270774@0: curTop3 KH.
-    if (handLen < 7 || handLen > 11) return null;
-    if (omin < 2 || omin > 8) return null;
-    if (curTop < 5) return null;
-    var rows = [], i, p, minS, secondS, atMin;
+    if (handLen < 6 || handLen > 13) return null;
+    if (omin < 2 || omin > 12) return null;
+    var rows = [], i, p, minS, atMin;
     for (i = 0; i < leg.length; i++) {
       p = leg[i];
       if (!p || p.length !== 1) continue;
@@ -649,18 +644,9 @@
     if (rows.length < 2) return null;
     minS = rows[0].sbc;
     for (i = 1; i < rows.length; i++) if (rows[i].sbc < minS) minS = rows[i].sbc;
-    // Only true-loose unique min (convert AD sbc0).
-    if (minS !== 0) return null;
     atMin = [];
-    secondS = 999;
-    for (i = 0; i < rows.length; i++) {
-      if (rows[i].sbc === minS) atMin.push(rows[i]);
-      else if (rows[i].sbc < secondS) secondS = rows[i].sbc;
-    }
+    for (i = 0; i < rows.length; i++) if (rows[i].sbc === minS) atMin.push(rows[i]);
     if (atMin.length !== 1) return null; // uniqueness lock
-    if (secondS - minS < 4) return null; // structure gap
-    // Ace-only: keep QH→AD convert; kill 6C→KH reverse (rank 10).
-    if (atMin[0].rank !== 11) return null;
     return atMin[0].p;
   }
 
@@ -1089,9 +1075,9 @@
       return { pass: true }; // v9.1 pass disc (ladder-tuned)
     }
 
-    // W47 com_sbc0: unique min-SBC==0 combat single (before multi combat; orthogonal)
-    var sbc0 = pickComSbc0(hand, cur, leg, state, cp);
-    if (sbc0) return { play: sbc0 };
+    // W46 com_sbcuniq: unique min-SBC combat single (before multi combat; orthogonal)
+    var sbcU = pickComSbcUniq(hand, cur, leg, state, cp);
+    if (sbcU) return { play: sbcU };
 
     // W34 seqhi: residual-max combat seq (before pairhi/mulowg; mulowg band disjoint via minT>3)
     var sh = pickSeqHi(hand, cur, leg, state, cp);
@@ -1951,10 +1937,10 @@
     } else {
       var ch = cheapLegals(leg);
       if (ch.length) leg = ch;
-      // W47 com_sbc0 BR: strip combat singles to unique min-SBC==0 play
-      var sbc0BR = pickComSbc0(hand, cur, leg, state, myIdx);
-      if (sbc0BR) {
-        leg = [sbc0BR];
+      // W46 com_sbcuniq BR: strip combat singles to unique min-SBC play
+      var sbcBR = pickComSbcUniq(hand, cur, leg, state, myIdx);
+      if (sbcBR) {
+        leg = [sbcBR];
       } else
       // W34 seqhi: BR strip to max-top seq pool (complement mulowg min band)
       var shBR = pickSeqHi(hand, cur, leg, state, myIdx);
@@ -3533,11 +3519,11 @@
         return { play: loteshRoot, stats: { mode: 'fl-lotesh-hard', via: 'search-root' } };
       }
     }
-    // W47 com_sbc0 hard before exact-endgame (search/exact prefer mid sbc over unique loose 0)
+    // W46 com_sbcuniq hard before exact-endgame (search/exact prefer mid sbc over unique min)
     if (cur && cur.type === 'single') {
-      var sbc0Root = pickComSbc0(hand, cur, legals, state, myIdx);
-      if (sbc0Root) {
-        return { play: sbc0Root, stats: { mode: 'com-sbc0-hard', via: 'search-root' } };
+      var sbcRoot = pickComSbcUniq(hand, cur, legals, state, myIdx);
+      if (sbcRoot) {
+        return { play: sbcRoot, stats: { mode: 'com-sbcuniq-hard', via: 'search-root' } };
       }
     }
 
@@ -4148,6 +4134,7 @@
     enforcePolicyGuards: enforcePolicyGuards,
     pickFreeLeadHard: pickFreeLeadHard,
     pickFlHidefer: pickFlHidefer,
+    pickComSbcUniq: pickComSbcUniq,
     pickFlTwoShed: pickFlTwoShed,
     pickFlPairSeq: pickFlPairSeq,
     pickFlLotesh: pickFlLotesh,
@@ -4158,7 +4145,6 @@
     flTriPairPool: flTriPairPool,
     pickFlBrSeq3: pickFlBrSeq3,
     flBrSeq3Pool: flBrSeq3Pool,
-    pickComSbc0: pickComSbc0,
     freeLeadCandidates: freeLeadCandidates,
     analyzeHand: analyzeHand,
     endgamePick: endgamePick,
