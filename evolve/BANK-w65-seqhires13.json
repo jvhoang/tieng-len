@@ -1,0 +1,20 @@
+{
+  "tag": "p_w65_ex_seqhires13",
+  "base": "p_w64_ex_acejunder",
+  "lever": "seqhi_res13 open-hand residual Jack-top seq3",
+  "convert": "A 20270774@0 345→9TJ",
+  "vs_v95_id": {
+    "A": 31,
+    "B": 36,
+    "new": ["20270774@0"],
+    "rev": []
+  },
+  "vs_v91": {
+    "A": 36,
+    "B": 38,
+    "sum": 74,
+    "rev_note": "reverses 20270774@0 vs v91 (mulowg seat) but still ≥36"
+  },
+  "ship_v96": false,
+  "stack": "A 30→31, B 36 flat pure vs v95; B>0.70; A needs +5 more"
+}
