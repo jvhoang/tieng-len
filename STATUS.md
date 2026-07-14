@@ -1,52 +1,44 @@
 # STATUS — Fair dual ladder (resumable handoff)
 
-**Updated:** 2026-07-14T18:50Z  
-**Live AI:** Grandmaster **v9.5** (fair dual sbc0) — **SHIPPED**  
-**Design freeze (prior):** **v9.1**  
-**New freeze:** **v9.5** ≡ `policies/v95-*` ≡ live `ai.js`/`search.js`  
+**Updated:** 2026-07-14T19:00Z  
+**Live AI / freeze:** Grandmaster **v9.5** ≡ `policies/v95-*` ≡ `ai.js`/`search.js` (**SHIPPED** fair dual)  
 **SoftN:** **DEAD**
 
-## PRIMARY GOLD
-`john_uploads/tien_len_AI.txt` + IMG_0498–0552 + `tienlen-playlogs-1784002833123.json`
+## Skeptic gaps (v9.5) — RESOLVED
+| Gap | Status |
+|-----|--------|
+| live AI_BUILD | **v9.5** |
+| `pickComSbc0` in live `search.js` | **yes** + `com-sbc0-hard` |
+| `policies/v95-*` freeze | **yes** |
+| fair `dual-primary` / `dual-rerun` | HOLDOUT A/B **36/36** WR **0.72** SOFT=0 BR-both |
+| git main + gh-pages | **cd2aff6** (+ bank commits) |
 
-## Ladder (fair dual only)
+## Shipped fair dual rungs
+| Rung | vs freeze | Holdout A/B | Sum | Git |
+|------|-----------|-------------:|----:|-----|
+| **v9.5** | v91 | **36 / 36** | **72** | `2a29964` + site `e8766cc` |
 
-| Rung | Tag | Holdout A/B | Sum | Ship notes |
-|------|-----|-------------:|----:|------------|
-| **v9.5 LIVE** | **`v95` / `p_w47_ex_sbc0`** | **36 / 36** | **72** | fair hidden BR-both SOFT=0 T20 vs freeze **v91** |
-| bank prior | `p_w45_ex_twoshed` | 36 / 35 | 71 | base of sbc0 |
-| discard | `p_w46_ex_sbcuniq` | 34 / 34 | 68 | thrash |
-| invalidated | v9.2–v9.4 | — | — | perfect-info harness, not fair dual |
+v9.2–v9.4 perfect-info harness **invalidated**.
 
-Ship WR **strict >0.70**: **A YES (0.72)** · **B YES (0.72)** · Δid **+22** both.
+## Banked intermediate (not yet a freeze)
+| Tag | vs v95 id | vs v91 | Ship v9.6? |
+|-----|-----------|--------|------------|
+| **`p_w49_ex_maxedge`** | 25 / **26** (0 rev) | **36 / 37** sum73 | **NO** — need both >0.70 vs **v95** |
 
-## Live wiring (verifier-critical)
-- `ai.js` AI_BUILD.id = **`v9.5`**
-- `search.js` contains **`pickComSbc0`** + **`com-sbc0-hard`**
-- `policies/v95-{ai,search}.js` freeze copy (policy-relative requires)
-- Bank alias: `policies/p_w47_ex_sbc0-*`
+Lever: unique naked Queen climb (`20400424@0` 8H→QD).  
+Evidence: `evolve/NOTE-fair-w49-maxedge.md`, `BANK-w49-maxedge.json`.
 
-## Dual artifacts (fair)
-- `{SCRATCH}/dual-primary.json` ← HOLDOUT_A seed0=20260801 36/50
-- `{SCRATCH}/dual-rerun.json` ← HOLDOUT_B seed0=20260802 36/50
-- `evolve/holdout-{A,B}-ch-t20-v95-fair.json`
-- `SHIP_READY.md` (fair dual — replaces perfect-info v9.4 note)
-
-## Stack (convert-first, SoftN dead)
-combat: mulowg · pairhi · pairhi_wide · seqhi · **sbc0**  
+## Stack
+combat: mulowg · pairhi · pairhi_wide · seqhi · sbc0 · **maxedge (banked)**  
 FREE: flvol · flshort5 · flhidetight · brseq3 · tripair · pairshed · lotesh · pairseq · twoshed
 
-## SoftN
-Forbidden. Rogue softN14/16 cancelled. Do not relaunch.
-
-## Next (ladder continues → v11.0)
-1. Next freeze target: **v9.6** must dual-pass fair vs freeze **v95** (holdout A+B WR>0.70).  
-2. Residual under v95: A 14 / B 14 losses — see `evolve/NOTE-fair-w48-residual.md` + scratch `w48/`.  
-3. Dual-safe CF under BASE=v95 FREEZE=v95: 22 non-pass converts (FREE longer-open + combat climb dominate); **20320640@1 stale**; prefer uniqueness-gated structure only.  
-4. Gold series 1–3 non-negotiable. SoftN stays dead.
+## Next (v9.6 → v11.0)
+1. Base **`p_w49_ex_maxedge`** (or live v95 + maxedge).  
+2. Hunt pure 0-reverse converts under freeze **v95** until holdout A **and** B WR **>0.70**.  
+3. Then freeze **v9.6**, stamp live, dual-primary/rerun, commit main + gh-pages.  
+4. SoftN never. Full-policy firstdiff before code (pairkeep/maxedge thrash lessons).
 
 ## Evidence
-`NOTE-fair-w47-results.md`, `SHIP_READY.md`,  
+`SHIP_READY.md`, `evolve/dual-primary.json`, `evolve/dual-rerun.json`,  
 `policies/v95-*`, live `ai.js`/`search.js`,  
-`evolve/dual-primary.json`, `evolve/dual-rerun.json`,  
-scratch `ship-v95/`
+`NOTE-fair-w47/w48/w49-*.md`, scratch `ship-v95/`, `w49/`

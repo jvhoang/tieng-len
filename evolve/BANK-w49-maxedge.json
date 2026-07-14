@@ -1,0 +1,24 @@
+{
+  "tag": "p_w49_ex_maxedge",
+  "base": "v95 / p_w47_ex_sbc0",
+  "lever": "com_maxedge unique naked Queen climb",
+  "convert": "20400424@0 8H\u2192QD",
+  "vs_v95_identity": {
+    "A": 25,
+    "B": 26,
+    "new": [
+      "20400424@0"
+    ],
+    "rev": []
+  },
+  "vs_v91_holdout": {
+    "A": 36,
+    "B": 37,
+    "sum": 73,
+    "protect_A36": true
+  },
+  "ship_v96": false,
+  "reason": "vs freeze v95 only 0.52 \u2014 need stack more pure converts for dual >0.70",
+  "softN": "FORBIDDEN",
+  "gates": "hl==10, omin 5-7, curTop<=2, AA+two, unique max naked rank==9, gap>=3"
+}

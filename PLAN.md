@@ -28,19 +28,24 @@ FORBIDDEN — do not relaunch. Rogue softN14/16 force-killed.
 
 Lever: `com_sbc0` unique true-loose Ace combat single (on convert-first stack through twoshed).
 
+## Intermediate bank (not freeze)
+| Tag | vs v95 | vs v91 | Notes |
+|-----|--------|--------|-------|
+| `p_w49_ex_maxedge` | 25/26 | 36/37 | pure B+1 Queen climb; **not** v9.6 (need >0.70 vs v95) |
+
 ## Live wiring (must hold)
 - `AI_BUILD.id === "v9.5"`
 - `search.js` exports/uses `pickComSbc0` + search-root `com-sbc0-hard`
 - Dual evidence: `evolve/dual-primary.json`, `evolve/dual-rerun.json`, `SHIP_READY.md`
 
 ## Stack (convert-first)
-combat: mulowg · pairhi · pairhi_wide · seqhi · **sbc0**  
+combat: mulowg · pairhi · pairhi_wide · seqhi · sbc0 · **maxedge (banked)**  
 FREE: flvol · flshort5 · flhidetight · brseq3 · tripair · pairshed · lotesh · pairseq · twoshed
 
 ## Next
-1. **v9.6** — one-axis residual under freeze **v95**; dual holdout A/B both WR>0.70 vs **v95**  
-2. Continue 0.1 rungs → **v11.0**  
-3. Gold + playlogs primary data for each lever  
+1. **v9.6** — stack pure 0-reverse converts on maxedge until holdout A/B both WR>0.70 **vs freeze v95**  
+2. Full-policy firstdiff + identity-diff before promote (reject dual-null / BR thrash)  
+3. Continue 0.1 rungs → **v11.0**  
 4. SoftN stays dead  
 
 ## Runner
