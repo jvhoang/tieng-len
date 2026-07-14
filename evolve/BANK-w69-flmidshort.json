@@ -1,0 +1,19 @@
+{
+  "tag": "p_w69_ex_flmidshort",
+  "base": "p_w68_ex_flseq5exact",
+  "lever": "fl_midshort FREE exact L=3 midshort no-2 twin5/7",
+  "convert": "A 20500153@0 seq5→345",
+  "vs_v95_id": {
+    "A": 34,
+    "B": 36,
+    "new": ["20500153@0"],
+    "rev": []
+  },
+  "vs_v91": {
+    "A": 36,
+    "B": 37,
+    "sum": 73
+  },
+  "ship_v96": false,
+  "stack": "A 33→34, B 36 flat; B>0.70; A needs +2 more"
+}
