@@ -1,42 +1,40 @@
 # STATUS — Fair dual ladder (resumable handoff)
 
-**Updated:** 2026-07-14T10:02Z  
-**Live AI / freeze:** Grandmaster **v9.5** ≡ `policies/v95-*` ≡ live `ai.js`/`search.js`  
-**SoftN:** **DEAD**
+**Updated:** 2026-07-14T10:08Z  
+**Live / freeze:** **v9.5** ≡ `policies/v95-*` ≡ live `ai.js`/`search.js` (**SHIPPED** fair dual)  
+**SoftN:** **DEAD**  
+**Git:** main ≡ gh-pages
 
-## Skeptic gaps (v9.5 ship) — CLOSED
-Evidence: `{SCRATCH}/audit-v95/SKEPTIC-AUDIT.txt`
-
-| Check | Result |
-|-------|--------|
-| live AI_BUILD | **v9.5** |
-| pickComSbc0 live | **function** + com-sbc0-hard |
-| policies/v95-* | **tracked + pushed** |
-| dual-primary/rerun | fair HOLDOUT A/B **36/36 WR 0.72** SOFT=0 BR-both |
-| SHIP_READY | fair dual (not perfect-info harness) |
-| main ≡ gh-pages | **yes** |
+## Skeptic gaps — CLOSED (rebuttal `2026-07-14`)
+See `{SCRATCH}/audit-v95-round2/REBUTTAL.txt`:
+- live **v9.5** + pickComSbc0 live
+- policies/v95-* tracked/pushed
+- dual-primary/rerun fair 36/36 WR 0.72 (not perfect-info)
+- SHIP_READY fair dual
 
 ## Shipped
-| Rung | vs | A/B | Sum | Commit |
-|------|----|----:|----:|--------|
-| **v9.5** | freeze v91 | **36/36** | **72** | `2a29964` |
+| Rung | vs freeze | A/B | Sum |
+|------|-----------|----:|----:|
+| **v9.5** | v91 | **36/36** | **72** |
 
-## Intermediate bank (stack toward v9.6)
-| Tag | vs v95 id | vs v91 | Notes |
-|-----|-----------|--------|-------|
-| p_w49_ex_maxedge | 25/26 | 36/37 | Queen climb 20400424@0 |
-| **p_w50_ex_egunder** | **25/27** | **36/36** | Ace underclimb 20320640@0; binary legals only |
+## Intermediate stack toward v9.6 (vs freeze **v95** identity bar 25/25)
+| Tag | vs v95 id | vs v91 | Pure converts |
+|-----|-----------|--------|---------------|
+| maxedge | 25/26 | 36/37 | 20400424@0 QD |
+| egunder | 25/27 | 36/36 | +20320640@0 QC |
+| **seqhires** | **25/28** | **36/36** | +20410397@0 9TJ |
 
-## Gap to v9.6
-vs freeze **v95** need both holdouts **>0.70** (36+/50). Current best bank **27/50 (0.54)** on B. Need ~**+9 net** more pure converts, 0 reverse.
+**Gap:** need A≥36 and B≥36 vs **v95** (currently B **28/50=0.56**). ~**+8 more net** pure converts, 0 reverse.
+
+## Stack
+combat: mulowg · pairhi · pairhi_wide · seqhi · sbc0 · maxedge · egunder · **seqhires**  
+FREE: flvol · flshort5 · flhidetight · brseq3 · tripair · pairshed · lotesh · pairseq · twoshed
 
 ## Next
-1. Base `p_w50_ex_egunder`  
-2. CF + full-policy force + identity-diff + protect v91 ship  
-3. Freeze v9.6 only when A&B >0.70 vs v95  
+1. Base `p_w51_ex_seqhires`  
+2. More pure structure converts (CF + full-policy + identity-diff)  
+3. Freeze **v9.6** only at dual >0.70 vs v95  
 4. SoftN never
 
 ## Evidence
-`SHIP_READY.md`, `evolve/dual-primary.json`, `evolve/dual-rerun.json`,  
-`NOTE-fair-w49-maxedge.md`, `NOTE-fair-w50-egunder.md`,  
-`audit-v95/`, `w49/`, `w50/`
+`SHIP_READY.md`, dual-primary/rerun, BANK-w49/50/51, NOTE-fair-w*, audit-v95*
