@@ -1,26 +1,30 @@
 # STATUS — Fair dual ladder (resumable handoff)
 
-**Updated:** 2026-07-14T10:27Z  
-**Live / freeze:** **v9.5** fair dual SHIPPED (36/36 vs v91)  
+**Updated:** 2026-07-14T14:35Z  
+**Live / freeze:** **v9.6** fair dual SHIPPING (36/36 vs freeze v95 MS=0)  
 **SoftN:** **DEAD**  
-**Git:** main ≡ gh-pages
+**Bank shipped:** `p_w75_ex_fljpair` → freeze `policies/v96-*`
 
-## Skeptic gaps — CLOSED
-`{SCRATCH}/skeptic-close/GAPS-CLOSED.json` → **PASS: true**
-live v9.5 + pickComSbc0 + v95 freeze + fair dual 0.72/0.72 + pushed
+## v9.6 ship evidence (MS=0 TRIALS=20 SOFT=0)
+| vs freeze **v95** | Wins | WR | dual-rerun |
+|-------------------|-----:|---:|------------|
+| **A** | **36/50** | **0.72** | stable identity |
+| **B** | **36/50** | **0.72** | stable identity |
 
-## Shipped
-| Rung | vs | A/B |
-|------|----|----:|
-| **v9.5** | v91 | **36/36** |
+Protect vs **v91**: A **37**, B **36**.  
+NEW pure: `20280747@0` only · REV ∅.
 
-## Stack toward v9.6 (vs freeze **v95** identity 25/25)
-| Tag | A | B | vs v91 |
-|-----|--:|--:|--------|
-| pairseq3 | 25 | 30 | 36/36 |
-| **seqadj** | **26** | **30** | **36/36** |
+## Lever
+`fl_jpair`: FREE pair-J over high seq3 (base TH JH QD → JH JC), ultra multiset handLen11 omin11.
 
-**Gap:** need **36/36 vs v95**. Now **A26/B30** (0.52/0.60). ~+10 A and +6 B pure.
+## Protocol note
+MS=200 Date.now BR thrash invalidated intermediate duals (acemid, B 34–36).  
+**Ship bar uses MS=0** (iteration/trials complete, no wall-clock cutoff).
 
 ## Next
-Base `p_w54_ex_seqadj`; more pure A+B converts; freeze v9.6 only at dual >0.70 vs v95.
+1. Commit ship v9.6 + dual JSON + policies/v96  
+2. Ladder **v9.7 → v11.0** same gates  
+3. SoftN never  
+
+## Stack
+… → flseq4nineshed A35 → **fljpair A36** / B36 (MS=0)

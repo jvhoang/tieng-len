@@ -1,0 +1,19 @@
+{
+  "rung": "v9.6",
+  "protocol": "fair-hidden-gm-BR-both-equal",
+  "ms": 0,
+  "trials": 20,
+  "soft": 0,
+  "freeze": "v95",
+  "chall": "v96",
+  "lever": "fl_jpair",
+  "convert": "20280747@0",
+  "holdoutA": { "seed0": 20260801, "primary": 36, "rerun": 36, "wr": 0.72 },
+  "holdoutB": { "seed0": 20260802, "primary": 36, "rerun": 36, "wr": 0.72 },
+  "protectV91": { "A": 37, "B": 36 },
+  "NEW": ["20280747@0"],
+  "REV": [],
+  "softN": "FORBIDDEN",
+  "tests": { "test-engine": "pass", "test-ai": "pass" },
+  "shipped": true
+}

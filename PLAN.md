@@ -1,6 +1,6 @@
 # PLAN — Fair dual ladder v9.1 → v11.0
 
-**Updated:** 2026-07-14T18:50Z
+**Updated:** 2026-07-14T14:35Z
 
 ## Locked protocol
 1. Hidden info only  
@@ -11,47 +11,50 @@
 6. N≥50 WR **>0.70** + identity **+≥2 wins**  
 7. Gold series 1–3 recommendations  
 8. Data-first, one lever at a time  
-9. Ship partitions: HOLDOUT_A `20260801` + HOLDOUT_B `20260802` (never DEV alone)
+9. Ship partitions: HOLDOUT_A `20260801` + HOLDOUT_B `20260802` (never DEV alone)  
+10. **Ship dual budget: MS=0 TRIALS=20 SOFT=0** (deterministic; avoid MS>0 wall-clock thrash)
 
 ## Invalidated
 - Perfect-info duals (hollow 40/50) — v9.2–v9.4 harness  
 - Live BR-on / freeze BR-off asymmetry  
 - softN count sweeps  
+- MS=200 dual thrash as ship evidence (Date.now BR cutoff)
 
 ## SoftN
-FORBIDDEN — do not relaunch. Rogue softN14/16 force-killed.
+FORBIDDEN — do not relaunch. Scripts .DISABLED.
 
 ## Shipped fair dual rungs
-| Rung | Live / freeze | Dual vs | Holdout A/B | Sum |
-|------|---------------|---------|-------------:|----:|
-| **v9.5** | `ai.js`/`search.js` ≡ `policies/v95-*` | freeze **v91** | **36 / 36** | **72** |
+| Rung | Live / freeze | Dual vs | Holdout A/B | Sum | Protocol |
+|------|---------------|---------|-------------:|----:|----------|
+| **v9.5** | `policies/v95-*` | freeze **v91** | **36 / 36** | **72** | T20 |
+| **v9.6** | `ai.js`/`search.js` ≡ `policies/v96-*` | freeze **v95** | **36 / 36** | **72** | **MS=0** T20 |
 
-Lever: `com_sbc0` unique true-loose Ace combat single (on convert-first stack through twoshed).
+Lever v9.6: `fl_jpair` FREE pair-J over high T-J-Q seq (convert 20280747@0).
 
-## Intermediate bank (not freeze)
-| Tag | vs v95 | vs v91 | Notes |
-|-----|--------|--------|-------|
-| `p_w49_ex_maxedge` | 25/26 | 36/37 | Queen climb |
-| `p_w50_ex_egunder` | **25/27** | 36/36 | binary Ace underclimb; stack +2 vs v95 id |
+## Intermediate bank (not freeze) → shipped
+| Tag | vs v95 MS0 | Notes |
+|-----|------------|-------|
+| `p_w71_ex_flseq4nineshed` | 35/36 | prior best bank |
+| **`p_w75_ex_fljpair`** | **36/36** | **SHIPPED as v9.6** |
 
 ## Live wiring (must hold)
-- `AI_BUILD.id === "v9.5"`
-- `search.js` exports/uses `pickComSbc0` + search-root `com-sbc0-hard`
+- `AI_BUILD.id === "v9.6"`
+- `search.js` exports/uses `pickFlJPair` + search-root `fl-jpair-hard`
 - Dual evidence: `evolve/dual-primary.json`, `evolve/dual-rerun.json`, `SHIP_READY.md`
 
 ## Stack (convert-first)
-combat: mulowg · pairhi · pairhi_wide · seqhi · sbc0 · **maxedge (banked)**  
-FREE: flvol · flshort5 · flhidetight · brseq3 · tripair · pairshed · lotesh · pairseq · twoshed
+combat: mulowg · pairhi · pairhi_wide · seqhi · sbc0 · maxedge · egunder · qpairclimb · seqhi_res · seqadj · seq5adj · seqmidunder  
+FREE: flvol · flshort5 · flhidetight · brseq3 · tripair · pairshed · lotesh · pairseq · twoshed · seqopen · pairseq3 · flpair88 · flmidshed · flegpair · flpair5 · flquad4lead · flpair6 · acejunder · seqhires13 · comkpeel · flseq5exact · flmidshort · flseq4nineshed · **fljpair**
 
 ## Next
-1. **v9.6** — stack pure 0-reverse converts on maxedge until holdout A/B both WR>0.70 **vs freeze v95**  
-2. Full-policy firstdiff + identity-diff before promote (reject dual-null / BR thrash)  
-3. Continue 0.1 rungs → **v11.0**  
+1. **v9.7+** — pure 0-reverse converts on v9.6 freeze until next 0.1 rung  
+2. Full-policy firstdiff + identity-diff before promote  
+3. Continue → **v11.0**  
 4. SoftN stays dead  
 
-## Runner
+## Runner (ship protocol)
 ```bash
-FREEZE=v91 CHALL=v95 SOFT=0 MS=200 TRIALS=20 GAMES=25 BOTH_SEATS=1 \
+FREEZE=v95 CHALL=v96 SOFT=0 MS=0 TRIALS=20 GAMES=25 BOTH_SEATS=1 \
   SEED=20260801 node evolve/lean-fair-dual-n20.js
 ```
 
