@@ -1,0 +1,23 @@
+{
+  "tag": "p_w52_ex_seqopen",
+  "base": "p_w51_ex_seqhires",
+  "lever": "fl_seqopen FREE opening maxL===6 double-2",
+  "convert": "20500154@1 len4\u2192len6",
+  "vs_v95_id": {
+    "A": 25,
+    "B": 29,
+    "new": [
+      "20320640@0",
+      "20400424@0",
+      "20410397@0",
+      "20500154@1"
+    ],
+    "rev": []
+  },
+  "vs_v91": {
+    "A": 36,
+    "B": 36,
+    "sum": 72
+  },
+  "ship_v96": false
+}
