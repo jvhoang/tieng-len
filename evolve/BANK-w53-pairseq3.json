@@ -1,0 +1,17 @@
+{
+  "tag": "p_w53_ex_pairseq3",
+  "base": "p_w52_ex_seqopen",
+  "lever": "fl_pairseq3 FREE mid pair\u2192seq3 no-quad",
+  "convert": "20270775@0 99\u219289T",
+  "vs_v95_id": {
+    "A": 25,
+    "B": 30,
+    "rev": []
+  },
+  "vs_v91": {
+    "A": 36,
+    "B": 36
+  },
+  "ship_v96": false,
+  "stack": "B 25\u219230 (+5 pure vs v95 id)"
+}

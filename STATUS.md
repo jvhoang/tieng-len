@@ -1,35 +1,29 @@
 # STATUS — Fair dual ladder (resumable handoff)
 
-**Updated:** 2026-07-14T10:17Z  
-**Live / freeze:** **v9.5** ≡ `policies/v95-*` ≡ live (`AI_BUILD` + `pickComSbc0`)  
+**Updated:** 2026-07-14T10:22Z  
+**Live / freeze:** **v9.5** (fair dual SHIPPED)  
 **SoftN:** **DEAD**  
 **Git:** main ≡ gh-pages
 
 ## Skeptic gaps — CLOSED
-Machine proof: `{SCRATCH}/skeptic-close/GAPS-CLOSED.json` (`PASS: true`)
-- live v9.5 + pickComSbc0 + com-sbc0-hard
-- policies/v95-* tracked/pushed
-- dual-primary/rerun fair 36/36 WR 0.72 SOFT=0 BR-both
-- SHIP_READY fair dual
-- main ≡ gh-pages
+`{SCRATCH}/skeptic-close/GAPS-CLOSED.json` → **PASS: true**
+live v9.5 + pickComSbc0 + policies/v95 + fair dual 0.72/0.72 + pushed
 
-## Shipped fair dual
-| Rung | vs | A/B | Sum |
-|------|----|----:|----:|
-| **v9.5** | v91 | **36/36** | **72** |
+## Shipped
+| Rung | vs | A/B |
+|------|----|----:|
+| **v9.5** | v91 | **36/36** |
 
-## Stack toward v9.6 (vs freeze **v95** identity 25/25)
-| Tag | B vs v95 id | vs v91 | Convert |
-|-----|------------:|--------|---------|
-| maxedge | 26 | 36/37 | 20400424@0 QD |
-| egunder | 27 | 36/36 | 20320640@0 QC |
-| seqhires | 28 | 36/36 | 20410397@0 9TJ |
-| **seqopen** | **29** | **36/36** | 20500154@1 max seq6 |
+## Stack toward v9.6 (vs freeze **v95** identity)
+| Tag | B | vs v91 |
+|-----|--:|--------|
+| maxedge | 26 | 36/37 |
+| egunder | 27 | 36/36 |
+| seqhires | 28 | 36/36 |
+| seqopen | 29 | 36/36 |
+| **pairseq3** | **30** | **36/36** |
 
-**Gap to v9.6:** need A&B ≥36 vs **v95**. Currently **B 29/50 (0.58)**. ~**+7 pure**.
+**Gap:** B **30/50 (0.60)** vs need **36**; A still **25** (need A lifts too).
 
 ## Next
-1. Base `p_w52_ex_seqopen`  
-2. More pure structure converts  
-3. Freeze v9.6 only at dual >0.70 vs v95  
-4. SoftN never
+Continue pure 0-reverse converts on `p_w53_ex_pairseq3` base; prioritize A residual; freeze v9.6 only at dual >0.70 vs v95.
