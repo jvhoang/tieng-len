@@ -1,36 +1,38 @@
 # STATUS — Fair dual ladder (resumable handoff)
 
-**Updated:** 2026-07-14T14:45Z  
-**Live / freeze:** **v9.6** SHIPPED (commit `384d3aa` main · `4d2abf4` gh-pages)  
+**Updated:** 2026-07-14T18:00Z  
+**Live / freeze:** **v9.6** SHIPPED (`384d3aa` main · `4d2abf4` gh-pages)  
 **SoftN:** **DEAD**  
-**Freeze package:** `policies/v96-*` ≡ live `ai.js`/`search.js`
+**Ship protocol:** **MS=0 TRIALS=20 SOFT=0** dual-rerun both holdouts  
 
-## v9.6 ship (closed)
-| vs freeze **v95** | Protocol | Wins | WR |
-|-------------------|----------|-----:|---:|
-| Holdout A | MS=0 T20 dual-rerun | **36/50** | **0.72** |
-| Holdout B | MS=0 T20 dual-rerun | **36/50** | **0.72** |
-| Protect A vs v91 | MS=0 | **37/50** | 0.74 |
-| Protect B vs v91 | MS=0 | **36/50** | 0.72 |
+## Shipped
+| Rung | vs freeze | A | B | Protocol |
+|------|-----------|--:|--:|----------|
+| v9.5 | v91 | 36 | 36 | T20 |
+| **v9.6** | **v95** | **36** | **36** | **MS=0** |
 
-- Lever: **`fl_jpair`** FREE force pair-J over high T-J-Q seq  
-- Convert: **`20280747@0`** pure NEW · REV ∅  
-- Evidence: `evolve/dual-primary.json`, `dual-rerun.json`, `SHIP_READY.md`, `GAPS-CLOSED-FAIR-V96.json`  
-- Tests: `test-engine` + `test-ai` pass  
+Live `AI_BUILD.id=v9.6` · `policies/v96-*` · lever `fl_jpair`  
+Evidence: `evolve/dual-primary.json`, `dual-rerun.json`, SCRATCH dual/load/test logs  
 
-## Protocol lock
-**Ship duals use MS=0 TRIALS=20 SOFT=0** (deterministic).  
-MS=200 wall-clock BR thrash rejected as ship evidence (W74 acemid).
+## Intermediate bank toward v9.7 (vs freeze **v96**)
+| Tag | A | B | NEW | REV |
+|-----|--:|--:|-----|-----|
+| identity v96 | 25 | 25 | — | — |
+| `p_w76_ex_acetrip_lowopen` | **26** | **25** | `20260801@1` multi-ply | ∅ |
+| `p_w77_ex_fltrash3` | **27** | **25** | `20270774@1` FREE trash3 | ∅ |
 
-## Next — ladder v9.7 → v11.0
-Residual A after v96 (14 seats, need A≥37 for WR>0.70 vs freeze **v96**):
-```
-20260801@1  20290720@0  20300693@1  20350558@1  20370504@1
-20380477@0  20390450@1  20400423@1  20410396@1  20420369@0
-20440315@0  20450288@1  20470234@0  20480207@0
-```
-1-force MS=0 vs v95 residual: **in progress / expect empty** (multi-ply skill).  
-Next: dual-safe 2/3-force + gold CF under MS=0; SoftN never.
+**Ship bar v9.7:** A≥**36** · B≥**36** vs freeze v96 (need **+9 A** and **+11 B** pure from w77).  
+w76 vs v95 continuity: **A37/B36**.  
 
-## Stack
-… → flseq4nineshed A35 → **fljpair A36** / B36 (MS=0) · freeze **v9.6**
+## Residual force (MS=0 under w76)
+Many dual-safe 1-force hits available (e.g. FREE trash opens, combat climbs).  
+Continuing convert-first package loop. SoftN never.
+
+## Goal end-state
+**v11.0** under same gates (or honest residual handoff with machine evidence).  
+Not complete: intermediate bank only (A27/B25 vs freeze v96).
+
+## Next
+1. Package next pure converts (1-force hits inventory in SCRATCH `v97-w76-1f-*`)  
+2. Climb bank to A36/B36 vs freeze v96 → ship **v9.7**  
+3. Repeat 0.1 rungs → **v11.0**  

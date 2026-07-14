@@ -1,0 +1,10 @@
+{
+  "tag": "p_w76_ex_acetrip_lowopen",
+  "base": "v96 / p_w75_ex_fljpair",
+  "levers": ["com_acetrip", "fl_lowopen"],
+  "convert": "20260801@1 multi-ply MS=0 (9H→AS then FREE 33→3)",
+  "vs_v96_ms0": { "A": "26/50", "B": "25/50", "NEW_A": ["20260801@1"], "REV": [] },
+  "identity_v96": { "A": "25/50" },
+  "ship_v97": false,
+  "note": "Pure A+1 intermediate toward v9.7 ship bar A≥36 vs freeze v96. SoftN FORBIDDEN."
+}

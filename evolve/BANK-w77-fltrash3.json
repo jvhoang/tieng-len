@@ -1,0 +1,8 @@
+{
+  "tag": "p_w77_ex_fltrash3",
+  "base": "p_w76_ex_acetrip_lowopen",
+  "lever": "fl_trash3 FREE single-3 over seq3",
+  "convert": "20270774@1",
+  "vs_v96_ms0": { "A": "27/50", "B": "TBD" },
+  "ship_v97": false
+}

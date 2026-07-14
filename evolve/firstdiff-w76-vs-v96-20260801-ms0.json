@@ -1,0 +1,71 @@
+{
+  "protocol": "fair-firstdiff-v1",
+  "freeze": "v96",
+  "chall": "p_w76_ex_acetrip_lowopen",
+  "live": {
+    "id": "v9.1-probe-p_w76_ex_acetrip_lowopen",
+    "stamped": "2026-07-14T17:00:00Z",
+    "label": "Grandmaster v9.1-probe p_w76_ex_acetrip_lowopen"
+  },
+  "freezeBuild": {
+    "id": "v9.6",
+    "stamped": "2026-07-14T14:33:42Z",
+    "label": "Grandmaster v9.6 (fair dual fljpair)"
+  },
+  "opts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": false,
+    "hiddenInfo": true,
+    "timeMs": 0,
+    "iterations": 60,
+    "maxSims": 120,
+    "brTrials": 20,
+    "bestResponse": true,
+    "exactExploit": false,
+    "exploit": true,
+    "softSamples": 0,
+    "maxBranch": 12,
+    "mode": "auto",
+    "strongSelf": false
+  },
+  "nGames": 2,
+  "nDiverged": 1,
+  "divergeRate": 0.5,
+  "classCount": {
+    "combat_other": 1
+  },
+  "results": [
+    {
+      "seed": 20260801,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 7,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 13,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 20260801,
+      "liveSeat": 1,
+      "firstDiff": {
+        "step": 3,
+        "seat": 1,
+        "phase": "single",
+        "handLen": 13,
+        "omin": 8,
+        "curTop": 5,
+        "freeze": "9H",
+        "chall": "AS",
+        "freezeSig": "25",
+        "challSig": "44",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 2,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 4,
+      "freezeWinIfNoDiff": null
+    }
+  ]
+}

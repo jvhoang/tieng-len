@@ -46,6 +46,15 @@ Lever v9.6: `fl_jpair` FREE pair-J over high T-J-Q seq (convert 20280747@0).
 combat: mulowg · pairhi · pairhi_wide · seqhi · sbc0 · maxedge · egunder · qpairclimb · seqhi_res · seqadj · seq5adj · seqmidunder  
 FREE: flvol · flshort5 · flhidetight · brseq3 · tripair · pairshed · lotesh · pairseq · twoshed · seqopen · pairseq3 · flpair88 · flmidshed · flegpair · flpair5 · flquad4lead · flpair6 · acejunder · seqhires13 · comkpeel · flseq5exact · flmidshort · flseq4nineshed · **fljpair**
 
+## Intermediate bank (post v9.6, vs freeze v96 MS=0)
+| Tag | A/B | Notes |
+|-----|-----|-------|
+| identity | 25/25 | baseline |
+| `p_w76_ex_acetrip_lowopen` | **26/25** | multi-ply 20260801@1 |
+| `p_w77_ex_fltrash3` | **27/25** | FREE trash3 20270774@1 |
+
+Ship v9.7 needs **36/36** vs freeze v96.
+
 ## Next
 1. **v9.7+** — pure 0-reverse converts on v9.6 freeze until next 0.1 rung  
 2. Full-policy firstdiff + identity-diff before promote  
