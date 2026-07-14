@@ -31,7 +31,8 @@ Lever: `com_sbc0` unique true-loose Ace combat single (on convert-first stack th
 ## Intermediate bank (not freeze)
 | Tag | vs v95 | vs v91 | Notes |
 |-----|--------|--------|-------|
-| `p_w49_ex_maxedge` | 25/26 | 36/37 | pure B+1 Queen climb; **not** v9.6 (need >0.70 vs v95) |
+| `p_w49_ex_maxedge` | 25/26 | 36/37 | Queen climb |
+| `p_w50_ex_egunder` | **25/27** | 36/36 | binary Ace underclimb; stack +2 vs v95 id |
 
 ## Live wiring (must hold)
 - `AI_BUILD.id === "v9.5"`
