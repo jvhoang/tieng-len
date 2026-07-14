@@ -1,0 +1,19 @@
+{
+  "tag": "p_w66_ex_comkpeel",
+  "base": "p_w65_ex_seqhires13",
+  "lever": "com_kpeel combat peel King from quad-K",
+  "convert": "A 20330612@1 5S→KH",
+  "vs_v95_id": {
+    "A": 32,
+    "B": 36,
+    "new": ["20330612@1"],
+    "rev": []
+  },
+  "vs_v91": {
+    "A": 36,
+    "B": 38,
+    "sum": 74
+  },
+  "ship_v96": false,
+  "stack": "A 31→32, B 36 flat; B>0.70; A needs +4 more"
+}
