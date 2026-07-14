@@ -1,0 +1,19 @@
+{
+  "tag": "p_w61_ex_flpair5",
+  "base": "p_w60_ex_flegpair",
+  "lever": "fl_pair5 FREE force pair-5 over long seq no-2 twin-K",
+  "convert": "B 20360532@1 seq5→55",
+  "vs_v95_id": {
+    "A": 30,
+    "B": 33,
+    "new": ["20360532@1"],
+    "rev": []
+  },
+  "vs_v91": {
+    "A": 37,
+    "B": 38,
+    "sum": 75
+  },
+  "ship_v96": false,
+  "stack": "A 30 flat, B 32→33 pure vs v95 id"
+}
