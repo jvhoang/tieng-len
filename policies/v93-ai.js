@@ -16,15 +16,8 @@
 const AI_BUILD = {
   id: "v9.3",
   stamped: "2026-07-14T00:27:00Z",
-  label: "Grandmaster v9.3"
+  label: "Grandmaster v9.3 (ladder freeze)"
 };
-
-if (typeof window !== 'undefined') {
-  window.TIENLEN_AI_BUILD = AI_BUILD;
-  window.TienLenAI = window.TienLenAI || {};
-  window.TienLenAI.AI_BUILD = AI_BUILD;
-}
-
 
 if (typeof window !== 'undefined') {
   window.TIENLEN_AI_BUILD = AI_BUILD;
@@ -54,12 +47,12 @@ if (typeof window !== 'undefined') {
 // `window.TienLenAI` is fully assigned.
 const _isNodeCjs = (typeof module === 'object' && module && module.exports &&
   typeof require === 'function');
-const engine = _isNodeCjs ? require('./engine.js') : ((typeof window !== 'undefined' && window.TienLenEngine) || {});
+const engine = _isNodeCjs ? require('../engine.js') : ((typeof window !== 'undefined' && window.TienLenEngine) || {});
 const genomeMod = _isNodeCjs
-  ? require('./genome.js')
+  ? require('../genome.js')
   : (typeof window !== 'undefined' ? window.TienLenGenome : null);
 const searchMod = _isNodeCjs
-  ? require('./search.js')
+  ? require('./v93-search.js')
   : (typeof window !== 'undefined' ? window.TienLenSearch : null);
 const {
   detectCombo, getLegalPlays, applyPlay, pass, cardCompare, cloneState: engineClone
