@@ -14,9 +14,9 @@
 
 /** Shown on title screen — bump when shipping AI behavior changes. */
 const AI_BUILD = {
-  id: "v9.9",
-  stamped: "2026-07-14T23:37:52Z",
-  label: "Grandmaster v9.9"
+  id: "v9.1-probe-p_r99g_p16",
+  stamped: "2026-07-14T21:59:49Z",
+  label: "probe p_r99g_p16"
 };
 
 // Publish build identity IMMEDIATELY (before any later init that might throw).
@@ -33,12 +33,12 @@ if (typeof window !== 'undefined') {
 // `window.TienLenAI` is fully assigned.
 const _isNodeCjs = (typeof module === 'object' && module && module.exports &&
   typeof require === 'function');
-const engine = _isNodeCjs ? require('./engine.js') : ((typeof window !== 'undefined' && window.TienLenEngine) || {});
+const engine = _isNodeCjs ? require('../engine.js') : ((typeof window !== 'undefined' && window.TienLenEngine) || {});
 const genomeMod = _isNodeCjs
-  ? require('./genome.js')
+  ? require('../genome.js')
   : (typeof window !== 'undefined' ? window.TienLenGenome : null);
 const searchMod = _isNodeCjs
-  ? require('./search.js')
+  ? require('./p_r99g_p16-search.js')
   : (typeof window !== 'undefined' ? window.TienLenSearch : null);
 const {
   detectCombo, getLegalPlays, applyPlay, pass, cardCompare, cloneState: engineClone

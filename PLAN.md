@@ -53,21 +53,35 @@ FORBIDDEN — do not relaunch. Scripts .DISABLED.
 > Fixed-seed intermediate banks (p_w98+) are **dev-only** until re-validated on a fresh seed set.
 
 ## Live wiring (must hold)
-- `AI_BUILD.id === "v9.7"`
+- `AI_BUILD.id === "v9.8"` (climbing toward **v11.0** via `evolve/ladder-to-v11.js`)
+- Freeze stamp: `policies/v98-*` from bank `p_r98e_p17` (38/36 + rerun on ship S vs FREEZE=v97)
 - Dual evidence (legacy): `evolve/dual-primary.json`, `evolve/dual-rerun.json`
 - Dual evidence (new): `evolve/fresh-dual-*.json` + `evolve/seed-sets/ship-*.json`
+- Convert ship: `evolve/ship-rung-p_r98e.json` · ladder log under goal SCRATCH
 
-## Residual handoff (2026-07-14) — goal incomplete
+## Residual handoff (2026-07-14) — superseded by convert-first climb
 Fresh-seed baseline **v97 vs v96 = 25/50+25/50 (Δ0)**.  
-Structural transfer probes (p_t1, p_t2a, p_t2b) **reverse or dual-null**.  
+Structural transfer probes reverse/dual-null — not ship path.  
 Documented: `evolve/NOTE-fair-residual-handoff-v97.md`.  
-**v11.0 not shipped.** Live remains **v9.7**. SoftN dead.
+**v11.0 not shipped.** Live remains **v9.7** until convert bar clears. SoftN dead.
 
-## Next (resume)
-1. Multi-seed pattern mine with **held-out second seed set** before package  
-2. Ship **v9.8+** only under fresh-seed gates → **v11.0**  
-3. SoftN stays dead  
-4. No fixed HOLDOUT_A/B ship duals
+## Active path (resume 2026-07-14 evening) — convert-first on ship S
+**Runner:** `evolve/ship-convert-rung.js`  
+**Promote:** `evolve/promote-bank-to-live.js <bank> v9.N v9N`  
+
+1. Fix one ship seed set **S** (saved under `evolve/seed-sets/`).  
+2. 1-force residual of BASE losses vs FREEZE on **S**.  
+3. Package ultra-exact byR hard roots one-by-one; pure accept  
+   `a≥prevA ∧ b≥prevB ∧ (a+b)>(prevA+prevB)`.  
+4. Ship when dual on **S**: A≥36 B≥36 (WR>0.70) + identity Δ≥+2 (auto).  
+5. Dual-rerun same **S** MS=0; promote bank → live + freeze stamp.  
+6. **New S** for next 0.1 rung; repeat through **v11.0**.  
+7. SoftN stays dead. No fixed HOLDOUT_A/B ship duals.
+
+### Climb S (v9.8 candidate)
+`evolve/seed-sets/ship-2026-07-14T17-22-34-567Z-v97-vs-v97.json`  
+Identity 25/25 · BASE chain p_r98d_p4 → p_r98e_* · FREEZE=v97  
+Bar: **36/36** both partitions.
 
 ## Runner (ship protocol — anti-overfit)
 ```bash

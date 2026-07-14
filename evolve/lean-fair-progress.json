@@ -5,12 +5,12 @@
     "liveWin": true,
     "liveSeat": 1,
     "steps": 17,
-    "ms": 44,
+    "ms": 56,
     "liveWins": 36,
     "games": 50,
     "wr": 0.72
   },
-  "freeze": "v96",
-  "chall": "v97",
+  "freeze": "v97",
+  "chall": "p_w117_ex_auto",
   "bothSeats": true
 }
