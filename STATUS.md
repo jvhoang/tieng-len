@@ -1,6 +1,6 @@
 # STATUS — Fair dual ladder (resumable handoff)
 
-**Updated:** 2026-07-14T18:00Z  
+**Updated:** 2026-07-14T18:30Z  
 **Live / freeze:** **v9.6** SHIPPED (`384d3aa` main · `4d2abf4` gh-pages)  
 **SoftN:** **DEAD**  
 **Ship protocol:** **MS=0 TRIALS=20 SOFT=0** dual-rerun both holdouts  
@@ -20,8 +20,9 @@ Evidence: `evolve/dual-primary.json`, `dual-rerun.json`, SCRATCH dual/load/test 
 | identity v96 | 25 | 25 | — | — |
 | `p_w76_ex_acetrip_lowopen` | **26** | **25** | `20260801@1` multi-ply | ∅ |
 | `p_w77_ex_fltrash3` | **27** | **25** | `20270774@1` FREE trash3 | ∅ |
+| `p_w78_ex_flseq5shed` | **28** | **25** | `20430342@0` FREE seq5shed | ∅ |
 
-**Ship bar v9.7:** A≥**36** · B≥**36** vs freeze v96 (need **+9 A** and **+11 B** pure from w77).  
+**Ship bar v9.7:** A≥**36** · B≥**36** vs freeze v96 (need **+8 A** and **+11 B** pure from w78).  
 w76 vs v95 continuity: **A37/B36**.  
 
 ## Residual force (MS=0 under w76)
