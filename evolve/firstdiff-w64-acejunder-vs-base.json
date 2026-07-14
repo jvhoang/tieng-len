@@ -1,0 +1,71 @@
+{
+  "protocol": "fair-firstdiff-v1",
+  "freeze": "p_w63_ex_flpair6",
+  "chall": "p_w64_ex_acejunder",
+  "live": {
+    "id": "v9.1-probe-p_w64_ex_acejunder",
+    "stamped": "2026-07-14T10:26:39Z",
+    "label": "Grandmaster v9.1-probe p_w64_ex_acejunder"
+  },
+  "freezeBuild": {
+    "id": "v9.1-probe-p_w63_ex_flpair6",
+    "stamped": "2026-07-14T10:26:39Z",
+    "label": "Grandmaster v9.1-probe p_w63_ex_flpair6"
+  },
+  "opts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": false,
+    "hiddenInfo": true,
+    "timeMs": 200,
+    "iterations": 60,
+    "maxSims": 120,
+    "brTrials": 20,
+    "bestResponse": true,
+    "exactExploit": false,
+    "exploit": true,
+    "softSamples": 0,
+    "maxBranch": 12,
+    "mode": "auto",
+    "strongSelf": false
+  },
+  "nGames": 2,
+  "nDiverged": 1,
+  "divergeRate": 0.5,
+  "classCount": {
+    "combat_other": 1
+  },
+  "results": [
+    {
+      "seed": 20470235,
+      "liveSeat": 0,
+      "firstDiff": {
+        "step": 4,
+        "seat": 0,
+        "phase": "single",
+        "handLen": 10,
+        "omin": 9,
+        "curTop": 1,
+        "freeze": "AC",
+        "chall": "JC",
+        "freezeSig": "47",
+        "challSig": "35",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 3,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 5,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 20470235,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 10,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 20,
+      "freezeWinIfNoDiff": true
+    }
+  ]
+}
