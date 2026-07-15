@@ -764,12 +764,12 @@
       if (hiSeq.length) return orderLegals(hiSeq, state, myIdx)[0];
     }
 
-    // Trash-first with control when deep (gold 0514): shed deadwood before mid pairs
-    // Prefer trash when has 2 + low trash + multi would leave orphan trash
+    // Trash-first with control when deep (gold 0514/0531/0540): shed deadwood
+    // Prefer trash when has 2 + low trash — before mid pairs / mid multi
     if (info.hasControl && handLen >= 7 && info.trashCount >= 1 && info.twos >= 1) {
       var trashPlays = [];
       for (i = 0; i < legals.length; i++) {
-        if (isTrashSinglePlay(legals[i], info) && legals[i][0].rank <= 5) trashPlays.push(legals[i]);
+        if (isTrashSinglePlay(legals[i], info) && legals[i][0].rank <= 6) trashPlays.push(legals[i]);
       }
       trashPlays.sort(function (a, b) {
         return a[0].rank - b[0].rank || a[0].suit - b[0].suit;
@@ -1512,9 +1512,39 @@
     for (i = 0; i < leg.length; i++) {
       if (leg[i].length === hand.length) return { play: leg[i] };
     }
+    var omin = oppMinHand(state, cp);
+    var handLen = hand.length;
     if (!cur) {
       return { play: pickFreeLeadHard(leg, state, cp) };
     }
+    var curTop = cur.top ? cur.top.rank : 0;
+    // omin≤1 combat: prefer single 2 / highest single / long multi (Series 4/5 convert)
+    if (omin <= 1) {
+      for (i = 0; i < leg.length; i++) {
+        if (leg[i].length === 1 && leg[i][0].rank === 12) return { play: leg[i] };
+      }
+      var highs = [];
+      for (i = 0; i < leg.length; i++) {
+        if (leg[i].length === 1 && leg[i][0].rank >= 10) highs.push(leg[i]);
+      }
+      if (highs.length) {
+        highs.sort(function (a, b) { return b[0].rank - a[0].rank; });
+        return { play: highs[0] };
+      }
+      var multis = leg.filter(function (p) { return p.length >= 2 && !playHasTwo(p); });
+      if (multis.length) {
+        multis.sort(function (a, b) { return b.length - a.length; });
+        return { play: multis[0] };
+      }
+    }
+    // Structure-safe "cheap": exclude high sbc peels that gold would reject
+    var safe = [];
+    for (i = 0; i < leg.length; i++) {
+      if (playHasTwo(leg[i]) || playIsBomb(leg[i])) continue;
+      if (structureBreakCost(hand, leg[i]) >= 5) continue;
+      safe.push(leg[i]);
+    }
+    if (safe.length) return { play: orderLegals(safe, state, cp)[0] };
     var cheap = cheapLegals(leg);
     if (cheap.length) return { play: orderLegals(cheap, state, cp)[0] };
     if (cur.cards && cur.cards.every(function (c) { return c.rank === 12; })) {
@@ -1522,12 +1552,17 @@
       for (var b = 0; b < leg.length; b++) if (playIsBomb(leg[b])) bombs.push(leg[b]);
       if (bombs.length) return { play: orderLegals(bombs, state, cp)[0] };
     }
-    var omin = oppMinHand(state, cp);
-    var handLen = hand.length;
-    var curTop = cur.top ? cur.top.rank : 0;
     var non2 = [];
     for (var ni = 0; ni < leg.length; ni++) {
       if (!playHasTwo(leg[ni]) && !playIsBomb(leg[ni])) non2.push(leg[ni]);
+    }
+    // Pass when deep and all non-2 answers smash structure (gold 0501/0510/0550)
+    if (handLen >= 9 && omin >= 4 && non2.length) {
+      var minSbc = 99;
+      for (i = 0; i < non2.length; i++) {
+        minSbc = Math.min(minSbc, structureBreakCost(hand, non2[i]));
+      }
+      if (minSbc >= 5 && curTop <= 10) return { pass: true };
     }
     if (non2.length) return { play: orderLegals(non2, state, cp)[0] };
     if (handLen <= 5 || omin <= 2 || curTop >= 10) {

@@ -1,51 +1,42 @@
 # STATUS — Superhuman goal (hybrid PAIR_STEP + CERT)
 
-**Updated:** 2026-07-15T08:15Z  
-**Champion:** `p_l2s7` / `v1.0-sh-L2s7` (first hybrid accept)  
+**Updated:** 2026-07-15T08:45Z  
+**Champion:** `p_l2s9` / `v1.0-sh-L2s9`  
 **W_max:** 9 · **SoftN:** FORBIDDEN · **convert-on-S:** FORBIDDEN  
-**Ladder:** **L1 ACHIEVED** · **L2 in progress** (1 accept, ΣΔ=+0.0875) · L3–L5 pending  
-**Gold latest:** GREEN (48/0) · manifest clean  
+**Ladder:** **L1 ACHIEVED** · L2 climb (2 accepts, consecutive streak needs rebuild after rejects)  
+**Gold latest:** GREEN (48/0)  
 
-## Current
+## Champion metrics
 
-| Item | State |
-|------|--------|
-| Champion | `policies/p_l2s7-*` + live `ai.js`/`search.js` |
-| Champion dual WR (dev) | **0.5125** on accept S_t vs v60 (not ship) |
-| ΣΔ accepted | **+0.0875** (1 accept) |
-| Consecutive accepts | **1** / 3 needed for L2 ΣΔ path |
-| EMA WR vs v6 | ~0.51 (single accept point) |
-| Gold suite | **48/0** fair path |
+| Metric | Value |
+|--------|-------|
+| ΣΔ accepted | **+0.1025** (0007 +0.0875, 0010 +0.015) |
+| Consecutive accept streak | **1** after rejects 0011–0013 (need 3 for L2 ΣΔ path) |
+| Dev WR vs v6 (accept points) | ~0.48–0.51 |
+| EMA | not yet ≥0.60 |
 
-## L1 shipped
+## PAIR_STEP log (abbrev)
 
-- Commit **`89ccbe0`** tag **`milestone-L1`** on origin
+| step | NEW | accept | Δ | LB | n | notes |
+|------|-----|--------|---|-----|---|-------|
+| 0007 | p_l2s7 | **Y** | +0.0875 | +0.029 | 240 | first accept vs L1 |
+| 0008 | p_l2s8 | N | 0 | 0 | 240 | trash-first noop |
+| 0009 | p_l2s9 | N | +0.004 | 0 | 240 | LB not >0 |
+| **0010** | **p_l2s9** | **Y** | **+0.015** | **+0.0025** | **400** | 2nd accept (large n) |
+| 0011 | p_l2s10 | N | 0 | 0 | 300 | orphan tax noop |
+| 0012 | p_l2s11 | N | −0.0125 | −0.03 | 320 | high-single veto hurt |
+| 0013 | p_l2s12 | N | +0.003 | 0 | 360 | sbc 7.8 LB=0 |
+| 0014 | p_l2s12 | running | — | — | 500 | large-n retest |
 
-## PAIR_STEP accept log
+## L2 bar reminder
 
-| step | NEW | accept | WR_new | WR_prev | Δ | CI 95% LB | n | seedHash |
-|------|-----|--------|--------|---------|---|-----------|---|----------|
-| smoke-id | id | false | 0.333 | 0.333 | 0 | 0 | 24 | b62d9f0b… |
-| 0001 | p_l2s1 | false | 0.500 | 0.500 | 0 | −0.06 | 200 | 130bbc38… |
-| 0002 | p_l2s2b | false | 0.419 | 0.488 | −0.069 | −0.14 | 160 | 13486c8c… |
-| 0003-v60probe | v60 | false | 0.500 | 0.425 | +0.075 | −0.03 | 80 | 157209e9… |
-| 0004 | p_l2s5 | false | 0.469 | 0.475 | −0.006 | −0.08 | 160 | dedb0246… |
-| 0005 | p_l2s6 | false | 0.515 | 0.485 | +0.030 | −0.05 | 200 | 8b2d3be2… |
-| 0006 | p_l2s6 | false | 0.480 | 0.460 | +0.020 | −0.04 | 300 | 70a2d4ed… |
-| **0007** | **p_l2s7** | **ACCEPT** | **0.5125** | **0.425** | **+0.0875** | **+0.029** | **240** | **db7500c5…** |
+EMA ≥ 0.60 **OR** (ΣΔ ≥ +0.10 **and** ≥3 consecutive accepts) + gold green.
 
-Accept 0007 levers (general): low-pair free-lead when control-backed; BR residual soft-tie on `structureBreakCost`; dualRollout BR; gold expert path green.
+## Git
 
-## Next for L2
+- L1: `89ccbe0` tag `milestone-L1`
+- Accept 0007 push: `9cb2f82`
 
-Need **ΣΔ ≥ +0.10** with **≥3 consecutive accepts** OR EMA ≥ 0.60.
+## Next
 
-1. PAIR_STEP next candidates on fresh S_t vs **p_l2s7** champion
-2. Series 4–5 gold cases into suite
-3. Combat/trash levers from `evolve/NOTE-l2-bc-levers.md`
-4. BC self-play under W_max=9
-5. When L2 met → milestone-L2 commit+push+tag
-
-## Forbidden reminder
-
-No residual packaging of any S_t. Discard reject seeds. CERT only after freeze SHA.
+Continue hybrid PAIR_STEP until 3 consecutive accepts or EMA≥0.60; then milestone-L2. Ship remains CERT ≥90% vs v60.
