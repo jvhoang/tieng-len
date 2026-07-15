@@ -1,6 +1,6 @@
 # STATUS — Superhuman Tiến Lên (hybrid PAIR_STEP + CERT)
 
-**Updated:** 2026-07-15T13:20Z  
+**Updated:** 2026-07-15T13:50Z  
 **W_max:** 9 (18 cores / 2)  
 **Dual champion:** `p_l2s9` (accept 0010)  
 **Live product:** `p_l2s15` — gold **62/0**  
