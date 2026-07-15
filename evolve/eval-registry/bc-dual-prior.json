@@ -1,0 +1,44 @@
+{
+  "protocol": "bc-dual-prior-v1",
+  "playlog": "tienlen-playlogs-1784093993176.json",
+  "freeN": 1302,
+  "bins": {
+    "deep_ctrl_pair": {
+      "n": 156,
+      "hit": 41
+    },
+    "deep_ctrl_seq": {
+      "n": 156,
+      "hit": 40
+    },
+    "deep_ctrl_single": {
+      "n": 156,
+      "hit": 56
+    },
+    "deep_ctrl_trash": {
+      "n": 156,
+      "hit": 49
+    },
+    "short_multi": {
+      "n": 0,
+      "hit": 0
+    },
+    "short_high": {
+      "n": 0,
+      "hit": 0
+    }
+  },
+  "rates": {
+    "deep_ctrl_pair": 0.26282051282051283,
+    "deep_ctrl_seq": 0.2564102564102564,
+    "deep_ctrl_single": 0.358974358974359,
+    "deep_ctrl_trash": 0.3141025641025641,
+    "short_multi": 0,
+    "short_high": 0
+  },
+  "dualHints": {
+    "preferLowPairWhenDeepCtrl": true,
+    "preferTrashWhenDeepCtrl": true,
+    "preferMultiWhenShort": false
+  }
+}

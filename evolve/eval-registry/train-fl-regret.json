@@ -1,0 +1,30 @@
+{
+  "protocol": "train-fl-regret-v1",
+  "base": "p_l2s15",
+  "strat": {
+    "trash": 0,
+    "lowpair": 0,
+    "midmulti": 1,
+    "himulti": 0,
+    "control": 0,
+    "default": 0
+  },
+  "regret": {
+    "trash": -1.2708333333333324,
+    "lowpair": -0.2708333333333325,
+    "midmulti": 2.7291666666666674,
+    "himulti": -0.2708333333333326,
+    "control": -0.2708333333333323,
+    "default": -6.270833333333333
+  },
+  "dualHints": {
+    "ranked": [
+      "midmulti",
+      "trash",
+      "lowpair",
+      "himulti",
+      "control",
+      "default"
+    ]
+  }
+}

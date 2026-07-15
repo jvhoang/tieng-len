@@ -1,0 +1,195 @@
+{
+  "protocol": "train-freelead-census-v1",
+  "chall": "p_l2s15",
+  "freeze": "v60",
+  "games": 120,
+  "wr": 0.48333333333333334,
+  "byClass": [
+    {
+      "cls": "pair_L2_t0",
+      "n": 24,
+      "wr": 0.4166666666666667,
+      "wins": 10
+    },
+    {
+      "cls": "seq_L3_t2",
+      "n": 17,
+      "wr": 0.47058823529411764,
+      "wins": 8
+    },
+    {
+      "cls": "single_L1_t0",
+      "n": 14,
+      "wr": 0.6428571428571429,
+      "wins": 9
+    },
+    {
+      "cls": "unknown",
+      "n": 8,
+      "wr": 0,
+      "wins": 0
+    },
+    {
+      "cls": "pair_L2_t3",
+      "n": 7,
+      "wr": 0.7142857142857143,
+      "wins": 5
+    },
+    {
+      "cls": "single_L1_t1",
+      "n": 6,
+      "wr": 0.6666666666666666,
+      "wins": 4
+    },
+    {
+      "cls": "pair_L2_t1",
+      "n": 5,
+      "wr": 0.8,
+      "wins": 4
+    },
+    {
+      "cls": "seq_L4_t3",
+      "n": 4,
+      "wr": 0.5,
+      "wins": 2
+    },
+    {
+      "cls": "pair_L2_t2",
+      "n": 4,
+      "wr": 0.5,
+      "wins": 2
+    },
+    {
+      "cls": "triple_L3_t0",
+      "n": 3,
+      "wr": 0.3333333333333333,
+      "wins": 1
+    },
+    {
+      "cls": "triple_L3_t4",
+      "n": 3,
+      "wr": 1,
+      "wins": 3
+    },
+    {
+      "cls": "seq_L3_t4",
+      "n": 2,
+      "wr": 0.5,
+      "wins": 1
+    },
+    {
+      "cls": "single_L1_t3",
+      "n": 2,
+      "wr": 0,
+      "wins": 0
+    },
+    {
+      "cls": "seq_L5_t4",
+      "n": 2,
+      "wr": 0,
+      "wins": 0
+    },
+    {
+      "cls": "pair_L2_t4",
+      "n": 2,
+      "wr": 0.5,
+      "wins": 1
+    },
+    {
+      "cls": "single_L1_t8",
+      "n": 2,
+      "wr": 0.5,
+      "wins": 1
+    },
+    {
+      "cls": "pair_L2_t11",
+      "n": 1,
+      "wr": 1,
+      "wins": 1
+    },
+    {
+      "cls": "pair_L2_t5",
+      "n": 1,
+      "wr": 0,
+      "wins": 0
+    },
+    {
+      "cls": "seq_L4_t4",
+      "n": 1,
+      "wr": 1,
+      "wins": 1
+    },
+    {
+      "cls": "seq_L3_t3",
+      "n": 1,
+      "wr": 1,
+      "wins": 1
+    },
+    {
+      "cls": "single_L1_t4",
+      "n": 1,
+      "wr": 0,
+      "wins": 0
+    },
+    {
+      "cls": "triple_L3_t9",
+      "n": 1,
+      "wr": 0,
+      "wins": 0
+    },
+    {
+      "cls": "single_L1_t5",
+      "n": 1,
+      "wr": 0,
+      "wins": 0
+    },
+    {
+      "cls": "pair_L2_t12",
+      "n": 1,
+      "wr": 1,
+      "wins": 1
+    },
+    {
+      "cls": "pair_L2_t8",
+      "n": 1,
+      "wr": 1,
+      "wins": 1
+    },
+    {
+      "cls": "single_L1_t7",
+      "n": 1,
+      "wr": 1,
+      "wins": 1
+    },
+    {
+      "cls": "pair_L2_t7",
+      "n": 1,
+      "wr": 0,
+      "wins": 0
+    },
+    {
+      "cls": "seq_L4_t7",
+      "n": 1,
+      "wr": 1,
+      "wins": 1
+    },
+    {
+      "cls": "seq_L3_t6",
+      "n": 1,
+      "wr": 0,
+      "wins": 0
+    },
+    {
+      "cls": "pair_L2_t10",
+      "n": 1,
+      "wr": 0,
+      "wins": 0
+    },
+    {
+      "cls": "triple_L3_t6",
+      "n": 1,
+      "wr": 0,
+      "wins": 0
+    }
+  ]
+}
