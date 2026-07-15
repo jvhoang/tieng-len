@@ -40,7 +40,7 @@ function defaultGenome() {
     oneCardFreeB: 80, multiLeadB: 4, shedLenB: 2.5, topLeadCost: 0.5, twoLeadMid: 40, twoLeadLate: 8,
     singleHighPen: 6, singleTwoLeadPen: 25, lowMultiB: 5, afterLenCost: 1.2, beatTopCost: 0.9,
     beatLenCost: 0.1, twoBeatPen: 30, bombBeatPen: 50, bombVs2B: 20, endgameShed: 2, endgameTwoUse: 12,
-    shortHandB: 5, passHandMin: 4, passOppMin: 2, passMargin: 0.08, winProbEdge: 0.02, gen: 0, id: 'v1.0-sh-L2s49'
+    shortHandB: 5, passHandMin: 4, passOppMin: 2, passMargin: 0.08, winProbEdge: 0.02, gen: 0, id: 'v1.0-sh-L2s48'
   };
 }
 
@@ -955,9 +955,9 @@ function getLowestLegalMove(state, myIdx) {
 }
 
 const AI_BUILD = {
-  id: "v1.0-sh-L2s49",
-  stamped: "2026-07-15T13:52:30.959556Z",
-  label: "L2s41 dual TRAIN knobs + gold green"
+  id: "v1.0-sh-L2s48",
+  stamped: "2026-07-15T15:07:36.086Z",
+  label: "Freeze v1.0-sh-L2s48"
 };
 
 const TienLenAI = {
