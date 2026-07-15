@@ -1475,6 +1475,7 @@
     return best;
   }
 
+  var _injectedOppPolicy = null;
   function setExploitOpponent(fn) {
     _injectedOppPolicy = typeof fn === 'function' ? fn : null;
   }
