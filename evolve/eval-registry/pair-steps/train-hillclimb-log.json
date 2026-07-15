@@ -1,0 +1,83 @@
+{
+  "protocol": "train-dual-hillclimb-v1",
+  "log": [
+    {
+      "tag": "p_hc_base",
+      "wr": 0.42857142857142855,
+      "knobs": "base"
+    },
+    {
+      "tag": "p_hc_0",
+      "wr": 0.48214285714285715,
+      "knobs": {
+        "passHand": 9,
+        "passTop": 10,
+        "sbcSafe": 4,
+        "softWin": 0.06
+      },
+      "wins": 54,
+      "games": 112
+    },
+    {
+      "tag": "p_hc_1",
+      "wr": 0.4732142857142857,
+      "knobs": {
+        "passHand": 10,
+        "passTop": 9,
+        "sbcSafe": 5,
+        "softWin": 0.1
+      },
+      "wins": 53,
+      "games": 112
+    },
+    {
+      "tag": "p_hc_2",
+      "wr": 0.4732142857142857,
+      "knobs": {
+        "passHand": 8,
+        "passTop": 10,
+        "sbcSafe": 4,
+        "softWin": 0.05
+      },
+      "wins": 53,
+      "games": 112
+    },
+    {
+      "tag": "p_hc_3",
+      "wr": 0.4732142857142857,
+      "knobs": {
+        "passHand": 9,
+        "passTop": 9,
+        "sbcSafe": 5,
+        "softWin": 0.08
+      },
+      "wins": 53,
+      "games": 112
+    },
+    {
+      "tag": "p_hc_4",
+      "wr": 0.5,
+      "knobs": {
+        "passHand": 11,
+        "passTop": 10,
+        "sbcSafe": 6,
+        "softWin": 0.04
+      },
+      "wins": 56,
+      "games": 112
+    },
+    {
+      "tag": "p_hc_5",
+      "wr": 0.5446428571428571,
+      "knobs": {
+        "passHand": 9,
+        "passTop": 10,
+        "sbcSafe": 3,
+        "softWin": 0.12
+      },
+      "wins": 61,
+      "games": 112
+    }
+  ],
+  "bestWR": 0.5446428571428571
+}

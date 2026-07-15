@@ -182,6 +182,45 @@ both(mk(handOf([[3, 0], [4, 1], [4, 3], [5, 1], [6, 0], [9, 0], [9, 2], [12, 1],
 both(mk(handOf([[0, 2], [4, 0], [4, 1], [4, 2], [5, 0], [5, 2], [8, 0], [9, 2], [10, 1], [12, 0]]), [card(9, 0)], 3),
   function (d) { return d && d.play && d.play.length === 1 && d.play[0].rank === 12; }, 'P5 2');
 
+// ── Series 4–5 living gold (general structure/control; not byR fingerprints) ──
+// IMG0523: loose high over triple peel
+both(mk(handOf([[2, 0], [2, 1], [2, 2], [4, 0], [6, 1], [9, 0], [11, 1], [12, 0]]), [card(1, 0)], 6),
+  function (d) {
+    return d && d.play && d.play.length === 1 && d.play[0].rank !== 2;
+  }, 'IMG0523 loose not triple');
+
+// IMG0524: loose T over 5-from-pair
+both(mk(handOf([[2, 0], [2, 1], [5, 2], [7, 0], [9, 1], [12, 0]]), [card(1, 1)], 5),
+  function (d) {
+    return d && d.play && d.play.length === 1 && d.play[0].rank !== 2;
+  }, 'IMG0524 loose not pair5');
+
+// IMG0525: 2 for control over A-from-pair
+both(mk(handOf([[4, 0], [6, 1], [11, 0], [11, 1], [12, 1]]), [card(9, 2)], 4),
+  function (d) {
+    return d && d.play && d.play.length === 1 && d.play[0].rank === 12;
+  }, 'IMG0525 2 not Apair');
+
+// IMG0531: trash low free-lead over high single when opp deep
+both(mk(handOf([[1, 2], [7, 0], [9, 1], [11, 0], [12, 0], [12, 1]]), null, 9),
+  function (d) {
+    return d && d.play && d.play.length === 1 && d.play[0].rank <= 4;
+  }, 'IMG0531 low trash first');
+
+// IMG0547: pass pair-of-2s midgame deep
+both(mk(handOf([[0, 0], [1, 1], [2, 2], [3, 0], [5, 1], [7, 0], [9, 1], [12, 0], [12, 1]]), [card(10, 0), card(10, 2)], 8),
+  function (d) { return d && d.pass; }, 'IMG0547 pass 22');
+
+// IMG0550: pass high QKA when deep + 2s
+both(mk(handOf([[0, 0], [1, 1], [2, 2], [3, 0], [5, 1], [9, 1], [10, 0], [11, 1], [12, 0]]), [card(6, 0), card(7, 1), card(8, 2)], 7),
+  function (d) { return d && d.pass; }, 'IMG0550 pass QKA');
+
+// IMG0558: omin=1 spend 2 first
+both(mk(handOf([[3, 0], [4, 1], [5, 2], [11, 0], [12, 1]]), [card(10, 2)], 1),
+  function (d) {
+    return d && d.play && d.play.length === 1 && d.play[0].rank === 12;
+  }, 'IMG0558 2 when omin1');
+
 console.log('\n=== FAIR GOLD SUITE ===');
 console.log('manifest files', manifest.fileCount, 'newestPlaylog', manifest.pointers && manifest.pointers.newestPlaylog);
 console.log('Passed:', passed, 'Failed:', failed);
