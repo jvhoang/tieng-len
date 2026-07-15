@@ -1,16 +1,15 @@
 # STATUS — Superhuman Tiến Lên (hybrid PAIR_STEP + CERT)
 
-**Updated:** 2026-07-15T17:07Z  
-**W_max:** 9 (18 cores / 2)  
-**Dual champion:** `p_l2s48` (accepts **0053→0056** value climb)  
-**Live product:** `p_l2s48` · gold **62/0**  
-**Ladder:** L1 ✅ · **L2 in progress** · L3–L5 pending  
+**Updated:** 2026-07-15T20:03Z  
+**W_max:** 9  
+**Dual champion:** `p_l2s48`  
+**Live:** `p_l2s48` · gold **62/0**  
+**Ladder:** L1 ✅ · **L2 open** (ΣΔ gate met; consecutive/EMA open) · L3–L5 pending  
 **SoftN / convert-on-S:** FORBIDDEN  
-**Gold manifest:** clean (81 files)
 
 ## Ship bar
 
-CERT ≥ **0.90** vs freeze v6.0 (Wilson LB > 0.87) — **not** dual ~50–53%.
+CERT ≥ **0.90** vs freeze v6.0 (Wilson LB > 0.87).
 
 ## Accepts (ΣΔ = **+0.1529**)
 
@@ -21,49 +20,38 @@ CERT ≥ **0.90** vs freeze v6.0 (Wilson LB > 0.87) — **not** dual ~50–53%.
 | **0053** | **p_l2s46** | **+0.0329** | **+0.0014** | **700** | **0.50** | **TRAIN linear V in BR** |
 | **0056** | **p_l2s48** | **+0.0175** | **+0.006** | **800** | **0.526** | **value-guided FL multi** |
 
-**Consecutive streak:** **0** (rejects after 0056 broke 2-in-a-row; need **3 consecutive** for L2).  
-**EMA vs v6 (dev):** champion WR ≈ **0.51–0.53** (need ≥0.60 for L2 alt).  
-**ΣΔ gate:** ✅ already ≥ +0.10; missing only **3 consecutive accepts** or EMA 0.60.
+**Consecutive streak:** **0** (post-0056 rejects 0057–0072).  
+**EMA vs v6 (dev):** ≈ **0.50–0.53** (need ≥0.60).  
+**ΣΔ ≥ +0.10:** ✅  
 
-## Session breakthrough
+## Post-0056 reject log (dual local max ~50–53%)
 
-Broke dual identity plateau (~47–50%) with **AlphaZero-lite linear value**:
+| step | idea | Δ |
+|------|------|---|
+| 0063 | action-Q dumpVol | **−4.7pp** |
+| 0064 | FL residual prior distill | −0.2pp |
+| 0065–66 | short-hand expert dual leaf | +0.8 then −0.8 |
+| 0067–68 | mixture 22% expert | +0.7 LB&lt;0 |
+| 0069 | V-vs-v60 + mix28 | +0.4 |
+| 0070 | sbc always in rateV | −0.7 |
+| 0071 | mix15 (TRAIN 0.53 unpaired) | −0.6 PAIR |
+| 0072 | expert sbc combat override | −0.4 |
 
-1. `evolve/train-value-selfplay.js` — TRAIN self-play features → logistic V(s)  
-2. `evolve/eval-registry/value-weights.json` — weights (~66–68% train acc)  
-3. BR blend: `rateV = rate + λ·ΔV` (λ=0.22) → accept **0053**  
-4. Value-guided multi free-lead → accept **0056**  
+## TRAIN tools added
 
-Gold suite **62/0** throughout (living john_uploads refresh clean).
+- `evolve/train-value-selfplay.js` — V(s) self-play  
+- `evolve/train-q-action.js` — Q(s,a) (dumpVol overfit — do not ship raw)  
+- `evolve/train-fl-distill.js` — free-lead BR teacher prior  
+- `evolve/train-value-vs-v60.js` — V trained vs fixed v60 expert  
 
-## Rejects after 0056 (streak break)
+## L2 blockers & next
 
-| step | NEW | idea | Δ |
-|------|-----|------|---|
-| 0057 | p_l2s49 | retrain V + λ0.26 | 0 identity |
-| 0058 | p_l2s50 | value combat dualRollout | −1.7pp |
-| 0059 | p_l2s51 | BR FL value re-rank | −0.7pp |
-| 0060 | p_l2s52 | UCB trial allocation | +0.17 LB=0 |
-| 0061 | p_l2s53 | trash≤7 + λ0.32 | −0.4pp |
-| 0062 | p_l2s54 | FL maxBranch 24 | 0 identity |
+1. Need **3 consecutive accepts** without intervening reject **or** EMA ≥ 0.60  
+2. Dual BR skill is **hard local max ~52%** vs v60 under SoftN=0 trials=20  
+3. Next high-value paths (not knob thrash):  
+   - Deep self-play MCTS/PUCT with value leaf (equal budget)  
+   - Population self-play / league of policies  
+   - Richer imperfect-info belief / ISMCTS  
+   - Avoid Q dumpVol; train Q without volume feature  
 
-## L2 still needs
-
-1. **3 consecutive** PAIR_STEP accepts (Δ CI LB > 0) **or** EMA ≥ 0.60  
-2. Gold latest green (OK)  
-3. `milestone-L2` commit/push/tag  
-
-## Next levers (priority)
-
-1. Action-conditioned / deeper V (mid-game dual-labeled TRAIN, not only self-play snapshots)  
-2. High-trial BR distillation into dualRollout prior (TRAIN only)  
-3. Stack 3 accepts in a row carefully (avoid streak-breaking micro-rejects)  
-4. Absolute WR climb toward EMA 0.60 then L3–L5 → CERT 90%  
-
-## Git
-
-- `04c90ab` accept 0053 value-blend  
-- `aa99529` accept 0056 value free-lead  
-- L1: `89ccbe0` + tag `milestone-L1`  
-
-Never residual-pack PAIR_STEP / CERT. Gold living folder authoritative.
+Gold living folder clean. Never residual-pack PAIR_STEP/CERT.
