@@ -1,0 +1,64 @@
+{
+  "protocol": "cert-oneshot-v1",
+  "stamped": "2026-07-15T07:14:06.973Z",
+  "freezeSha": "UNSET",
+  "certAfterFreeze": false,
+  "chall": "milestone-L1",
+  "freeze": "v60",
+  "seedPath": "/Users/johnhoang/Developer/Grok/tieng-len/evolve/eval-registry/cert/cert-2026-07-15T07-14-06-973Z-seeds.json",
+  "dualPath": "/Users/johnhoang/Developer/Grok/tieng-len/evolve/eval-registry/cert/cert-2026-07-15T07-14-06-973Z-vs-v60.json",
+  "nGames": 12,
+  "wins": 7,
+  "wr": 0.5833333333333334,
+  "wilson": {
+    "lo": 0.3195073356553728,
+    "hi": 0.8067425380947535,
+    "wr": 0.5833333333333334
+  },
+  "blocks": [
+    {
+      "block": 0,
+      "wins": 3,
+      "games": 4,
+      "wr": 0.75,
+      "wilson": {
+        "lo": 0.3006360524426366,
+        "hi": 0.9544139373553637,
+        "wr": 0.75
+      }
+    },
+    {
+      "block": 1,
+      "wins": 2,
+      "games": 4,
+      "wr": 0.5,
+      "wilson": {
+        "lo": 0.15003570882017148,
+        "hi": 0.8499642911798285,
+        "wr": 0.5
+      }
+    },
+    {
+      "block": 2,
+      "wins": 2,
+      "games": 4,
+      "wr": 0.5,
+      "wilson": {
+        "lo": 0.15003570882017148,
+        "hi": 0.8499642911798285,
+        "wr": 0.5
+      }
+    }
+  ],
+  "shipGate": false,
+  "shipOk": false,
+  "shipThresholds": {
+    "minGames": 600,
+    "minWR": 0.9,
+    "minWilsonLB": 0.87,
+    "minBlockWR": 0.88
+  },
+  "forbid": "Never residual-pack CERT seeds. Fail ⇒ new SHA + new CERT seeds.",
+  "wMax": 9,
+  "dualExit": 2
+}

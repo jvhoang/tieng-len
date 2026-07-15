@@ -1,0 +1,317 @@
+{
+  "protocol": "fresh-seed-fair-dual-v1",
+  "antiOverfit": true,
+  "infoModel": "hidden",
+  "perfectInfo": false,
+  "hiddenInfo": true,
+  "brBoth": true,
+  "equalBudget": true,
+  "softN": 0,
+  "ms": 0,
+  "trials": 20,
+  "bothSeats": true,
+  "freezeTag": "v60",
+  "challTag": "milestone-L0-v1",
+  "freeze": {
+    "id": "v6.0-frozen-baseline",
+    "stamped": "2026-07-11T01:00:00-07:00",
+    "label": "Grandmaster v6.0 (frozen)"
+  },
+  "seedSetPath": "/Users/johnhoang/Developer/Grok/tieng-len/evolve/eval-registry/pair-steps/step-smoke-id-seeds.json",
+  "seedSetGenerated": false,
+  "seeds": {
+    "A": [
+      2875578777,
+      2828678041,
+      2001448762,
+      2264123448,
+      2296044158,
+      2210900083,
+      2545807452,
+      2822514391,
+      2481921369,
+      2157412144,
+      2779639254,
+      2706781148
+    ],
+    "B": []
+  },
+  "opts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": false,
+    "hiddenInfo": true,
+    "timeMs": 0,
+    "iterations": 60,
+    "maxSims": 120,
+    "brTrials": 20,
+    "bestResponse": true,
+    "exactExploit": false,
+    "exploit": true,
+    "softSamples": 0,
+    "maxBranch": 12,
+    "mode": "auto",
+    "strongSelf": false
+  },
+  "target": 0.7,
+  "minDelta": 2,
+  "chall": {
+    "A": {
+      "mode": "chall-vs-freeze",
+      "partition": "A",
+      "games": 24,
+      "liveWins": 8,
+      "freezeWins": 16,
+      "liveWinRate": 0.3333333333333333,
+      "seeds": [
+        2875578777,
+        2828678041,
+        2001448762,
+        2264123448,
+        2296044158,
+        2210900083,
+        2545807452,
+        2822514391,
+        2481921369,
+        2157412144,
+        2779639254,
+        2706781148
+      ],
+      "bothSeats": true,
+      "ms": 76753,
+      "perGame": [
+        {
+          "seed": 2875578777,
+          "liveWin": true,
+          "liveSeat": 0,
+          "steps": 21,
+          "ms": 9584
+        },
+        {
+          "seed": 2875578777,
+          "liveWin": false,
+          "liveSeat": 1,
+          "steps": 13,
+          "ms": 1501
+        },
+        {
+          "seed": 2828678041,
+          "liveWin": false,
+          "liveSeat": 0,
+          "steps": 19,
+          "ms": 3882
+        },
+        {
+          "seed": 2828678041,
+          "liveWin": false,
+          "liveSeat": 1,
+          "steps": 18,
+          "ms": 3155
+        },
+        {
+          "seed": 2001448762,
+          "liveWin": false,
+          "liveSeat": 0,
+          "steps": 11,
+          "ms": 2275
+        },
+        {
+          "seed": 2001448762,
+          "liveWin": false,
+          "liveSeat": 1,
+          "steps": 20,
+          "ms": 3186
+        },
+        {
+          "seed": 2264123448,
+          "liveWin": false,
+          "liveSeat": 0,
+          "steps": 19,
+          "ms": 5463
+        },
+        {
+          "seed": 2264123448,
+          "liveWin": false,
+          "liveSeat": 1,
+          "steps": 14,
+          "ms": 10149
+        },
+        {
+          "seed": 2296044158,
+          "liveWin": false,
+          "liveSeat": 0,
+          "steps": 18,
+          "ms": 1660
+        },
+        {
+          "seed": 2296044158,
+          "liveWin": true,
+          "liveSeat": 1,
+          "steps": 18,
+          "ms": 2482
+        },
+        {
+          "seed": 2210900083,
+          "liveWin": true,
+          "liveSeat": 0,
+          "steps": 22,
+          "ms": 2184
+        },
+        {
+          "seed": 2210900083,
+          "liveWin": false,
+          "liveSeat": 1,
+          "steps": 22,
+          "ms": 2330
+        },
+        {
+          "seed": 2545807452,
+          "liveWin": true,
+          "liveSeat": 0,
+          "steps": 15,
+          "ms": 2326
+        },
+        {
+          "seed": 2545807452,
+          "liveWin": false,
+          "liveSeat": 1,
+          "steps": 19,
+          "ms": 2485
+        },
+        {
+          "seed": 2822514391,
+          "liveWin": true,
+          "liveSeat": 0,
+          "steps": 15,
+          "ms": 887
+        },
+        {
+          "seed": 2822514391,
+          "liveWin": false,
+          "liveSeat": 1,
+          "steps": 15,
+          "ms": 739
+        },
+        {
+          "seed": 2481921369,
+          "liveWin": true,
+          "liveSeat": 0,
+          "steps": 22,
+          "ms": 1774
+        },
+        {
+          "seed": 2481921369,
+          "liveWin": false,
+          "liveSeat": 1,
+          "steps": 18,
+          "ms": 7010
+        },
+        {
+          "seed": 2157412144,
+          "liveWin": false,
+          "liveSeat": 0,
+          "steps": 16,
+          "ms": 5962
+        },
+        {
+          "seed": 2157412144,
+          "liveWin": true,
+          "liveSeat": 1,
+          "steps": 16,
+          "ms": 1372
+        },
+        {
+          "seed": 2779639254,
+          "liveWin": true,
+          "liveSeat": 0,
+          "steps": 15,
+          "ms": 1617
+        },
+        {
+          "seed": 2779639254,
+          "liveWin": false,
+          "liveSeat": 1,
+          "steps": 17,
+          "ms": 1344
+        },
+        {
+          "seed": 2706781148,
+          "liveWin": false,
+          "liveSeat": 0,
+          "steps": 22,
+          "ms": 2602
+        },
+        {
+          "seed": 2706781148,
+          "liveWin": false,
+          "liveSeat": 1,
+          "steps": 11,
+          "ms": 779
+        }
+      ],
+      "lossSeats": [
+        "2875578777@1",
+        "2828678041@0",
+        "2828678041@1",
+        "2001448762@0",
+        "2001448762@1",
+        "2264123448@0",
+        "2264123448@1",
+        "2296044158@0",
+        "2210900083@1",
+        "2545807452@1",
+        "2822514391@1",
+        "2481921369@1",
+        "2157412144@0",
+        "2779639254@1",
+        "2706781148@0",
+        "2706781148@1"
+      ]
+    },
+    "B": {
+      "mode": "chall-vs-freeze",
+      "partition": "B",
+      "games": 0,
+      "liveWins": 0,
+      "freezeWins": 0,
+      "liveWinRate": 0,
+      "seeds": [],
+      "bothSeats": true,
+      "ms": 0,
+      "perGame": [],
+      "lossSeats": []
+    }
+  },
+  "identity": null,
+  "summary": {
+    "challA": {
+      "wins": 8,
+      "games": 24,
+      "wr": 0.3333333333333333
+    },
+    "challB": {
+      "wins": 0,
+      "games": 0,
+      "wr": 0
+    },
+    "idA": null,
+    "idB": null,
+    "deltaA": null,
+    "deltaB": null,
+    "passA": {
+      "wrOk": false,
+      "deltaOk": null,
+      "delta": null,
+      "passed": false
+    },
+    "passB": {
+      "wrOk": false,
+      "deltaOk": null,
+      "delta": null,
+      "passed": false
+    }
+  },
+  "totalMs": 76753,
+  "passed": false,
+  "note": "Fixed HOLDOUT seeds 20260801/20260802 are FORBIDDEN for ship under this protocol. Each eval round uses a new seed set recorded in seedSetPath."
+}

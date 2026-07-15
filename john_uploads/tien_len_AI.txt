@@ -61,3 +61,34 @@ IMG_0549.PNG: AI hinted counter 6-7-8, leaving me with 6 and 9 trash cards. Bett
 IMG_0550.PNG: AI hinted counter Q-K-A, those are my highest 3 cards and i have lots of lower cards, best to pass.
 IMG_0551.PNG: AI hinted counter 4-5-6, which breaks up my 4-5-6-7-8 straight and thus leaving me w/ 2 trash cards (7,8). next best is 10-J-Q, followed by Q-K-A
 IMG_0552.PNG: AI hinted counter 8 hearts, which breaks up my 6-7-8 straight and thus leaving me w/ 2 trash cards (6,7). next best is 9 spades (9 hearts extends my straight)
+
+
+Series #5: (added 7/14/26)
+IMG_0553.PNG: AI hinted free lead 6-7-8-9-10, should just extend the whole available straight 6-7-8-9-10-J-Q-K-A, which will give me definite control, leave me with a 6 for the win
+IMG_0554.PNG: AI hinted counter 5 hearts, which breaks up my pair of 5's, next card should be a 9 which still gives a long straight
+IMG_0555.PNG: AI hinted counter J spade, which breaks up my pair of J's, next card should be A for the control or if conservative, a pass so that the A can cover the trash 7 or 10
+IMG_0556.PNG: AI hinted free lead 10 spade, which leaves me with the lower 7 single, should do lower card (7) first if only have few cards left and opponent cards have more than you
+IMG_0557.PNG: AI hinted counter 5 spades, which breaks up my 5 triplet, next best loose card is 8 diamonds
+IMG_0558.PNG: AI hinted counter A clubs. If opponent has 1 card left, should play multi's, then the highest single card and go down from there. So it should have been 2 diamonds first
+IMG_0559.PNG: AI hinted free lead 78910J straight, which leaves me with single 9 and JQK straight. Better play would be 7-8-9, followed by 9-10-J, then J-Q-K, then 2.
+IMG_0560.PNG: AI hinted counter 3 clubs, which breaks up my pair of 3's, next best loose card is 7 hearts
+IMG_0561.PNG: AI hinted free lead A triplets, wasting my highest cards when I have multiple lower cards that needs back up. Pair of 3's is next best.
+IMG_0562.PNG: AI hinted counter 8 clubs, which breaks up my pair of 8's, next best loose card is A clubs
+IMG_0563.PNG: AI hinted counter J diamonds, which breaks up my pair of J's, next best is 2 diamonds for control
+IMG_0564.PNG: AI hinted free lead pair of 10's, which risk losing to opponent's 2 card left possible pair, should go with the highest multi first if opponent has less cards than you or the multi combo (which is JJ in this case)
+IMG_0565.PNG: AI hinted counter 6 diamonds, which breaks up my straight, next best loose card is J spades
+IMG_0566.PNG: AI hinted free lead 56789 straight, leaving 10 & J as loose cards, should extend the straight as 5678910J
+IMG_0567.PNG: AI hinted counter 10 diamonds, which breaks up my pair of 10's, next best loose card is J
+IMG_0568.PNG: AI hinted free lead 6 triplet, leaving me with super low 4 and 5 trash cards, should get rid of lowest card(s) in early game like this with 456 straight
+IMG_0569.PNG: AI hinted counter 10 diamonds, which breaks my pair of 10's, next best is 2 hearts for control
+IMG_0571.PNG: AI hinted counter 6 spades, which breaks my pair of 6's, next best is Q clubs
+IMG_0572.PNG: AI hinted counter 7 spades, which truncates my 4-5-6-7 straight, next best loose card is the surprise A hearts for possible control (opp only has 2 cards left), followed by 4567 straight, 10JQK straight, pair 9's, then pair 4's
+IMG_0573.PNG: AI hinted counter Q heart, which breaks my 910JQKA straight, should be highest card (A heart) due to opponent only have 1 card left, followed by absolute win with only multi combos left
+IMG_0574.PNG: AI hinted counter 7 diamonds, which breaks my 789 straight, next best loose card is 2 clubs given my following controlling sequence: 789, QKA, 99, KK
+IMG_0575.PNG: AI hinted free lead 9 triplet, which breaks my 789 straight and leaves me with 7 & 8 trashes. next best should be lowest card or combo in early game (789 straight)
+IMG_0576.PNG: AI hinted free lead K triplet, wasteful high cards especially when I could have followed up with QKA (opponent had already passed on 3 card straight), then 99, and finally KK
+IMG_0577.PNG: AI hinted counter 7 hearts, which breaks up my 567 straight, next best is Q heart (conceding to break up my QKA straight so that I can have loose high cards for back up); or an 8 followed by Q like before
+IMG_0578.PNG: AI hinted counter 3 clubs, which breaks up my 345 straight, net loose card is 7 clubs
+IMG_0579.PNG: AI hinted counter 910JQKA straight, which leaves me with possibility of losing with low cards un-backed. should do 345 first, then can back up with 9-10-J, and then QKA
+IMG_0580.PNG: AI hinted counter 6 diamonds, which breaks up my 6-7-8 straight, next loose card should be J. after eventually having control hopefully, i can play 678, then 8910, then 10JQ
+IMG_0581.PNG: AI hinted free lead 678910 straight, leaving me with an 8 trash and 10JQ straight, next best is 678, then 8910, then 10JQ for the clean win

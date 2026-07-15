@@ -321,17 +321,22 @@
               if (liveAI.AI_BUILD) {
                 try { aiMeta.build = liveAI.AI_BUILD; } catch (_) {}
               }
-              // Hard/grandmaster: use perfect-info exploit when 2p (stronger + logs modes).
-              // Medium/easy stay hidden-info for softer play.
-              const usePerfect = state.players.length === 2 &&
+              // Superhuman goal fair path: rated GM uses HIDDEN info (no perfectInfo peek).
+              // Opt-in perfectInfo only via opts.allowPerfectInfo / env TIENLEN_PERFECT_AI=1.
+              const allowPerfect = (typeof process !== 'undefined' && process.env && process.env.TIENLEN_PERFECT_AI === '1') ||
+                (opts && opts.allowPerfectInfo === true);
+              const usePerfect = allowPerfect && state.players.length === 2 &&
                 (aiDifficulty === 'hard' || aiDifficulty === 'grandmaster');
               choice = liveAI.getAIMove(state, cp, {
                 difficulty: aiDifficulty,
                 perfectInfo: usePerfect,
                 hiddenInfo: !usePerfect,
                 useSearch: true,
+                // Fair duals / gold path: expert-aligned for GM when not perfect
+                mode: usePerfect ? 'mcts' : (aiDifficulty === 'grandmaster' ? 'expert' : undefined),
+                iterations: usePerfect ? undefined : (aiDifficulty === 'grandmaster' ? 0 : undefined),
                 timeMs: usePerfect ? (aiDifficulty === 'grandmaster' ? 900 : 500) : 400,
-                bestResponse: true
+                bestResponse: usePerfect
               });
               if (liveAI.getLastSearchStats) {
                 try { aiMeta.stats = liveAI.getLastSearchStats(); } catch (_) {}

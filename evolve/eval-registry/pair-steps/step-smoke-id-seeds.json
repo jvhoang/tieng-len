@@ -1,0 +1,26 @@
+{
+  "protocol": "pair-step-v1",
+  "stamped": "2026-07-15T06:58:00.552Z",
+  "step": "smoke-id",
+  "gamesPerPartition": 12,
+  "bothSeats": true,
+  "freeze": "v60",
+  "prev": "milestone-L0-v1",
+  "new": "milestone-L0-v1",
+  "A": [
+    2875578777,
+    2828678041,
+    2001448762,
+    2264123448,
+    2296044158,
+    2210900083,
+    2545807452,
+    2822514391,
+    2481921369,
+    2157412144,
+    2779639254,
+    2706781148
+  ],
+  "B": [],
+  "note": "PAIR_STEP eval-only. Do not residual-pack. Discard after accept/reject for training."
+}

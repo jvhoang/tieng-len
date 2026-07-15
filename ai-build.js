@@ -1,12 +1,11 @@
 /**
- * ai-build.js — zero-dependency build identity for the title screen.
- * Auto-synced by evolve/promote-bank-to-live.js from AI_BUILD.
+ * ai-build.js — superhuman goal milestone L1
  */
 (function (root) {
   var BUILD = {
-    id: "v9.9",
-    stamped: "2026-07-14T23:37:52Z",
-    label: "Grandmaster v9.9"
+    id: "v1.0-sh-L1",
+    stamped: "2026-07-15T07:13:23Z",
+    label: "Superhuman L1: living gold + PAIR_STEP + fair expert path"
   };
   root.TIENLEN_AI_BUILD = BUILD;
   root.TienLenAI = root.TienLenAI || {};

@@ -1,0 +1,41 @@
+{
+  "protocol": "cert-oneshot-v1",
+  "stamped": "2026-07-15T07:14:06.973Z",
+  "freezeSha": "UNSET",
+  "chall": "milestone-L1",
+  "freeze": "v60",
+  "bothSeats": true,
+  "A": [
+    2156957554,
+    2575914046,
+    2118959989,
+    2428862674,
+    2057448266,
+    2287855831
+  ],
+  "B": [],
+  "blocks": [
+    {
+      "id": 0,
+      "seeds": [
+        2156957554,
+        2575914046
+      ]
+    },
+    {
+      "id": 1,
+      "seeds": [
+        2118959989,
+        2428862674
+      ]
+    },
+    {
+      "id": 2,
+      "seeds": [
+        2057448266,
+        2287855831
+      ]
+    }
+  ],
+  "note": "Generated at cert time AFTER model freeze. Do not residual-pack. One shot only."
+}
