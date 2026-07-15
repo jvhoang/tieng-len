@@ -1,57 +1,51 @@
 # STATUS — Superhuman goal (hybrid PAIR_STEP + CERT)
 
-**Updated:** 2026-07-15T09:15Z  
-**Champion:** `v1.0-sh-L1` (general expertPolicy; fair path)  
-**W_max:** 9 (logical cores 18, half-cap)  
-**Ladder:** **L1 ACHIEVED** · L2–L5 pending  
-**SoftN:** FORBIDDEN · convert-on-S: FORBIDDEN  
-**Gold latest:** GREEN (48/0 fair suite) · manifest clean
+**Updated:** 2026-07-15T08:15Z  
+**Champion:** `p_l2s7` / `v1.0-sh-L2s7` (first hybrid accept)  
+**W_max:** 9 · **SoftN:** FORBIDDEN · **convert-on-S:** FORBIDDEN  
+**Ladder:** **L1 ACHIEVED** · **L2 in progress** (1 accept, ΣΔ=+0.0875) · L3–L5 pending  
+**Gold latest:** GREEN (48/0) · manifest clean  
 
 ## Current
 
 | Item | State |
 |------|--------|
-| Live AI | `v1.0-sh-L1` (`ai.js` / `search.js` / `ai-build.js`) |
-| Freeze stamp | `policies/milestone-L1-*` (+ L0-v1 baseline) |
-| Gold manifest | `evolve/eval-registry/gold-manifest.json` (81 files, living) |
-| PAIR_STEP harness | `evolve/pair-step.js` + math unit tests PASS |
-| CERT harness | `evolve/cert-run.js` (SHIP_GATE dry-run plumbing) |
-| ΣΔ accepted | 0 |
-| EMA WR vs v6 | ~0.33 (smoke-id n=24, identity) — **dev estimate only** |
-| Gold latest | **GREEN** Passed:48 Failed:0 |
+| Champion | `policies/p_l2s7-*` + live `ai.js`/`search.js` |
+| Champion dual WR (dev) | **0.5125** on accept S_t vs v60 (not ship) |
+| ΣΔ accepted | **+0.0875** (1 accept) |
+| Consecutive accepts | **1** / 3 needed for L2 ΣΔ path |
+| EMA WR vs v6 | ~0.51 (single accept point) |
+| Gold suite | **48/0** fair path |
 
-## L1 evidence
+## L1 shipped
 
-- Living gold: `evolve/refresh-gold-manifest.js` + suite `evolve/run-gold-fair-suite.js`
-- Fair product: controller GM → hiddenInfo, mode=expert (no perfectInfo by default)
-- PAIR_STEP smoke: `step-smoke-id` identity vs v60 → Δ=0, accept=false (correct)
-  - seedHash `b62d9f0b0bed0c07302a09c42ad112402a46f6fce8881464bf6bcbe24bb128ab`
-  - WR_prev=WR_new=0.333 (8/24)
-- Unit: `node evolve/test-pair-step-math.js` ALL passed
-- Methodology: `evolve/NOTE-methodology-alphago.md`
-- Goal prompt: `GOAL-PROMPT-alphago-class-from-v1.md`
+- Commit **`89ccbe0`** tag **`milestone-L1`** on origin
 
 ## PAIR_STEP accept log
 
-| step | accept | WR_new | WR_prev | Δ_WR | CI_LB | seedHash | SHA |
-|------|--------|--------|---------|------|-------|----------|-----|
-| smoke-id | false (identity) | 0.333 | 0.333 | 0 | 0 | b62d9f0b… | — |
+| step | NEW | accept | WR_new | WR_prev | Δ | CI 95% LB | n | seedHash |
+|------|-----|--------|--------|---------|---|-----------|---|----------|
+| smoke-id | id | false | 0.333 | 0.333 | 0 | 0 | 24 | b62d9f0b… |
+| 0001 | p_l2s1 | false | 0.500 | 0.500 | 0 | −0.06 | 200 | 130bbc38… |
+| 0002 | p_l2s2b | false | 0.419 | 0.488 | −0.069 | −0.14 | 160 | 13486c8c… |
+| 0003-v60probe | v60 | false | 0.500 | 0.425 | +0.075 | −0.03 | 80 | 157209e9… |
+| 0004 | p_l2s5 | false | 0.469 | 0.475 | −0.006 | −0.08 | 160 | dedb0246… |
+| 0005 | p_l2s6 | false | 0.515 | 0.485 | +0.030 | −0.05 | 200 | 8b2d3be2… |
+| 0006 | p_l2s6 | false | 0.480 | 0.460 | +0.020 | −0.04 | 300 | 70a2d4ed… |
+| **0007** | **p_l2s7** | **ACCEPT** | **0.5125** | **0.425** | **+0.0875** | **+0.029** | **240** | **db7500c5…** |
 
-(none production accepts yet — L2 climb next)
+Accept 0007 levers (general): low-pair free-lead when control-backed; BR residual soft-tie on `structureBreakCost`; dualRollout BR; gold expert path green.
 
-## Gold refresh log
+## Next for L2
 
-| when | status | notes |
-|------|--------|-------|
-| 2026-07-15T07:13Z | clean | 81 files; newest playlog `tienlen-playlogs-1784093993176.json`; suite 48/0 |
+Need **ΣΔ ≥ +0.10** with **≥3 consecutive accepts** OR EMA ≥ 0.60.
 
-## Next
-
-1. **L2 climb:** general policy / BC / self-play → PAIR_STEP accepts vs v60 (no convert-on-S)
-2. Re-scan john_uploads every PAIR_STEP / ≤2h
-3. Milestone L2–L5 git commit+push when criteria met
-4. L5: freeze SHA → one-shot CERT ≥90% vs v60
+1. PAIR_STEP next candidates on fresh S_t vs **p_l2s7** champion
+2. Series 4–5 gold cases into suite
+3. Combat/trash levers from `evolve/NOTE-l2-bc-levers.md`
+4. BC self-play under W_max=9
+5. When L2 met → milestone-L2 commit+push+tag
 
 ## Forbidden reminder
 
-No residual packaging of PAIR_STEP S_t or CERT seeds. Absolute WR on one S_t is not ship.
+No residual packaging of any S_t. Discard reject seeds. CERT only after freeze SHA.

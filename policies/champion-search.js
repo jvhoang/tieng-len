@@ -11,7 +11,7 @@
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require("../engine.js"));
+    module.exports = factory(require('../engine.js'));
   } else {
     root.TienLenSearch = factory(root.TienLenEngine);
   }
@@ -57,12 +57,18 @@
   }
 
   function finalUtility(state, myIdx) {
+    var nP = state.players.length;
     if (state.players[myIdx].finished) {
       var place = (state.finishOrder || []).indexOf(myIdx);
       if (place < 0) return 0.35;
+      // 2p: hard win/loss (soft place scores dilute search signal)
+      if (nP === 2) return place === 0 ? 1 : 0;
       return PLACE_SCORE[Math.min(place, 3)] || 0;
     }
-    if (state.roundOver) return 0;
+    if (state.roundOver) {
+      if (nP === 2) return state.loser === myIdx ? 0 : 1;
+      return 0;
+    }
     return placeUtility(state, myIdx);
   }
 
@@ -187,6 +193,58 @@
   }
 
   /**
+   * Hand structure analysis for trash/control planning (general features).
+   * trash: isolated singles rank≤9 not inside a ≥3 run.
+   */
+  function analyzeHand(hand) {
+    var byRank = {};
+    var i, r;
+    for (i = 0; i < hand.length; i++) {
+      r = hand[i].rank;
+      byRank[r] = (byRank[r] || 0) + 1;
+    }
+    var ranks = Object.keys(byRank).map(Number).sort(function (a, b) { return a - b; });
+    var inSeq = {};
+    for (var len = 3; len <= ranks.length; len++) {
+      for (var st = 0; st <= ranks.length - len; st++) {
+        var ok = true;
+        for (var k = 1; k < len; k++) {
+          if (ranks[st + k] !== ranks[st] + k) { ok = false; break; }
+        }
+        if (!ok) continue;
+        for (k = 0; k < len; k++) inSeq[ranks[st + k]] = true;
+      }
+    }
+    var trash = [];
+    var control = 0;
+    var twos = 0;
+    for (i = 0; i < hand.length; i++) {
+      var c = hand[i];
+      if (c.rank === 12) twos++;
+      if (c.rank >= 10) control++;
+      if (byRank[c.rank] === 1 && !inSeq[c.rank] && c.rank <= 9) trash.push(c);
+    }
+    trash.sort(function (a, b) { return a.rank - b.rank || a.suit - b.suit; });
+    return {
+      byRank: byRank,
+      trash: trash,
+      trashCount: trash.length,
+      twos: twos,
+      control: control,
+      hasControl: twos >= 1 || control >= 2
+    };
+  }
+
+  function isTrashSinglePlay(play, handInfo) {
+    if (!play || play.length !== 1) return false;
+    var c = play[0];
+    for (var i = 0; i < handInfo.trash.length; i++) {
+      if (handInfo.trash[i].rank === c.rank && handInfo.trash[i].suit === c.suit) return true;
+    }
+    return false;
+  }
+
+  /**
    * Expert move score for ordering / rollouts. Lower is better.
    * Superhuman goal: gold structure/control prior (general features, not byR fingerprints).
    */
@@ -245,10 +303,28 @@
         }
         // Don't free-lead mid pair when a lone 2 is better vs short opp (0499: 2 over 66)
         if (topRank(play) <= 6 && twos >= 1 && omin <= 2 && hand.length <= 4) score += 35;
+        // Series 4/5: low-pair open when deep + control-backed (0526/0535/0542/0561)
+        if (hand.length >= 9 && topRank(play) <= 6) {
+          var hiPairs = 0;
+          var byP = {};
+          for (var pi = 0; pi < hand.length; pi++) {
+            byP[hand[pi].rank] = (byP[hand[pi].rank] || 0) + 1;
+          }
+          for (var pr = 9; pr <= 11; pr++) if ((byP[pr] || 0) >= 2) hiPairs++;
+          if (twos >= 1 || hiPairs >= 1) score -= 18;
+        }
       } else {
         // multi: prefer mid length residual
         if (play.length >= 3 && play.length <= 6) score -= 12;
         if (topRank(play) <= 9) score -= 8;
+        // Control-backed deep hand: tax mid multi that risks control when low pair exists
+        if (hand.length >= 9 && twos >= 1 && com.type === 'seq' && play.length >= 3 && play.length <= 5) {
+          var hasLowPair = false;
+          var byM = {};
+          for (var mi = 0; mi < hand.length; mi++) byM[hand[mi].rank] = (byM[hand[mi].rank] || 0) + 1;
+          for (var lr = 0; lr <= 6; lr++) if ((byM[lr] || 0) >= 2) { hasLowPair = true; break; }
+          if (hasLowPair && topRank(play) >= 7 && topRank(play) <= 10) score += 14;
+        }
         // Prefer residual that keeps a clean high run edge (gold 0517: 10-J-Q-K)
         if (com.type === 'seq' && play.length === 4) {
           var lo = 99;
@@ -386,34 +462,7 @@
         }
         if (fl.length) pool = fl;
       }
-      // Prefer doubleseq when available (gold 0506/0507)
-      var dseq = [];
-      for (var ds = 0; ds < pool.length; ds++) {
-        var dc = detectCombo(pool[ds]);
-        if (dc && dc.type === 'doubleseq' && pool[ds].length >= 6) dseq.push(pool[ds]);
-      }
-      if (dseq.length) return { play: orderLegals(dseq, state, cp)[0] };
-      // Prefer high 4-seq control lead when hand has 2s (gold 0517 TJQK)
-      if (twos >= 1 && handLen >= 6) {
-        var hiSeq = [];
-        for (var hs = 0; hs < pool.length; hs++) {
-          var hc = detectCombo(pool[hs]);
-          if (hc && hc.type === 'seq' && pool[hs].length === 4) {
-            var lo3 = 99;
-            for (var hx = 0; hx < pool[hs].length; hx++) lo3 = Math.min(lo3, pool[hs][hx].rank);
-            if (lo3 >= 6 && topRank(pool[hs]) >= 9) hiSeq.push(pool[hs]);
-          }
-        }
-        if (hiSeq.length) return { play: orderLegals(hiSeq, state, cp)[0] };
-      }
-      // vs 1-card: prefer longest multi (0521)
-      if (omin <= 1) {
-        var longM = pool.slice().sort(function (a, b) {
-          return b.length - a.length || expertScore(a, state, cp) - expertScore(b, state, cp);
-        });
-        if (longM[0] && longM[0].length >= 3) return { play: longM[0] };
-      }
-      return { play: orderLegals(pool, state, cp)[0] };
+      return { play: pickFreeLeadHard(pool, state, cp) };
     }
 
     var curTop = cur.top ? cur.top.rank : 0;
@@ -637,22 +686,128 @@
     return { play: ordered[0] };
   }
 
-  /** Free-lead hard pick for UI/controller — structure-aware, no-gift vs 1-card opp. */
+  /**
+   * Free-lead hard pick — dual-strength multi bias (v60 lineage) + gold doubleseq/control.
+   * General features only; no seed fingerprints.
+   */
   function pickFreeLeadHard(legals, state, myIdx) {
     if (!legals || !legals.length) return null;
-    var ordered = orderLegals(legals, state, myIdx);
+    var hand = state.players[myIdx].hand;
+    var handLen = hand.length;
     var omin = oppMinHand(state, myIdx);
-    if (omin <= 1) {
-      // No-gift: prefer high singles / long multi that pressure
-      var best = ordered[0];
-      for (var i = 0; i < ordered.length; i++) {
-        var com = detectCombo(ordered[i]);
-        if (com && com.type === 'single' && com.top.rank >= 10) return ordered[i];
-        if (com && ordered[i].length >= 4) return ordered[i];
+    var info = analyzeHand(hand);
+    var multi = [];
+    var dseqAll = [];
+    var i;
+    for (i = 0; i < legals.length; i++) {
+      if (legals[i].length === handLen) return legals[i];
+      var comi = detectCombo(legals[i]);
+      // Include doubleseq even if classified bomb (3+ pairs) — gold 0506/0507
+      if (comi && comi.type === 'doubleseq' && legals[i].length >= 6) {
+        dseqAll.push(legals[i]);
       }
-      return best;
+      if (legals[i].length >= 2 && !playHasTwo(legals[i]) && !(comi && comi.type === 'quad')) {
+        multi.push(legals[i]);
+      }
     }
-    return ordered[0];
+
+    // Gold: doubleseq lock packages first (control + rare hard-to-beat)
+    if (dseqAll.length) return orderLegals(dseqAll, state, myIdx)[0];
+
+    // Short hand + pair-of-2s: lead 22 for near-sure control then trash (gold 0518)
+    if (handLen <= 4 && info.twos >= 2) {
+      for (i = 0; i < legals.length; i++) {
+        if (legals[i].length === 2 && playHasTwo(legals[i]) &&
+            legals[i][0].rank === 12 && legals[i][1].rank === 12) {
+          return legals[i];
+        }
+      }
+    }
+
+    // Short hand + 2: lock free-lead with single 2 when opp short (gold 0499 sure-win 2)
+    if (handLen <= 4 && info.twos >= 1 && omin <= 2) {
+      for (i = 0; i < legals.length; i++) {
+        if (legals[i].length === 1 && legals[i][0].rank === 12) return legals[i];
+      }
+    }
+
+    // One-card opponent: no gift low singles — multi or high single / 2
+    if (omin <= 1) {
+      if (multi.length) {
+        multi.sort(function (a, b) {
+          return b.length - a.length || expertScore(a, state, myIdx) - expertScore(b, state, myIdx);
+        });
+        return multi[0];
+      }
+      var highs = [];
+      for (i = 0; i < legals.length; i++) {
+        if (legals[i].length === 1 && legals[i][0].rank >= 10) highs.push(legals[i]);
+      }
+      if (highs.length) {
+        highs.sort(function (a, b) { return b[0].rank - a[0].rank || b[0].suit - a[0].suit; });
+        return highs[0];
+      }
+      return orderLegals(legals, state, myIdx)[0];
+    }
+
+    // Gold 0517: high 4-seq control lead when holding 2s
+    if (info.twos >= 1 && handLen >= 6) {
+      var hiSeq = [];
+      for (i = 0; i < multi.length; i++) {
+        var hc = detectCombo(multi[i]);
+        if (hc && hc.type === 'seq' && multi[i].length === 4) {
+          var lo3 = 99;
+          for (var hx = 0; hx < multi[i].length; hx++) lo3 = Math.min(lo3, multi[i][hx].rank);
+          if (lo3 >= 6 && topRank(multi[i]) >= 9) hiSeq.push(multi[i]);
+        }
+      }
+      if (hiSeq.length) return orderLegals(hiSeq, state, myIdx)[0];
+    }
+
+    // Trash-first with control when deep (gold 0514): shed deadwood before mid pairs
+    // Prefer trash when has 2 + low trash + multi would leave orphan trash
+    if (info.hasControl && handLen >= 7 && info.trashCount >= 1 && info.twos >= 1) {
+      var trashPlays = [];
+      for (i = 0; i < legals.length; i++) {
+        if (isTrashSinglePlay(legals[i], info) && legals[i][0].rank <= 5) trashPlays.push(legals[i]);
+      }
+      trashPlays.sort(function (a, b) {
+        return a[0].rank - b[0].rank || a[0].suit - b[0].suit;
+      });
+      if (trashPlays.length) return trashPlays[0];
+    }
+
+    // Control-backed low-pair pin (Series 4/5): prefer pair top≤6 when deep + 2s/high pairs
+    if (info.hasControl && handLen >= 9) {
+      var lowPairs = [];
+      for (i = 0; i < multi.length; i++) {
+        if (multi[i].length === 2 && topRank(multi[i]) <= 6 && !playHasTwo(multi[i])) {
+          lowPairs.push(multi[i]);
+        }
+      }
+      if (lowPairs.length) return orderLegals(lowPairs, state, myIdx)[0];
+    }
+
+    // Multi-first: low volume free-leads (pairs/short seqs) — dual strength
+    if (multi.length) {
+      var lowMulti = multi.filter(function (p) { return topRank(p) <= 8; });
+      if (lowMulti.length) return orderLegals(lowMulti, state, myIdx)[0];
+      return orderLegals(multi, state, myIdx)[0];
+    }
+
+    // Remaining trash / singles
+    if (info.hasControl && info.trashCount >= 1) {
+      var t2 = [];
+      for (i = 0; i < legals.length; i++) {
+        if (isTrashSinglePlay(legals[i], info)) t2.push(legals[i]);
+      }
+      t2.sort(function (a, b) {
+        return a[0].rank - b[0].rank || a[0].suit - b[0].suit;
+      });
+      if (t2.length) return t2[0];
+    }
+
+    return orderLegals(legals, state, myIdx)[0];
   }
 
   /** Policy guards: never return illegal; force 2 vs ace; veto high free-lead singles when multi exists. */
@@ -1207,6 +1362,287 @@
    *
    * Default: imperfect-info (determinization). Pass perfectInfo:true only for debug.
    */
+  function freeLeadCandidates(leg, state, cp) {
+    var info = analyzeHand(state.players[cp].hand);
+    var omin = oppMinHand(state, cp);
+    var out = [];
+    var i;
+    for (i = 0; i < leg.length; i++) {
+      var p = leg[i];
+      if (p.length === state.players[cp].hand.length) {
+        out.push(p);
+        continue;
+      }
+      var com = detectCombo(p);
+      // Prefer doubleseq packages in root set (gold/control)
+      if (com && com.type === 'doubleseq' && p.length >= 6) {
+        out.push(p);
+        continue;
+      }
+      if (omin === 1) {
+        if (p.length >= 2 && !playHasTwo(p)) out.push(p);
+        else if (p.length === 1 && p[0].rank >= 10) out.push(p);
+        continue;
+      }
+      if (p.length >= 2 && !playHasTwo(p) && !(com && com.type === 'quad')) {
+        out.push(p);
+        continue;
+      }
+      if (isTrashSinglePlay(p, info) && info.hasControl && state.players[cp].hand.length >= 7) {
+        out.push(p);
+        continue;
+      }
+    }
+    if (!out.length) {
+      for (i = 0; i < leg.length; i++) {
+        if (!playIsExpensive(leg[i])) out.push(leg[i]);
+      }
+    }
+    // L2s5 pin low pairs / trash into root before branch cap (dual strength)
+    var info2 = analyzeHand(state.players[cp].hand);
+    if (info2.hasControl && state.players[cp].hand.length >= 8) {
+      for (i = 0; i < leg.length; i++) {
+        var p2 = leg[i];
+        if (p2.length === 2 && !playHasTwo(p2) && topRank(p2) <= 5) {
+          if (out.indexOf(p2) < 0) out.push(p2);
+        }
+        if (isTrashSinglePlay(p2, info2) && p2[0].rank <= 5) {
+          if (out.indexOf(p2) < 0) out.push(p2);
+        }
+      }
+    }
+    if (!out.length) out = leg.slice();
+    return orderLegals(out, state, cp);
+  }
+
+  function endgamePick(state, myIdx) {
+    var handLen = state.players[myIdx].hand.length;
+    var total = 0;
+    for (var i = 0; i < state.players.length; i++) {
+      if (!state.players[i].finished) total += state.players[i].hand.length;
+    }
+    if (handLen > 4 && total > 10) return null;
+
+    var leg = getLegalPlays(
+      state.players[myIdx].hand, state.currentCombo,
+      state.players[myIdx].passed, state.isFirstLead, state.firstLeadCard
+    );
+    if (!leg.length) return null;
+
+    if (!state.currentCombo) leg = freeLeadCandidates(leg, state, myIdx);
+    else {
+      var cheap = cheapLegals(leg);
+      if (cheap.length) leg = cheap;
+    }
+    leg = orderLegals(leg, state, myIdx);
+    if (leg.length > 12) leg = leg.slice(0, 12);
+
+    var best = leg[0];
+    var bestU = -1;
+    var rng = Math.random;
+    for (var c = 0; c < leg.length; c++) {
+      var next = applyPlayFast(state, myIdx, leg[c]);
+      next.isFirstLead = false;
+      var u = 0;
+      var trials = handLen <= 4 ? 24 : 12;
+      for (var t = 0; t < trials; t++) {
+        u += rollout(next, myIdx, 100, rng);
+      }
+      u /= trials;
+      if (leg[c].length === state.players[myIdx].hand.length) u = 1;
+      if (u > bestU) {
+        bestU = u;
+        best = leg[c];
+      }
+    }
+    return best;
+  }
+
+  function setExploitOpponent(fn) {
+    _injectedOppPolicy = typeof fn === 'function' ? fn : null;
+  }
+
+  function opponentPolicyStrong(state, cp) {
+    if (_injectedOppPolicy) {
+      try {
+        var mv = _injectedOppPolicy(state, cp);
+        if (mv == null) return { pass: true };
+        return { play: mv };
+      } catch (eInj) { /* fall through */ }
+    }
+    return opponentPolicyV21(state, cp);
+  }
+
+  function opponentPolicyV21(state, cp) {
+    var hand = state.players[cp].hand;
+    var cur = state.currentCombo;
+    var leg = getLegalPlays(hand, cur, state.players[cp].passed, state.isFirstLead, state.firstLeadCard);
+    if (!leg.length) return { pass: true };
+    var i;
+    for (i = 0; i < leg.length; i++) {
+      if (leg[i].length === hand.length) return { play: leg[i] };
+    }
+    if (!cur) {
+      var multi = [];
+      for (var m = 0; m < leg.length; m++) {
+        if (leg[m].length >= 2 && !playHasTwo(leg[m])) multi.push(leg[m]);
+      }
+      if (multi.length) return { play: orderLegals(multi, state, cp)[0] };
+      var cheapS = [];
+      for (i = 0; i < leg.length; i++) {
+        if (!playIsExpensive(leg[i])) cheapS.push(leg[i]);
+      }
+      if (cheapS.length) return { play: orderLegals(cheapS, state, cp)[0] };
+      return { play: leg[0] };
+    }
+    var cheap = cheapLegals(leg);
+    if (cheap.length) return { play: orderLegals(cheap, state, cp)[0] };
+    var curTop = cur.top ? cur.top.rank : 0;
+    if (curTop >= 11 || hand.length <= 6) return { play: orderLegals(leg, state, cp)[0] };
+    if (hand.length > 8 && curTop < 9) return { pass: true };
+    return { play: orderLegals(leg, state, cp)[0] };
+  }
+
+  function dualRolloutPolicy(state, cp) {
+    var hand = state.players[cp].hand;
+    var cur = state.currentCombo;
+    var leg = getLegalPlays(hand, cur, state.players[cp].passed, state.isFirstLead, state.firstLeadCard);
+    if (!leg.length) return { pass: true };
+    var i;
+    for (i = 0; i < leg.length; i++) {
+      if (leg[i].length === hand.length) return { play: leg[i] };
+    }
+    if (!cur) {
+      return { play: pickFreeLeadHard(leg, state, cp) };
+    }
+    var cheap = cheapLegals(leg);
+    if (cheap.length) return { play: orderLegals(cheap, state, cp)[0] };
+    if (cur.cards && cur.cards.every(function (c) { return c.rank === 12; })) {
+      var bombs = [];
+      for (var b = 0; b < leg.length; b++) if (playIsBomb(leg[b])) bombs.push(leg[b]);
+      if (bombs.length) return { play: orderLegals(bombs, state, cp)[0] };
+    }
+    var omin = oppMinHand(state, cp);
+    var handLen = hand.length;
+    var curTop = cur.top ? cur.top.rank : 0;
+    var non2 = [];
+    for (var ni = 0; ni < leg.length; ni++) {
+      if (!playHasTwo(leg[ni]) && !playIsBomb(leg[ni])) non2.push(leg[ni]);
+    }
+    if (non2.length) return { play: orderLegals(non2, state, cp)[0] };
+    if (handLen <= 5 || omin <= 2 || curTop >= 10) {
+      return { play: orderLegals(leg, state, cp)[0] };
+    }
+    if (handLen <= 7 && (omin <= 3 || curTop >= 9)) {
+      return { play: orderLegals(leg, state, cp)[0] };
+    }
+    if (handLen >= 8 && curTop < 10) return { pass: true };
+    return { play: orderLegals(leg, state, cp)[0] };
+  }
+
+  function bestResponseMove(state, myIdx, opts) {
+    opts = opts || {};
+    var trials = opts.trials != null ? opts.trials : 24;
+    var maxBranch = opts.maxBranch || 12;
+    var timeMs = opts.timeMs || 0;
+    var perfectInfo = opts.perfectInfo === true;
+    var rng = opts.rng || Math.random;
+    var t0 = Date.now();
+
+    var hand = state.players[myIdx].hand;
+    var cur = state.currentCombo;
+    var leg = getLegalPlays(hand, cur, state.players[myIdx].passed,
+      state.isFirstLead, state.firstLeadCard);
+    if (!leg.length) return { play: null, stats: { mode: 'br-none' } };
+
+    for (var g = 0; g < leg.length; g++) {
+      if (leg[g].length === hand.length) {
+        return { play: leg[g], stats: { mode: 'br-out' } };
+      }
+    }
+
+    if (!cur) leg = freeLeadCandidates(leg, state, myIdx);
+    else {
+      // Include structure-safe answers (not only pure cheap) so gold combat roots exist
+      var ch = cheapLegals(leg);
+      var safeRoot = ch.length ? ch.slice() : [];
+      if (!safeRoot.length) {
+        for (var sr = 0; sr < leg.length; sr++) {
+          if (!playHasTwo(leg[sr]) && structureBreakCost(hand, leg[sr]) < 5) safeRoot.push(leg[sr]);
+        }
+      }
+      if (safeRoot.length) leg = safeRoot;
+    }
+    leg = orderLegals(leg, state, myIdx);
+    if (leg.length > maxBranch) leg = leg.slice(0, maxBranch);
+
+    var allowPass = !!cur && cheapLegals(
+      getLegalPlays(hand, cur, state.players[myIdx].passed, state.isFirstLead, state.firstLeadCard)
+    ).length === 0;
+    var actions = leg.slice();
+    if (allowPass) actions.push(null);
+
+    var bestPlay = actions[0];
+    var bestRate = -1;
+    var details = [];
+    var selfPol = opts.selfPolicy === 'gold' ? expertPolicy : dualRolloutPolicy;
+
+    for (var ai = 0; ai < actions.length; ai++) {
+      if (timeMs > 0 && (Date.now() - t0) >= timeMs) break;
+      var act = actions[ai];
+      var wins = 0;
+      var nTry = trials;
+      for (var t = 0; t < nTry; t++) {
+        var root = perfectInfo ? state : determinize(state, myIdx, rng, false);
+        var s;
+        if (act == null) s = passFast(root, myIdx);
+        else s = applyPlayFast(root, myIdx, act);
+        s.isFirstLead = false;
+        var steps = 0;
+        while (!s.roundOver && steps < 200) {
+          var cp = s.currentPlayer;
+          var oppPol = (opts.oppModel === 'strong') ? opponentPolicyStrong(s, cp) : opponentPolicyV21(s, cp);
+          var dec = (cp === myIdx) ? selfPol(s, cp) : oppPol;
+          s = applyDecision(s, cp, dec);
+          s.isFirstLead = false;
+          steps++;
+        }
+        var u = finalUtility(s, myIdx);
+        if (u >= 0.99) wins++;
+      }
+      var rate = wins / nTry;
+      // Soft residual tie-break: structure cost (Series 1–5 never smash for min-rate noise)
+      var sbc = act == null ? 0 : structureBreakCost(hand, act);
+      details.push({ sig: playSig(act), rate: rate, n: nTry, sbc: sbc, act: act });
+      if (rate > bestRate + 0.02) {
+        bestRate = rate;
+        bestPlay = act;
+      } else if (Math.abs(rate - bestRate) <= 0.02) {
+        var bestSbc = bestPlay == null ? 0 : structureBreakCost(hand, bestPlay);
+        if (rate > bestRate || (rate === bestRate && sbc < bestSbc)) {
+          bestRate = rate;
+          bestPlay = act;
+        } else if (Math.abs(rate - bestRate) < 1e-9 && sbc < bestSbc) {
+          bestPlay = act;
+        }
+      }
+    }
+    details.sort(function (a, b) { return b.rate - a.rate || a.sbc - b.sbc; });
+    return {
+      play: bestPlay,
+      stats: {
+        mode: perfectInfo ? 'best-response' : 'best-response-det',
+        avg: bestRate,
+        top: details.slice(0, 5).map(function (d) {
+          return { sig: d.sig, rate: d.rate, n: d.n, sbc: d.sbc };
+        }),
+        ms: Date.now() - t0,
+        trials: trials,
+        perfectInfo: perfectInfo
+      }
+    };
+  }
+
   function searchMove(state, myIdx, opts) {
     opts = opts || {};
     var difficulty = opts.difficulty || 'hard';
@@ -1215,10 +1651,8 @@
     var hiddenInfo = opts.hiddenInfo === true || !perfectInfo;
     if (opts.perfectInfo === false) perfectInfo = false;
     if (opts.hiddenInfo === false && opts.perfectInfo !== true) {
-      // explicit hiddenInfo:false without perfectInfo still uses det for safety
       perfectInfo = false;
     }
-    // Resolve: perfectInfo true only when explicitly requested
     if (opts.perfectInfo === true) {
       perfectInfo = true;
       hiddenInfo = false;
@@ -1234,10 +1668,70 @@
       state.isFirstLead, state.firstLeadCard);
     if (!legals.length) return { play: null, stats: { mode: 'none' } };
 
-    // Always go out if possible
     for (var i = 0; i < legals.length; i++) {
       if (legals[i].length === hand.length) {
         return { play: legals[i], stats: { mode: 'forced-out' } };
+      }
+    }
+
+    // Budgets (before BR)
+    var timeMs = opts.timeMs;
+    var maxSims = opts.maxSims;
+    var iterations = opts.iterations;
+    var maxBranch = opts.maxBranch || 12;
+    if (timeMs == null && iterations == null && maxSims == null) {
+      if (difficulty === 'medium') {
+        timeMs = 180;
+        maxSims = 100;
+      } else if (difficulty === 'grandmaster') {
+        timeMs = 3500;
+        iterations = 900;
+      } else {
+        timeMs = opts.inBrowser ? 1200 : 1800;
+        iterations = opts.inBrowser ? 220 : 450;
+      }
+    }
+
+    var exact = exactEndgameMove(state, myIdx);
+    if (exact && exact.play) {
+      return { play: exact.play, stats: { mode: 'exact-endgame' } };
+    }
+    var eg = endgamePick(state, myIdx);
+    if (eg) {
+      return { play: eg, stats: { mode: 'endgame' } };
+    }
+
+    // Best-response MC (2p hard+, or when dual sets bestResponse:true)
+    if (opts.bestResponse || (state.players.length === 2 && difficulty !== 'easy' && difficulty !== 'medium')) {
+      var ominBR = oppMinHand(state, myIdx);
+      var freeBR = !cur;
+      var brTrials = opts.brTrials;
+      if (brTrials == null) {
+        if (opts.inBrowser) brTrials = freeBR || ominBR <= 2 ? 18 : 10;
+        else brTrials = freeBR || ominBR <= 2 ? 55 : 22;
+      }
+      var brTime = timeMs != null ? timeMs : (opts.inBrowser ? 800 : 2500);
+      if (!opts.inBrowser && (freeBR || ominBR <= 2)) brTime = Math.max(brTime, 800);
+      // Duals pass timeMs=0 with fixed trials — respect trials budget only
+      if (opts.timeMs === 0) brTime = 0;
+      var br = bestResponseMove(state, myIdx, {
+        trials: brTrials,
+        timeMs: brTime,
+        maxBranch: freeBR ? 16 : 12,
+        perfectInfo: perfectInfo,
+        rng: rng,
+        oppModel: opts.exploit ? 'strong' : 'v21'
+      });
+      if (br && br.play !== undefined) {
+        if (br.play == null && !cur) {
+          br.play = pickFreeLeadHard(legals, state, myIdx);
+        }
+        if (!cur && br.play && br.play.length === 1 && ominBR === 1 && br.play[0].rank < 10) {
+          br.play = pickFreeLeadHard(legals, state, myIdx);
+        }
+        br.stats = br.stats || {};
+        br.stats.perfectInfo = perfectInfo;
+        return br;
       }
     }
 
@@ -1245,7 +1739,7 @@
     if (mode === 'auto') {
       if (difficulty === 'easy') mode = 'expert';
       else if (difficulty === 'medium') mode = perfectInfo ? 'mc' : 'mcts';
-      else mode = 'mcts'; // hard + grandmaster → det-mcts when hidden
+      else mode = 'mcts';
     }
 
     if (mode === 'expert') {
@@ -1256,24 +1750,6 @@
       };
     }
 
-    // Budgets
-    var timeMs = opts.timeMs;
-    var maxSims = opts.maxSims;
-    var iterations = opts.iterations;
-    if (timeMs == null && iterations == null && maxSims == null) {
-      if (difficulty === 'medium') {
-        timeMs = 180;
-        maxSims = 100;
-      } else if (difficulty === 'grandmaster') {
-        timeMs = 3500;
-        iterations = 900;
-      } else {
-        // hard default for browser (~1s decisions; grandmaster higher)
-        timeMs = opts.inBrowser ? 1200 : 1800;
-        iterations = opts.inBrowser ? 220 : 450;
-      }
-    }
-
     if (mode === 'mc') {
       var mc = flatMonteCarlo(state, myIdx, {
         rng: rng,
@@ -1281,7 +1757,7 @@
         maxSims: maxSims || 120,
         perfectInfo: perfectInfo,
         determinizations: opts.determinizations || (perfectInfo ? 1 : 12),
-        maxBranch: opts.maxBranch || 12,
+        maxBranch: maxBranch,
         rolloutSteps: 65
       });
       mc.stats = mc.stats || {};
@@ -1289,7 +1765,6 @@
       return mc;
     }
 
-    // MCTS / determinized (default for hard)
     var detN = opts.determinizations != null
       ? opts.determinizations
       : (perfectInfo ? 1 : (difficulty === 'grandmaster' ? 24 : 12));
@@ -1338,6 +1813,12 @@
     structureBreakCost: structureBreakCost,
     pickFreeLeadHard: pickFreeLeadHard,
     enforcePolicyGuards: enforcePolicyGuards,
-    exactEndgameMove: exactEndgameMove
+    exactEndgameMove: exactEndgameMove,
+    endgamePick: endgamePick,
+    bestResponseMove: bestResponseMove,
+    setExploitOpponent: setExploitOpponent,
+    freeLeadCandidates: freeLeadCandidates,
+    dualRolloutPolicy: dualRolloutPolicy,
+    analyzeHand: analyzeHand
   };
 }));

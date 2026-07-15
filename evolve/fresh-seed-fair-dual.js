@@ -45,10 +45,19 @@ const soft = parseInt(process.env.SOFT || '0', 10);
 const branch = parseInt(process.env.BRANCH || '12', 10);
 const bothSeats = process.env.BOTH_SEATS !== '0'; // default ON
 const skipIdentity = process.env.SKIP_IDENTITY === '1';
-const target = parseFloat(process.env.TARGET || '0.70');
+let target = parseFloat(process.env.TARGET || '0.70');
+if (!isFinite(target)) {
+  // Guard against ladder TARGET_RUNG / version strings leaking into TARGET
+  console.warn('WARN: TARGET env not a WR threshold (' + process.env.TARGET + '); using 0.70');
+  target = 0.70;
+}
 const minDelta = parseInt(process.env.MIN_DELTA || '2', 10);
 const outName = process.env.OUT || ('fresh-dual-' + challTag + '-vs-' + freezeTag + '.json');
-const outPath = path.isAbsolute(outName) ? outName : path.join(__dirname, outName);
+// Prefer cwd-relative OUT so evolve/eval-registry/... lands at repo root (not evolve/evolve/...)
+const outPath = path.isAbsolute(outName) ? outName : path.join(process.cwd(), outName);
+const os = require('os');
+const W_MAX = Math.max(1, Math.floor((os.cpus().length || 2) / 2));
+const WORKERS = Math.max(1, Math.min(W_MAX, parseInt(process.env.WORKERS || String(W_MAX), 10) || W_MAX));
 
 const live = require('../policies/' + challTag + '-ai.js');
 const freeze = require('../policies/' + freezeTag + '-ai.js');
@@ -161,7 +170,7 @@ function playGame(seed, liveSeat, livePol, freezePol) {
   };
 }
 
-function runPartition(label, seeds, livePol, freezePol, mode) {
+function runPartitionSerial(label, seeds, livePol, freezePol, mode) {
   const perGame = [];
   let liveWins = 0;
   const t0 = Date.now();
@@ -202,6 +211,96 @@ function runPartition(label, seeds, livePol, freezePol, mode) {
     lossSeats: perGame.filter(function (x) { return !x.liveWin; })
       .map(function (x) { return x.seed + '@' + x.liveSeat; })
   };
+}
+
+/**
+ * Parallel partition: shard seeds across WORKERS child processes (≤ W_max).
+ * Orchestrated via bash `wait` so parent stays synchronous.
+ */
+function runPartitionParallel(label, seeds, mode) {
+  const { execSync } = require('child_process');
+  const t0 = Date.now();
+  const nW = Math.max(1, Math.min(WORKERS, seeds.length || 1));
+  const shards = [];
+  for (let w = 0; w < nW; w++) shards.push([]);
+  for (let i = 0; i < seeds.length; i++) shards[i % nW].push(seeds[i]);
+
+  const tmpDir = path.join(os.tmpdir(), 'tieng-len-dual-' + process.pid + '-' + label + '-' + Date.now());
+  try { fs.mkdirSync(tmpDir); } catch (e) { if (e.code !== 'EEXIST') throw e; }
+
+  const workerJs = path.join(__dirname, 'dual-shard-worker.js');
+  const root = path.join(__dirname, '..');
+  const lines = ['set -e', 'cd ' + JSON.stringify(root)];
+  const outFiles = [];
+  for (let w = 0; w < nW; w++) {
+    if (!shards[w].length) continue;
+    const seedFile = path.join(tmpDir, 'seeds-' + w + '.json');
+    const outFile = path.join(tmpDir, 'out-' + w + '.json');
+    outFiles.push(outFile);
+    fs.writeFileSync(seedFile, JSON.stringify({ seeds: shards[w], bothSeats: bothSeats }));
+    // Background each worker with env
+    lines.push(
+      'CHALL=' + JSON.stringify(challTag) +
+      ' FREEZE=' + JSON.stringify(freezeTag) +
+      ' SEED_FILE=' + JSON.stringify(seedFile) +
+      ' OUT=' + JSON.stringify(outFile) +
+      ' MS=' + String(ms) +
+      ' TRIALS=' + String(trials) +
+      ' SOFT=' + String(soft) +
+      ' BRANCH=' + String(branch) +
+      ' MODE=' + JSON.stringify(mode) +
+      ' BOTH_SEATS=' + (bothSeats ? '1' : '0') +
+      ' ' + JSON.stringify(process.execPath) + ' ' + JSON.stringify(workerJs) +
+      ' >' + JSON.stringify(path.join(tmpDir, 'log-' + w + '.txt')) + ' 2>&1 &'
+    );
+  }
+  lines.push('wait');
+  lines.push('echo SHARDS_DONE');
+  try {
+    execSync(lines.join('\n'), { stdio: ['ignore', 'inherit', 'inherit'], timeout: 0 });
+  } catch (e) {
+    throw new Error('parallel workers failed: ' + (e.message || e));
+  }
+
+  const perGame = [];
+  for (let i = 0; i < outFiles.length; i++) {
+    if (!fs.existsSync(outFiles[i])) throw new Error('missing shard out ' + outFiles[i]);
+    const res = JSON.parse(fs.readFileSync(outFiles[i], 'utf8'));
+    const pg = res.perGame || [];
+    for (let j = 0; j < pg.length; j++) perGame.push(pg[j]);
+  }
+  perGame.sort(function (a, b) {
+    return a.seed - b.seed || a.liveSeat - b.liveSeat;
+  });
+  let liveWins = 0;
+  for (let k = 0; k < perGame.length; k++) if (perGame[k].liveWin) liveWins++;
+  const n = perGame.length;
+  return {
+    mode: mode,
+    partition: label,
+    games: n,
+    liveWins: liveWins,
+    freezeWins: n - liveWins,
+    liveWinRate: n ? liveWins / n : 0,
+    seeds: seeds.slice(),
+    bothSeats: bothSeats,
+    ms: Date.now() - t0,
+    workers: nW,
+    perGame: perGame,
+    lossSeats: perGame.filter(function (x) { return !x.liveWin; })
+      .map(function (x) { return x.seed + '@' + x.liveSeat; })
+  };
+}
+
+function runPartition(label, seeds, livePol, freezePol, mode) {
+  if (WORKERS > 1 && seeds.length >= 2 && process.env.NO_SHARD !== '1') {
+    try {
+      return runPartitionParallel(label, seeds, mode);
+    } catch (e) {
+      console.error('WARN: parallel shard failed, falling back serial:', e.message);
+    }
+  }
+  return runPartitionSerial(label, seeds, livePol, freezePol, mode);
 }
 
 /** Generate `n` unique positive int seeds in [2e9, 3e9) style range. */
@@ -368,8 +467,17 @@ console.log(JSON.stringify({
   summary: report.summary,
   passed: report.passed,
   seedSetPath: report.seedSetPath,
-  totalMs: report.totalMs
+  totalMs: report.totalMs,
+  workers: WORKERS,
+  wMax: W_MAX
 }, null, 2));
+try {
+  fs.mkdirSync(path.dirname(outPath), { recursive: true });
+} catch (e) {
+  if (e.code !== 'EEXIST') {
+    try { fs.mkdirSync(path.dirname(outPath)); } catch (e2) { /* best-effort */ }
+  }
+}
 fs.writeFileSync(outPath, JSON.stringify(report, null, 2));
 console.log('wrote', outPath);
 process.exit(report.passed ? 0 : 2);
