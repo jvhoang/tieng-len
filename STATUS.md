@@ -36,6 +36,8 @@ CERT ≥ **0.90** vs freeze v6.0 (Wilson LB > 0.87).
 | 0070 | sbc always in rateV | −0.7 |
 | 0071 | mix15 (TRAIN 0.53 unpaired) | −0.6 PAIR |
 | 0072 | expert sbc combat override | −0.4 |
+| 0073 | expertScore soft blend BR | −0.3 |
+| 0074 | λ0.24 + TRIALS=36 | 0 identity |
 
 ## TRAIN tools added
 
