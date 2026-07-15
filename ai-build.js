@@ -1,11 +1,11 @@
 /**
- * ai-build.js — L2s14 Series4-5 dual levers
+ * ai-build.js — L2s23 soft BR leaf + dual min-beat
  */
 (function (root) {
   var BUILD = {
-    id: "v1.0-sh-L2s14",
-    stamped: "2026-07-15T09:01:47.541Z",
-    label: "L2s14: S4-5 structure/pass/omin1 + BR pins; gold 62/0"
+    id: "v1.0-sh-L2s23",
+    stamped: "2026-07-15T10:40:08.615Z",
+    label: "L2s23: BR expected-value leafEval2p + dual min-beat combat"
   };
   root.TIENLEN_AI_BUILD = BUILD;
   root.TienLenAI = root.TienLenAI || {};

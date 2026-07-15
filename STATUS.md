@@ -1,54 +1,59 @@
 # STATUS — Superhuman goal (hybrid PAIR_STEP + CERT)
 
-**Updated:** 2026-07-15T10:20Z  
-**Dual champion:** `p_l2s9` / `v1.0-sh-L2s9` (last accepted dual climber)  
-**Live product:** `p_l2s15` / pass-QKA living-gold fix (62/0 suite; dual ≈ neutral vs p_l2s9)  
-**W_max:** 9 · SoftN FORBIDDEN · convert-on-S FORBIDDEN  
-**Ladder:** **L1 ACHIEVED** · **L2 plateau** (ΣΔ=+0.1025 but consecutive streak broken) · L3–L5 pending  
-**Gold latest:** **GREEN 62/0** (Series 1–5 sample cases) · manifest clean  
+**Updated:** 2026-07-15T12:15Z  
+**Dual champion:** `p_l2s9` (last PAIR_STEP accept 0010)  
+**Live product:** `p_l2s15` (gold 62/0; dual ≈ peer with champion)  
+**W_max:** 9 (18 logical cores / 2)  
+**SoftN / convert-on-S:** FORBIDDEN  
+**Ladder:** **L1 done** · **L2 plateau** · L3–L5 pending  
+**Gold:** GREEN **62/0** · manifest clean  
 
-## PAIR_STEP accepts (cumulative)
+## PAIR_STEP accepts
 
-| step | NEW | Δ | LB | n | notes |
-|------|-----|---|-----|---|-------|
-| **0007** | p_l2s7 | +0.0875 | +0.029 | 240 | first accept vs L1 |
-| **0010** | p_l2s9 | +0.015 | +0.0025 | 400 | second accept |
+| step | NEW | Δ_WR | CI LB | n | notes |
+|------|-----|------|-------|---|-------|
+| 0007 | p_l2s7 | +0.0875 | +0.029 | 240 | vs L1 |
+| 0010 | p_l2s9 | +0.015 | +0.0025 | 400 | vs p_l2s7 |
 
-**ΣΔ = +0.1025** · Consecutive streak after later rejects: **0–1** (need **3 consecutive** for L2 ΣΔ gate)  
-**EMA WR vs v6:** ~0.48–0.50 (not ≥0.60)
+**ΣΔ = +0.1025**  
+**Consecutive accept streak:** broken (many rejects 0011–0037)  
+**EMA WR vs v6 (dev):** ~0.46–0.50 — **not ≥0.60**
 
-## Session progress (post-0010)
+## L2 criteria (not yet met)
 
-| Work | Result |
-|------|--------|
-| Series 4–5 fair gold cases | **62/0** living suite (0523–0558 sample) |
-| p_l2s15 pass QKA handLen≥9 | gold green; dual Δ≈0 vs p_l2s9 (n=600) |
-| TRAIN hill-climb knobs | train WR~0.54 noise; **PAIR_STEP reject** vs p_l2s9 (−0.7pp) |
-| Many dual levers (v60 dualRollout, multi-first, BR soft-tie widen, hybrid selfPol) | reject or dual-null; some dual-hurt |
+Need **EMA ≥ 0.60** **OR** (ΣΔ ≥ +0.10 **and ≥3 consecutive accepts**).  
+ΣΔ ok; consecutive and EMA both short.
 
-## L2 remaining
+## Recent TRAIN / dual experiments (all general; no convert)
 
-1. **3 consecutive PAIR_STEP accepts** with Δ CI LB>0 **or** EMA ≥ 0.60  
-2. Gold latest suite stays green (now 62 cases)  
-3. milestone-L2 git commit/push/tag  
+| Candidate | Idea | PAIR vs p_l2s9 | Notes |
+|-----------|------|----------------|-------|
+| p_l2s23 | soft leafEval BR | reject −3.3pp | incomplete soft hurt |
+| p_l2s24 | dual min-beat | reject ~0 | large-n slight − |
+| p_l2s_sp | TRAIN selfplay knobs ~0.54 | reject ~0 | train noise no transfer |
+| p_l2s25 | opening multi + 2-tempo | reject −0.8pp | |
+| p_l2s26–28 | forced-win / progressive BR / multiBonus | reject ~0 to −2pp | |
+| p_l2s29 | v60 dualRollout + gold expert split | +0.3pp n=600 LB− | dual-null |
 
-## Ship remaining
+## Diagnosis
 
-CERT ≥90% vs v60 after freeze SHA — still far above ~50% peer duals.
+Dual strength is a **local max ~50% vs v60**. Micro general knobs and BR tweaks do not clear **LB>0** vs champion. TRAIN dual hill-climbs overfit seed noise. Gold structure and dual multi bias continue to trade off.
 
-## Tools added
+## Tools
 
-- `evolve/train-dual-hillclimb.js` — TRAIN-only dual knob search (no PAIR_STEP residual pack)
-- `evolve/run-gold-fair-suite.js` — Series 4–5 cases
+- `evolve/train-dual-hillclimb.js`
+- `evolve/train-selfplay-dual.js` — TRAIN dual knob search + gold gate
+- Living gold suite Series 4–5
 
-## Next levers (general only)
+## Next (highest value)
 
-1. Self-play value head / longer BR with better leaf eval  
-2. Playlog BC parametric prior (TRAIN ingest)  
-3. Conservative dual-only free-lead residual scoring validated on TRAIN then PAIR_STEP  
-4. Never residual-pack PAIR_STEP S_t  
+1. **Large-scale self-play** with isolated worktrees + linear/value features learned on TRAIN only  
+2. **Playlog BC** → dualRollout prior features (not fingerprints)  
+3. Stack **3 consecutive** accepts once a dual-positive general change sticks  
+4. milestone-L2 then L3–L5 → CERT ≥90%  
 
 ## Git
 
-- L1: `89ccbe0` `milestone-L1`  
-- Accepts: `9cb2f82` (0007), `d22e1c3` (0010)  
+- L1: `89ccbe0` tag `milestone-L1`  
+- Accepts: `9cb2f82`, `d22e1c3`  
+- Gold suite+train tools: `8da9a2d`  

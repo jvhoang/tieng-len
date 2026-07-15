@@ -1,0 +1,130 @@
+{
+  "protocol": "train-selfplay-dual-v1",
+  "base": "p_l2s15",
+  "bestWR": 0.5388888888888889,
+  "bestKnobs": {
+    "passHand": 7,
+    "passTop": 10,
+    "sbcSafe": 3,
+    "passSbc": 7,
+    "softWin": 0.06
+  },
+  "goldOk": true,
+  "log": [
+    {
+      "tag": "p_sp_base",
+      "wr": 0.5,
+      "knobs": {
+        "passHand": 8,
+        "passTop": 10,
+        "sbcSafe": 5,
+        "passSbc": 5,
+        "softWin": 0.02
+      }
+    },
+    {
+      "tag": "p_sp_0",
+      "wr": 0.4888888888888889,
+      "knobs": {
+        "passHand": 7,
+        "passTop": 11,
+        "sbcSafe": 5,
+        "passSbc": 6,
+        "softWin": 0.04
+      },
+      "wins": 88,
+      "games": 180
+    },
+    {
+      "tag": "p_sp_1",
+      "wr": 0.4666666666666667,
+      "knobs": {
+        "passHand": 8,
+        "passTop": 11,
+        "sbcSafe": 4,
+        "passSbc": 7,
+        "softWin": 0.1
+      },
+      "wins": 84,
+      "games": 180
+    },
+    {
+      "tag": "p_sp_2",
+      "wr": 0.4777777777777778,
+      "knobs": {
+        "passHand": 7,
+        "passTop": 11,
+        "sbcSafe": 4,
+        "passSbc": 5,
+        "softWin": 0.02
+      },
+      "wins": 86,
+      "games": 180
+    },
+    {
+      "tag": "p_sp_3",
+      "wr": 0.4777777777777778,
+      "knobs": {
+        "passHand": 8,
+        "passTop": 10,
+        "sbcSafe": 6,
+        "passSbc": 4,
+        "softWin": 0.08
+      },
+      "wins": 86,
+      "games": 180
+    },
+    {
+      "tag": "p_sp_4",
+      "wr": 0.5388888888888889,
+      "knobs": {
+        "passHand": 7,
+        "passTop": 10,
+        "sbcSafe": 3,
+        "passSbc": 7,
+        "softWin": 0.06
+      },
+      "wins": 97,
+      "games": 180
+    },
+    {
+      "tag": "p_sp_5",
+      "wr": 0.5,
+      "knobs": {
+        "passHand": 7,
+        "passTop": 8,
+        "sbcSafe": 4,
+        "passSbc": 7,
+        "softWin": 0.04
+      },
+      "wins": 90,
+      "games": 180
+    },
+    {
+      "tag": "p_sp_6",
+      "wr": 0.5222222222222223,
+      "knobs": {
+        "passHand": 11,
+        "passTop": 10,
+        "sbcSafe": 4,
+        "passSbc": 7,
+        "softWin": 0.06
+      },
+      "wins": 94,
+      "games": 180
+    },
+    {
+      "tag": "p_sp_7",
+      "wr": 0.48333333333333334,
+      "knobs": {
+        "passHand": 7,
+        "passTop": 8,
+        "sbcSafe": 3,
+        "passSbc": 7,
+        "softWin": 0.04
+      },
+      "wins": 87,
+      "games": 180
+    }
+  ]
+}
