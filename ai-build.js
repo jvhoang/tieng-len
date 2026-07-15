@@ -1,14 +1,2 @@
-/**
- * ai-build.js — L2s23 soft BR leaf + dual min-beat
- */
-(function (root) {
-  var BUILD = {
-    id: "v1.0-sh-L2s23",
-    stamped: "2026-07-15T10:40:08.615Z",
-    label: "L2s23: BR expected-value leafEval2p + dual min-beat combat"
-  };
-  root.TIENLEN_AI_BUILD = BUILD;
-  root.TienLenAI = root.TienLenAI || {};
-  root.TienLenAI.AI_BUILD = BUILD;
-  if (typeof module === "object" && module.exports) module.exports = BUILD;
-}(typeof window !== "undefined" ? window : (typeof global !== "undefined" ? global : this)));
+/** L2s48 value free-lead + BR blend */
+(function(r){var B={id:"v1.0-sh-L2s48",stamped:"2026-07-15T15:07:34.505606Z",label:"L2s48 value-guided multi free-lead on p_l2s46"};r.TIENLEN_AI_BUILD=B;if(typeof module==="object")module.exports=B;}(typeof window!=="undefined"?window:global));

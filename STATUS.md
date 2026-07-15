@@ -1,65 +1,48 @@
 # STATUS — Superhuman Tiến Lên (hybrid PAIR_STEP + CERT)
 
-**Updated:** 2026-07-15T13:50Z  
+**Updated:** 2026-07-15T15:08Z  
 **W_max:** 9 (18 cores / 2)  
-**Dual champion:** `p_l2s9` (accept 0010)  
-**Live product:** `p_l2s15` — gold **62/0**  
-**Ladder:** L1 ✅ · **L2 plateau** · L3–L5 pending  
+**Dual champion:** `p_l2s46` (accept **0053**)  
+**Live:** value-blend BR λ=0.22 · gold **62/0**  
+**Ladder:** L1 ✅ · **L2 in progress (1/3 consecutive accepts)** · L3–L5 pending  
 **SoftN / convert-on-S:** FORBIDDEN  
+**Gold manifest:** clean (81 files)
 
 ## Ship bar
 
-CERT ≥ **0.90** vs freeze v6.0 (Wilson LB > 0.87) — **not** dual ~50%.
+CERT ≥ **0.90** vs freeze v6.0 (Wilson LB > 0.87).
 
-## Accepts (ΣΔ = +0.1025)
+## Accepts (ΣΔ = +0.1354)
 
-| step | NEW | Δ | LB | n |
-|------|-----|---|-----|---|
-| 0007 | p_l2s7 | +0.0875 | +0.029 | 240 |
-| 0010 | p_l2s9 | +0.015 | +0.0025 | 400 |
+| step | NEW | Δ | LB | n | notes |
+|------|-----|---|-----|---|-------|
+| 0007 | p_l2s7 | +0.0875 | +0.029 | 240 | first climb |
+| 0010 | p_l2s9 | +0.015 | +0.0025 | 400 | structure dual |
+| **0053** | **p_l2s46** | **+0.0329** | **+0.0014** | **700** | **TRAIN linear value blend BR** |
 
-**Consecutive streak:** broken (rejects 0011–0043).  
-**EMA vs v6:** ~0.47–0.50 (need ≥0.60 for L2 alt path).
+**Consecutive streak:** **1** (0053). Need 2 more consecutive for L2.  
+**EMA vs v6:** champion WR_new ≈ 0.50 on 0053 (dev estimate).
 
-## L2 still needs
+### Accept 0053 detail
 
-- **3 consecutive** PAIR_STEP accepts (Δ CI LB > 0) **or** EMA ≥ 0.60  
-- Gold latest green (62 cases OK)  
-- then `milestone-L2` commit/push/tag  
+- seedHash `6c571c06736a9f5f…`
+- McNemar b=51 c=74 χ²=3.87
+- Gold suite 62/0 after refresh
+- Method: general linear V(s) from TRAIN self-play features; BR uses `rateV = rate + 0.22·ΔV`
+- **Not** convert-on-S; no residual packaging of PAIR seeds
 
-## Experiment summary (post-0010)
+## Rejects this session (selected)
 
-Dozens of general dual levers under hybrid PAIR_STEP:
+| step | idea | Δ |
+|------|------|---|
+| 0047–0051 | knobs / expert leaf / residual FL / FL-expert root | ≤0 or negative |
+| 0052 | value blend n=400 | +3.5pp LB−0.005 (borderline) |
+| 0054 | λ=0.30 vs 0.22 | identity 0 |
 
-- Soft leafEval BR, progressive BR, forced-win, multiBonus  
-- TRAIN hill-climb / selfplay knobs (~0.54 train WR) — **no transfer**  
-- v60 dualRollout / teacher combat / hybrid gold+v60  
-- free-lead census + regret midmulti — small +Δ then **n=1000 reject −1.1pp**  
+## Next
 
-**Conclusion:** dual skill is a **hard local max ~50% vs v60**. Micro dualRollout / BR knobs do not clear accept. Need **large-scale self-play value learning** or deeper search (beyond knob search).
+1. Stack accepts 2–3 consecutive (value FL / retrain V / distillation)
+2. L2 milestone commit when 3-streak or EMA≥0.60
+3. Climb L3–L5 → CERT 90%
 
-## Tools on disk
-
-| Script | Role |
-|--------|------|
-| `evolve/pair-step.js` | hybrid accept |
-| `evolve/train-selfplay-dual.js` | TRAIN dual knobs |
-| `evolve/train-freelead-census.js` | free-lead outcome census |
-| `evolve/train-fl-regret.js` | abstract free-lead regret |
-| `evolve/bc-dual-prior.js` | playlog BC rates |
-| `evolve/run-gold-fair-suite.js` | living gold 62 |
-
-## Git
-
-- `89ccbe0` milestone-L1  
-- `9cb2f82` / `d22e1c3` accepts  
-- `8da9a2d` / `86abb65` gold+train tools  
-
-## Next session plan
-
-1. Multi-hour self-play with linear/value features learned only on TRAIN  
-2. Distill high-trial BR into dualRollout prior  
-3. Resume consecutive accept stack; L2 tag when criteria met  
-4. Climb toward CERT 90%  
-
-Never residual-pack PAIR_STEP / CERT. Gold living folder still authoritative.  
+Never residual-pack PAIR_STEP / CERT.

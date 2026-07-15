@@ -11,7 +11,7 @@
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./engine.js'));
+    module.exports = factory(require('../engine.js'));
   } else {
     root.TienLenSearch = factory(root.TienLenEngine);
   }
@@ -788,26 +788,9 @@
       if (lowPairs.length) return orderLegals(lowPairs, state, myIdx)[0];
     }
 
-    // Multi-first + value-guided residual (L2s48): among low multi, max V(after)
+    // Multi-first: low volume free-leads (pairs/short seqs) — dual strength
     if (multi.length) {
       var lowMulti = multi.filter(function (p) { return topRank(p) <= 8; });
-      var pool = lowMulti.length ? lowMulti : multi;
-      if (typeof valueEval === 'function' && typeof applyPlayFast === 'function') {
-        var bestP = pool[0];
-        var bestV = -1;
-        var bi;
-        for (bi = 0; bi < pool.length && bi < 14; bi++) {
-          try {
-            var stA = applyPlayFast(state, myIdx, pool[bi]);
-            stA.isFirstLead = false;
-            var vv = valueEval(stA, myIdx);
-            // structure residual soft: penalize sbc
-            vv -= structureBreakCost(hand, pool[bi]) * 0.02;
-            if (vv > bestV) { bestV = vv; bestP = pool[bi]; }
-          } catch (eV2) { /* skip */ }
-        }
-        return bestP;
-      }
       if (lowMulti.length) return orderLegals(lowMulti, state, myIdx)[0];
       return orderLegals(multi, state, myIdx)[0];
     }

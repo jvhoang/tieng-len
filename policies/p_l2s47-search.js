@@ -11,7 +11,7 @@
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./engine.js'));
+    module.exports = factory(require('../engine.js'));
   } else {
     root.TienLenSearch = factory(root.TienLenEngine);
   }
@@ -788,26 +788,9 @@
       if (lowPairs.length) return orderLegals(lowPairs, state, myIdx)[0];
     }
 
-    // Multi-first + value-guided residual (L2s48): among low multi, max V(after)
+    // Multi-first: low volume free-leads (pairs/short seqs) — dual strength
     if (multi.length) {
       var lowMulti = multi.filter(function (p) { return topRank(p) <= 8; });
-      var pool = lowMulti.length ? lowMulti : multi;
-      if (typeof valueEval === 'function' && typeof applyPlayFast === 'function') {
-        var bestP = pool[0];
-        var bestV = -1;
-        var bi;
-        for (bi = 0; bi < pool.length && bi < 14; bi++) {
-          try {
-            var stA = applyPlayFast(state, myIdx, pool[bi]);
-            stA.isFirstLead = false;
-            var vv = valueEval(stA, myIdx);
-            // structure residual soft: penalize sbc
-            vv -= structureBreakCost(hand, pool[bi]) * 0.02;
-            if (vv > bestV) { bestV = vv; bestP = pool[bi]; }
-          } catch (eV2) { /* skip */ }
-        }
-        return bestP;
-      }
       if (lowMulti.length) return orderLegals(lowMulti, state, myIdx)[0];
       return orderLegals(multi, state, myIdx)[0];
     }
@@ -1522,7 +1505,7 @@
 
   /* VALUE_NET_START — linear TRAIN value (AlphaZero-lite features) */
   var VALUE_W = [0.850323,-3.343534,1.799391,1.523945,1.498918,-1.57339,-0.573825,0.362528,-0.568548,0.487795,0.731693,0.240293,-0.121663];
-  var VALUE_LAMBDA = 0.22; // blend into BR rate
+  var VALUE_LAMBDA = 0.30; // blend into BR rate
   function valueSigmoid(x) {
     if (x > 20) return 1;
     if (x < -20) return 0;
@@ -1728,10 +1711,10 @@
       // Soft residual tie-break: structure cost (Series 1–5 never smash for min-rate noise)
       var sbc = act == null ? 0 : structureBreakCost(hand, act);
       details.push({ sig: playSig(act), rate: rate, rateV: rateV, n: nTry, sbc: sbc, act: act });
-      if (rateV > bestRate + 0.03) {
+      if (rateV > bestRate + 0.04) {
         bestRate = rateV;
         bestPlay = act;
-      } else if (Math.abs(rateV - bestRate) <= 0.03) {
+      } else if (Math.abs(rateV - bestRate) <= 0.04) {
         var bestSbc = bestPlay == null ? 0 : structureBreakCost(hand, bestPlay);
         if (rateV > bestRate || (rateV === bestRate && sbc < bestSbc)) {
           bestRate = rateV;
