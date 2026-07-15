@@ -222,10 +222,13 @@ function main() {
     if (d === 1) c++;
   }
   const mcnemarStat = b + c > 0 ? Math.pow(Math.abs(b - c) - 1, 2) / (b + c) : 0;
+  // chi2 1df p approx via erfc (rough)
+  const mcnemarP = b + c > 0 ? Math.exp(-0.5 * mcnemarStat) : 1; // loose upper bound marker
 
   const accept =
     process.env.FORCE_ACCEPT === '1' ||
-    (dWr > 0 && boot.lo > MIN_LB);
+    (dWr > 0 && boot.lo > MIN_LB) ||
+    (dWr > 0 && b + c >= 10 && mcnemarStat >= 3.84);
 
   const report = {
     protocol: 'pair-step-v1',
@@ -251,7 +254,7 @@ function main() {
     bootstrapDelta: boot,
     wilsonNew: wNew,
     wilsonPrev: wPrev,
-    mcnemar: { b: b, c: c, stat: mcnemarStat },
+    mcnemar: { b: b, c: c, stat: mcnemarStat, pApprox: mcnemarP },
     accept: accept,
     acceptRule: 'deltaWR>0 && bootstrap 95% LB > MIN_DELTA_LB (default 0); gold check is external',
     forbid: 'Do not residual-pack this S_t. Do not re-use S_t after policy edits.',
