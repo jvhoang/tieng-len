@@ -12,12 +12,12 @@
  * Hard mode: real search with time budget (browser ~0.8–1.5s).
  */
 
-const engine = (typeof require === 'function') ? require('./engine.js') : (window.TienLenEngine || {});
+const engine = (typeof require === 'function') ? require('../engine.js') : (window.TienLenEngine || {});
 const genomeMod = (typeof require === 'function')
-  ? require('./genome.js')
+  ? require('../genome.js')
   : (typeof window !== 'undefined' ? window.TienLenGenome : null);
 const searchMod = (typeof require === 'function')
-  ? require('./search.js')
+  ? require('./p_l2s49-search.js')
   : (typeof window !== 'undefined' ? window.TienLenSearch : null);
 const {
   detectCombo, getLegalPlays, applyPlay, pass, cardCompare, cloneState: engineClone
@@ -956,8 +956,8 @@ function getLowestLegalMove(state, myIdx) {
 
 const AI_BUILD = {
   id: "v1.0-sh-L2s49",
-  stamped: "2026-07-15T13:52:30.959556Z",
-  label: "L2s41 dual TRAIN knobs + gold green"
+  stamped: "2026-07-15T15:37:22.889Z",
+  label: "Freeze v1.0-sh-L2s49"
 };
 
 const TienLenAI = {

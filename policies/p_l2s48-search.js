@@ -11,7 +11,7 @@
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./engine.js'));
+    module.exports = factory(require('../engine.js'));
   } else {
     root.TienLenSearch = factory(root.TienLenEngine);
   }
@@ -1521,8 +1521,8 @@
   }
 
   /* VALUE_NET_START — linear TRAIN value (AlphaZero-lite features) */
-  var VALUE_W = [0.829099,-1.518949,0.926269,1.3838,0.80331,-2.25097,-2.28091,0.063372,-0.386251,0.765726,0.897534,0.194514,-0.26295];
-  var VALUE_LAMBDA = 0.26; // blend into BR rate
+  var VALUE_W = [0.850323,-3.343534,1.799391,1.523945,1.498918,-1.57339,-0.573825,0.362528,-0.568548,0.487795,0.731693,0.240293,-0.121663];
+  var VALUE_LAMBDA = 0.22; // blend into BR rate
   function valueSigmoid(x) {
     if (x > 20) return 1;
     if (x < -20) return 0;
