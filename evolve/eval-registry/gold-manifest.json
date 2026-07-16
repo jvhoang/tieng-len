@@ -1,8 +1,8 @@
 {
   "protocol": "living-gold-manifest-v1",
-  "stamped": "2026-07-16T03:06:57.893Z",
+  "stamped": "2026-07-16T05:59:05.281Z",
   "goldDir": "john_uploads",
-  "fileCount": 81,
+  "fileCount": 108,
   "files": [
     {
       "path": "IMG_0498.PNG",
@@ -479,16 +479,178 @@
       "sha256": "a2fce58d8907bd42cacbc3474d5b76c662fe7267a1a06e21d5a0b999a297cfcd"
     },
     {
-      "path": "tien_len_AI.txt",
-      "bytes": 12302,
-      "mtimeMs": 1784096932487.129,
-      "sha256": "14c2d40306598aee3035ea94c3cccd41f88fa02127550d96c9eb07454cc73874"
+      "path": "IMG_0582.PNG",
+      "bytes": 1259360,
+      "mtimeMs": 1784139288000,
+      "sha256": "da0a4421f772145d5824cb5ab815350ccf25e4ea0dfc4a55c1822673524c5ec4"
     },
     {
-      "path": "tienlen-playlogs-1784093993176.json",
-      "bytes": 12000787,
-      "mtimeMs": 1784093993000,
-      "sha256": "b362fb33a40a6d9686152cb4a74384f66d2adc561dc8d57be22c954d599703d4"
+      "path": "IMG_0583.PNG",
+      "bytes": 1341704,
+      "mtimeMs": 1784139386000,
+      "sha256": "f0528bbea9d3d88e25a6510cb2eeded35e8a1f62889e0358750383a4803c8539"
+    },
+    {
+      "path": "IMG_0584.PNG",
+      "bytes": 1317176,
+      "mtimeMs": 1784139513000,
+      "sha256": "bcd2b4f1bf56f57a78ebc0ab5e767685ece6d4399c6d17e9d623f1962aada8f3"
+    },
+    {
+      "path": "IMG_0585.PNG",
+      "bytes": 1284589,
+      "mtimeMs": 1784139589000,
+      "sha256": "a7a3a67e24c4b99e5b8b9b625b6f10da195c2ced4ca28677a9d36fd8f277e40f"
+    },
+    {
+      "path": "IMG_0586.PNG",
+      "bytes": 1282090,
+      "mtimeMs": 1784139637000,
+      "sha256": "481f9ce71ede7436ba4cb42e61c5517add5f2f82d40f0f1336ceba05749669f2"
+    },
+    {
+      "path": "IMG_0587.PNG",
+      "bytes": 1405811,
+      "mtimeMs": 1784139661000,
+      "sha256": "6e2d2e12462d38b22868955b4a6146a84aaa26b438f3b91e65abbe282cc594c1"
+    },
+    {
+      "path": "IMG_0588.PNG",
+      "bytes": 1338264,
+      "mtimeMs": 1784139704000,
+      "sha256": "7740b8c545f0ace7870763ce80dc02967d9ff6d43cf42ecdd2d003783a988cdd"
+    },
+    {
+      "path": "IMG_0589.PNG",
+      "bytes": 1311217,
+      "mtimeMs": 1784139769000,
+      "sha256": "a52f2f07030ec4d01ad2bd41858e30ec60eba03c1cf66482f6e89b3af81dc671"
+    },
+    {
+      "path": "IMG_0590.PNG",
+      "bytes": 1299897,
+      "mtimeMs": 1784139813000,
+      "sha256": "ba2cadca056bfa8447ab8c68bf7c634c6a8afb9ecaabc24d11b10152e6040240"
+    },
+    {
+      "path": "IMG_0592.PNG",
+      "bytes": 1286036,
+      "mtimeMs": 1784139946000,
+      "sha256": "c6e3817ad96e4048f84dfc03920aec27abbeceaab772aea83ae991eeda44e31b"
+    },
+    {
+      "path": "IMG_0593.PNG",
+      "bytes": 1280477,
+      "mtimeMs": 1784139982000,
+      "sha256": "337b4fbb7dd0ab4801794ac8813cb7c07bb18c556942202d8f2c0e0485b737f8"
+    },
+    {
+      "path": "IMG_0594.PNG",
+      "bytes": 1322823,
+      "mtimeMs": 1784139996000,
+      "sha256": "60f1f17d231ca3d5901ce5818cc0e04c2b788bcd6d9389bc5396f071454a15a8"
+    },
+    {
+      "path": "IMG_0595.PNG",
+      "bytes": 1250693,
+      "mtimeMs": 1784140035000,
+      "sha256": "d6c69196aed65b66a05b87a64dafcc8d9e5fa5e14a623c52d5c5460ff0c812b4"
+    },
+    {
+      "path": "IMG_0596.PNG",
+      "bytes": 1372677,
+      "mtimeMs": 1784140080000,
+      "sha256": "5fd5b189119eb4dbc9690453cbfa74cd527c11a970d6fb4af9df564a27e59495"
+    },
+    {
+      "path": "IMG_0597.PNG",
+      "bytes": 1348665,
+      "mtimeMs": 1784140133000,
+      "sha256": "439d1e2f37d3164da195c3405426fdbd014dedce6d76f8f8722873a156b85011"
+    },
+    {
+      "path": "IMG_0598.PNG",
+      "bytes": 1359451,
+      "mtimeMs": 1784140369000,
+      "sha256": "5f50d814c8c3b1b6fd0ba91de2af3186a28e0d99b0e984d560a0e4a3bf47a410"
+    },
+    {
+      "path": "IMG_0599.PNG",
+      "bytes": 1324616,
+      "mtimeMs": 1784140410000,
+      "sha256": "d1803bb4eab3eef4c053da74a6891b341df19eca7aceb5effa5e4035cb7c88d8"
+    },
+    {
+      "path": "IMG_0600.PNG",
+      "bytes": 1337457,
+      "mtimeMs": 1784140476000,
+      "sha256": "43db87ae7cb98903c45cf32390ca483d82cec968a589076b7cce336f6c1953bc"
+    },
+    {
+      "path": "IMG_0601.PNG",
+      "bytes": 1322231,
+      "mtimeMs": 1784167923000,
+      "sha256": "b5ce10fc7522c480ef4aa4107e136d51e6233113c3ce05bd89bbe5ce7268d156"
+    },
+    {
+      "path": "IMG_0602.PNG",
+      "bytes": 1269327,
+      "mtimeMs": 1784167996000,
+      "sha256": "88706df88cf3aee42ecd9cc664846a72a1fd593b540dbccccfe78dfdcc8a8b44"
+    },
+    {
+      "path": "IMG_0603.PNG",
+      "bytes": 1248387,
+      "mtimeMs": 1784168069000,
+      "sha256": "1101f8978b62b728e418fdea74bab60fe0b4323f7727cf659d2e0d923e381ded"
+    },
+    {
+      "path": "IMG_0604.PNG",
+      "bytes": 1307046,
+      "mtimeMs": 1784168090000,
+      "sha256": "0087d16a9a7c53fd6a05377a981b8a4b30eb3f948649f102edd19045158b016c"
+    },
+    {
+      "path": "IMG_0605.PNG",
+      "bytes": 1329386,
+      "mtimeMs": 1784168123000,
+      "sha256": "67be8a9700f7760bd9030225335744b3d78f19f00ecb74bae484777527d81896"
+    },
+    {
+      "path": "IMG_0607.PNG",
+      "bytes": 1242087,
+      "mtimeMs": 1784177156000,
+      "sha256": "5114d65bc36e842e1509ed4df6567d9044f6f88e6e5cbff29cd32e50abfb2839"
+    },
+    {
+      "path": "IMG_0608.PNG",
+      "bytes": 1319161,
+      "mtimeMs": 1784177233000,
+      "sha256": "c97d3a699f1e5b9bbd725dd0d8fa4945579807c41e1e97ecf19c8222b4345b5c"
+    },
+    {
+      "path": "IMG_0609.PNG",
+      "bytes": 1264036,
+      "mtimeMs": 1784177291000,
+      "sha256": "27ddaeb7cfeb51b59c19866abc953f62ac0398f0aa5aac194593d51ee2a54a02"
+    },
+    {
+      "path": "IMG_0610.PNG",
+      "bytes": 1325753,
+      "mtimeMs": 1784177308000,
+      "sha256": "472669a052f625254455e6662d5471ea1c4b17e013d67b7b529800a22974fe49"
+    },
+    {
+      "path": "tien_len_AI.txt",
+      "bytes": 16028,
+      "mtimeMs": 1784179781979.923,
+      "sha256": "bc750e751038f947acead36db81e1d07c3c93e89a7ed7ba2dea7a6d54241cbce"
+    },
+    {
+      "path": "tienlen-playlogs-1784177353718.json",
+      "bytes": 13190573,
+      "mtimeMs": 1784177353000,
+      "sha256": "bdf742c90ace8899c3367f79161db20d513191c3f73cad4ed59becdef114dda7"
     }
   ],
   "diff": {
@@ -501,11 +663,11 @@
     "textFiles": [
       "tien_len_AI.txt"
     ],
-    "newestPlaylog": "tienlen-playlogs-1784093993176.json",
+    "newestPlaylog": "tienlen-playlogs-1784177353718.json",
     "playlogs": [
-      "tienlen-playlogs-1784093993176.json"
+      "tienlen-playlogs-1784177353718.json"
     ],
-    "imageCount": 79,
+    "imageCount": 106,
     "imagesSample": [
       "IMG_0498.PNG",
       "IMG_0499.PNG",

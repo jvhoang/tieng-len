@@ -323,20 +323,27 @@
               }
               // Superhuman goal fair path: rated GM uses HIDDEN info (no perfectInfo peek).
               // Opt-in perfectInfo only via opts.allowPerfectInfo / env TIENLEN_PERFECT_AI=1.
+              //
+              // IMPORTANT: Do NOT force mode:'expert'+iterations:0 for product GM.
+              // That path never runs search/BR, so the AI opponent diverges from Hint
+              // (which uses getAIMove with search) and rarely spends 2s for control.
+              // Align opponent with the same hidden search/BR path as hints + duals.
               const allowPerfect = (typeof process !== 'undefined' && process.env && process.env.TIENLEN_PERFECT_AI === '1') ||
                 (opts && opts.allowPerfectInfo === true);
               const usePerfect = allowPerfect && state.players.length === 2 &&
                 (aiDifficulty === 'hard' || aiDifficulty === 'grandmaster');
+              const isGM = aiDifficulty === 'grandmaster';
+              const isHard = aiDifficulty === 'hard';
               choice = liveAI.getAIMove(state, cp, {
                 difficulty: aiDifficulty,
                 perfectInfo: usePerfect,
                 hiddenInfo: !usePerfect,
                 useSearch: true,
-                // Fair duals / gold path: expert-aligned for GM when not perfect
-                mode: usePerfect ? 'mcts' : (aiDifficulty === 'grandmaster' ? 'expert' : undefined),
-                iterations: usePerfect ? undefined : (aiDifficulty === 'grandmaster' ? 0 : undefined),
-                timeMs: usePerfect ? (aiDifficulty === 'grandmaster' ? 900 : 500) : 400,
-                bestResponse: usePerfect
+                // Browser time budgets (hidden BR is heavier than pure expert leaf)
+                timeMs: usePerfect
+                  ? (isGM ? 900 : 500)
+                  : (isGM ? 700 : (isHard ? 500 : 350)),
+                bestResponse: isGM || isHard || usePerfect
               });
               if (liveAI.getLastSearchStats) {
                 try { aiMeta.stats = liveAI.getLastSearchStats(); } catch (_) {}

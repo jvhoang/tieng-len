@@ -1,11 +1,11 @@
 # STATUS — Superhuman Tiến Lên (hybrid PAIR_STEP + CERT)
 
-**Updated:** 2026-07-16T04:40Z  
+**Updated:** 2026-07-16T06:20Z  
 **W_max:** 9  
-**Dual champion:** `p_l2s86` ✅  
-**Live:** `p_l2s86` · gold **62/0** · gold manifest clean (81 files)  
-**Ladder:** L1 ✅ · **L2 open** (streak **1**/3) · L3–L5 pending  
-**Git:** `3c02e4a` feat(ai): accept PAIR 0100 p_l2s86 (pushed origin/main)
+**Dual champion:** `p_l2s86` ✅ (PAIR 0100)  
+**Live product:** `p_l2s97` — controller GM path + 2-for-control fix (see below)  
+**Gold:** **62/0** · manifest **108 files** (new playlog + Series 6 IMG_0582–0610)  
+**Ladder:** L1 ✅ · **L2 open** (streak **1**/3) · L3–L5 pending
 
 ## Ship bar
 CERT ≥ **0.90** vs freeze v6.0 (Wilson LB > 0.87).
@@ -49,8 +49,32 @@ No PAIR residual packaging. Gold 62/0.
 - Dual inject freeze dualRollout
 - PAIR registry through step-0105
 
+## Product bugfix (2026-07-16) — AI opponent vs Hint discrepancy
+
+**Symptom:** Opponent almost never spent a **2 for control** unless forced; Hint often suggested 2s correctly.
+
+**Root cause (yes, an overwrite/split-path bug, analogous to orderLegals wiping BRD):**
+
+| Path | Code | Effect |
+|------|------|--------|
+| **AI opponent** (`controller.js`) | Forced `mode:'expert'` + `iterations:0` + `bestResponse:false` for GM when not perfectInfo | **Never ran search/BR** — pure `expertPolicy` leaf |
+| **Hint** (`index.html` `requestHint`) | `getAIMove` with search + time budget | Ran search; 2p GM auto-enabled BR inside `searchMove` |
+
+So opponent and hint were **not the same brain**. Expert leaf also returned “safe” non-2 answers first (A/K climbs, structure peels) **before** ever considering single-2 tempo.
+
+**Fixes shipped (live `p_l2s97`):**
+1. `controller.js` — product GM uses hidden search/BR (same family as duals/hints); no force-expert.
+2. `search.js` `expertPolicy` / `dualRollout` — **2-for-control before safe return** vs high singles (Q+); do not auto-climb A/K when single-2 held on high combat.
+3. `index.html` hint — `bestResponse` aligned with hard/GM.
+4. Regression: `test/test-2-for-control.js`. Gold suite **62/0**.
+
+**Note:** Dual champion for PAIR_STEP remains `p_l2s86` until a hybrid accept promotes `p_l2s97`. Product play uses live controller+search immediately.
+
+**Living gold:** Series 6 (IMG_0582–0610) + new playlog present; suite still 62 cases (new images not all machine-encoded yet).
+
 ## Next
 1. Stack consecutive accept #2 and #3 → **L2 milestone** commit/tag  
-2. Climb L3–L5 → CERT ≥90%  
+2. Encode Series 6 gold cases that are fully specified  
+3. Climb L3–L5 → CERT ≥90%  
 
 Never residual-pack PAIR_STEP/CERT. Gold living authoritative.

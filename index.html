@@ -1595,13 +1595,15 @@
         let stats = null;
         try {
           if (ai && ai.getAIMove) {
+            // Same path as controller AI opponent (hidden search/BR) so Hint matches
+            // what the AI would play — not a separate expert-only leaf.
             mv = ai.getAIMove(st, seat, {
               difficulty: diff,
               timeMs: diff === 'grandmaster' ? 700 : 450,
               useSearch: true,
               perfectInfo: false,
               hiddenInfo: true,
-              bestResponse: false // pure policy path, not exploit peek
+              bestResponse: diff === 'grandmaster' || diff === 'hard'
             });
             if (ai.getLastSearchStats) stats = ai.getLastSearchStats();
           }
