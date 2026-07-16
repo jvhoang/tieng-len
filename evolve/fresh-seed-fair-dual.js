@@ -66,12 +66,13 @@ const freezeSearch = require('../policies/' + freezeTag + '-search.js');
 
 function injectOpp(searchMod, freezeSearchMod) {
   if (!searchMod.setExploitOpponent) return;
+  // Prefer freeze dualRollout (stronger GM leaf) over expert for BR opp model.
   searchMod.setExploitOpponent(function (s, seat) {
-    if (freezeSearchMod && typeof freezeSearchMod.expertPolicy === 'function') {
-      var dec = freezeSearchMod.expertPolicy(s, seat);
-      return dec && dec.pass ? null : (dec && dec.play != null ? dec.play : null);
-    }
-    return null;
+    if (!freezeSearchMod) return null;
+    var pol = freezeSearchMod.dualRolloutPolicy || freezeSearchMod.expertPolicy;
+    if (typeof pol !== 'function') return null;
+    var dec = pol(s, seat);
+    return dec && dec.pass ? null : (dec && dec.play != null ? dec.play : null);
   });
 }
 injectOpp(liveSearch, freezeSearch);
