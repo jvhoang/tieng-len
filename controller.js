@@ -420,8 +420,11 @@
             aiMeta.fallbackReason = 'null-free-lead';
           }
 
-          // SAFETY: if any cheap (non-2, non-bomb) legal exists, never pass
-          if (choice == null && state.currentCombo) {
+          // SAFETY: cheap-force ONLY when AI errored or never produced a search decision.
+          // Kill-point (DEEP-DIVE §2c): forcing min-beat over intentional PASS destroys
+          // gold pass plans (0501/0510/0547/0550) and structure-preserving play.
+          // Intentional null from GM/hard search = strategic pass; do not rewrite.
+          if (choice == null && state.currentCombo && (aiMeta.error || !aiMeta.stats)) {
             const cheap = legals.filter(function (pl) {
               const hasTwo = pl.some(function (c) { return c.rank === 12; });
               const com = engine.detectCombo(pl);
@@ -437,7 +440,7 @@
               });
               choice = cheap[0];
               aiMeta.fallbackUsed = true;
-              aiMeta.fallbackReason = 'cheap-force';
+              aiMeta.fallbackReason = 'cheap-force-error-only';
             }
           }
 

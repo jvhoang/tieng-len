@@ -221,6 +221,29 @@ both(mk(handOf([[3, 0], [4, 1], [5, 2], [11, 0], [12, 1]]), [card(10, 2)], 1),
     return d && d.play && d.play.length === 1 && d.play[0].rank === 12;
   }, 'IMG0558 2 when omin1');
 
+// ── Series 6 / author 2-for-control (generalized; no byR fingerprints) ──
+// IMG0584-style: vs K, hold 2 + structure → spend single 2 for control
+both(mk(handOf([[3, 0], [4, 1], [5, 2], [6, 3], [7, 0], [10, 0], [10, 1], [12, 2]]), [card(10, 3)], 6),
+  function (d) {
+    return d && d.play && d.play.length === 1 && d.play[0].rank === 12;
+  }, 'S6 2-for-control vs K');
+
+// IMG0563/0569-style: vs 10/J, hold 2 → prefer 2 over peeling pair
+both(mk(handOf([[2, 0], [3, 1], [4, 2], [5, 3], [8, 0], [8, 1], [12, 1]]), [card(7, 2)], 7),
+  function (d) {
+    return d && d.play && d.play.length === 1 && d.play[0].rank === 12;
+  }, 'S6 2-for-control vs 10');
+
+// IMG0597/0601-style: omin=1 free lead → highest single not lowest trash
+both(mk(handOf([[1, 0], [2, 1], [4, 2], [6, 3]]), null, 1),
+  function (d) {
+    return d && d.play && d.play.length === 1 && d.play[0].rank === 6;
+  }, 'S6 omin1 free high single');
+
+// Still pass pair-of-2s deep midgame (0511 / 0547) — do not over-spend 22
+both(mk(handOf([[0, 0], [1, 1], [2, 2], [3, 0], [5, 1], [7, 0], [9, 1], [12, 0], [12, 1]]), [card(4, 0), card(4, 2)], 8),
+  function (d) { return d && d.pass; }, 'S6 still pass 22 deep');
+
 console.log('\n=== FAIR GOLD SUITE ===');
 console.log('manifest files', manifest.fileCount, 'newestPlaylog', manifest.pointers && manifest.pointers.newestPlaylog);
 console.log('Passed:', passed, 'Failed:', failed);

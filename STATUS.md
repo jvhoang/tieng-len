@@ -3,7 +3,7 @@
 **Updated:** 2026-07-16T06:20Z  
 **W_max:** 9  
 **Dual champion:** `p_l2s86` ✅ (PAIR 0100)  
-**Live product:** `p_l2s97` — controller GM path + 2-for-control fix (see below)  
+**Live product:** `p_l2s100` — DEEP-DIVE kill-points + 2-for-control + controller GM search (see below)  
 **Gold:** **62/0** · manifest **108 files** (new playlog + Series 6 IMG_0582–0610)  
 **Ladder:** L1 ✅ · **L2 open** (streak **1**/3) · L3–L5 pending
 
@@ -71,6 +71,18 @@ So opponent and hint were **not the same brain**. Expert leaf also returned “s
 **Note:** Dual champion for PAIR_STEP remains `p_l2s86` until a hybrid accept promotes `p_l2s97`. Product play uses live controller+search immediately.
 
 **Living gold:** Series 6 (IMG_0582–0610) + new playlog present; suite still 62 cases (new images not all machine-encoded yet).
+
+## Kill-point fixes (DEEP-DIVE L2s100)
+
+Implemented from `evolve/DEEP-DIVE-logic-killpoints.md` (analysis holds):
+1. BR free-lead BRD order final (no orderLegals wipe) + unit test
+2. `freeLeadCandidates` ranks by BRD after gold pins (not pure expert)
+3. MC free-lead uses freeLeadCandidates
+4. Controller: no cheap-force over intentional GM/search pass
+5. Re-applied 2-for-control before safe return (expert + dualRollout)
+6. Gold suite 70/0 including S6 2-control + omin1 free high single
+
+Still open: wire BC weights; dual-path gold gate; bulk Series 4–6 encoding.
 
 ## Next
 1. Stack consecutive accept #2 and #3 → **L2 milestone** commit/tag  

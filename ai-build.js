@@ -1,2 +1,2 @@
-/** p_l2s97 product path align + 2-for-control (hint/opponent parity) */
-(function(r){var B={id:"v1.0-sh-L2s97",stamped:"2026-07-16T06:15:00.000Z",label:"L2s97 fix: controller GM uses search/BR (not force expert); 2-for-control before safe"};r.TIENLEN_AI_BUILD=B;if(typeof module==="object")module.exports=B;}(typeof window!=="undefined"?window:global));
+/** L2s100 kill-point fixes: freeLeadCandidates BRD prior, no cheap-force pass, MC freeLeadCandidates, 2-for-control */
+(function(r){var B={id:"v1.0-sh-L2s100",stamped:"2026-07-16T07:00:00.000Z",label:"L2s100 DEEP-DIVE kill-points: BRD freeLeadCandidates, no cheap-force on intentional pass, MC free-lead prior, 2-for-control"};r.TIENLEN_AI_BUILD=B;if(typeof module==="object")module.exports=B;}(typeof window!=="undefined"?window:global));
