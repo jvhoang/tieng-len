@@ -12,12 +12,12 @@
  * Hard mode: real search with time budget (browser ~0.8–1.5s).
  */
 
-const engine = (typeof require === 'function') ? require('./engine.js') : (window.TienLenEngine || {});
+const engine = (typeof require === 'function') ? require('../engine.js') : (window.TienLenEngine || {});
 const genomeMod = (typeof require === 'function')
-  ? require('./genome.js')
+  ? require('../genome.js')
   : (typeof window !== 'undefined' ? window.TienLenGenome : null);
 const searchMod = (typeof require === 'function')
-  ? require('./search.js')
+  ? require('./p_l2s112-search.js')
   : (typeof window !== 'undefined' ? window.TienLenSearch : null);
 const {
   detectCombo, getLegalPlays, applyPlay, pass, cardCompare, cloneState: engineClone
@@ -813,8 +813,9 @@ function getAIMove(state, myIdx, opts = {}) {
           : null) || pickFreeLead(state, myIdx, legals, genome) || legals[0];
       }
 
-      // Never pass when cheap legal exists
-      if (mv == null && cur) {
+      // Cheap force only when search did NOT intentionally pass.
+      // K4 / G7: BR/GM plan-pass (0501/0510/0550) must not be overwritten by min-beat.
+      if (mv == null && cur && !exploitMode) {
         const cheapS = cheapLegals(legals);
         if (cheapS.length) {
           mv = pickBestPlay(state, myIdx, cheapS, genome) || cheapS[0];
@@ -955,9 +956,9 @@ function getLowestLegalMove(state, myIdx) {
 }
 
 const AI_BUILD = {
-  id: "v1.0-sh-L2s86",
-  stamped: "2026-07-16T02:50:54.050Z",
-  label: "Freeze v1.0-sh-L2s86"
+  id: "v1.0-sh-L2s112",
+  stamped: "2026-07-16T09:30:00.000Z",
+  label: "L2s112 free-lead mixed-opp + nested trials"
 };
 
 const TienLenAI = {

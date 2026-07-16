@@ -11,7 +11,7 @@
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./engine.js'));
+    module.exports = factory(require('../engine.js'));
   } else {
     root.TienLenSearch = factory(root.TienLenEngine);
   }
@@ -741,6 +741,23 @@
 
     // Gold: doubleseq lock packages first (control + rare hard-to-beat)
     if (dseqAll.length) return orderLegals(dseqAll, state, myIdx)[0];
+
+    // Full-straight extend (gold 0553/0566): prefer longest seq when residual is
+    // tiny (≤2 cards) — definite control lead, leave one trash for finish.
+    {
+      var longSeqs = [];
+      for (i = 0; i < multi.length; i++) {
+        var cLs = detectCombo(multi[i]);
+        if (cLs && cLs.type === 'seq' && multi[i].length >= 6) {
+          var resid = handLen - multi[i].length;
+          if (resid <= 2) longSeqs.push(multi[i]);
+        }
+      }
+      if (longSeqs.length) {
+        longSeqs.sort(function (a, b) { return b.length - a.length || topRank(b) - topRank(a); });
+        return longSeqs[0];
+      }
+    }
 
     // Short hand + pair-of-2s: lead 22 for near-sure control then trash (gold 0518)
     if (handLen <= 4 && info.twos >= 2) {
@@ -1486,7 +1503,9 @@
     for (var i = 0; i < state.players.length; i++) {
       if (!state.players[i].finished) total += state.players[i].hand.length;
     }
-    if (handLen > 4 && total > 10) return null;
+    // True endgame only — midgame hands with omin=1 must not short-circuit BR
+    // (gold 0520a: 9-card hand vs 1-card opp was incorrectly endgame-picked).
+    if (handLen > 6 || total > 12) return null;
 
     var leg = getLegalPlays(
       state.players[myIdx].hand, state.currentCombo,
@@ -1494,10 +1513,33 @@
     );
     if (!leg.length) return null;
 
+    // omin=1 combat: prefer single-2 if legal (gold 0520a / 0558)
+    var ominEg = oppMinHand(state, myIdx);
+    var curEg = state.currentCombo;
+    if (curEg && curEg.type === 'single' && ominEg <= 1) {
+      for (var e2 = 0; e2 < leg.length; e2++) {
+        if (leg[e2].length === 1 && leg[e2][0].rank === 12) return leg[e2];
+      }
+    }
+
     if (!state.currentCombo) leg = freeLeadCandidates(leg, state, myIdx);
     else {
       var cheap = cheapLegals(leg);
       if (cheap.length) leg = cheap;
+      // Keep single-2 in endgame combat branch (2-for-control / omin1)
+      var fullEg = getLegalPlays(
+        state.players[myIdx].hand, state.currentCombo,
+        state.players[myIdx].passed, state.isFirstLead, state.firstLeadCard
+      );
+      for (var e2c = 0; e2c < fullEg.length; e2c++) {
+        if (fullEg[e2c].length === 1 && fullEg[e2c][0].rank === 12) {
+          var has2eg = false;
+          for (var he = 0; he < leg.length; he++) {
+            if (leg[he].length === 1 && leg[he][0].rank === 12) { has2eg = true; break; }
+          }
+          if (!has2eg) leg = [fullEg[e2c]].concat(leg);
+        }
+      }
     }
     leg = orderLegals(leg, state, myIdx);
     if (leg.length > 12) leg = leg.slice(0, 12);
@@ -1573,7 +1615,7 @@
   var VALUE_W = [0.850323,-3.343534,1.799391,1.523945,1.498918,-1.57339,-0.573825,0.362528,-0.568548,0.487795,0.731693,0.240293,-0.121663];
   var VALUE_LAMBDA = 0.22; // blend into BR rate
   // L2s85: offline high-trials BR distill scorer (TRAIN SoftN=0 BR_TRIALS=36 teacher)
-  var BRD_W = [0,0,0,0,0,0,0,0,0,0,0,0,2.41482,-7.273717,-2.306139,-0.428902,-0.12291,-0.016208,-1.387684,-2.129686,-0.185936,1.024446,2.678859,-0.508818,-0.428902,-0.12291,-0.016208,0];
+  var BRD_W = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,-0.0,-0.0,-0.0,-0.0,1.303906,-4.200862,0.032786,-0.567582,0.239831,0.524989,-1.951978,-1.945305,0.000473,1.123915,2.772895,-2.290995,-0.567582,0.239831,0.524989,0];
   function brdLogit(state, myIdx, cards) {
     if (!cards || !cards.length) return -9;
     var hand = state.players[myIdx].hand;
@@ -1770,9 +1812,13 @@
     }
 
     if (!cur) {
+      // L2s112: free-lead nested budget (mixed-opp already in trial loop)
+      if (trials > 0 && trials < 40) trials = Math.min(40, Math.floor(trials * 1.5) + 4);
+      if (maxBranch < 18) maxBranch = 18;
+      // freeLeadCandidates already ranks by BRD (or expert fallback). Do NOT
+      // orderLegals here — that wiped teacher order before maxBranch (kill-point).
       leg = freeLeadCandidates(leg, state, myIdx);
-      leg = orderLegals(leg, state, myIdx);
-      // L2s99: BR-teacher free-lead order FINAL (must not be wiped by orderLegals)
+      // Idempotent FINAL BRD sort (guarantees teacher prior even if flc changes).
       if (typeof brdLogit === 'function') {
         leg = leg.slice().sort(function (a, b) {
           return brdLogit(state, myIdx, b) - brdLogit(state, myIdx, a);
@@ -1788,21 +1834,89 @@
         }
       }
       if (safeRoot.length) leg = safeRoot;
+      // K5/G7 dual-path: NEVER drop single-2 from combat branch. Cheap-only root
+      // previously wiped 2-for-control candidates (S6 / 0513 / 0500 dual fails).
+      var fullLegCombat = getLegalPlays(hand, cur, state.players[myIdx].passed,
+        state.isFirstLead, state.firstLeadCard);
+      var curTopBr = cur && cur.top ? cur.top.rank : (cur && cur.cards && cur.cards[0] ? cur.cards[0].rank : 0);
+      for (var t2i = 0; t2i < fullLegCombat.length; t2i++) {
+        var t2p = fullLegCombat[t2i];
+        if (t2p.length === 1 && t2p[0].rank === 12) {
+          var already2 = false;
+          for (var a2c = 0; a2c < leg.length; a2c++) {
+            if (leg[a2c].length === 1 && leg[a2c][0].rank === 12) { already2 = true; break; }
+          }
+          if (!already2) leg = [t2p].concat(leg);
+        }
+      }
       leg = orderLegals(leg, state, myIdx);
+      // Prefer single-2 early in branch vs high singles (author 2-for-control)
+      if (cur && cur.type === 'single' && curTopBr >= 9) {
+        leg = leg.slice().sort(function (a, b) {
+          var a2 = a.length === 1 && a[0].rank === 12 ? 1 : 0;
+          var b2 = b.length === 1 && b[0].rank === 12 ? 1 : 0;
+          return b2 - a2;
+        });
+      }
     }
     if (leg.length > maxBranch) leg = leg.slice(0, maxBranch);
 
-    var allowPass = !!cur && cheapLegals(
-      getLegalPlays(hand, cur, state.players[myIdx].passed, state.isFirstLead, state.firstLeadCard)
-    ).length === 0;
+    var fullLegForPass = getLegalPlays(hand, cur, state.players[myIdx].passed,
+      state.isFirstLead, state.firstLeadCard);
+    var allowPass = !!cur && cheapLegals(fullLegForPass).length === 0;
+    // G7 plan-pass: if gold-aligned expert says pass, always evaluate pass even when
+    // cheap beats exist (0501/0510/0550). Soft prior — not hard force.
+    var expertPin = null;
+    try { expertPin = expertPolicy(state, myIdx); } catch (ePin) { expertPin = null; }
+    if (expertPin && expertPin.pass && cur) allowPass = true;
+    // Plan-pass: soft bias usually; narrow hard pin only for high multi dumps
+    // (IMG0510 QKA-style: sbc≥12, len≥3) where short BR rates are pure noise.
+    // Broader hard pins dual-cliffed on PAIR 0114 (−3.75pp).
+    var planPassBias = 0;
+    if (cur && expertPin && expertPin.pass) {
+      var ominPin = oppMinHand(state, myIdx);
+      var minSmash = 99;
+      var anyCheapPin = false;
+      var anyHighMultiSmash = false;
+      for (var sp = 0; sp < fullLegForPass.length; sp++) {
+        var scp = structureBreakCost(hand, fullLegForPass[sp]);
+        if (!playHasTwo(fullLegForPass[sp]) && scp < 4) anyCheapPin = true;
+        if (scp < minSmash) minSmash = scp;
+        if (fullLegForPass[sp].length >= 3 && scp >= 12) anyHighMultiSmash = true;
+      }
+      if (!anyCheapPin && anyHighMultiSmash && hand.length >= 10 && ominPin >= 5) {
+        return { play: null, stats: { mode: 'best-response-det', planPass: true, reason: 'high-multi-structure-pass' } };
+      }
+      if (!anyCheapPin && minSmash >= 8 && hand.length >= 9 && ominPin >= 5) {
+        planPassBias = 0.18;
+      }
+    }
+    // omin=1 combat: soft prefer single-2 (gold 0520a) without hard pin dual risk
+    var omin1TwoBias = 0;
+    if (cur && cur.type === 'single' && expertPin && expertPin.play &&
+        expertPin.play.length === 1 && expertPin.play[0].rank === 12) {
+      var omin1 = oppMinHand(state, myIdx);
+      if (omin1 <= 1) omin1TwoBias = 0.15;
+    }
     var actions = leg.slice();
     if (allowPass) actions.push(null);
+    // Inject expert play into action set if missing (structure / 2-for-control pin)
+    if (expertPin && expertPin.play && expertPin.play.length) {
+      var epSig = playSig(expertPin.play);
+      var hasEp = false;
+      for (var ep = 0; ep < actions.length; ep++) {
+        if (actions[ep] && playSig(actions[ep]) === epSig) { hasEp = true; break; }
+      }
+      if (!hasEp) actions.unshift(expertPin.play);
+    }
 
     var bestPlay = actions[0];
     var bestRate = -1;
     var details = [];
     var selfPol = opts.selfPolicy === 'gold' ? expertPolicy : dualRolloutPolicy;
+    var expertSig = expertPin && expertPin.play ? playSig(expertPin.play) : (expertPin && expertPin.pass ? 'PASS' : null);
 
+    var freeLeadRoot = !cur;
     for (var ai = 0; ai < actions.length; ai++) {
       if (timeMs > 0 && (Date.now() - t0) >= timeMs) break;
       var act = actions[ai];
@@ -1815,10 +1929,18 @@
         else s = applyPlayFast(root, myIdx, act);
         s.isFirstLead = false;
         var steps = 0;
+        // L2s111: free-lead mixed-opp BR — alternate strong/v21 so root choice
+        // is robust to teacher mismatch (architecture leap, not BRD re-fit).
+        var freeOppStrong = freeLeadRoot ? (t % 2 === 0) : (opts.oppModel === 'strong');
+        // Free-lead self diversity: 1/3 trials use expert leaf (gold structure),
+        // rest dualRollout (dual strength).
+        var selfPolT = (freeLeadRoot && (t % 3 === 0) && selfPol !== expertPolicy)
+          ? expertPolicy
+          : selfPol;
         while (!s.roundOver && steps < 200) {
           var cp = s.currentPlayer;
-          var oppPol = (opts.oppModel === 'strong') ? opponentPolicyStrong(s, cp) : opponentPolicyV21(s, cp);
-          var dec = (cp === myIdx) ? selfPol(s, cp) : oppPol;
+          var oppPol = freeOppStrong ? opponentPolicyStrong(s, cp) : opponentPolicyV21(s, cp);
+          var dec = (cp === myIdx) ? selfPolT(s, cp) : oppPol;
           s = applyDecision(s, cp, dec);
           s.isFirstLead = false;
           steps++;
@@ -1840,6 +1962,19 @@
       // squash teacher logit contribution
       var brdTerm = 0.10 * (1 / (1 + Math.exp(-brdA)) - 0.5);
       var rateV = rate + VALUE_LAMBDA * (vAfter - vRoot) + brdTerm;
+      // Soft expert-pin prior (dual-safe scale after PAIR 0114 cliff)
+      if (expertSig) {
+        var actSig = act == null ? 'PASS' : playSig(act);
+        if (actSig === expertSig) rateV += 0.06;
+      }
+      if (act == null && planPassBias) rateV += planPassBias;
+      // Soft 2-for-control prior: single-2 vs high singles (even if expert pin missed)
+      if (act && act.length === 1 && act[0].rank === 12 && cur && cur.type === 'single') {
+        var cTop2 = cur.top ? cur.top.rank : (cur.cards && cur.cards[0] ? cur.cards[0].rank : 0);
+        if (cTop2 >= 9) rateV += 0.05;
+        else if (cTop2 >= 7) rateV += 0.02;
+        if (omin1TwoBias) rateV += omin1TwoBias;
+      }
       // Soft residual tie-break: structure cost (Series 1–5 never smash for min-rate noise)
       var sbc = act == null ? 0 : structureBreakCost(hand, act);
       details.push({ sig: playSig(act), rate: rate, rateV: rateV, n: nTry, sbc: sbc, act: act });
@@ -1856,18 +1991,32 @@
         }
       }
     }
-    details.sort(function (a, b) { return b.rate - a.rate || a.sbc - b.sbc; });
+    details.sort(function (a, b) { return b.rateV - a.rateV || b.rate - a.rate || a.sbc - b.sbc; });
+    // Free-lead multi-length soft tie-break: when rateV nearly tied, prefer longer
+    // non-2 multi (gold doubleseq / full-straight control packages).
+    if (freeLeadRoot && details.length >= 2) {
+      var d0 = details[0];
+      var d1 = details[1];
+      if (d0 && d1 && Math.abs((d0.rateV || 0) - (d1.rateV || 0)) <= 0.05) {
+        var a0 = d0.act, a1 = d1.act;
+        if (a0 && a1 && a1.length > a0.length && a1.length >= 4 && !playHasTwo(a1)) {
+          bestPlay = a1;
+          bestRate = d1.rateV;
+        }
+      }
+    }
     return {
       play: bestPlay,
       stats: {
         mode: perfectInfo ? 'best-response' : 'best-response-det',
         avg: bestRate,
         top: details.slice(0, 5).map(function (d) {
-          return { sig: d.sig, rate: d.rate, n: d.n, sbc: d.sbc };
+          return { sig: d.sig, rate: d.rate, rateV: d.rateV, n: d.n, sbc: d.sbc };
         }),
         ms: Date.now() - t0,
         trials: trials,
-        perfectInfo: perfectInfo
+        perfectInfo: perfectInfo,
+        freeLeadMixedOpp: freeLeadRoot
       }
     };
   }

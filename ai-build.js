@@ -1,2 +1,2 @@
-/** L2s100 kill-point fixes: freeLeadCandidates BRD prior, no cheap-force pass, MC freeLeadCandidates, 2-for-control */
-(function(r){var B={id:"v1.0-sh-L2s100",stamped:"2026-07-16T07:00:00.000Z",label:"L2s100 DEEP-DIVE kill-points: BRD freeLeadCandidates, no cheap-force on intentional pass, MC free-lead prior, 2-for-control"};r.TIENLEN_AI_BUILD=B;if(typeof module==="object")module.exports=B;}(typeof window!=="undefined"?window:global));
+/** L2s112 */
+(function(r){var B={id:"v1.0-sh-L2s112",stamped:"2026-07-16T09:30:00.000Z",label:"L2s112 free-lead mixed-opp + nested trials"};r.TIENLEN_AI_BUILD=B;if(typeof module==="object")module.exports=B;}(typeof window!=="undefined"?window:global));
