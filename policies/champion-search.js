@@ -1813,7 +1813,7 @@
 
     if (!cur) {
       // L2s112: free-lead nested budget (mixed-opp already in trial loop)
-      if (trials > 0 && trials < 40) trials = Math.min(40, Math.floor(trials * 1.5) + 4);
+      if (trials > 0 && trials < 50) trials = Math.min(50, Math.floor(trials * 2.0) + 6);
       if (maxBranch < 18) maxBranch = 18;
       // freeLeadCandidates already ranks by BRD (or expert fallback). Do NOT
       // orderLegals here — that wiped teacher order before maxBranch (kill-point).
@@ -1917,23 +1917,20 @@
     var expertSig = expertPin && expertPin.play ? playSig(expertPin.play) : (expertPin && expertPin.pass ? 'PASS' : null);
 
     var freeLeadRoot = !cur;
-    for (var ai = 0; ai < actions.length; ai++) {
-      if (timeMs > 0 && (Date.now() - t0) >= timeMs) break;
-      var act = actions[ai];
+    // L2s141: progressive free-lead (no residual) + conditional top-2 MC hybrid.
+    // Combines 0137 progressive architecture with 0157 MC signal; residual omitted
+    // (plateau overfit risk). Combat path unchanged.
+    function runBrTrials(act, nTry) {
       var wins = 0;
-      var nTry = trials;
-      for (var t = 0; t < nTry; t++) {
-        var root = perfectInfo ? state : determinize(state, myIdx, rng, false);
+      var t;
+      for (t = 0; t < nTry; t++) {
+        var root = perfectInfo ? cloneStateFast(state) : determinize(state, myIdx, rng, false);
         var s;
         if (act == null) s = passFast(root, myIdx);
         else s = applyPlayFast(root, myIdx, act);
         s.isFirstLead = false;
         var steps = 0;
-        // L2s111: free-lead mixed-opp BR — alternate strong/v21 so root choice
-        // is robust to teacher mismatch (architecture leap, not BRD re-fit).
         var freeOppStrong = freeLeadRoot ? (t % 2 === 0) : (opts.oppModel === 'strong');
-        // Free-lead self diversity: 1/3 trials use expert leaf (gold structure),
-        // rest dualRollout (dual strength).
         var selfPolT = (freeLeadRoot && (t % 3 === 0) && selfPol !== expertPolicy)
           ? expertPolicy
           : selfPol;
@@ -1945,10 +1942,15 @@
           s.isFirstLead = false;
           steps++;
         }
-        var u = finalUtility(s, myIdx);
-        if (u >= 0.99) wins++;
+        if (finalUtility(s, myIdx) >= 0.99) wins++;
       }
-      var rate = wins / nTry;
+      return wins / Math.max(1, nTry);
+    }
+    for (var ai = 0; ai < actions.length; ai++) {
+      if (timeMs > 0 && (Date.now() - t0) >= timeMs) break;
+      var act = actions[ai];
+      var nTry = freeLeadRoot ? Math.max(6, Math.floor(trials * 0.55)) : trials;
+      var rate = runBrTrials(act, nTry);
       // Value blend: prefer actions that improve TRAIN linear V (general features)
       var vRoot = valueEval(state, myIdx);
       var vAfter = vRoot;
@@ -1960,7 +1962,7 @@
       var brdA = 0;
       try { if (act != null && typeof brdLogit === 'function') brdA = brdLogit(state, myIdx, act); } catch (eB) { brdA = 0; }
       // squash teacher logit contribution
-      var brdTerm = 0.10 * (1 / (1 + Math.exp(-brdA)) - 0.5);
+      var brdTerm = (freeLeadRoot ? 0.13 : 0.10) * (1 / (1 + Math.exp(-brdA)) - 0.5);
       var rateV = rate + VALUE_LAMBDA * (vAfter - vRoot) + brdTerm;
       // Soft expert-pin prior (dual-safe scale after PAIR 0114 cliff)
       if (expertSig) {
@@ -1991,7 +1993,60 @@
         }
       }
     }
-    details.sort(function (a, b) { return b.rateV - a.rateV || b.rate - a.rate || a.sbc - b.sbc; });
+    // Progressive deep refine top-3 (free-lead only)
+    if (freeLeadRoot && details.length >= 2 && trials >= 10) {
+      details.sort(function (a, b) { return b.rateV - a.rateV || b.rate - a.rate || a.sbc - b.sbc; });
+      var deepN2 = Math.max(10, Math.floor(trials * 0.80));
+      var topK2 = Math.min(3, details.length);
+      for (var dj = 0; dj < topK2; dj++) {
+        if (timeMs > 0 && (Date.now() - t0) >= timeMs) break;
+        var scoutRate = details[dj].rate;
+        var scoutExtras = details[dj].rateV - scoutRate;
+        var deepRate2 = runBrTrials(details[dj].act, deepN2);
+        var blendR = 0.35 * scoutRate + 0.65 * deepRate2;
+        details[dj].rate = blendR;
+        details[dj].rateV = blendR + scoutExtras;
+        details[dj].n = (details[dj].n || 0) + deepN2;
+      }
+      details.sort(function (a, b) { return b.rateV - a.rateV || b.rate - a.rate || a.sbc - b.sbc; });
+      bestPlay = details[0].act;
+      bestRate = details[0].rateV;
+      // Conditional MC hybrid only when top-2 nearly tied (0157 signal, less noise)
+      var gap01 = Math.abs((details[0].rateV || 0) - (details[1].rateV || 0));
+      if (gap01 <= 0.06) {
+        try {
+          var mc = flatMonteCarlo(state, myIdx, {
+            rng: rng,
+            maxSims: Math.max(36, trials * 2),
+            determinizations: Math.max(6, Math.floor(trials / 3)),
+            maxBranch: maxBranch,
+            perfectInfo: false,
+            timeMs: 0,
+            rolloutSteps: 50
+          });
+          if (mc && mc.stats && mc.stats.top) {
+            var mcMap = {};
+            for (var mi = 0; mi < mc.stats.top.length; mi++) {
+              var mt = mc.stats.top[mi];
+              if (mt && mt.sig != null) mcMap[mt.sig] = mt.avg != null ? mt.avg : 0.5;
+            }
+            for (var di = 0; di < Math.min(2, details.length); di++) {
+              var mAvg = mcMap[details[di].sig];
+              if (mAvg == null) continue;
+              var ex = details[di].rateV - details[di].rate;
+              var br2 = 0.72 * details[di].rate + 0.28 * mAvg;
+              details[di].rate = br2;
+              details[di].rateV = br2 + ex;
+            }
+            details.sort(function (a, b) { return b.rateV - a.rateV || b.rate - a.rate || a.sbc - b.sbc; });
+            bestPlay = details[0].act;
+            bestRate = details[0].rateV;
+          }
+        } catch (eMc) { /* keep progressive BR */ }
+      }
+    } else {
+      details.sort(function (a, b) { return b.rateV - a.rateV || b.rate - a.rate || a.sbc - b.sbc; });
+    }
     // Free-lead multi-length soft tie-break: when rateV nearly tied, prefer longer
     // non-2 multi (gold doubleseq / full-straight control packages).
     if (freeLeadRoot && details.length >= 2) {

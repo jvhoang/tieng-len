@@ -17,7 +17,7 @@ const genomeMod = (typeof require === 'function')
   ? require('../genome.js')
   : (typeof window !== 'undefined' ? window.TienLenGenome : null);
 const searchMod = (typeof require === 'function')
-  ? require('./p_l2s112-search.js')
+  ? require('./p_l2s145-search.js')
   : (typeof window !== 'undefined' ? window.TienLenSearch : null);
 const {
   detectCombo, getLegalPlays, applyPlay, pass, cardCompare, cloneState: engineClone
@@ -956,9 +956,9 @@ function getLowestLegalMove(state, myIdx) {
 }
 
 const AI_BUILD = {
-  id: "v1.0-sh-L2s112",
-  stamped: "2026-07-16T09:30:00.000Z",
-  label: "L2s112 free-lead mixed-opp + nested trials"
+  id: "v1.0-sh-L2s145",
+  stamped: "2026-07-16T16:35:00.000Z",
+  label: "L2s145 progressive+cond MC + 2x nested + brdTerm0.13"
 };
 
 const TienLenAI = {
