@@ -1,1 +1,1 @@
-(function(r){var B={id:"v1.0-sh-L2s145",stamped:"2026-07-16T16:35:00.000Z",label:"L2s145 progressive+cond MC + 2x nested + brdTerm0.13"};r.TIENLEN_AI_BUILD=B;if(typeof module==="object")module.exports=B;}(typeof window!=="undefined"?window:global));
+(function(r){var B={id:"v1.0-sh-L2s204",stamped:"2026-07-17T10:30:00.000Z",label:"L2s204 free-lead mid diversity ≤T + early deep nest on 0213 champ"};r.TIENLEN_AI_BUILD=B;if(typeof module==="object")module.exports=B;}(typeof window!=="undefined"?window:global));

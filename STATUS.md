@@ -1,60 +1,52 @@
 # STATUS — Superhuman Tiến Lên (hybrid PAIR_STEP + CERT)
 
-**Updated:** 2026-07-16T19:32Z  
+**Updated:** 2026-07-17T05:40Z  
 **W_max:** 9  
-**Dual champion:** `p_l2s145` ✅ (PAIR **0165**)  
-**GitHub champion freeze:** `policies/p_l2s145-*` + product root `ai.js`/`search.js`/`ai-build.js` (PAIR **0165** ACCEPT)  
-**Live product:** `v1.0-sh-L2s145`  
-**Gold:** dual G7 **17/0** · manifest **111** CLEAN · K6 green  
-**Ladder:** L1 ✅ · **L2 open** (streak **1**/3) · CERT not attempted  
+**Dual champion / live product:** **`p_l2s201`** ✅ (PAIR **0213** ACCEPT)  
+**Author:** RECOMMEND-WR90-SELFPLAY + RECOMMEND-FREELEAD-CONTROL-SIGNALS  
+**Gold:** expert **74/0** · dual G7 critical **17/0** · manifest **113** CLEAN · K6 green  
+**Ladder:** L1 ✅ · L2 open (streak **1**/3 after long reject chain; ΣΔ≈**+0.281**) · CERT never  
 
-## Ship bar
-CERT ≥ **0.90** vs v6.0. Dual WR ~53–58% on fair duals — **not ship**.
+**CS1 note:** goal `p_l2s86` is **stale**. Dual champion = **`p_l2s201`**.
 
-## Accepts (ΣΔ ≈ **+0.259**)
+## PAIR_STEP ACCEPT 0213
+| Field | Value |
+|-------|--------|
+| PREV | p_l2s145 |
+| NEW | **p_l2s201** |
+| WR_prev | 0.506 |
+| WR_new | **0.528** |
+| Δ | **+2.2pp** |
+| Bootstrap 95% LB | **+1.1pp** |
+| McNemar | 30 new-only / 8 prev-only (stat 11.6, p≈0.003) |
+| n | 1000 (500 seeds × both seats) |
+| seedHash | `5e324f343fd66e67deb1b4a89b3ea1f84d5ef4a2ac03103db41415d4dd7b8ea8` |
+| AI_BUILD | v1.0-sh-L2s201 |
+| Change | **Free-lead P0-B2 diversity samples** into BR branch (non-expert multis/trash enter maxBranch) + 0165 progressive |
 
-| step | NEW | Δ | LB | n | note |
-|------|-----|---|-----|---|------|
-| **0115** | p_l2s104 | +0.0567 | >0 | 300 | FL distill dual-safe |
-| **0125** | p_l2s112 | +0.0227 | >0 | 440 | mixed-opp + nested |
-| **0165** | **p_l2s145** | **+0.0100** | **+0.0029** | 700 | progressive+cond MC + 2× nested + brdTerm0.13 |
+## After accept
+| step | NEW | Δ | LB | note |
+|------|-----|---|-----|------|
+| 0212 | p_l2s201 n=700 | +1.0pp | −0.29pp | near-miss (led to 0213) |
+| **0213** | p_l2s201 n=1000 | **+2.2pp** | **+1.1pp** | **ACCEPT** |
+| 0214 | diversity 6+top4 nest | 0 | −0.6pp | identity null vs 201 |
 
-**Streak:** **1** (need 3 consecutive for L2). Rejects after 0165 reset consecutive progress.
+## Strength truth
+Absolute WR_v60 ≈ **0.53** on S_t 0213 — still far from CERT 0.90. Accept is real paired gain, not ship.
 
-## Post-0165 climb (all REJECT)
+## Lessons
+1. **P0-B2 free-lead diversity** dual-transferred (non-expert lines must enter BR).  
+2. Near-miss at n=700 → recheck large n; 0212 near-miss → 0213 confirm accept.  
+3. Soft plan/value/BRD-force packages dual-null or reverse.  
+4. Free-lead architecture > combat residual thrash.
 
-| step | candidate | Δ | LB | n | note |
-|------|-----------|---|-----|---|------|
-| 0166 | paired multi-world | +0.67pp | 0 | 600 | near-miss |
-| 0167 | always MC amplify | +0.31pp | <0 | 640 | |
-| 0168 | paired re-eval n=400 | 0 | ± | 800 | identity |
-| 0169 | budget amplify 2.25× | +0.14pp | <0 | 700 | |
-| 0170 | soft GOLD_W distill | 0 | ± | 640 | identity |
-| 0171 | trash+control + ISMCTS | +0.67pp | <0 | 600 | |
-| 0172 | re-eval 150 n=420 | +0.83pp | **0** | 840 | McNemar 11–4 near |
-| 0173 | amplify ISMCTS | +0.83pp | <0 | 720 | |
-| **0174** | re-eval 150 n=500 | **0** | ±0.9 | **1000** | **noise cleared — null** |
-| 0175 | nested BRD leaf diversity | −0.31pp | <0 | 640 | reverse |
-| **0176** | free-lead-aware opp model | **−1.88pp** | <0 | 640 | **toxic reverse** |
+## Next
+1. Stack **2 more consecutive accepts** → L2 milestone (or EMA≥0.60).  
+2. Build on diversity: more free-lead samples / nested BR / stronger BRD teacher.  
+3. CERT only when climbing toward 0.90.  
+4. G2 gold every PAIR + ≤2h.
 
-### Lessons
-1. **0165 recipe is the last dual-transferring free-lead architecture.** Micro amplifications rarely clear LB>0.
-2. **0174 is critical:** p_l2s150 looked +0.8pp at n≈600–840 but **identity at n=1000** — do not promote on single near-miss without large-n recheck.
-3. Soft distill / nested BRD leaf / budget knobs → null or reverse.
-4. Free-lead-aware opponent model (0176) is **dual-toxic** (−1.9pp) — do not use.
-4. Prefer **qualitatively new** free-lead search (true multi-ply / belief) over residual packages.
-
-## Champion L2s145 recipe (do not regress)
-- Progressive free-lead scout → deep top-K
-- Conditional top-2 flat MC when rateV close
-- Free-lead nested trials **2×**
-- Free-lead brdTerm **0.13** (combat 0.10)
-- Kill-points K1–K5 honored; K6 green
-
-## Gates
-K6 green · G7 17/0 · gold 111 CLEAN · W_max=9
-
-## Next for L2
-Need **2 consecutive** accepts vs `p_l2s145`.  
-Levers: multi-ply free-lead search, dual-BR value from full game traces (not expert leaf), gold GR encoding if uploads appear.  
-Never residual-pack. CERT 90% still far.
+## Infrastructure
+- `policies/p_l2s201-{ai,search,ai-build}.js` dual champion  
+- `evolve/eval-registry/pair-steps/step-0213-*`  
+- train-br-distill / train-freelead-control inject paths  
