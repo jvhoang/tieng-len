@@ -1,9 +1,27 @@
 {
   "protocol": "living-gold-manifest-v1",
-  "stamped": "2026-07-16T05:59:05.281Z",
+  "stamped": "2026-07-17T08:29:26.001Z",
   "goldDir": "john_uploads",
-  "fileCount": 108,
+  "fileCount": 113,
   "files": [
+    {
+      "path": "GOLD-RECS-PLAYLOG-MAP.json",
+      "bytes": 253259,
+      "mtimeMs": 1784192526778.969,
+      "sha256": "d4f793d324ed93e4efd76b10f22a1bc7eb341a5dbb9e21c6f405d58d498ae335"
+    },
+    {
+      "path": "GOLD-RECS-PLAYLOG-MAP.md",
+      "bytes": 70003,
+      "mtimeMs": 1784192526781.3452,
+      "sha256": "4757d3ddba88324e940fc59f0a62850873f49c5c87ddb9ff229f6ec93d00a792"
+    },
+    {
+      "path": "GOLD-RECS-PLAYLOG-TRAIN.jsonl",
+      "bytes": 73417,
+      "mtimeMs": 1784192499151.0503,
+      "sha256": "3d52e565b86222980151cd575a4f12d5b6eb1c980901b9f6b78dea80c1ef254c"
+    },
     {
       "path": "IMG_0498.PNG",
       "bytes": 2967422,
@@ -641,6 +659,18 @@
       "sha256": "472669a052f625254455e6662d5471ea1c4b17e013d67b7b529800a22974fe49"
     },
     {
+      "path": "RECOMMEND-FREELEAD-CONTROL-SIGNALS.md",
+      "bytes": 13485,
+      "mtimeMs": 1784259653985.0989,
+      "sha256": "b880fc3a9e1e3850504cf5e0e03d63828d92e82ecddf552d7e03c9d274b329f3"
+    },
+    {
+      "path": "RECOMMEND-WR90-SELFPLAY.md",
+      "bytes": 16534,
+      "mtimeMs": 1784241833942.2378,
+      "sha256": "2cf1d6a0064a666e5a8cf0793f7f2b3e55031cf34f6abd31b8687bc56a983286"
+    },
+    {
       "path": "tien_len_AI.txt",
       "bytes": 16028,
       "mtimeMs": 1784179781979.923,
@@ -663,8 +693,9 @@
     "textFiles": [
       "tien_len_AI.txt"
     ],
-    "newestPlaylog": "tienlen-playlogs-1784177353718.json",
+    "newestPlaylog": "GOLD-RECS-PLAYLOG-MAP.json",
     "playlogs": [
+      "GOLD-RECS-PLAYLOG-MAP.json",
       "tienlen-playlogs-1784177353718.json"
     ],
     "imageCount": 106,

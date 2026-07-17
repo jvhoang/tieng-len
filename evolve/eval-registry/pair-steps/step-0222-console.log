@@ -1,0 +1,13 @@
+{"start":true,"step":"0222","prev":"p_l2s201","new":"p_l2s211","freeze":"v60","nSeeds":450,"bothSeats":true,"wMax":9,"seedHash":"83964cb6b2639cdc3e501ae0fba331da8e6eefe76a3d98180c100651f5a89d3e"}
+=== PAIR_STEP RESULT ===
+{
+  "accept": false,
+  "wrPrev": 0.5355555555555556,
+  "wrNew": 0.5488888888888889,
+  "deltaWR": 0.013333333333333308,
+  "bootstrapLB": -0.006666666666666667,
+  "bootstrapUB": 0.03333333333333333,
+  "nGames": 900,
+  "seedHash": "83964cb6b2639cdc3e501ae0fba331da8e6eefe76a3d98180c100651f5a89d3e",
+  "report": "/Users/johnhoang/Developer/Grok/tieng-len/evolve/eval-registry/pair-steps/step-0222-report.json"
+}

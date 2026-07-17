@@ -1,0 +1,1 @@
+(function(r){var B={id:"v1.0-sh-L2s211",stamped:"2026-07-17T08:15:00.000Z",label:"L2s211 combat diversity mid-climbs + progressive combat refine + mixed-opp (on 0213 free-lead champ) · PAIR 0223 ACCEPT"};r.TIENLEN_AI_BUILD=B;if(typeof module==="object")module.exports=B;}(typeof window!=="undefined"?window:global));

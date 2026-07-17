@@ -1,0 +1,706 @@
+{
+  "protocol": "fair-firstdiff-v1",
+  "freeze": "p_l2s201",
+  "chall": "p_l2s211",
+  "live": {
+    "id": "v1.0-sh-L2s211",
+    "stamped": "2026-07-17T07:33:35.811Z",
+    "label": "Freeze v1.0-sh-L2s211"
+  },
+  "freezeBuild": {
+    "id": "v1.0-sh-L2s201",
+    "stamped": "2026-07-17T09:00:00.000Z",
+    "label": "L2s201 free-lead P0-B2 diversity samples into BR branch + 0165 progressive"
+  },
+  "opts": {
+    "difficulty": "grandmaster",
+    "useSearch": true,
+    "perfectInfo": false,
+    "hiddenInfo": true,
+    "timeMs": 0,
+    "iterations": 60,
+    "maxSims": 120,
+    "brTrials": 16,
+    "bestResponse": true,
+    "exactExploit": false,
+    "exploit": true,
+    "softSamples": 0,
+    "maxBranch": 12,
+    "mode": "auto",
+    "strongSelf": false
+  },
+  "nGames": 48,
+  "nDiverged": 18,
+  "divergeRate": 0.375,
+  "classCount": {
+    "combat_other": 18
+  },
+  "results": [
+    {
+      "seed": 2374523956,
+      "liveSeat": 0,
+      "firstDiff": {
+        "step": 4,
+        "seat": 0,
+        "phase": "single",
+        "handLen": 10,
+        "omin": 9,
+        "curTop": 2,
+        "freeze": "AD",
+        "chall": "7C",
+        "freezeSig": "46",
+        "challSig": "19",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 3,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 5,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 2374523956,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 8,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 17,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 2055170532,
+      "liveSeat": 0,
+      "firstDiff": {
+        "step": 1,
+        "seat": 0,
+        "phase": "single",
+        "handLen": 13,
+        "omin": 12,
+        "curTop": 0,
+        "freeze": "3C",
+        "chall": "6C",
+        "freezeSig": "3",
+        "challSig": "15",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 1,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 2,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 2055170532,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 11,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 21,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 2205521910,
+      "liveSeat": 0,
+      "firstDiff": {
+        "step": 1,
+        "seat": 0,
+        "phase": "single",
+        "handLen": 13,
+        "omin": 12,
+        "curTop": 0,
+        "freeze": "AH",
+        "chall": "AC",
+        "freezeSig": "45",
+        "challSig": "47",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 1,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 2,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 2205521910,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 11,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 21,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 2041506522,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 13,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 25,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 2041506522,
+      "liveSeat": 1,
+      "firstDiff": {
+        "step": 5,
+        "seat": 1,
+        "phase": "single",
+        "handLen": 10,
+        "omin": 10,
+        "curTop": 6,
+        "freeze": "TS",
+        "chall": "KD",
+        "freezeSig": "28",
+        "challSig": "42",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 3,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 6,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 2861939283,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 8,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 17,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 2861939283,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 17,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 2369119320,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 18,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 2369119320,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 18,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 2182602811,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 8,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 16,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 2182602811,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 8,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 16,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 2016202607,
+      "liveSeat": 0,
+      "firstDiff": {
+        "step": 3,
+        "seat": 0,
+        "phase": "seq",
+        "handLen": 13,
+        "omin": 5,
+        "curTop": 3,
+        "freeze": "KH AS 2C",
+        "chall": "KH AD 2C",
+        "freezeSig": "41,44,51",
+        "challSig": "41,46,51",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 2,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 4,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 2016202607,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 8,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 16,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 2557880016,
+      "liveSeat": 0,
+      "firstDiff": {
+        "step": 10,
+        "seat": 0,
+        "phase": "single",
+        "handLen": 9,
+        "omin": 8,
+        "curTop": 11,
+        "freeze": "PASS",
+        "chall": "2S",
+        "freezeSig": "PASS",
+        "challSig": "48",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 6,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 11,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 2557880016,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 12,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 25,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 2302269163,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 10,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 20,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 2302269163,
+      "liveSeat": 1,
+      "firstDiff": {
+        "step": 1,
+        "seat": 1,
+        "phase": "pair",
+        "handLen": 13,
+        "omin": 11,
+        "curTop": 0,
+        "freeze": "PASS",
+        "chall": "9C 9S",
+        "freezeSig": "PASS",
+        "challSig": "24,27",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 1,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 2,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 2854479884,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 5,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 9,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 2854479884,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 4,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 9,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 2738333730,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 19,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 2738333730,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 10,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 19,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 2245270054,
+      "liveSeat": 0,
+      "firstDiff": {
+        "step": 1,
+        "seat": 0,
+        "phase": "seq",
+        "handLen": 13,
+        "omin": 10,
+        "curTop": 2,
+        "freeze": "5H 6S 7S",
+        "chall": "5C 6S 7C",
+        "freezeSig": "9,12,16",
+        "challSig": "11,12,19",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 1,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 2,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 2245270054,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 10,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 19,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 2123502145,
+      "liveSeat": 0,
+      "firstDiff": {
+        "step": 1,
+        "seat": 0,
+        "phase": "seq",
+        "handLen": 13,
+        "omin": 10,
+        "curTop": 2,
+        "freeze": "TD JS QC",
+        "chall": "JS QC KD",
+        "freezeSig": "30,32,39",
+        "challSig": "32,39,42",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 1,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 2,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 2123502145,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 17,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 2226393366,
+      "liveSeat": 0,
+      "firstDiff": {
+        "step": 6,
+        "seat": 0,
+        "phase": "pair",
+        "handLen": 10,
+        "omin": 4,
+        "curTop": 1,
+        "freeze": "5S 5C",
+        "chall": "AD AH",
+        "freezeSig": "8,11",
+        "challSig": "45,46",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 4,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 7,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 2226393366,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 18,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 2342973511,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 8,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 15,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 2342973511,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 7,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 15,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 2643423053,
+      "liveSeat": 0,
+      "firstDiff": {
+        "step": 2,
+        "seat": 0,
+        "phase": "single",
+        "handLen": 12,
+        "omin": 12,
+        "curTop": 1,
+        "freeze": "8H",
+        "chall": "7D",
+        "freezeSig": "21",
+        "challSig": "18",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 2,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 3,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 2643423053,
+      "liveSeat": 1,
+      "firstDiff": {
+        "step": 1,
+        "seat": 1,
+        "phase": "single",
+        "handLen": 13,
+        "omin": 12,
+        "curTop": 0,
+        "freeze": "4D",
+        "chall": "9C",
+        "freezeSig": "6",
+        "challSig": "27",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 1,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 2,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 2039832354,
+      "liveSeat": 0,
+      "firstDiff": {
+        "step": 5,
+        "seat": 0,
+        "phase": "single",
+        "handLen": 13,
+        "omin": 4,
+        "curTop": 0,
+        "freeze": "5S",
+        "chall": "AD",
+        "freezeSig": "8",
+        "challSig": "46",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 3,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 6,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 2039832354,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 18,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 2397189768,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 13,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 27,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 2397189768,
+      "liveSeat": 1,
+      "firstDiff": {
+        "step": 10,
+        "seat": 1,
+        "phase": "single",
+        "handLen": 10,
+        "omin": 5,
+        "curTop": 1,
+        "freeze": "JH",
+        "chall": "KH",
+        "freezeSig": "33",
+        "challSig": "41",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 6,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 11,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 2380150115,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 18,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 2380150115,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 9,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 18,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 2779571796,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 10,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 20,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 2779571796,
+      "liveSeat": 1,
+      "firstDiff": {
+        "step": 5,
+        "seat": 1,
+        "phase": "single",
+        "handLen": 10,
+        "omin": 6,
+        "curTop": 5,
+        "freeze": "JD",
+        "chall": "AC",
+        "freezeSig": "34",
+        "challSig": "47",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 3,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 6,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 2670031071,
+      "liveSeat": 0,
+      "firstDiff": null,
+      "pathLen": 7,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 13,
+      "freezeWinIfNoDiff": true
+    },
+    {
+      "seed": 2670031071,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 6,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 13,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 2572451327,
+      "liveSeat": 0,
+      "firstDiff": {
+        "step": 6,
+        "seat": 0,
+        "phase": "single",
+        "handLen": 9,
+        "omin": 5,
+        "curTop": 1,
+        "freeze": "TC",
+        "chall": "2D",
+        "freezeSig": "31",
+        "challSig": "50",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 4,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 7,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 2572451327,
+      "liveSeat": 1,
+      "firstDiff": null,
+      "pathLen": 10,
+      "diverged": false,
+      "stepsUntilDiffOrEnd": 21,
+      "freezeWinIfNoDiff": false
+    },
+    {
+      "seed": 2686447720,
+      "liveSeat": 0,
+      "firstDiff": {
+        "step": 1,
+        "seat": 0,
+        "phase": "single",
+        "handLen": 13,
+        "omin": 12,
+        "curTop": 0,
+        "freeze": "4H",
+        "chall": "4D",
+        "freezeSig": "5",
+        "challSig": "6",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 1,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 2,
+      "freezeWinIfNoDiff": null
+    },
+    {
+      "seed": 2686447720,
+      "liveSeat": 1,
+      "firstDiff": {
+        "step": 2,
+        "seat": 1,
+        "phase": "single",
+        "handLen": 12,
+        "omin": 12,
+        "curTop": 1,
+        "freeze": "6H",
+        "chall": "5S",
+        "freezeSig": "13",
+        "challSig": "8",
+        "same": false,
+        "class": "combat_other"
+      },
+      "pathLen": 2,
+      "diverged": true,
+      "stepsUntilDiffOrEnd": 3,
+      "freezeWinIfNoDiff": null
+    }
+  ]
+}

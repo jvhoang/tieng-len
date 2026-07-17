@@ -11,7 +11,7 @@
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./engine.js'));
+    module.exports = factory(require('../engine.js'));
   } else {
     root.TienLenSearch = factory(root.TienLenEngine);
   }
@@ -1932,23 +1932,6 @@
     var expertPin = null;
     try { expertPin = expertPolicy(state, myIdx); } catch (ePin) { expertPin = null; }
     if (expertPin && expertPin.pass && cur) allowPass = true;
-    // L2s212: combat pass-in-branch expand — when deep + opp not short, always score PASS
-    // even if a cheap beat exists (author pass-plans; v60 firstdiff often PASSes mid fights).
-    // BR chooses; never force pass (K4). Free-lead unchanged.
-    if (cur && !allowPass && hand.length >= 9) {
-      var ominPass = oppMinHand(state, myIdx);
-      if (ominPass >= 5) {
-        var minSbcPass = 99;
-        for (var psi = 0; psi < fullLegForPass.length; psi++) {
-          if (playHasTwo(fullLegForPass[psi]) || playIsBomb(fullLegForPass[psi])) continue;
-          var sbcP = structureBreakCost(hand, fullLegForPass[psi]);
-          if (sbcP < minSbcPass) minSbcPass = sbcP;
-        }
-        // Expand when any non-trivial smash risk OR mid/high current top (control fight)
-        var curTopPass = cur.top ? cur.top.rank : 0;
-        if (minSbcPass >= 3 || curTopPass >= 7) allowPass = true;
-      }
-    }
     // Plan-pass: soft bias usually; narrow hard pin only for high multi dumps
     // (IMG0510 QKA-style: sbc≥12, len≥3) where short BR rates are pure noise.
     // Broader hard pins dual-cliffed on PAIR 0114 (−3.75pp).
