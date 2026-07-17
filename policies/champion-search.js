@@ -1812,9 +1812,8 @@
     }
 
     if (!cur) {
-      // L2s112/L2s204: free-lead nested budget; deeper when hand is full (plan-critical)
+      // L2s112: free-lead nested budget (mixed-opp already in trial loop)
       if (trials > 0 && trials < 50) trials = Math.min(50, Math.floor(trials * 2.0) + 6);
-      if (hand.length >= 11 && trials > 0) trials = Math.min(60, Math.floor(trials * 1.25));
       if (maxBranch < 18) maxBranch = 18;
       // freeLeadCandidates already ranks by BRD (or expert fallback). Do NOT
       // orderLegals here — that wiped teacher order before maxBranch (kill-point).
@@ -1825,8 +1824,8 @@
           return brdLogit(state, myIdx, b) - brdLogit(state, myIdx, a);
         });
       }
-      // L2s201/L2s204 P0-B2: free-lead diversity — multis + mid singles (≤T) enter BR.
-      // 0213 transferred with ≤7; expand mid free-lead without progressive/BRD churn.
+      // L2s201 P0-B2: free-lead diversity samples — BR must see non-expert multis/trash
+      // that freeLeadCandidates filtered out (author/v60 lines never enter tree otherwise).
       var fullFL = getLegalPlays(hand, cur, state.players[myIdx].passed,
         state.isFirstLead, state.firstLeadCard);
       var seenFl = Object.create(null);
@@ -1837,15 +1836,15 @@
         var px = fullFL[sfi];
         if (playIsExpensive(px)) continue;
         if (seenFl[playSig(px)]) continue;
-        if (px.length >= 2 || (px.length === 1 && px[0].rank <= 9)) extrasFl.push(px);
+        if (px.length >= 2 || (px.length === 1 && px[0].rank <= 7)) extrasFl.push(px);
       }
       if (typeof brdLogit === 'function' && extrasFl.length > 1) {
         extrasFl.sort(function (a, b) {
           return brdLogit(state, myIdx, b) - brdLogit(state, myIdx, a);
         });
       }
-      for (sfi = 0; sfi < Math.min(5, extrasFl.length); sfi++) leg.push(extrasFl[sfi]);
-      if (maxBranch < 22) maxBranch = 22;
+      for (sfi = 0; sfi < Math.min(4, extrasFl.length); sfi++) leg.push(extrasFl[sfi]);
+      if (maxBranch < 20) maxBranch = 20;
     } else {
       // Include structure-safe answers (not only pure cheap) so gold combat roots exist
       var ch = cheapLegals(leg);
