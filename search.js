@@ -170,6 +170,52 @@
     return cost;
   }
 
+  /**
+   * residualOrphans — author RECOMMEND-RESIDUAL-ORPHAN-RUN-STRUCTURE-URGENT.
+   * Count leftover mid singles (by[r]===1, r<10) NOT in a remaining ≥3 consecutive
+   * presence-run. Pair-adjacent mid singles still trash (8 next to 77). Intact leftover
+   * 910J / 345 after free-lead = 0 orphans (not 3). High-only singles (K/A/2) not trash.
+   */
+  function residualOrphans(hand, play) {
+    if (!play || !play.length) return 0;
+    var by = {};
+    var i, r;
+    for (i = 0; i < hand.length; i++) {
+      r = hand[i].rank;
+      by[r] = (by[r] || 0) + 1;
+    }
+    for (i = 0; i < play.length; i++) {
+      r = play[i].rank;
+      by[r] = (by[r] || 0) - 1;
+    }
+    // Mark ranks in any consecutive presence chain of length ≥ 3
+    var inRun3 = {};
+    for (r = 0; r <= 12; r++) {
+      if (!(by[r] > 0)) continue;
+      if (by[r - 1] > 0) continue; // not start of chain
+      var len = 0;
+      var t = r;
+      while (by[t] > 0) {
+        len++;
+        t++;
+      }
+      if (len >= 3) {
+        for (t = r; t < r + len; t++) inRun3[t] = 1;
+      }
+    }
+    var orphans = 0;
+    var keys = Object.keys(by);
+    for (i = 0; i < keys.length; i++) {
+      r = +keys[i];
+      if (by[r] !== 1) continue;
+      if (inRun3[r]) continue; // structured remaining run (345 / 910J)
+      if (r >= 10) continue; // pure control single not residual trash
+      // Isolated mid single OR mid single only glued to pair/trip → trash
+      orphans++;
+    }
+    return orphans;
+  }
+
   function countTwos(hand) {
     var n = 0;
     for (var i = 0; i < hand.length; i++) if (hand[i].rank === 12) n++;
@@ -1485,10 +1531,18 @@
     // Kill-point fix (DEEP-DIVE §2a/§6.2): do not pure-expert sort as the only prior.
     // Gold pins already applied; rank by BR-teacher when available, else expertScore.
     if (typeof brdLogit === 'function') {
+      var handFl = state.players[cp].hand;
       return out.slice().sort(function (a, b) {
         var da = brdLogit(state, cp, a);
         var db = brdLogit(state, cp, b);
         if (Math.abs(db - da) > 1e-9) return db - da;
+        // L2s261: residual orphan tie-break after BRD (author residual family).
+        // Prefer lower leftover trash; never wipe BRD order via orderLegals.
+        if (typeof residualOrphans === 'function') {
+          var oa = residualOrphans(handFl, a);
+          var ob = residualOrphans(handFl, b);
+          if (oa !== ob) return oa - ob;
+        }
         // tie-break: longer multi, then lower expertScore (expertScore lower = better)
         if (b.length !== a.length) return b.length - a.length;
         return expertScore(a, state, cp) - expertScore(b, state, cp);
@@ -1612,10 +1666,11 @@
   }
 
   /* VALUE_NET_START — linear TRAIN value (AlphaZero-lite features) */
-  var VALUE_W = [0.850323,-3.343534,1.799391,1.523945,1.498918,-1.57339,-0.573825,0.362528,-0.568548,0.487795,0.731693,0.240293,-0.121663];
-  var VALUE_LAMBDA = 0.22; // blend into BR rate
+  // L2s243: value retrain SP vs v60 (acc≈0.64, n≈7.4k) — PAIR 0243/0244 near-miss @ λ=0.28
+    var VALUE_W = [0.9904,-3.3175,0.5535,1.3074,1.2706,-2.9511,0.871,0.1115,-0.4879,0.879,0.4578,0.5526,-0.0199];
+  var VALUE_LAMBDA = 0.28; // sweet spot: 0.22 weak, 0.38 reverse (0245)
   // L2s85: offline high-trials BR distill scorer (TRAIN SoftN=0 BR_TRIALS=36 teacher)
-  var BRD_W = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,-0.0,-0.0,-0.0,-0.0,1.303906,-4.200862,0.032786,-0.567582,0.239831,0.524989,-1.951978,-1.945305,0.000473,1.123915,2.772895,-2.290995,-0.567582,0.239831,0.524989,0];
+  var BRD_W = [0,0,0,0,0,0,0,0,0,0,0,0,3.139745,-4.50587,-0.526956,0.40215,0.063992,0.496165,-3.124324,-1.891638,-0.05919,1.599993,3.47516,-2.584494,0.40215,0.063992,0.496165,0];
   function brdLogit(state, myIdx, cards) {
     if (!cards || !cards.length) return -9;
     var hand = state.players[myIdx].hand;
@@ -1669,11 +1724,27 @@
       if (r === 12) twos++;
       if (r >= 10) control++;
     }
+    // L2s261: trash = residual orphans (mid singles not in ≥3 presence-run).
+    // Matches residualOrphans / author URGENT — do not count intact 910J/345 as trash.
+    var inRun3 = {};
+    for (r = 0; r <= 12; r++) {
+      if (!(by[r] > 0)) continue;
+      if (by[r - 1] > 0) continue;
+      var lenR = 0;
+      var tR = r;
+      while (by[tR] > 0) {
+        lenR++;
+        tR++;
+      }
+      if (lenR >= 3) {
+        for (tR = r; tR < r + lenR; tR++) inRun3[tR] = 1;
+      }
+    }
     var keys = Object.keys(by);
     for (i = 0; i < keys.length; i++) {
       r = +keys[i];
       if (by[r] >= 2) pairs++;
-      if (by[r] === 1 && r <= 9) trash++;
+      if (by[r] === 1 && r < 10 && !inRun3[r]) trash++;
     }
     var curTop = state.currentCombo && state.currentCombo.top ? state.currentCombo.top.rank : -1;
     var freeLead = !state.currentCombo;
@@ -1759,7 +1830,29 @@
         }
       }
     }
-    if (safe.length) return { play: orderLegals(safe, state, cp)[0] };
+    // L2s255: residual-aware leaf among structure-safe (author RT / CB-LOOSE).
+    // Prefer lower residual orphans then lower sbc — not pure orderLegals min.
+    // ValueEval leaf dual-cliffed (0247); residual features dual-transferred (0254).
+    if (safe.length) {
+      if (safe.length === 1 || typeof residualOrphans !== 'function') {
+        return { play: orderLegals(safe, state, cp)[0] };
+      }
+      var bestS = safe[0];
+      var bestScore = 1e9;
+      var si;
+      for (si = 0; si < safe.length && si < 10; si++) {
+        var orph = residualOrphans(hand, safe[si]);
+        var sbcS = structureBreakCost(hand, safe[si]);
+        // loose single beats preferred when residual clean
+        var looseB = (safe[si].length === 1 && isLooseSingle(hand, safe[si])) ? -0.4 : 0;
+        var sc = orph * 2.0 + sbcS * 0.15 + looseB;
+        if (sc < bestScore) {
+          bestScore = sc;
+          bestS = safe[si];
+        }
+      }
+      return { play: bestS };
+    }
     var cheap = cheapLegals(leg);
     if (cheap.length) return { play: orderLegals(cheap, state, cp)[0] };
     if (cur.cards && cur.cards.every(function (c) { return c.rank === 12; })) {
@@ -2041,8 +2134,24 @@
       var brdA = 0;
       try { if (act != null && typeof brdLogit === 'function') brdA = brdLogit(state, myIdx, act); } catch (eB) { brdA = 0; }
       // squash teacher logit contribution
-      var brdTerm = (freeLeadRoot ? 0.13 : 0.10) * (1 / (1 + Math.exp(-brdA)) - 0.5);
+      // L2s248: free-lead brdTerm 0.16 after winfilter BRD retrain on p_l2s243
+      var brdTerm = (freeLeadRoot ? 0.16 : 0.10) * (1 / (1 + Math.exp(-brdA)) - 0.5);
       var rateV = rate + VALUE_LAMBDA * (vAfter - vRoot) + brdTerm;
+      // L2s249b: milder residual-trash soft prior (0253 near-miss +0.64 LB-0.57)
+      if (act != null) {
+        try {
+          var orphans = residualOrphans(hand, act);
+          var sbcRt = structureBreakCost(hand, act);
+          if (freeLeadRoot) {
+            rateV -= 0.025 * Math.min(3, orphans);
+            if (act.length >= 3 && act.length <= 5 && orphans >= 2) rateV -= 0.03;
+          } else {
+            rateV -= 0.02 * Math.min(3, orphans);
+            if (sbcRt >= 4 && orphans >= 1) rateV -= 0.03;
+            if (act.length === 1 && isLooseSingle(hand, act) && sbcRt < 2) rateV += 0.025;
+          }
+        } catch (eRt) { /* ignore */ }
+      }
       // Soft expert-pin prior (dual-safe scale after PAIR 0114 cliff)
       if (expertSig) {
         var actSig = act == null ? 'PASS' : playSig(act);

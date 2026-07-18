@@ -1531,18 +1531,10 @@
     // Kill-point fix (DEEP-DIVE §2a/§6.2): do not pure-expert sort as the only prior.
     // Gold pins already applied; rank by BR-teacher when available, else expertScore.
     if (typeof brdLogit === 'function') {
-      var handFl = state.players[cp].hand;
       return out.slice().sort(function (a, b) {
         var da = brdLogit(state, cp, a);
         var db = brdLogit(state, cp, b);
         if (Math.abs(db - da) > 1e-9) return db - da;
-        // L2s261: residual orphan tie-break after BRD (author residual family).
-        // Prefer lower leftover trash; never wipe BRD order via orderLegals.
-        if (typeof residualOrphans === 'function') {
-          var oa = residualOrphans(handFl, a);
-          var ob = residualOrphans(handFl, b);
-          if (oa !== ob) return oa - ob;
-        }
         // tie-break: longer multi, then lower expertScore (expertScore lower = better)
         if (b.length !== a.length) return b.length - a.length;
         return expertScore(a, state, cp) - expertScore(b, state, cp);
@@ -1667,7 +1659,7 @@
 
   /* VALUE_NET_START — linear TRAIN value (AlphaZero-lite features) */
   // L2s243: value retrain SP vs v60 (acc≈0.64, n≈7.4k) — PAIR 0243/0244 near-miss @ λ=0.28
-    var VALUE_W = [0.9904,-3.3175,0.5535,1.3074,1.2706,-2.9511,0.871,0.1115,-0.4879,0.879,0.4578,0.5526,-0.0199];
+  var VALUE_W = [0.8607,-4.4159,0.3982,0.764,1.0905,-0.7992,1.5995,-0.0578,-0.3558,0.9185,0.8107,0.1204,-0.0704];
   var VALUE_LAMBDA = 0.28; // sweet spot: 0.22 weak, 0.38 reverse (0245)
   // L2s85: offline high-trials BR distill scorer (TRAIN SoftN=0 BR_TRIALS=36 teacher)
   var BRD_W = [0,0,0,0,0,0,0,0,0,0,0,0,3.139745,-4.50587,-0.526956,0.40215,0.063992,0.496165,-3.124324,-1.891638,-0.05919,1.599993,3.47516,-2.584494,0.40215,0.063992,0.496165,0];
@@ -1724,27 +1716,11 @@
       if (r === 12) twos++;
       if (r >= 10) control++;
     }
-    // L2s261: trash = residual orphans (mid singles not in ≥3 presence-run).
-    // Matches residualOrphans / author URGENT — do not count intact 910J/345 as trash.
-    var inRun3 = {};
-    for (r = 0; r <= 12; r++) {
-      if (!(by[r] > 0)) continue;
-      if (by[r - 1] > 0) continue;
-      var lenR = 0;
-      var tR = r;
-      while (by[tR] > 0) {
-        lenR++;
-        tR++;
-      }
-      if (lenR >= 3) {
-        for (tR = r; tR < r + lenR; tR++) inRun3[tR] = 1;
-      }
-    }
     var keys = Object.keys(by);
     for (i = 0; i < keys.length; i++) {
       r = +keys[i];
       if (by[r] >= 2) pairs++;
-      if (by[r] === 1 && r < 10 && !inRun3[r]) trash++;
+      if (by[r] === 1 && r <= 9) trash++;
     }
     var curTop = state.currentCombo && state.currentCombo.top ? state.currentCombo.top.rank : -1;
     var freeLead = !state.currentCombo;

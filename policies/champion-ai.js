@@ -17,7 +17,7 @@ const genomeMod = (typeof require === 'function')
   ? require('../genome.js')
   : (typeof window !== 'undefined' ? window.TienLenGenome : null);
 const searchMod = (typeof require === 'function')
-  ? require('./p_l2s201-search.js')
+  ? require('./champion-search.js')
   : (typeof window !== 'undefined' ? window.TienLenSearch : null);
 const {
   detectCombo, getLegalPlays, applyPlay, pass, cardCompare, cloneState: engineClone
@@ -956,9 +956,9 @@ function getLowestLegalMove(state, myIdx) {
 }
 
 const AI_BUILD = {
-  id: "v1.0-sh-L2s201",
-  stamped: "2026-07-17T09:00:00.000Z",
-  label: "L2s201 free-lead P0-B2 diversity samples into BR branch + 0165 progressive"
+  id: "v1.0-sh-L2s261",
+  stamped: "2026-07-18T04:55:36.330Z",
+  label: "Freeze v1.0-sh-L2s261"
 };
 
 const TienLenAI = {
