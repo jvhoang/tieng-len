@@ -895,6 +895,11 @@
             var vv = valueEval(stA, myIdx);
             vv -= structureBreakCost(hand, pool[bi]) * 0.02;
             if (typeof brdLogit === 'function') vv += 0.16 * brdLogit(state, myIdx, pool[bi]);
+            // L2s275 mild FL multi residual
+            if (typeof residualOrphans === 'function') {
+              vv -= 0.04 * Math.min(4, residualOrphans(hand, pool[bi]));
+              vv += 0.008 * Math.min(8, pool[bi].length);
+            }
             if (vv > bestV) { bestV = vv; bestP = pool[bi]; }
           } catch (eV2) { /* skip */ }
         }
@@ -1845,7 +1850,7 @@
         var sbcS = structureBreakCost(hand, safe[si]);
         // loose single beats preferred when residual clean
         var looseB = (safe[si].length === 1 && isLooseSingle(hand, safe[si])) ? -0.4 : 0;
-        var sc = orph * 2.0 + sbcS * 0.15 + looseB;
+        var sc = orph * 2.6 + sbcS * 0.16 + looseB; // L2s275 mild residual leaf tip
         if (sc < bestScore) {
           bestScore = sc;
           bestS = safe[si];
@@ -2143,7 +2148,7 @@
           var orphans = residualOrphans(hand, act);
           var sbcRt = structureBreakCost(hand, act);
           if (freeLeadRoot) {
-            rateV -= 0.025 * Math.min(3, orphans);
+            rateV -= 0.030 * Math.min(3, orphans);
             if (act.length >= 3 && act.length <= 5 && orphans >= 2) rateV -= 0.03;
           } else {
             rateV -= 0.02 * Math.min(3, orphans);

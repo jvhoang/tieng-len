@@ -956,9 +956,9 @@ function getLowestLegalMove(state, myIdx) {
 }
 
 const AI_BUILD = {
-  id: "v1.0-sh-L2s261",
-  stamped: "2026-07-18T04:55:36.330Z",
-  label: "Freeze v1.0-sh-L2s261"
+  id: "v1.0-sh-L2s275",
+  stamped: "2026-07-19T00:08:13.112Z",
+  label: "Freeze v1.0-sh-L2s275"
 };
 
 const TienLenAI = {

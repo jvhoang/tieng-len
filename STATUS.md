@@ -1,40 +1,53 @@
 # STATUS — Superhuman Tiến Lên (hybrid PAIR_STEP + CERT)
 
-**Updated:** 2026-07-18T15:56Z  
+**Updated:** 2026-07-19T05:18Z  
 **W_max:** 9  
-**Dual champion / live candidate:** **`p_l2s261`** champion · **`p_l2s264`** PAIR pending  
-**Ladder:** L1 ✅ · **L2 OPEN (consecutive streak 0/3)** · CERT never  
+**Dual champion / live:** **`p_l2s275`** (PAIR **0283** ACCEPT)  
+**Ladder:** L1 ✅ · **L2 OPEN (consecutive streak 1/3)** · CERT never  
 
-## GitHub product ship (this commit)
-- **Live dual champion:** `p_l2s261` (PAIR **0267** ACCEPT chain: 0266 residualOrphans ≥3-run → 0267 residual value+FL BRD)
-- Product roots: `ai.js` / `search.js` / `ai-build.js` + `policies/champion-*`
-- Absolute WR ~0.62 vs v60 — **not** CERT ship (≥0.90 open)
-- Gold hidden-hand recon: still eval hygiene only (not dual path)
+## GitHub product ship (L2s275)
+- **Live dual champion:** `p_l2s275` (PAIR **0283** ACCEPT: residual dualRollout leaf + FL multi residual soft)
+- Product: `ai.js` / `search.js` / `ai-build.js` + `policies/champion-*`
+- Absolute WR ~0.61–0.65 vs v60 — **not** CERT ship (≥0.90 open); L2 streak **1**/3
 
-## Honesty
+## Honesty (do not gaslight)
 | Claim | Truth |
 |-------|--------|
-| Dual champ | **`p_l2s261`** (stale prompt p_l2s86) |
-| L2 / streak 3 | **NO** — streak 2 broken by 0268; then 0269 reject |
-| CERT ≥0.90 | **Never** |
-| Absolute WR | ~**0.58–0.62** on S_t — not ship |
+| Dual champ | **`p_l2s275`** (goal-prompt `p_l2s86` is STALE) |
+| L2 / streak 3 | **NO** — consecutive streak **1** (0283 only) |
+| CERT ≥0.90 | **Never attempted** |
+| Absolute WR vs v60 | **~0.61–0.65** depending on S_t (0290 wrPrev=0.654; independent audit 0.625 n=400) — **not ship** |
+| Gold green | Safety only: expert 74/0 · G7 17/0 · K6 green |
 
-## Recent PAIR
-| step | PREV→NEW | Δ / LB | result |
-|------|----------|--------|--------|
-| 0266 | 255→260 | +1.30 / +0.25 | ACCEPT residualOrphans ≥3-run |
-| 0267 | 260→261 | +2.10 / +1.10 | ACCEPT residual value+FL BRD tie |
-| 0268 | 261→262 | −0.10 / −0.85 | REJECT dual-null soft residual |
-| 0269 | 261→263 | −0.25 / −1.30 | REJECT BRD+value retrain dual-null |
-| **0270** | **261→264** | pending | FL residual diversity+branch24 + expanded V FDIM24 |
+## Held accepts
+| step | PREV→NEW | Δ / LB | n | leap |
+|------|----------|--------|---|------|
+| 0266 | 255→260 | +1.30 / +0.25 | 2000 | residualOrphans ≥3-run |
+| 0267 | 260→261 | +2.10 / +1.10 | 2000 | residual valueFeatures + retrain |
+| **0283** | **261→275** | **+1.35 / +0.70** | **2000** | **mild residual dualRollout leaf 2.6 + FL multi residual + FL soft 0.030** |
 
-## Gold
-fileCount **117** clean · G7 17/0 · expert 74/0 · K6 green
+## Post-accept 0283
+K6 green · G7 17/0 · expert 74/0 · gold 117 clean · McNemar p≈0.001
+
+## Consecutive #2 attempts after 0283 (all reject → streak stays 1)
+| step | idea | Δ / LB | result |
+|------|------|--------|--------|
+| 0284–0289 | residual tips / value / BRD / FL diversity | dual-null | no accept |
+| 0290 | λ=0.31 + deeper FL blend | +0.15 / −0.10 | dual-null (abs wrPrev **0.654**) |
+| 0291 | combat residual soft+leaf | −0.35 / −1.10 | reverse |
+
+## Absolute
+- Independent fair dual p_l2s261 class: **0.625** n=400 Wilson LB 0.577  
+- Recent PAIR S_t champion WR often **0.62–0.65** — still far from CERT 0.90  
+
+## Gold living
+fileCount **117** clean · G2 refreshed · residualOrphans URGENT live  
 
 ## Next
-1. PAIR 0270 accept → streak 1; stack 3 for real L2.
-2. Self-play absolute climb (author WR90) toward CERT 0.90.
-3. No ship claim at mid–high 50s / low 60s.
+1. **2 more consecutive PAIR accepts** vs `p_l2s275` → real L2 + milestone commit/tag.  
+2. Prefer **architecture leaps with real McNemar discords** (author WR90 self-play/search); residual softs dual-null post-0283.  
+3. CERT only when absolute WR climbs toward 0.90.  
+4. **No ship claim** at mid-60s.
 
 ## Live
-Champion **p_l2s261** until 0270 accept · **no ship claim**
+**p_l2s275** · streak **1** · L2 OPEN · **no ship claim**
