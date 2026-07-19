@@ -922,7 +922,7 @@
   -->
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <script>
-    window.TIENLEN_SITE_BUILD = '202607191200';
+    window.TIENLEN_SITE_BUILD = '202607191330';
     // Inline fallback so title always has a version even if scripts fail to load
     window.TIENLEN_AI_BUILD = window.TIENLEN_AI_BUILD || {
       id: 'v1.0-sh-L2s275',
@@ -1474,11 +1474,27 @@
       }
 
       function isSearchStatsUsable(stats) {
-        if (!stats || !stats.mode) return false;
-        const m = String(stats.mode);
-        // Real search / BR / endgame — not empty error stubs
-        if (m === 'none' || m === 'br-none' || m.indexOf('error') >= 0) return false;
-        return true;
+        if (!stats) return false;
+        if (stats.error) return false;
+        // Prefer mode, but also accept top/avg from partial BR results
+        if (stats.mode) {
+          const m = String(stats.mode);
+          if (m === 'none' || m === 'br-none') return false;
+          return true;
+        }
+        if (stats.top && stats.top.length) return true;
+        if (stats.avg != null && !isNaN(Number(stats.avg))) return true;
+        return false;
+      }
+
+      /** Normalize getAIMove return to cards[] | null (PASS). */
+      function normalizeAiMove(out) {
+        if (out == null) return null;
+        if (Array.isArray(out)) return out.length ? out : null;
+        if (out.play && Array.isArray(out.play)) return out.play.length ? out.play : null;
+        if (out.cards && Array.isArray(out.cards)) return out.cards.length ? out.cards : null;
+        if (out.pass) return null;
+        return null;
       }
 
       function formatStatsPlayLabel(sig) {
@@ -1639,10 +1655,13 @@
           return;
         }
 
-        // Same path as controller AI opponent (hidden search/BR) — not expert-only leaf.
+        // Same path as controller AI opponent (hidden search/BR).
+        // Trust getAIMove's return value — that IS what the AI would play.
+        // Do not require stats for showing the move; stats only enrich Why text.
         let mv = null;
         let stats = null;
         let searchErr = null;
+        let getAiCompleted = false;
         const seed = ((Date.now() ^ (Math.random() * 1e9)) >>> 0) || 1;
         const aiOpts = buildProductAiOpts(diff, seed);
         try {
@@ -1651,97 +1670,102 @@
         } catch (_) {}
 
         function runHintSearch() {
-          if (!ai || typeof ai.getAIMove !== 'function') return null;
+          if (!ai || typeof ai.getAIMove !== 'function') {
+            throw new Error('TienLenAI.getAIMove missing');
+          }
           const out = ai.getAIMove(st, seat, aiOpts);
           let stt = null;
           if (ai.getLastSearchStats) {
             try { stt = ai.getLastSearchStats(); } catch (_) { stt = null; }
           }
-          return { mv: out, stats: stt };
+          return { mv: normalizeAiMove(out), stats: stt, raw: out };
         }
 
         try {
           let res = runHintSearch();
-          mv = res && res.mv;
-          stats = res && res.stats;
-          // One retry if search returned a move/pass but no usable stats (stale/failed)
-          if (!isSearchStatsUsable(stats) && (diff === 'grandmaster' || diff === 'hard')) {
+          getAiCompleted = true;
+          mv = res.mv;
+          stats = res.stats;
+          // Retry once if we got neither a move/pass decision signal nor stats
+          // (e.g. first call threw mid-path and recovered empty)
+          if (!isSearchStatsUsable(stats) && mv == null && !st.currentCombo) {
             try {
               res = runHintSearch();
-              if (res) {
-                mv = res.mv;
-                stats = res.stats;
-              }
+              getAiCompleted = true;
+              mv = res.mv;
+              stats = res.stats;
             } catch (e2) {
               searchErr = e2;
             }
           }
         } catch (eHint) {
           searchErr = eHint;
+          getAiCompleted = false;
           try { console.warn('[TiengLen] hint search failed', eHint); } catch (_) {}
         }
 
         const searchOk = isSearchStatsUsable(stats);
-        // Intentional PASS: null/empty with search stats present
-        const intentionalPass = searchOk && (!mv || !mv.length) && !!st.currentCombo;
-
         let fallback = false;
         let fallbackReason = '';
 
-        // Free-lead: only labeled free-lead hard fallback if search failed completely
-        if ((!mv || !mv.length) && !st.currentCombo && !searchOk) {
+        // If getAIMove threw: use dual/expert leaf (same as BR playout leaf) — NOT min-legal.
+        if (!getAiCompleted && searchErr) {
           fallback = true;
-          fallbackReason = 'search failed on free-lead; using free-lead hard policy';
+          fallbackReason = 'getAIMove threw; using dualRollout/expert leaf (not min-legal)';
           try {
-            if (search && search.pickFreeLeadHard) {
-              mv = search.pickFreeLeadHard(legals, st, seat);
+            if (search && typeof search.dualRolloutPolicy === 'function') {
+              const dec = search.dualRolloutPolicy(st, seat);
+              if (dec && dec.pass) mv = null;
+              else if (dec && dec.play) mv = dec.play;
             }
           } catch (_) {}
-          if ((!mv || !mv.length) && ai && ai.pickFreeLead) {
-            try { mv = ai.pickFreeLead(st, seat, legals); } catch (_) {}
+          if (mv == null && !st.currentCombo) {
+            try {
+              if (search && search.pickFreeLeadHard) mv = search.pickFreeLeadHard(legals, st, seat);
+            } catch (_) {}
           }
-          if (!mv || !mv.length) {
-            const multi = legals.filter(p => p.length >= 2);
-            if (multi.length) {
-              multi.sort((a, b) => {
-                const ta = Math.max.apply(null, a.map(c => c.rank));
-                const tb = Math.max.apply(null, b.map(c => c.rank));
-                return ta - tb || a.length - b.length;
-              });
-              mv = multi[0];
-            } else {
-              mv = legals[0];
-            }
+          if (mv == null && st.currentCombo && search && typeof search.expertPolicy === 'function') {
+            try {
+              const dec = search.expertPolicy(st, seat);
+              if (dec && dec.pass) mv = null;
+              else if (dec && dec.play) mv = dec.play;
+            } catch (_) {}
           }
+          // Free-lead must open
+          if (mv == null && !st.currentCombo) {
+            mv = legals[0];
+            fallbackReason += '; last resort first legal free-lead';
+          }
+          // Combat still null after leaf → PASS (do not force cheapest beat)
         }
 
-        // Combat: do NOT silently substitute cheapest legal as "champion" move
-        if ((!mv || !mv.length) && st.currentCombo && !intentionalPass && !searchOk) {
-          show(
-            '<div class="text-left leading-snug text-[11px]">' +
-              '<div><strong>Hint unavailable</strong> — champion search did not complete.</div>' +
-              '<div class="mt-1 text-[#94a3b8]">Will not show cheapest legal as the AI move (that diverges from live BR). Tap Hint again.</div>' +
-              (searchErr ? '<div class="mt-1 text-[#f87171]">Error: ' + String(searchErr.message || searchErr) + '</div>' : '') +
-            '</div>'
-          );
-          return;
+        // Free-lead: getAIMove should never return null; if it did without throw, open somehow
+        if (mv == null && !st.currentCombo) {
+          fallback = true;
+          fallbackReason = fallbackReason || 'free-lead empty result; free-lead hard / first legal';
+          try {
+            if (search && search.pickFreeLeadHard) mv = search.pickFreeLeadHard(legals, st, seat);
+          } catch (_) {}
+          if (!mv || !mv.length) mv = legals[0];
         }
 
         const meta = {
-          path: searchOk ? 'search' : (fallback ? 'fallback' : 'unknown'),
+          path: searchOk ? 'search' : (fallback ? 'fallback' : (getAiCompleted ? 'getAIMove' : 'unknown')),
           fallback: fallback,
           fallbackReason: fallbackReason,
           seed: seed
         };
-        const reasons = explainHintWhy(st, seat, (mv && mv.length) ? mv : null, stats, meta);
+        // null mv + combat = PASS (from getAIMove or dual leaf)
+        const showPass = (mv == null || !mv.length) && !!st.currentCombo;
+        const reasons = explainHintWhy(st, seat, showPass ? null : mv, stats, meta);
         const whyHtml = reasons.map(r => '· ' + r).join('<br>');
         const pathBadge = searchOk
           ? '<span class="opacity-70">(live search / BR)</span>'
           : (fallback
-            ? '<span class="text-[#fbbf24]">(FALLBACK — not full BR)</span>'
-            : '<span class="opacity-70">(search)</span>');
+            ? '<span class="text-[#fbbf24]">(FALLBACK leaf — not full BR)</span>'
+            : '<span class="opacity-70">(getAIMove)</span>');
 
-        if (mv && mv.length) {
+        if (!showPass && mv && mv.length) {
           try {
             if (window.TienLenUI && window.TienLenUI.selectCardsByKeys) {
               window.TienLenUI.selectCardsByKeys(mv.map(c => c.rank * 4 + c.suit));
@@ -1755,7 +1779,7 @@
               '<div class="text-[11px] text-[#94a3b8]">' + whyHtml + '</div>' +
             '</div>'
           );
-        } else if (st.currentCombo) {
+        } else if (showPass) {
           show(
             '<div class="text-left leading-snug">' +
               '<div><strong>AI would:</strong> PASS ' + pathBadge + '</div>' +
@@ -1764,12 +1788,13 @@
             '</div>'
           );
         } else {
+          // Should be rare (free-lead always filled above)
           const last = legals[0];
           show(
             '<div class="text-left leading-snug">' +
               '<div><strong>AI would play:</strong> ' + formatHintPlay(last) +
               ' <span class="text-[#fbbf24]">(FALLBACK legal)</span></div>' +
-              '<div class="mt-1 text-[11px] text-[#94a3b8]"><strong>Why:</strong> free-lead must open; search unavailable after retries.</div>' +
+              '<div class="mt-1 text-[11px] text-[#94a3b8]"><strong>Why:</strong> free-lead must open.</div>' +
             '</div>'
           );
         }
