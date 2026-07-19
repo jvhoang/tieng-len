@@ -12,16 +12,22 @@
  * Hard mode: real search with time budget (browser ~0.8–1.5s).
  */
 
-const engine = (typeof require === 'function') ? require('./engine.js') : (window.TienLenEngine || {});
-const genomeMod = (typeof require === 'function')
-  ? require('./genome.js')
-  : (typeof window !== 'undefined' ? window.TienLenGenome : null);
-const searchMod = (typeof require === 'function')
-  ? require('./search.js')
-  : (typeof window !== 'undefined' ? window.TienLenSearch : null);
-const {
-  detectCombo, getLegalPlays, applyPlay, pass, cardCompare, cloneState: engineClone
-} = engine;
+// Browser-first binding: avoid Node `require` when window exists (broken module stubs).
+const engine = (typeof window !== 'undefined' && window.TienLenEngine)
+  ? window.TienLenEngine
+  : ((typeof require === 'function') ? require('./engine.js') : {});
+const genomeMod = (typeof window !== 'undefined' && window.TienLenGenome)
+  ? window.TienLenGenome
+  : ((typeof require === 'function') ? require('./genome.js') : null);
+const searchMod = (typeof window !== 'undefined' && window.TienLenSearch)
+  ? window.TienLenSearch
+  : ((typeof require === 'function') ? require('./search.js') : null);
+const detectCombo = engine.detectCombo;
+const getLegalPlays = engine.getLegalPlays;
+const applyPlay = engine.applyPlay;
+const pass = engine.pass;
+const cardCompare = engine.cardCompare;
+const engineClone = engine.cloneState;
 
 function cloneState(s) {
   return engineClone ? engineClone(s) : JSON.parse(JSON.stringify(s));
@@ -956,9 +962,9 @@ function getLowestLegalMove(state, myIdx) {
 }
 
 const AI_BUILD = {
-  id: "v1.0-sh-L2s275",
-  stamped: "2026-07-19T00:08:13.112Z",
-  label: "Freeze v1.0-sh-L2s275"
+  id: "v1.0-sh-L2s286",
+  stamped: "2026-07-19T07:08:55.471Z",
+  label: "L2s286 FL brdTerm 0.22 + mid-single freeLeadCandidates on p275"
 };
 
 const TienLenAI = {

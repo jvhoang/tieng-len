@@ -10,10 +10,19 @@
  * Pure JS, Node v10+ and browser. Depends on engine (+ optional AI helpers).
  */
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) {
+  // Prefer browser global when window is present (some hosts define a stub `module`
+  // that would otherwise take the Node branch and never set window.TienLenSearch).
+  var eng = null;
+  if (typeof window !== 'undefined') {
+    eng = root.TienLenEngine || (typeof window !== 'undefined' ? window.TienLenEngine : null);
+    root.TienLenSearch = factory(eng || {});
+    if (typeof module === 'object' && module.exports) {
+      try { module.exports = root.TienLenSearch; } catch (_) {}
+    }
+  } else if (typeof module === 'object' && module.exports) {
     module.exports = factory(require('./engine.js'));
   } else {
-    root.TienLenSearch = factory(root.TienLenEngine);
+    root.TienLenSearch = factory(root.TienLenEngine || {});
   }
 }(typeof self !== 'undefined' ? self : this, function (engine) {
 
@@ -1509,6 +1518,11 @@
         out.push(p);
         continue;
       }
+      // L2s286: mid singles into free-lead root when control held (BR must score trash-first)
+      if (p.length === 1 && p[0].rank <= 7 && info.hasControl && state.players[cp].hand.length >= 6) {
+        out.push(p);
+        continue;
+      }
       if (isTrashSinglePlay(p, info) && info.hasControl && state.players[cp].hand.length >= 7) {
         out.push(p);
         continue;
@@ -2140,7 +2154,7 @@
       try { if (act != null && typeof brdLogit === 'function') brdA = brdLogit(state, myIdx, act); } catch (eB) { brdA = 0; }
       // squash teacher logit contribution
       // L2s248: free-lead brdTerm 0.16 after winfilter BRD retrain on p_l2s243
-      var brdTerm = (freeLeadRoot ? 0.16 : 0.10) * (1 / (1 + Math.exp(-brdA)) - 0.5);
+      var brdTerm = (freeLeadRoot ? 0.22 : 0.11) // L2s286 stronger FL teacher term * (1 / (1 + Math.exp(-brdA)) - 0.5);
       var rateV = rate + VALUE_LAMBDA * (vAfter - vRoot) + brdTerm;
       // L2s249b: milder residual-trash soft prior (0253 near-miss +0.64 LB-0.57)
       if (act != null) {
