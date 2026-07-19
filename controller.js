@@ -334,6 +334,10 @@
                 (aiDifficulty === 'hard' || aiDifficulty === 'grandmaster');
               const isGM = aiDifficulty === 'grandmaster';
               const isHard = aiDifficulty === 'hard';
+              // Seed for determinize/BR reproducibility; Hint uses the same opts shape
+              // (buildProductAiOpts in index.html) so paths stay aligned.
+              const thinkSeed = ((Date.now() ^ (Math.random() * 1e9)) >>> 0) || 1;
+              try { window.__TIENLEN_LAST_AI_SEED = thinkSeed; } catch (_) {}
               choice = liveAI.getAIMove(state, cp, {
                 difficulty: aiDifficulty,
                 perfectInfo: usePerfect,
@@ -343,7 +347,8 @@
                 timeMs: usePerfect
                   ? (isGM ? 900 : 500)
                   : (isGM ? 700 : (isHard ? 500 : 350)),
-                bestResponse: isGM || isHard || usePerfect
+                bestResponse: isGM || isHard || usePerfect,
+                seed: thinkSeed
               });
               if (liveAI.getLastSearchStats) {
                 try { aiMeta.stats = liveAI.getLastSearchStats(); } catch (_) {}
