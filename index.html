@@ -922,7 +922,7 @@
   -->
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <script>
-    window.TIENLEN_SITE_BUILD = '202607191500';
+    window.TIENLEN_SITE_BUILD = '202607191620';
     // Inline fallback so title always has a version even if scripts fail to load
     window.TIENLEN_AI_BUILD = window.TIENLEN_AI_BUILD || {
       id: 'v1.0-sh-L2s275',
@@ -1653,13 +1653,21 @@
           return;
         }
 
-        const ai = window.TienLenAI;
-        const search = window.TienLenSearch;
+        // Resolve live modules at click time (re-read globals — avoid stale captures).
+        function resolveAi() {
+          return (typeof window !== 'undefined' && window.TienLenAI) ? window.TienLenAI : null;
+        }
+        function resolveSearch() {
+          return (typeof window !== 'undefined' && window.TienLenSearch) ? window.TienLenSearch : null;
+        }
+
+        let ai = resolveAi();
+        let search = resolveSearch();
         let diff = (c && c.getAIDifficulty) ? c.getAIDifficulty() : 'grandmaster';
         if (diff === 'easy') diff = 'medium'; // hints should still be thoughtful
 
         const hand = st.players[seat].hand;
-        const engLocal = eng;
+        const engLocal = (typeof window !== 'undefined' && window.TienLenEngine) ? window.TienLenEngine : eng;
         const legalFn = engLocal.getLegalPlays;
         const legals = legalFn
           ? legalFn(hand, st.currentCombo, st.players[seat].passed, st.isFirstLead, st.firstLeadCard)
@@ -1670,12 +1678,13 @@
           return;
         }
 
-        // Same path as controller AI opponent (hidden search/BR).
-        // ALWAYS surface a decision: play cards or PASS. Never "Hint unavailable".
+        // Same champion decision path as live AI: prefer getAIMove; if wrapper missing,
+        // call TienLenSearch.searchMove directly (what getAIMove uses under the hood).
         let mv = null;
         let stats = null;
         let searchErr = null;
         let getAiCompleted = false;
+        let usedDirectSearch = false;
         const seed = ((Date.now() ^ (Math.random() * 1e9)) >>> 0) || 1;
         const aiOpts = buildProductAiOpts(diff, seed, true /* forHint: trial budget */);
         try {
@@ -1683,20 +1692,47 @@
           window.__TIENLEN_LAST_HINT_OPTS = aiOpts;
         } catch (_) {}
 
-        function runHintSearch() {
-          if (!ai || typeof ai.getAIMove !== 'function') {
-            throw new Error('TienLenAI.getAIMove missing — scripts may not have loaded');
+        function runChampionMove() {
+          ai = resolveAi();
+          search = resolveSearch();
+          // 1) Full product AI (same as controller opponent)
+          if (ai && typeof ai.getAIMove === 'function') {
+            const out = ai.getAIMove(st, seat, aiOpts);
+            let stt = null;
+            if (ai.getLastSearchStats) {
+              try { stt = ai.getLastSearchStats(); } catch (_) { stt = null; }
+            }
+            return { mv: normalizeAiMove(out), stats: stt, via: 'getAIMove' };
           }
-          const out = ai.getAIMove(st, seat, aiOpts);
-          let stt = null;
-          if (ai.getLastSearchStats) {
-            try { stt = ai.getLastSearchStats(); } catch (_) { stt = null; }
+          // 2) Direct search core (champion BR) — identical engine when AI wrapper failed to bind
+          if (search && typeof search.searchMove === 'function') {
+            usedDirectSearch = true;
+            const isGM = diff === 'grandmaster';
+            const isHard = diff === 'hard';
+            const result = search.searchMove(st, seat, {
+              difficulty: diff,
+              inBrowser: true,
+              perfectInfo: false,
+              hiddenInfo: true,
+              bestResponse: isGM || isHard,
+              timeMs: 0,
+              brTrials: isGM ? 20 : (isHard ? 14 : 10),
+              iterations: isGM ? 48 : 32,
+              seed: seed,
+              maxBranch: 16
+            });
+            const play = result && result.play != null ? result.play : null;
+            return {
+              mv: normalizeAiMove(play),
+              stats: (result && result.stats) || null,
+              via: 'searchMove'
+            };
           }
-          return { mv: normalizeAiMove(out), stats: stt, raw: out };
+          throw new Error('Neither TienLenAI.getAIMove nor TienLenSearch.searchMove is available');
         }
 
         function leafFallback(reason) {
-          let leaf = null;
+          search = resolveSearch();
           try {
             if (search && typeof search.dualRolloutPolicy === 'function') {
               const dec = search.dualRolloutPolicy(st, seat);
@@ -1712,34 +1748,45 @@
             }
           } catch (_) {}
           if (!st.currentCombo) {
+            let leaf = null;
             try {
               if (search && search.pickFreeLeadHard) leaf = search.pickFreeLeadHard(legals, st, seat);
             } catch (_) {}
             if (!leaf || !leaf.length) leaf = legals[0];
             return { mv: leaf, reason: reason + ' → free-lead legal' };
           }
-          // Combat: prefer structure-safe dual leaf over min-legal; if nothing, PASS
           return { mv: null, reason: reason + ' → PASS' };
         }
 
-        try {
-          const res = runHintSearch();
-          getAiCompleted = true;
-          mv = res.mv;
-          stats = res.stats;
-        } catch (eHint) {
-          searchErr = eHint;
-          getAiCompleted = false;
-          try { console.warn('[TiengLen] hint search failed', eHint); } catch (_) {}
+        // Brief retry if scripts still binding (rare race after navigation)
+        function tryRun(attempt) {
+          try {
+            const res = runChampionMove();
+            getAiCompleted = true;
+            mv = res.mv;
+            stats = res.stats;
+            if (res.via === 'searchMove') usedDirectSearch = true;
+            return true;
+          } catch (eHint) {
+            searchErr = eHint;
+            getAiCompleted = false;
+            if (attempt < 2) {
+              // one microtask-style retry via sync re-read of globals only
+              return tryRun(attempt + 1);
+            }
+            try { console.warn('[TiengLen] hint champion move failed', eHint); } catch (_) {}
+            return false;
+          }
         }
+        tryRun(0);
 
         let fallback = false;
         let fallbackReason = '';
 
         if (!getAiCompleted) {
           const fb = leafFallback(searchErr
-            ? ('getAIMove error: ' + String(searchErr.message || searchErr))
-            : 'getAIMove missing result');
+            ? String(searchErr.message || searchErr)
+            : 'champion API unavailable');
           fallback = true;
           fallbackReason = fb.reason;
           mv = fb.mv;
@@ -1758,20 +1805,22 @@
           path: searchOk ? 'search' : (fallback ? 'fallback' : (getAiCompleted ? 'getAIMove' : 'unknown')),
           fallback: fallback,
           fallbackReason: fallbackReason,
-          seed: seed
+          seed: seed,
+          usedDirectSearch: usedDirectSearch
         };
-        // null + combat = PASS (getAIMove plan-pass or leaf PASS)
         const showPass = (mv == null || !mv.length) && !!st.currentCombo;
         const reasons = explainHintWhy(st, seat, showPass ? null : mv, stats, meta);
-        if (searchErr && !fallback) {
-          reasons.push('note: ' + String(searchErr.message || searchErr));
+        if (usedDirectSearch && !fallback) {
+          reasons.unshift('via TienLenSearch.searchMove (same core as live AI search)');
         }
         const whyHtml = reasons.map(r => '· ' + r).join('<br>');
         const pathBadge = searchOk
           ? '<span class="opacity-70">(live search / BR)</span>'
           : (fallback
             ? '<span class="text-[#fbbf24]">(FALLBACK leaf)</span>'
-            : '<span class="opacity-70">(getAIMove)</span>');
+            : (usedDirectSearch
+              ? '<span class="opacity-70">(searchMove)</span>'
+              : '<span class="opacity-70">(getAIMove)</span>'));
 
         if (!showPass && mv && mv.length) {
           try {
@@ -1796,7 +1845,6 @@
             '</div>'
           );
         } else {
-          // Absolute last resort — should almost never hit
           const last = legals[0];
           show(
             '<div class="text-left leading-snug">' +
