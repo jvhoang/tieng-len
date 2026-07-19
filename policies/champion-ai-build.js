@@ -1,1 +1,1 @@
-(function(r){var B={id:"v1.0-sh-L2s275",stamped:"2026-07-19T00:08:13.112Z",label:"Freeze v1.0-sh-L2s275"};r.TIENLEN_AI_BUILD=B;if(typeof module==="object")module.exports=B;}(typeof window!=="undefined"?window:global));
+(function(r){var B={id:"v1.0-sh-L2s299",stamped:"2026-07-19T17:05:18.803Z",label:"L2s299 residual-zero multi extra trials + soft (no branch reorder)"};r.TIENLEN_AI_BUILD=B;if(typeof module==="object")module.exports=B;}(typeof window!=="undefined"?window:global));

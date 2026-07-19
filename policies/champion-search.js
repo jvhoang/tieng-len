@@ -10,10 +10,16 @@
  * Pure JS, Node v10+ and browser. Depends on engine (+ optional AI helpers).
  */
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) {
+  // Browser-first: some hosts define stub `module` which would skip window bind.
+  if (typeof window !== 'undefined') {
+    root.TienLenSearch = factory(root.TienLenEngine || {});
+    if (typeof module === 'object' && module.exports) {
+      try { module.exports = root.TienLenSearch; } catch (_) {}
+    }
+  } else if (typeof module === 'object' && module.exports) {
     module.exports = factory(require('../engine.js'));
   } else {
-    root.TienLenSearch = factory(root.TienLenEngine);
+    root.TienLenSearch = factory(root.TienLenEngine || {});
   }
 }(typeof self !== 'undefined' ? self : this, function (engine) {
 
@@ -895,10 +901,11 @@
             var vv = valueEval(stA, myIdx);
             vv -= structureBreakCost(hand, pool[bi]) * 0.02;
             if (typeof brdLogit === 'function') vv += 0.16 * brdLogit(state, myIdx, pool[bi]);
-            // L2s275 mild FL multi residual
+            // L2s290: stronger FL multi residual leaf (0283 family; CB-PLAN dual-null)
             if (typeof residualOrphans === 'function') {
-              vv -= 0.04 * Math.min(4, residualOrphans(hand, pool[bi]));
-              vv += 0.008 * Math.min(8, pool[bi].length);
+              vv -= 0.08 * Math.min(4, residualOrphans(hand, pool[bi]));
+              vv += 0.012 * Math.min(8, pool[bi].length);
+              if (pool[bi].length >= 3 && residualOrphans(hand, pool[bi]) === 0) vv += 0.04;
             }
             if (vv > bestV) { bestV = vv; bestP = pool[bi]; }
           } catch (eV2) { /* skip */ }
@@ -1936,13 +1943,23 @@
         if (seenFl[playSig(px)]) continue;
         if (px.length >= 2 || (px.length === 1 && px[0].rank <= 7)) extrasFl.push(px);
       }
-      if (typeof brdLogit === 'function' && extrasFl.length > 1) {
+      // L2s290: residual-first diversity extras (author FL residual / non-expert lines)
+      if (extrasFl.length > 1) {
         extrasFl.sort(function (a, b) {
-          return brdLogit(state, myIdx, b) - brdLogit(state, myIdx, a);
+          if (typeof residualOrphans === 'function') {
+            var oa = residualOrphans(hand, a);
+            var ob = residualOrphans(hand, b);
+            if (oa !== ob) return oa - ob;
+          }
+          if (typeof brdLogit === 'function') {
+            var d = brdLogit(state, myIdx, b) - brdLogit(state, myIdx, a);
+            if (Math.abs(d) > 1e-9) return d;
+          }
+          return b.length - a.length;
         });
       }
-      for (sfi = 0; sfi < Math.min(4, extrasFl.length); sfi++) leg.push(extrasFl[sfi]);
-      if (maxBranch < 20) maxBranch = 20;
+      for (sfi = 0; sfi < Math.min(6, extrasFl.length); sfi++) leg.push(extrasFl[sfi]);
+      if (maxBranch < 22) maxBranch = 22;
     } else {
       // Include structure-safe answers (not only pure cheap) so gold combat roots exist
       var ch = cheapLegals(leg);
@@ -2108,14 +2125,27 @@
         else s = applyPlayFast(root, myIdx, act);
         s.isFirstLead = false;
         var steps = 0;
-        // Free-lead + combat L2s211: mix strong/v21 opp and expert leaf (was combat-fixed).
-        var freeOppStrong = (t % 2 === 0);
-        var selfPolT = (t % 3 === 0 && selfPol !== expertPolicy) ? expertPolicy : selfPol;
+        // L2s294/295: 3-way opp mix (strong / v21 / dualRollout) for rate diversity —
+        // free-lead (0304 ACCEPT) + combat parity (L2s295 consecutive climb).
+        // Self leaf less expert-pinned on free-lead (1/5); combat 1/4.
+        var selfPolT = freeLeadRoot
+          ? ((t % 5 === 0 && selfPol !== expertPolicy) ? expertPolicy : selfPol)
+          : ((t % 4 === 0 && selfPol !== expertPolicy) ? expertPolicy : selfPol);
         while (!s.roundOver && steps < 200) {
           var cp = s.currentPlayer;
-          var oppPol = freeOppStrong ? opponentPolicyStrong(s, cp) : opponentPolicyV21(s, cp);
-          var dec = (cp === myIdx) ? selfPolT(s, cp) : oppPol;
-          s = applyDecision(s, cp, dec);
+          var oppDec;
+          if (cp === myIdx) {
+            oppDec = selfPolT(s, cp);
+          } else {
+            var om = t % 3;
+            if (om === 0) oppDec = opponentPolicyStrong(s, cp);
+            else if (om === 1) oppDec = opponentPolicyV21(s, cp);
+            else {
+              try { oppDec = dualRolloutPolicy(s, cp); }
+              catch (eOm) { oppDec = opponentPolicyV21(s, cp); }
+            }
+          }
+          s = applyDecision(s, cp, oppDec);
           s.isFirstLead = false;
           steps++;
         }
@@ -2126,7 +2156,8 @@
     for (var ai = 0; ai < actions.length; ai++) {
       if (timeMs > 0 && (Date.now() - t0) >= timeMs) break;
       var act = actions[ai];
-      var nTry = freeLeadRoot ? Math.max(6, Math.floor(trials * 0.55)) : trials;
+      // L2s290: free-lead full scout budget (was 0.55× — under-sampled root rates)
+      var nTry = freeLeadRoot ? Math.max(trials, Math.floor(trials * 0.95)) : trials;
       var rate = runBrTrials(act, nTry);
       // Value blend: prefer actions that improve TRAIN linear V (general features)
       var vRoot = valueEval(state, myIdx);
@@ -2148,8 +2179,10 @@
           var orphans = residualOrphans(hand, act);
           var sbcRt = structureBreakCost(hand, act);
           if (freeLeadRoot) {
-            rateV -= 0.030 * Math.min(3, orphans);
-            if (act.length >= 3 && act.length <= 5 && orphans >= 2) rateV -= 0.03;
+            // L2s290/299: FL residual soft + residual-zero multi bonus (extra trials above)
+            rateV -= 0.040 * Math.min(3, orphans);
+            if (act.length >= 3 && act.length <= 5 && orphans >= 2) rateV -= 0.04;
+            if (act.length >= 2 && orphans === 0) rateV += 0.035;
           } else {
             rateV -= 0.02 * Math.min(3, orphans);
             if (sbcRt >= 4 && orphans >= 1) rateV -= 0.03;
@@ -2189,17 +2222,18 @@
     // Progressive deep refine: free-lead top-3 (0165) + combat top-2 (L2s211)
     if (details.length >= 2 && trials >= 10) {
       details.sort(function (a, b) { return b.rateV - a.rateV || b.rate - a.rate || a.sbc - b.sbc; });
+      // L2s290: free-lead deeper top-4 refine (quality over soft residual tips)
       var deepN2 = freeLeadRoot
-        ? Math.max(10, Math.floor(trials * 0.80))
+        ? Math.max(14, Math.floor(trials * 1.05))
         : Math.max(8, Math.floor(trials * 0.70));
-      var topK2 = freeLeadRoot ? Math.min(3, details.length) : Math.min(2, details.length);
+      var topK2 = freeLeadRoot ? Math.min(4, details.length) : Math.min(2, details.length);
       for (var dj = 0; dj < topK2; dj++) {
         if (timeMs > 0 && (Date.now() - t0) >= timeMs) break;
         var scoutRate = details[dj].rate;
         var scoutExtras = details[dj].rateV - scoutRate;
         var deepRate2 = runBrTrials(details[dj].act, deepN2);
         var blendR = freeLeadRoot
-          ? (0.35 * scoutRate + 0.65 * deepRate2)
+          ? (0.28 * scoutRate + 0.72 * deepRate2)
           : (0.40 * scoutRate + 0.60 * deepRate2);
         details[dj].rate = blendR;
         details[dj].rateV = blendR + scoutExtras;
