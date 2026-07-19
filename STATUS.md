@@ -1,53 +1,47 @@
 # STATUS — Superhuman Tiến Lên (hybrid PAIR_STEP + CERT)
 
-**Updated:** 2026-07-19T05:18Z  
+**Updated:** 2026-07-19T21:54Z  
 **W_max:** 9  
-**Dual champion / live:** **`p_l2s275`** (PAIR **0283** ACCEPT)  
+**Dual champion / live:** **`p_l2s299`** (PAIR **0309** ACCEPT)  
 **Ladder:** L1 ✅ · **L2 OPEN (consecutive streak 1/3)** · CERT never  
 
-## GitHub product ship (L2s275)
-- **Live dual champion:** `p_l2s275` (PAIR **0283** ACCEPT: residual dualRollout leaf + FL multi residual soft)
+## GitHub product ship (L2s299)
+- **Live dual champion:** `p_l2s299` (PAIR **0309** ACCEPT — residual-zero multi soft; streak **1**/3)
 - Product: `ai.js` / `search.js` / `ai-build.js` + `policies/champion-*`
-- Absolute WR ~0.61–0.65 vs v60 — **not** CERT ship (≥0.90 open); L2 streak **1**/3
+- Abs WR ~0.65–0.67 vs v60 — **not** CERT; L2 not claimed
+- Author `RECOMMEND-COMBAT-PLAN-EQUITY-NEXTLEVEL.md` live in gold (plan equity next)
 
-## Honesty (do not gaslight)
+## Honesty (skeptic-aligned — NEVER claim L2/ship)
 | Claim | Truth |
 |-------|--------|
-| Dual champ | **`p_l2s275`** (goal-prompt `p_l2s86` is STALE) |
-| L2 / streak 3 | **NO** — consecutive streak **1** (0283 only) |
-| CERT ≥0.90 | **Never attempted** |
-| Absolute WR vs v60 | **~0.61–0.65** depending on S_t (0290 wrPrev=0.654; independent audit 0.625 n=400) — **not ship** |
-| Gold green | Safety only: expert 74/0 · G7 17/0 · K6 green |
+| Dual champ | **`p_l2s299`** — goal CS1 `p_l2s86` **STALE** |
+| L2 | **OPEN** — consecutive streak **1** (only 0309) |
+| EMA ≥0.60 | **No** — abs WR **~0.65–0.67** |
+| CERT ≥0.90 | **Never run** |
+| GR | **27 fixed / 1 deferred / 0 pending** (not all-pending) |
+| Gold | 118 clean · G7 17/0 · expert 74/0 · K6 green |
+| Gates | `post-champ-p_l2s299-gates-20260719T1931Z/` |
 
-## Held accepts
-| step | PREV→NEW | Δ / LB | n | leap |
-|------|----------|--------|---|------|
-| 0266 | 255→260 | +1.30 / +0.25 | 2000 | residualOrphans ≥3-run |
-| 0267 | 260→261 | +2.10 / +1.10 | 2000 | residual valueFeatures + retrain |
-| **0283** | **261→275** | **+1.35 / +0.70** | **2000** | **mild residual dualRollout leaf 2.6 + FL multi residual + FL soft 0.030** |
+## Dual-transfer accepts
+| step | Δ/LB | leap |
+|------|------|------|
+| 0299 | +1.05/+0.25 | FL full-scout |
+| 0304 | +0.73/+0.23 n=3000 | FL 3-way opp |
+| 0305 | +1.75/+0.75 | combat+FL 3-way opp |
+| **0309** | **+0.30/+0.05 thin** | residual-zero multi soft |
 
-## Post-accept 0283
-K6 green · G7 17/0 · expert 74/0 · gold 117 clean · McNemar p≈0.001
+## Rejects 0310–0316 (plateau)
+Identity / reverse on deep refine, brdTerm, residual branch pin, 4-way expert opp, **winfilter BRD α=0.30 reverse −0.8pp (0316)**.
 
-## Consecutive #2 attempts after 0283 (all reject → streak stays 1)
-| step | idea | Δ / LB | result |
-|------|------|--------|--------|
-| 0284–0289 | residual tips / value / BRD / FL diversity | dual-null | no accept |
-| 0290 | λ=0.31 + deeper FL blend | +0.15 / −0.10 | dual-null (abs wrPrev **0.654**) |
-| 0291 | combat residual soft+leaf | −0.35 / −1.10 | reverse |
-
-## Absolute
-- Independent fair dual p_l2s261 class: **0.625** n=400 Wilson LB 0.577  
-- Recent PAIR S_t champion WR often **0.62–0.65** — still far from CERT 0.90  
-
-## Gold living
-fileCount **117** clean · G2 refreshed · residualOrphans URGENT live  
+## Consecutive streak for L2
+```
+0309 ACCEPT → streak 1
+Need two more consecutive accepts without reject.
+```
 
 ## Next
-1. **2 more consecutive PAIR accepts** vs `p_l2s275` → real L2 + milestone commit/tag.  
-2. Prefer **architecture leaps with real McNemar discords** (author WR90 self-play/search); residual softs dual-null post-0283.  
-3. CERT only when absolute WR climbs toward 0.90.  
-4. **No ship claim** at mid-60s.
+Self-play outer loop / nested free-lead architecture with large McNemar discords.  
+Stop: BRD re-blend, brdTerm ±0.03, tip-only freezes.
 
-## Live
-**p_l2s275** · streak **1** · L2 OPEN · **no ship claim**
+## Forbidden
+Claim L2 at streak 1 · ship mid-60s · CERT residual-pack · K1–K5 regression  
