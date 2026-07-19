@@ -321,17 +321,34 @@
               if (liveAI.AI_BUILD) {
                 try { aiMeta.build = liveAI.AI_BUILD; } catch (_) {}
               }
-              // Hard/grandmaster: use perfect-info exploit when 2p (stronger + logs modes).
-              // Medium/easy stay hidden-info for softer play.
-              const usePerfect = state.players.length === 2 &&
+              // Superhuman goal fair path: rated GM uses HIDDEN info (no perfectInfo peek).
+              // Opt-in perfectInfo only via opts.allowPerfectInfo / env TIENLEN_PERFECT_AI=1.
+              //
+              // IMPORTANT: Do NOT force mode:'expert'+iterations:0 for product GM.
+              // That path never runs search/BR, so the AI opponent diverges from Hint
+              // (which uses getAIMove with search) and rarely spends 2s for control.
+              // Align opponent with the same hidden search/BR path as hints + duals.
+              const allowPerfect = (typeof process !== 'undefined' && process.env && process.env.TIENLEN_PERFECT_AI === '1') ||
+                (opts && opts.allowPerfectInfo === true);
+              const usePerfect = allowPerfect && state.players.length === 2 &&
                 (aiDifficulty === 'hard' || aiDifficulty === 'grandmaster');
+              const isGM = aiDifficulty === 'grandmaster';
+              const isHard = aiDifficulty === 'hard';
+              // Seed for determinize/BR reproducibility; Hint uses the same opts shape
+              // (buildProductAiOpts in index.html) so paths stay aligned.
+              const thinkSeed = ((Date.now() ^ (Math.random() * 1e9)) >>> 0) || 1;
+              try { window.__TIENLEN_LAST_AI_SEED = thinkSeed; } catch (_) {}
               choice = liveAI.getAIMove(state, cp, {
                 difficulty: aiDifficulty,
                 perfectInfo: usePerfect,
                 hiddenInfo: !usePerfect,
                 useSearch: true,
-                timeMs: usePerfect ? (aiDifficulty === 'grandmaster' ? 900 : 500) : 400,
-                bestResponse: true
+                // Browser time budgets (hidden BR is heavier than pure expert leaf)
+                timeMs: usePerfect
+                  ? (isGM ? 900 : 500)
+                  : (isGM ? 700 : (isHard ? 500 : 350)),
+                bestResponse: isGM || isHard || usePerfect,
+                seed: thinkSeed
               });
               if (liveAI.getLastSearchStats) {
                 try { aiMeta.stats = liveAI.getLastSearchStats(); } catch (_) {}
@@ -408,8 +425,11 @@
             aiMeta.fallbackReason = 'null-free-lead';
           }
 
-          // SAFETY: if any cheap (non-2, non-bomb) legal exists, never pass
-          if (choice == null && state.currentCombo) {
+          // SAFETY: cheap-force ONLY when AI errored or never produced a search decision.
+          // Kill-point (DEEP-DIVE §2c): forcing min-beat over intentional PASS destroys
+          // gold pass plans (0501/0510/0547/0550) and structure-preserving play.
+          // Intentional null from GM/hard search = strategic pass; do not rewrite.
+          if (choice == null && state.currentCombo && (aiMeta.error || !aiMeta.stats)) {
             const cheap = legals.filter(function (pl) {
               const hasTwo = pl.some(function (c) { return c.rank === 12; });
               const com = engine.detectCombo(pl);
@@ -425,7 +445,7 @@
               });
               choice = cheap[0];
               aiMeta.fallbackUsed = true;
-              aiMeta.fallbackReason = 'cheap-force';
+              aiMeta.fallbackReason = 'cheap-force-error-only';
             }
           }
 

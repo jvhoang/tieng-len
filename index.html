@@ -922,12 +922,12 @@
   -->
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <script>
-    window.TIENLEN_SITE_BUILD = '202607140935';
+    window.TIENLEN_SITE_BUILD = '202607191330';
     // Inline fallback so title always has a version even if scripts fail to load
     window.TIENLEN_AI_BUILD = window.TIENLEN_AI_BUILD || {
-      id: 'v9.5',
-      stamped: '2026-07-14T09:35:31Z',
-      label: 'Grandmaster v9.5 (fair dual sbc0)'
+      id: 'v1.0-sh-L2s275',
+      stamped: '2026-07-19T00:08:13.112Z',
+      label: 'Freeze v1.0-sh-L2s275'
     };
   </script>
   <script>
@@ -1454,11 +1454,85 @@
         return n + '-card combo';
       }
       /**
-       * Explain why the AI chose this move (hidden-info policy — no peeking at opp hands).
-       * Public info only: opp hand counts, current combo, own cards played/kept.
+       * Same getAIMove options as controller AI opponent (controller.js ~337–347).
+       * Shared so Hint = what the live AI would play in this seat (hidden, no peek).
        */
-      function explainHintWhy(st, seat, mv, stats) {
+      function buildProductAiOpts(diff, seed, forHint) {
+        const d = diff || 'grandmaster';
+        const isGM = d === 'grandmaster';
+        const isHard = d === 'hard';
+        // Hint: prefer trial budget over wall-clock so mobile tabs don't abort mid-BR
+        // with empty results (was causing intermittent "unavailable" UX).
+        if (forHint) {
+          return {
+            difficulty: d,
+            perfectInfo: false,
+            hiddenInfo: true,
+            useSearch: true,
+            timeMs: 0,
+            brTrials: isGM ? 20 : (isHard ? 14 : 10),
+            iterations: isGM ? 48 : 32,
+            bestResponse: isGM || isHard,
+            seed: seed != null ? seed : ((Date.now() ^ (Math.random() * 1e9)) >>> 0) || 1
+          };
+        }
+        return {
+          difficulty: d,
+          perfectInfo: false,
+          hiddenInfo: true,
+          useSearch: true,
+          // Match controller browser budgets (hidden BR)
+          timeMs: isGM ? 700 : (isHard ? 500 : 350),
+          bestResponse: isGM || isHard,
+          seed: seed != null ? seed : ((Date.now() ^ (Math.random() * 1e9)) >>> 0) || 1
+        };
+      }
+
+      function isSearchStatsUsable(stats) {
+        if (!stats) return false;
+        if (stats.error) return false;
+        // Prefer mode, but also accept top/avg from partial BR results
+        if (stats.mode) {
+          const m = String(stats.mode);
+          if (m === 'none' || m === 'br-none') return false;
+          return true;
+        }
+        if (stats.top && stats.top.length) return true;
+        if (stats.avg != null && !isNaN(Number(stats.avg))) return true;
+        return false;
+      }
+
+      /** Normalize getAIMove return to cards[] | null (PASS). */
+      function normalizeAiMove(out) {
+        if (out == null) return null;
+        if (Array.isArray(out)) return out.length ? out : null;
+        if (out.play && Array.isArray(out.play)) return out.play.length ? out.play : null;
+        if (out.cards && Array.isArray(out.cards)) return out.cards.length ? out.cards : null;
+        if (out.pass) return null;
+        return null;
+      }
+
+      function formatStatsPlayLabel(sig) {
+        if (sig == null || sig === 'PASS') return 'PASS';
+        const ranks = eng.RANKS || [];
+        const ids = String(sig).split(',').map(Number);
+        if (!ids.length || isNaN(ids[0])) return String(sig);
+        return ids.map(function (id) {
+          const r = (id / 4) | 0;
+          const s = id % 4;
+          const rn = ranks[r] != null ? ranks[r] : String(r);
+          const sn = (eng.SUITS && eng.SUITS[s]) || ['♠', '♣', '♦', '♥'][s] || '';
+          return rn + sn;
+        }).join(' ');
+      }
+
+      /**
+       * Explain why the AI chose this move from real search stats when available.
+       * Do NOT invent "cheapest legal beat" unless path is explicitly a min-legal fallback.
+       */
+      function explainHintWhy(st, seat, mv, stats, meta) {
         const reasons = [];
+        meta = meta || {};
         const cur = st.currentCombo;
         const hand = (st.players[seat] && st.players[seat].hand) || [];
         const handLen = hand.length;
@@ -1466,67 +1540,73 @@
           .map((p, i) => (i === seat || !p || p.finished) ? null : (p.hand ? p.hand.length : 0))
           .filter(x => x != null);
         const oppMin = oppCounts.length ? Math.min.apply(null, oppCounts) : 13;
+        const path = meta.path || (isSearchStatsUsable(stats) ? 'search' : 'unknown');
+
+        if (meta.fallback) {
+          reasons.push('⚠ FALLBACK (not full champion search) — ' + (meta.fallbackReason || 'search unavailable'));
+        }
 
         if (mv == null) {
-          reasons.push('PASS — save high/control cards rather than beat this cheaply');
-          if (cur && cur.length === 1 && cur[0].rank >= 11) {
-            reasons.push('current lead is high (A/2 territory); holding out often wins endgame');
+          if (isSearchStatsUsable(stats)) {
+            reasons.push('PASS chosen by search (mode: ' + stats.mode + ') under hidden-info determinization');
+            if (stats.top && stats.top.length) {
+              const t0 = stats.top[0];
+              if (t0 && (t0.sig === 'PASS' || t0.sig == null) && t0.rateV != null) {
+                reasons.push('PASS rateV≈' + Number(t0.rateV).toFixed(3) +
+                  (t0.rate != null ? ' (win-rate ' + Number(t0.rate).toFixed(2) + ')' : ''));
+              }
+              const alt = stats.top.find(function (t) { return t && t.sig && t.sig !== 'PASS'; });
+              if (alt && alt.rateV != null) {
+                reasons.push('best beat considered: ' + formatStatsPlayLabel(alt.sig) +
+                  ' rateV≈' + Number(alt.rateV).toFixed(3));
+              }
+            }
+          } else {
+            reasons.push('PASS — no champion search stats; treat as intentional pass only if search completed');
           }
-          reasons.push('AI did not peek at opponent hole cards — same hidden-info policy it uses vs you');
+          reasons.push('hidden-info: no peek at opponent hole cards');
           return reasons;
         }
 
         const shape = describeComboShape(mv);
         const top = mv.reduce((m, c) => Math.max(m, c.rank), -1);
         const topLabel = (eng.RANKS || [])[top] || '?';
-        const isExpensive = mv.some(c => c.rank >= 11); // A or 2
-        const hasTwo = mv.some(c => c.rank === 12);
 
-        if (!cur) {
-          // Free lead
-          if (mv.length === handLen) {
-            reasons.push('free-lead go-out — empty the hand in one play');
-          } else if (mv.length >= 2) {
-            reasons.push('free-lead ' + shape + ' (top ' + topLabel + ') — multi-card open keeps structure and sheds volume');
-            if (top <= 8) reasons.push('low multi preferred: dump mid cards without burning A/2 control');
-          } else if (mv.length === 1) {
-            if (top <= 6) {
-              reasons.push('free-lead trash single ' + topLabel + ' — no safe multi; shed low deadwood');
-            } else if (top >= 10) {
-              reasons.push('free-lead high single ' + topLabel + ' — often force control when multi is unavailable');
-            } else {
-              reasons.push('free-lead single ' + topLabel);
-            }
+        // Prefer real search instrumentation over narrative templates
+        if (isSearchStatsUsable(stats)) {
+          reasons.push('same path as live AI opponent: getAIMove + search (hidden-info, no peek)');
+          reasons.push('search mode: ' + stats.mode +
+            (stats.perfectInfo ? ' (perfect-info)' : ' · hidden det.'));
+          if (stats.top && stats.top.length) {
+            const topN = stats.top.slice(0, 3).map(function (t) {
+              const lab = formatStatsPlayLabel(t.sig);
+              const rv = t.rateV != null ? Number(t.rateV).toFixed(3) : '?';
+              const r = t.rate != null ? Number(t.rate).toFixed(2) : '?';
+              return lab + ' rateV=' + rv + ' (r=' + r + ')';
+            });
+            reasons.push('BR ranking: ' + topN.join(' · '));
+          } else if (stats.avg != null && !isNaN(Number(stats.avg))) {
+            reasons.push('search score≈' + Number(stats.avg).toFixed(2));
           }
-          if (oppMin === 1) {
-            reasons.push('opponent has 1 card — avoid gifting a low beatable single if possible');
+          if (stats.trials != null) reasons.push('BR trials budget≈' + stats.trials);
+          if (stats.determinizations) {
+            reasons.push(stats.determinizations + ' opponent-hand samples (no peek)');
           }
+          if (meta.seed != null) reasons.push('seed ' + meta.seed + ' (reproducible with same seed)');
+          reasons.push('chose ' + shape + ' (top ' + topLabel + ') as best under rateV / search — not a separate min-beat leaf');
+        } else if (path === 'fallback' || meta.fallback) {
+          reasons.push('chose ' + shape + ' (top ' + topLabel + ') via labeled fallback only');
         } else {
-          // Combat
-          if (mv.length === handLen) {
-            reasons.push('beat and go out — exact empty');
-          } else if (hasTwo) {
-            reasons.push('use 2 only when needed to seize the trick or deny opp go-out');
-          } else if (isExpensive) {
-            reasons.push('spend ' + topLabel + ' carefully to take control of the trick');
-          } else {
-            reasons.push('cheapest legal beat with ' + shape + ' (top ' + topLabel + ') — conserve bombs/A/2');
-          }
-          if (oppMin <= 2) {
-            reasons.push('short opponent (' + oppMin + ' card' + (oppMin === 1 ? '' : 's') + ') — contest rather than soft-pass when cheap');
-          }
+          reasons.push('chose ' + shape + ' (top ' + topLabel + ') — search stats missing; may not match full BR');
         }
 
-        if (stats) {
-          if (stats.mode) reasons.push('search mode: ' + stats.mode + (stats.perfectInfo ? ' (would be perfect-info)' : ' · hidden-info det.'));
-          if (stats.avg != null && !isNaN(Number(stats.avg))) {
-            reasons.push('approx EV ' + Number(stats.avg).toFixed(2) + ' under sampled opponent hands');
-          }
-          if (stats.determinizations) {
-            reasons.push(stats.determinizations + ' opponent-hand samples (no peek at real hole cards)');
-          }
-        } else {
-          reasons.push('policy / expert path (hidden-info) — no peeking at opponent hands');
+        if (!cur && mv.length === handLen) {
+          reasons.push('free-lead go-out — empty the hand in one play');
+        } else if (cur && mv.length === handLen) {
+          reasons.push('beat and go out — exact empty');
+        }
+        if (oppMin <= 2 && cur) {
+          reasons.push('short opponent (' + oppMin + ' card' + (oppMin === 1 ? '' : 's') + ')');
         }
         if (handLen - mv.length <= 2 && handLen > mv.length) {
           reasons.push('leaves ' + (handLen - mv.length) + ' card(s) — near endgame shape');
@@ -1536,7 +1616,7 @@
 
       /**
        * Hint = exact move the live AI would make sitting in YOUR seat, WITHOUT
-       * peeking at opponent hands (hiddenInfo). Free-lead always returns a play.
+       * peeking at opponent hands (hiddenInfo). Same getAIMove path as AI opponent.
        */
       window.requestHint = function(){
         const c = window.controller;
@@ -1590,83 +1670,110 @@
           return;
         }
 
-        // Always hidden-info: do NOT peek at opponent hole cards (matches training signal)
+        // Same path as controller AI opponent (hidden search/BR).
+        // ALWAYS surface a decision: play cards or PASS. Never "Hint unavailable".
         let mv = null;
         let stats = null;
+        let searchErr = null;
+        let getAiCompleted = false;
+        const seed = ((Date.now() ^ (Math.random() * 1e9)) >>> 0) || 1;
+        const aiOpts = buildProductAiOpts(diff, seed, true /* forHint: trial budget */);
         try {
-          if (ai && ai.getAIMove) {
-            mv = ai.getAIMove(st, seat, {
-              difficulty: diff,
-              timeMs: diff === 'grandmaster' ? 700 : 450,
-              useSearch: true,
-              perfectInfo: false,
-              hiddenInfo: true,
-              bestResponse: false // pure policy path, not exploit peek
-            });
-            if (ai.getLastSearchStats) stats = ai.getLastSearchStats();
+          window.__TIENLEN_LAST_HINT_SEED = seed;
+          window.__TIENLEN_LAST_HINT_OPTS = aiOpts;
+        } catch (_) {}
+
+        function runHintSearch() {
+          if (!ai || typeof ai.getAIMove !== 'function') {
+            throw new Error('TienLenAI.getAIMove missing — scripts may not have loaded');
           }
+          const out = ai.getAIMove(st, seat, aiOpts);
+          let stt = null;
+          if (ai.getLastSearchStats) {
+            try { stt = ai.getLastSearchStats(); } catch (_) { stt = null; }
+          }
+          return { mv: normalizeAiMove(out), stats: stt, raw: out };
+        }
+
+        function leafFallback(reason) {
+          let leaf = null;
+          try {
+            if (search && typeof search.dualRolloutPolicy === 'function') {
+              const dec = search.dualRolloutPolicy(st, seat);
+              if (dec && dec.pass) return { mv: null, reason: reason + ' → dualRollout PASS' };
+              if (dec && dec.play && dec.play.length) return { mv: dec.play, reason: reason + ' → dualRollout' };
+            }
+          } catch (_) {}
+          try {
+            if (search && typeof search.expertPolicy === 'function') {
+              const dec = search.expertPolicy(st, seat);
+              if (dec && dec.pass) return { mv: null, reason: reason + ' → expert PASS' };
+              if (dec && dec.play && dec.play.length) return { mv: dec.play, reason: reason + ' → expert' };
+            }
+          } catch (_) {}
+          if (!st.currentCombo) {
+            try {
+              if (search && search.pickFreeLeadHard) leaf = search.pickFreeLeadHard(legals, st, seat);
+            } catch (_) {}
+            if (!leaf || !leaf.length) leaf = legals[0];
+            return { mv: leaf, reason: reason + ' → free-lead legal' };
+          }
+          // Combat: prefer structure-safe dual leaf over min-legal; if nothing, PASS
+          return { mv: null, reason: reason + ' → PASS' };
+        }
+
+        try {
+          const res = runHintSearch();
+          getAiCompleted = true;
+          mv = res.mv;
+          stats = res.stats;
         } catch (eHint) {
+          searchErr = eHint;
+          getAiCompleted = false;
           try { console.warn('[TiengLen] hint search failed', eHint); } catch (_) {}
         }
 
-        // Free-lead hard fallbacks — never leave empty "No hint available"
-        if ((!mv || !mv.length) && !st.currentCombo) {
-          try {
-            if (search && search.pickFreeLeadHard) {
-              mv = search.pickFreeLeadHard(legals, st, seat);
-            }
-          } catch (_) {}
-          if ((!mv || !mv.length) && ai && ai.pickFreeLead) {
-            try { mv = ai.pickFreeLead(st, seat, legals); } catch (_) {}
-          }
-          if ((!mv || !mv.length) && ai && ai.preferNonSingleLegal) {
-            try { mv = ai.preferNonSingleLegal(legals); } catch (_) {}
-          }
-          if (!mv || !mv.length) {
-            // Lowest multi, else lowest single
-            const multi = legals.filter(p => p.length >= 2);
-            if (multi.length) {
-              multi.sort((a, b) => {
-                const ta = Math.max.apply(null, a.map(c => c.rank));
-                const tb = Math.max.apply(null, b.map(c => c.rank));
-                return ta - tb || a.length - b.length;
-              });
-              mv = multi[0];
-            } else {
-              const singles = legals.filter(p => p.length === 1).slice().sort((a, b) =>
-                a[0].rank - b[0].rank || a[0].suit - b[0].suit);
-              mv = singles[0] || legals[0];
-            }
-          }
+        let fallback = false;
+        let fallbackReason = '';
+
+        if (!getAiCompleted) {
+          const fb = leafFallback(searchErr
+            ? ('getAIMove error: ' + String(searchErr.message || searchErr))
+            : 'getAIMove missing result');
+          fallback = true;
+          fallbackReason = fb.reason;
+          mv = fb.mv;
         }
 
-        // Combat: null means intentional PASS; if no pass allowed? always can pass when combo exists
-        if ((!mv || !mv.length) && st.currentCombo) {
-          // Distinguish intentional pass vs failure
-          const cheap = (ai && ai.cheapLegals) ? ai.cheapLegals(legals) : legals;
-          if (!cheap.length && ai && ai.shouldPassStrategically) {
-            // keep pass
-            mv = null;
-          } else if (!stats) {
-            // Search failed — prefer cheapest legal over silent empty
-            try {
-              if (ai && ai.getLowestLegalMove) mv = ai.getLowestLegalMove(st, seat);
-              else mv = legals.slice().sort((a, b) => {
-                const ta = Math.max.apply(null, a.map(c => c.rank));
-                const tb = Math.max.apply(null, b.map(c => c.rank));
-                return ta - tb || a.length - b.length;
-              })[0];
-            } catch (_) {
-              mv = legals[0];
-            }
-          }
+        // Free-lead must never be empty
+        if ((mv == null || !mv.length) && !st.currentCombo) {
+          const fb = leafFallback('free-lead empty');
+          fallback = true;
+          fallbackReason = fb.reason;
+          mv = fb.mv || legals[0];
         }
 
-        const reasons = explainHintWhy(st, seat, mv, stats);
+        const searchOk = isSearchStatsUsable(stats);
+        const meta = {
+          path: searchOk ? 'search' : (fallback ? 'fallback' : (getAiCompleted ? 'getAIMove' : 'unknown')),
+          fallback: fallback,
+          fallbackReason: fallbackReason,
+          seed: seed
+        };
+        // null + combat = PASS (getAIMove plan-pass or leaf PASS)
+        const showPass = (mv == null || !mv.length) && !!st.currentCombo;
+        const reasons = explainHintWhy(st, seat, showPass ? null : mv, stats, meta);
+        if (searchErr && !fallback) {
+          reasons.push('note: ' + String(searchErr.message || searchErr));
+        }
         const whyHtml = reasons.map(r => '· ' + r).join('<br>');
+        const pathBadge = searchOk
+          ? '<span class="opacity-70">(live search / BR)</span>'
+          : (fallback
+            ? '<span class="text-[#fbbf24]">(FALLBACK leaf)</span>'
+            : '<span class="opacity-70">(getAIMove)</span>');
 
-        if (mv && mv.length) {
-          // Pre-select the cards so user can see/act on them
+        if (!showPass && mv && mv.length) {
           try {
             if (window.TienLenUI && window.TienLenUI.selectCardsByKeys) {
               window.TienLenUI.selectCardsByKeys(mv.map(c => c.rank * 4 + c.suit));
@@ -1675,27 +1782,27 @@
           show(
             '<div class="text-left leading-snug">' +
               '<div><strong>AI would play:</strong> ' + formatHintPlay(mv) +
-              ' <span class="opacity-70">(' + describeComboShape(mv) + ')</span></div>' +
+              ' <span class="opacity-70">(' + describeComboShape(mv) + ')</span> ' + pathBadge + '</div>' +
               '<div class="mt-1 text-[11px] text-[#94a3b8]"><strong>Why</strong> (hidden-info, no peek at opp hands):</div>' +
               '<div class="text-[11px] text-[#94a3b8]">' + whyHtml + '</div>' +
             '</div>'
           );
-        } else if (st.currentCombo) {
+        } else if (showPass) {
           show(
             '<div class="text-left leading-snug">' +
-              '<div><strong>AI would:</strong> PASS</div>' +
+              '<div><strong>AI would:</strong> PASS ' + pathBadge + '</div>' +
               '<div class="mt-1 text-[11px] text-[#94a3b8]"><strong>Why</strong> (hidden-info, no peek):</div>' +
               '<div class="text-[11px] text-[#94a3b8]">' + whyHtml + '</div>' +
             '</div>'
           );
         } else {
-          // Absolute last resort free-lead
+          // Absolute last resort — should almost never hit
           const last = legals[0];
           show(
             '<div class="text-left leading-snug">' +
               '<div><strong>AI would play:</strong> ' + formatHintPlay(last) +
-              ' <span class="opacity-70">(fallback legal)</span></div>' +
-              '<div class="mt-1 text-[11px] text-[#94a3b8]"><strong>Why:</strong> free-lead must open; chose first legal after policy fallbacks.</div>' +
+              ' <span class="text-[#fbbf24]">(last-resort legal)</span></div>' +
+              '<div class="mt-1 text-[11px] text-[#94a3b8]"><strong>Why:</strong> free-lead must open.</div>' +
             '</div>'
           );
         }
