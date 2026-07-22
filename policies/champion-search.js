@@ -17,7 +17,7 @@
       try { module.exports = root.TienLenSearch; } catch (_) {}
     }
   } else if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('../engine.js'));
+    module.exports = factory(require('./engine.js'));
   } else {
     root.TienLenSearch = factory(root.TienLenEngine || {});
   }
@@ -1547,6 +1547,10 @@
       return out.slice().sort(function (a, b) {
         var da = brdLogit(state, cp, a);
         var db = brdLogit(state, cp, b);
+        if (FL_WIN_LAMBDA > 0 && typeof flWinLogit === 'function') {
+          da += FL_WIN_LAMBDA * flWinLogit(state, cp, a);
+          db += FL_WIN_LAMBDA * flWinLogit(state, cp, b);
+        }
         if (Math.abs(db - da) > 1e-9) return db - da;
         // L2s261: residual orphan tie-break after BRD (author residual family).
         // Prefer lower leftover trash; never wipe BRD order via orderLegals.
@@ -1682,7 +1686,26 @@
     var VALUE_W = [0.9904,-3.3175,0.5535,1.3074,1.2706,-2.9511,0.871,0.1115,-0.4879,0.879,0.4578,0.5526,-0.0199];
   var VALUE_LAMBDA = 0.28; // sweet spot: 0.22 weak, 0.38 reverse (0245)
   // L2s85: offline high-trials BR distill scorer (TRAIN SoftN=0 BR_TRIALS=36 teacher)
-  var BRD_W = [0,0,0,0,0,0,0,0,0,0,0,0,3.139745,-4.50587,-0.526956,0.40215,0.063992,0.496165,-3.124324,-1.891638,-0.05919,1.599993,3.47516,-2.584494,0.40215,0.063992,0.496165,0];
+  var BRD_W = [0,0,0,0,0,0,0,0,0,0,0,0,2.981318,-4.188063,-0.329445,0.563369,0.084415,0.377463,-2.123878,-1.718802,-0.028057,1.092173,2.778563,-2.614876,0.563369,0.084415,0.377463,0];
+  // FL_WIN infra λ=0 — 0344 null, 0345 leaf reverse, 0347 opp mix null
+  var FL_WIN_W = [0.05,0.1674,-0.0369,-0.0535,0.1994,0.0298,-0.148,0.0738,-0.4066,-0.1771,0.1102,0.267,-0.0914,0,0,0,0.067,0.2703];
+  var FL_WIN_LAMBDA = 0;
+  function flWinLogit(state, myIdx, cards) {
+    if (!cards || !cards.length || !FL_WIN_W || !FL_WIN_W.length) return 0;
+    var hand = state.players[myIdx].hand, by={}, i,r,top=0,twos=0;
+    for (i=0;i<hand.length;i++){ r=hand[i].rank; by[r]=(by[r]||0)+1; if(r===12)twos++; }
+    for (i=0;i<cards.length;i++) if(cards[i].rank>top) top=cards[i].rank;
+    var com=detectCombo(cards), typ=com&&com.type;
+    var isTrash=(cards.length===1&&top<=6&&by[top]===1&&!by[top+1])?1:0;
+    var cost=structureBreakCost(hand,cards), used={}, leftBy={};
+    for (i=0;i<cards.length;i++) used[cards[i].rank+':'+cards[i].suit]=1;
+    for (i=0;i<hand.length;i++){ var key=hand[i].rank+':'+hand[i].suit; if(!used[key]) leftBy[hand[i].rank]=(leftBy[hand[i].rank]||0)+1; }
+    var orph=0,pairs=0,lkeys=Object.keys(leftBy);
+    for (i=0;i<lkeys.length;i++){ r=+lkeys[i]; var n=leftBy[r]; if(n>=2)pairs++; if(n===1&&r<=9&&!leftBy[r-1]&&!leftBy[r+1])orph++; }
+    var omin=oppMinHand(state,myIdx);
+    var f=[1,isTrash,typ==='pair'?1:0,typ==='seq'?1:0,typ==='triple'?1:0,typ==='doubleseq'?1:0,top/12,cards.length/8,Math.min(10,cost)/10,Math.min(5,orph)/5,Math.min(5,pairs)/5,top<=6?1:0,top>=7&&top<=9?1:0,twos>=1?1:0,hand.length/13,omin/13,cards.length>=5?1:0,(cards.length>=2&&cards.length<=4&&orph<=1)?1:0];
+    var s=0; for(i=0;i<FL_WIN_W.length&&i<f.length;i++) s+=FL_WIN_W[i]*f[i]; return s;
+  }
   function brdLogit(state, myIdx, cards) {
     if (!cards || !cards.length) return -9;
     var hand = state.players[myIdx].hand;

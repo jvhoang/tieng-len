@@ -10,16 +10,10 @@
  * Pure JS, Node v10+ and browser. Depends on engine (+ optional AI helpers).
  */
 (function (root, factory) {
-  // Browser-first: some hosts define stub `module` which would skip window bind.
-  if (typeof window !== 'undefined') {
-    root.TienLenSearch = factory(root.TienLenEngine || {});
-    if (typeof module === 'object' && module.exports) {
-      try { module.exports = root.TienLenSearch; } catch (_) {}
-    }
-  } else if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./engine.js'));
+  if (typeof module === 'object' && module.exports) {
+    module.exports = factory(require('../engine.js'));
   } else {
-    root.TienLenSearch = factory(root.TienLenEngine || {});
+    root.TienLenSearch = factory(root.TienLenEngine);
   }
 }(typeof self !== 'undefined' ? self : this, function (engine) {
 

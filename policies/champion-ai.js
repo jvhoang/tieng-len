@@ -12,13 +12,16 @@
  * Hard mode: real search with time budget (browser ~0.8–1.5s).
  */
 
-const engine = (typeof require === 'function') ? require('../engine.js') : (window.TienLenEngine || {});
-const genomeMod = (typeof require === 'function')
-  ? require('../genome.js')
-  : (typeof window !== 'undefined' ? window.TienLenGenome : null);
-const searchMod = (typeof require === 'function')
-  ? require('./champion-search.js')
-  : (typeof window !== 'undefined' ? window.TienLenSearch : null);
+// Browser-first binding (avoid Node require when window exists).
+const engine = (typeof window !== 'undefined' && window.TienLenEngine)
+  ? window.TienLenEngine
+  : ((typeof require === 'function') ? require('./engine.js') : {});
+const genomeMod = (typeof window !== 'undefined' && window.TienLenGenome)
+  ? window.TienLenGenome
+  : ((typeof require === 'function') ? require('./genome.js') : null);
+const searchMod = (typeof window !== 'undefined' && window.TienLenSearch)
+  ? window.TienLenSearch
+  : ((typeof require === 'function') ? require('./search.js') : null);
 const {
   detectCombo, getLegalPlays, applyPlay, pass, cardCompare, cloneState: engineClone
 } = engine;
@@ -956,9 +959,9 @@ function getLowestLegalMove(state, myIdx) {
 }
 
 const AI_BUILD = {
-  id: "v1.0-sh-L2s299",
-  stamped: "2026-07-19T17:05:18.885Z",
-  label: "Freeze v1.0-sh-L2s299"
+  id: "v1.0-sh-L2s337",
+  stamped: "2026-07-21T09:19:45.044Z",
+  label: "Freeze v1.0-sh-L2s337"
 };
 
 const TienLenAI = {

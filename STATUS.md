@@ -1,47 +1,42 @@
 # STATUS — Superhuman Tiến Lên (hybrid PAIR_STEP + CERT)
 
-**Updated:** 2026-07-19T21:54Z  
+**Updated:** 2026-07-22T12:00Z  
 **W_max:** 9  
-**Dual champion / live:** **`p_l2s299`** (PAIR **0309** ACCEPT)  
-**Ladder:** L1 ✅ · **L2 OPEN (consecutive streak 1/3)** · CERT never  
+**Dual champion:** **`p_l2s337`** (0348 ACCEPT) · streak **0** · **L2 OPEN** · **CERT never**  
+**Abs WR_v60:** **0.653** (n=1200, Wilson 0.626–0.680) · **NOT CERT ship**  
+**Gold:** 118 clean · K6 green · fair 74/0 · G7 23/0  
 
-## GitHub product ship (L2s299)
-- **Live dual champion:** `p_l2s299` (PAIR **0309** ACCEPT — residual-zero multi soft; streak **1**/3)
-- Product: `ai.js` / `search.js` / `ai-build.js` + `policies/champion-*`
-- Abs WR ~0.65–0.67 vs v60 — **not** CERT; L2 not claimed
-- Author `RECOMMEND-COMBAT-PLAN-EQUITY-NEXTLEVEL.md` live in gold (plan equity next)
+## Product GitHub ship (dual champion, not CERT)
+**Live product brain = `p_l2s337`** (PAIR **0348** free-lead winfilter BRD accept vs `p_l2s299`, Δ+0.005 / LB+0.00075 @ n=4000).  
+Roots `ai.js` / `search.js` / `ai-build.js` + `policies/champion-*` + freeze `policies/p_l2s337-*`.  
+SITE_BUILD `202607221200`. Absolute mid-60s WR is **not** CERT/L2; streak still 0.
 
-## Honesty (skeptic-aligned — NEVER claim L2/ship)
-| Claim | Truth |
-|-------|--------|
-| Dual champ | **`p_l2s299`** — goal CS1 `p_l2s86` **STALE** |
-| L2 | **OPEN** — consecutive streak **1** (only 0309) |
-| EMA ≥0.60 | **No** — abs WR **~0.65–0.67** |
-| CERT ≥0.90 | **Never run** |
-| GR | **27 fixed / 1 deferred / 0 pending** (not all-pending) |
-| Gold | 118 clean · G7 17/0 · expert 74/0 · K6 green |
-| Gates | `post-champ-p_l2s299-gates-20260719T1931Z/` |
+## Goal NOT complete
+S0 CERT never · streak 0 · CS1 p_l2s86 **STALE** → **p_l2s337**  
+Never claim L2/CERT ship at mid-60s.
 
-## Dual-transfer accepts
-| step | Δ/LB | leap |
-|------|------|------|
-| 0299 | +1.05/+0.25 | FL full-scout |
-| 0304 | +0.73/+0.23 n=3000 | FL 3-way opp |
-| 0305 | +1.75/+0.75 | combat+FL 3-way opp |
-| **0309** | **+0.30/+0.05 thin** | residual-zero multi soft |
+## Single blocking gap for CERT
+**CERT WR ≥ 0.90 vs v60** (currently ~0.65). Need real dual gains stacking 3 accepts for L2 then L3–L4 then CERT.
 
-## Rejects 0310–0316 (plateau)
-Identity / reverse on deep refine, brdTerm, residual branch pin, 4-way expert opp, **winfilter BRD α=0.30 reverse −0.8pp (0316)**.
+## PAIR 0364 REJECT
+always-MC free-lead: Δ=−0.002 n=4000
 
-## Consecutive streak for L2
-```
-0309 ACCEPT → streak 1
-Need two more consecutive accepts without reject.
-```
+## Firstdiff 337 vs v60 (binding insight)
+- 23/24 games diverge · **21 combat** · 2 free-lead  
+- Free-lead residual thrash is the **wrong** primary surface  
+- Combat: v60 min-beat lower singles/pairs; we overcommit / PASS wrong
 
-## Next
-Self-play outer loop / nested free-lead architecture with large McNemar discords.  
-Stop: BRD re-blend, brdTerm ±0.03, tip-only freezes.
+## Smokes this continuation (all fail; live=p_l2s337)
+0379–0386: FL self-play rates, pure rates, Q, leaf overrides, combat min-overcommit, combat BRD teacher — null or reverse. Soft tips rarely flip BR root (identity McNemar).
 
-## Forbidden
-Claim L2 at streak 1 · ship mid-60s · CERT residual-pack · K1–K5 regression  
+## Live
+Restored **p_l2s337** for product GH ship. Kill-points green.
+
+## Next (must move combat BR root pick, not soft rateV)
+1. Combat **leaf** dualRollout min-beat preference for deep hands (changes playout rates)  
+2. Or higher-trial combat nested refine that flips ranking  
+3. Smoke: LB>0 + discords≥20  
+4. 3 accepts → L2 → CERT  
+
+## Ship / CERT
+CERT ≥0.90 only for true ship claim. Product dual-champion push ≠ CERT.

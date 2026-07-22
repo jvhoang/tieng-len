@@ -1,0 +1,79 @@
+{
+  "protocol": "pair-step-v1",
+  "stamped": "2026-07-21T10:28:15.481Z",
+  "step": "0348",
+  "prev": "p_l2s299",
+  "new": "p_l2s337",
+  "freeze": "v60",
+  "seedSetPath": "/Users/johnhoang/Developer/Grok/tieng-len/evolve/eval-registry/pair-steps/step-0348-seeds.json",
+  "seedHash": "8e83ecf5b2ca052a44dcd5bd5f71e2b5e430c20b1134cf9aacc66b114abbf4ac",
+  "nGames": 4000,
+  "bothSeats": true,
+  "softN": 0,
+  "ms": 0,
+  "trials": 20,
+  "hiddenInfo": true,
+  "perfectInfo": false,
+  "wrPrev": 0.659,
+  "wrNew": 0.664,
+  "winsPrev": 2636,
+  "winsNew": 2656,
+  "deltaWR": 0.0050000000000000044,
+  "bootstrapDelta": {
+    "lo": 0.00075,
+    "hi": 0.00925,
+    "mean": 0.005
+  },
+  "wilsonNew": {
+    "lo": 0.6492108904866507,
+    "hi": 0.6784744005598282,
+    "wr": 0.664
+  },
+  "wilsonPrev": {
+    "lo": 0.6441628820954246,
+    "hi": 0.6735320037362227,
+    "wr": 0.659
+  },
+  "mcnemar": {
+    "b": 26,
+    "c": 46,
+    "stat": 5.013888888888889,
+    "pApprox": 0.08151693862468952
+  },
+  "accept": true,
+  "acceptRule": "deltaWR>0 && bootstrap 95% LB > MIN_DELTA_LB (default 0); gold check is external",
+  "forbid": "Do not residual-pack this S_t. Do not re-use S_t after policy edits.",
+  "wMax": 9,
+  "pairedSample": [
+    {
+      "key": "2000241598@0",
+      "prevWin": true,
+      "newWin": true,
+      "d": 0
+    },
+    {
+      "key": "2000241598@1",
+      "prevWin": false,
+      "newWin": false,
+      "d": 0
+    },
+    {
+      "key": "2000338368@0",
+      "prevWin": true,
+      "newWin": true,
+      "d": 0
+    },
+    {
+      "key": "2000338368@1",
+      "prevWin": false,
+      "newWin": false,
+      "d": 0
+    },
+    {
+      "key": "2000482734@0",
+      "prevWin": true,
+      "newWin": true,
+      "d": 0
+    }
+  ]
+}
