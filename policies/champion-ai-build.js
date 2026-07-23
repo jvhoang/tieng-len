@@ -1,1 +1,1 @@
-(function(r){var B={id:"v1.0-sh-L2s337",stamped:"2026-07-21T09:19:45.044Z",label:"L2s337 product GM path fix (browser-first + free-lead/stats)"};r.TIENLEN_AI_BUILD=B;if(typeof module==="object")module.exports=B;}(typeof window!=="undefined"?window:global));
+(function(r){var B={id:"v1.0-sh-L2s337",stamped:"2026-07-21T09:19:45.044Z",label:"L2s337 product GM — no browser require() (getAIMove bind)"};r.TIENLEN_AI_BUILD=B;if(typeof module==="object")module.exports=B;}(typeof window!=="undefined"?window:global));

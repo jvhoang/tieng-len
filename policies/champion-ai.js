@@ -12,28 +12,60 @@
  * Hard mode: real search with time budget (browser ~0.8–1.5s).
  */
 
-// Browser-first binding (avoid Node require when window exists).
-const engine = (typeof window !== 'undefined' && window.TienLenEngine)
-  ? window.TienLenEngine
-  : ((typeof require === 'function') ? require('./engine.js') : {});
-const genomeMod = (typeof window !== 'undefined' && window.TienLenGenome)
-  ? window.TienLenGenome
-  : ((typeof require === 'function') ? require('./genome.js') : null);
-const searchMod = (typeof window !== 'undefined' && window.TienLenSearch)
-  ? window.TienLenSearch
-  : ((typeof require === 'function') ? require('./search.js') : null);
-const {
-  detectCombo, getLegalPlays, applyPlay, pass, cardCompare, cloneState: engineClone
-} = engine;
-
+// Browser-first binding. CRITICAL: when `window` exists, NEVER call require().
+// Mobile Safari / some hosts define a stub `require` that throws on './search.js',
+// which previously aborted this entire file so window.TienLenAI never bound
+// (playlogs: "TienLenAI.getAIMove missing (script bind failed)").
+function _loadNode(path) {
+  if (typeof window !== 'undefined') return null;
+  if (typeof require !== 'function') return null;
+  try { return require(path); } catch (e) { return null; }
+}
+const engine = (typeof window !== 'undefined')
+  ? (window.TienLenEngine || {})
+  : (_loadNode('./engine.js') || {});
+const genomeMod = (typeof window !== 'undefined')
+  ? (window.TienLenGenome || null)
+  : _loadNode('./genome.js');
+const searchMod = (typeof window !== 'undefined')
+  ? (window.TienLenSearch || null)
+  : _loadNode('./search.js');
+function _eng() {
+  try {
+    if (typeof window !== 'undefined' && window.TienLenEngine) return window.TienLenEngine;
+  } catch (_) {}
+  return engine;
+}
+function detectCombo(play) {
+  const e = _eng();
+  return e.detectCombo ? e.detectCombo(play) : null;
+}
+function getLegalPlays(hand, cur, hp, isFirst, firstCard) {
+  const e = _eng();
+  return e.getLegalPlays ? e.getLegalPlays(hand, cur, hp, isFirst, firstCard) : [];
+}
+function applyPlay(state, seat, cards) {
+  return _eng().applyPlay(state, seat, cards);
+}
+function pass(state, seat) {
+  return _eng().pass(state, seat);
+}
+function cardCompare(a, b) {
+  const e = _eng();
+  return e.cardCompare ? e.cardCompare(a, b) : 0;
+}
 function cloneState(s) {
-  return engineClone ? engineClone(s) : JSON.parse(JSON.stringify(s));
+  const e = _eng();
+  if (e.cloneState) return e.cloneState(s);
+  return JSON.parse(JSON.stringify(s));
 }
 
 // Active policy genome (evolved champion becomes default)
-let _activeGenome = genomeMod
-  ? genomeMod.getChampion()
-  : null;
+let _activeGenome = null;
+try {
+  const gMod = (typeof window !== 'undefined' && window.TienLenGenome) ? window.TienLenGenome : genomeMod;
+  if (gMod && typeof gMod.getChampion === 'function') _activeGenome = gMod.getChampion();
+} catch (_) { _activeGenome = null; }
 
 function defaultGenome() {
   if (genomeMod) return genomeMod.getChampion();

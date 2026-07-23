@@ -326,7 +326,10 @@
           const tThink0 = Date.now();
           try {
             // Prefer live global AI in browser (always freshest module)
-            const liveAI = (typeof window !== 'undefined' && window.TienLenAI) ? window.TienLenAI : aiMod;
+            // Re-resolve every turn — ai.js may bind after controller factory captured aiMod.
+            const liveAI = (typeof window !== 'undefined' && window.TienLenAI)
+              ? window.TienLenAI
+              : aiMod;
             if (liveAI && typeof liveAI.getAIMove === 'function') {
               if (liveAI.AI_BUILD) {
                 try { aiMeta.build = liveAI.AI_BUILD; } catch (_) {}
