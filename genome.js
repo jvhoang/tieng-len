@@ -3,7 +3,13 @@
  * Pure data + mutators. No DOM. Browser + Node.
  */
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) {
+  // Browser-first: stub `module` on some mobile hosts must not skip window bind.
+  if (typeof window !== 'undefined') {
+    root.TienLenGenome = factory();
+    if (typeof module === 'object' && module.exports) {
+      try { module.exports = root.TienLenGenome; } catch (_) {}
+    }
+  } else if (typeof module === 'object' && module.exports) {
     module.exports = factory();
   } else {
     root.TienLenGenome = factory();

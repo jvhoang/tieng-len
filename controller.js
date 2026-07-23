@@ -4,7 +4,17 @@
  * UI and tests drive ONLY this module for game actions.
  */
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) {
+  // Browser-first: never take module.exports path when window exists (Safari/iOS stubs).
+  if (typeof window !== 'undefined') {
+    root.TienLenController = factory(
+      root.TienLenEngine,
+      root.TienLenAI,
+      root.TienLenPlayLog
+    );
+    if (typeof module === 'object' && module.exports) {
+      try { module.exports = root.TienLenController; } catch (_) {}
+    }
+  } else if (typeof module === 'object' && module.exports) {
     module.exports = factory(
       require('./engine.js'),
       require('./ai.js'),
@@ -350,9 +360,13 @@
                 bestResponse: isGM || isHard || usePerfect,
                 seed: thinkSeed
               });
+              // Empty array is not a legal play (treat as null → free-lead guarantee path)
+              if (choice && !choice.length) choice = null;
               if (liveAI.getLastSearchStats) {
                 try { aiMeta.stats = liveAI.getLastSearchStats(); } catch (_) {}
               }
+            } else {
+              aiMeta.error = 'TienLenAI.getAIMove missing (script bind failed)';
             }
           } catch (err) {
             // Never silently turn errors into pass-only — fall through to legal play
@@ -418,18 +432,36 @@
             return list[0];
           }
 
-          // SAFETY: free lead must play multi when possible
+          // SAFETY: free lead must always play when legals exist (product kill-point).
+          // Healthy getAIMove already guarantees this; this is last-resort if AI missing.
           if (choice == null && !state.currentCombo) {
             choice = freeLeadFallback(legals);
             aiMeta.fallbackUsed = true;
             aiMeta.fallbackReason = 'null-free-lead';
+            if (!aiMeta.stats) {
+              aiMeta.stats = { mode: 'controller-free-lead-fallback', freeLeadGuaranteed: true };
+            }
           }
 
-          // SAFETY: cheap-force ONLY when AI errored or never produced a search decision.
+          // SAFETY: cheap-force ONLY when AI hard-errored or never produced a decision
+          // record. Intentional GM/BR pass MUST set stats (ai.js stampSearchStats) so
+          // !stats alone is rare. Do NOT force when stats.intentionalPass / BR modes.
           // Kill-point (DEEP-DIVE §2c): forcing min-beat over intentional PASS destroys
           // gold pass plans (0501/0510/0547/0550) and structure-preserving play.
-          // Intentional null from GM/hard search = strategic pass; do not rewrite.
-          if (choice == null && state.currentCombo && (aiMeta.error || !aiMeta.stats)) {
+          var statsOk = aiMeta.stats && !aiMeta.stats.error;
+          var intentionalPass = !!(aiMeta.stats && (
+            aiMeta.stats.intentionalPass ||
+            aiMeta.stats.mode === 'best-response' ||
+            aiMeta.stats.mode === 'best-response-det' ||
+            aiMeta.stats.mode === 'exact-endgame' ||
+            aiMeta.stats.mode === 'endgame' ||
+            aiMeta.stats.mode === 'expert' ||
+            aiMeta.stats.mode === 'fallback-pass' ||
+            aiMeta.stats.mode === 'heuristic-pass' ||
+            aiMeta.stats.planPass
+          ));
+          if (choice == null && state.currentCombo && !intentionalPass &&
+              (aiMeta.error || !statsOk)) {
             const cheap = legals.filter(function (pl) {
               const hasTwo = pl.some(function (c) { return c.rank === 12; });
               const com = engine.detectCombo(pl);

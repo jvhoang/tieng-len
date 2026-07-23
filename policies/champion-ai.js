@@ -694,13 +694,53 @@ function getLastSearchStats() {
 }
 
 /**
+ * Prefer live window search (freshest browser bind) over load-time require capture.
+ * Fixes mobile hosts where search.js re-binds after ai.js evaluated.
+ */
+function resolveSearchMod() {
+  try {
+    if (typeof window !== 'undefined' && window.TienLenSearch &&
+        typeof window.TienLenSearch.searchMove === 'function') {
+      return window.TienLenSearch;
+    }
+  } catch (_) { /* ignore */ }
+  return searchMod;
+}
+
+function stampSearchStats(stats, extra) {
+  const s = stats && typeof stats === 'object' ? Object.assign({}, stats) : {};
+  if (extra) {
+    const keys = Object.keys(extra);
+    for (let i = 0; i < keys.length; i++) s[keys[i]] = extra[keys[i]];
+  }
+  s.policyVersion = AI_BUILD.id;
+  s.stamped = AI_BUILD.stamped;
+  _lastSearchStats = s;
+  return s;
+}
+
+function guaranteeFreeLeadPlay(S, state, myIdx, legals, genome) {
+  let mv = null;
+  try {
+    if (S && typeof S.pickFreeLeadHard === 'function') {
+      mv = S.pickFreeLeadHard(legals, state, myIdx);
+    }
+  } catch (_) { mv = null; }
+  if (!mv || !mv.length) mv = pickFreeLead(state, myIdx, legals, genome);
+  if (!mv || !mv.length) mv = legals[0];
+  return mv && mv.length ? mv : null;
+}
+
+/**
  * getAIMove(state, myIdx, opts) → cards[] | null
  * opts.genome — optional policy params (evolution / testing)
  * opts.difficulty — easy|medium|hard|grandmaster
  * opts.timeMs / iterations / mode / hiddenInfo / perfectInfo / useSearch
  * null = pass (only when combating and policy says so)
+ * Free lead: NEVER null when legals exist (product kill-point).
  */
 function getAIMove(state, myIdx, opts = {}) {
+  _lastSearchStats = null;
   const genome = opts.genome ? G(opts.genome) : G();
   const difficulty = opts.difficulty || 'hard';
   const inBrowser = (typeof window !== 'undefined' && typeof document !== 'undefined');
@@ -720,31 +760,65 @@ function getAIMove(state, myIdx, opts = {}) {
   const cur = state.currentCombo;
   const hp = state.players[myIdx].passed;
   const legals = legalFn(hand, cur, hp, state.isFirstLead, state.firstLeadCard);
+  const S = resolveSearchMod();
 
-  if (!legals.length) return null;
+  if (!legals.length) {
+    stampSearchStats({ mode: 'no-legals', sims: 0 });
+    return null;
+  }
 
   // Immediate go-out always
   for (let gi = 0; gi < legals.length; gi++) {
-    if (legals[gi].length === hand.length) return legals[gi];
+    if (legals[gi].length === hand.length) {
+      stampSearchStats({ mode: 'forced-out', sims: 0 });
+      return legals[gi];
+    }
   }
 
   // Evolution / easy / forced expert: use search.expertPolicy (gold-aligned) when available
   const forceExpert = evolveFast || difficulty === 'easy' || iters === 0 || opts.mode === 'expert';
   if (forceExpert) {
-    if (searchMod && typeof searchMod.expertPolicy === 'function') {
-      const dec = searchMod.expertPolicy(state, myIdx);
-      if (dec && dec.pass) return null;
-      if (dec && dec.play && dec.play.length) return dec.play;
+    if (S && typeof S.expertPolicy === 'function') {
+      const dec = S.expertPolicy(state, myIdx);
+      // Free lead: never honor expert pass (illegal / product kill-point)
+      if (!cur) {
+        if (dec && dec.play && dec.play.length) {
+          stampSearchStats({ mode: 'expert', freeLead: true });
+          return dec.play;
+        }
+        const fl = guaranteeFreeLeadPlay(S, state, myIdx, legals, genome);
+        stampSearchStats({ mode: 'expert-free-lead-guarantee', freeLead: true });
+        return fl;
+      }
+      if (dec && dec.pass) {
+        stampSearchStats({ mode: 'expert', intentionalPass: true });
+        return null;
+      }
+      if (dec && dec.play && dec.play.length) {
+        stampSearchStats({ mode: 'expert' });
+        return dec.play;
+      }
     }
-    if (!cur) return pickFreeLead(state, myIdx, legals, genome) || legals[0];
+    if (!cur) {
+      const fl = guaranteeFreeLeadPlay(S, state, myIdx, legals, genome);
+      stampSearchStats({ mode: 'heuristic-free-lead', freeLead: true });
+      return fl;
+    }
     const cheap = cheapLegals(legals);
-    if (cheap.length) return pickBestPlay(state, myIdx, cheap, genome) || cheap[0];
-    if (shouldPassStrategically(state, myIdx, legals, genome)) return null;
+    if (cheap.length) {
+      stampSearchStats({ mode: 'heuristic-cheap' });
+      return pickBestPlay(state, myIdx, cheap, genome) || cheap[0];
+    }
+    if (shouldPassStrategically(state, myIdx, legals, genome)) {
+      stampSearchStats({ mode: 'heuristic-pass', intentionalPass: true });
+      return null;
+    }
+    stampSearchStats({ mode: 'heuristic-play' });
     return pickBestPlay(state, myIdx, legals, genome) || legals[0];
   }
 
   // ─── Search path (medium / hard / grandmaster) ───
-  const useSearch = opts.useSearch !== false && searchMod && typeof searchMod.searchMove === 'function'
+  const useSearch = opts.useSearch !== false && S && typeof S.searchMove === 'function'
     && !isFastEnv();
 
   if (useSearch) {
@@ -781,14 +855,20 @@ function getAIMove(state, myIdx, opts = {}) {
       if (opts.iterations != null) searchOpts.iterations = opts.iterations;
       if (opts.maxSims != null) searchOpts.maxSims = opts.maxSims;
 
-      const result = searchMod.searchMove(state, myIdx, searchOpts);
-      _lastSearchStats = result && result.stats ? result.stats : null;
-      if (_lastSearchStats) {
-        _lastSearchStats.policyVersion = AI_BUILD.id;
-        _lastSearchStats.stamped = AI_BUILD.stamped;
+      const result = S.searchMove(state, myIdx, searchOpts);
+      // ALWAYS attach stats so controller never mass cheap-forces intentional passes.
+      if (result && result.stats) {
+        stampSearchStats(result.stats);
+      } else {
+        stampSearchStats({
+          mode: (result && result.play == null && cur) ? 'search-pass-no-stats' : 'search-no-stats',
+          intentionalPass: !!(result && result.play == null && cur)
+        });
       }
 
       let mv = result ? result.play : undefined;
+      // Empty array is not a legal play — treat as null
+      if (mv && !mv.length) mv = null;
       const exploitMode = _lastSearchStats && (
         _lastSearchStats.mode === 'best-response' ||
         _lastSearchStats.mode === 'best-response-det' ||
@@ -796,24 +876,27 @@ function getAIMove(state, myIdx, opts = {}) {
         _lastSearchStats.mode === 'endgame'
       );
 
-      if (searchMod.enforcePolicyGuards) {
+      if (S.enforcePolicyGuards) {
         if (exploitMode) {
           const omin = oppMinHand(state, myIdx);
           if (!cur && mv && mv.length === 1 && omin === 1 && mv[0].rank < 10) {
-            mv = searchMod.pickFreeLeadHard
-              ? searchMod.pickFreeLeadHard(legals, state, myIdx)
+            mv = S.pickFreeLeadHard
+              ? S.pickFreeLeadHard(legals, state, myIdx)
               : mv;
           }
         } else {
-          mv = searchMod.enforcePolicyGuards(state, myIdx, mv);
+          mv = S.enforcePolicyGuards(state, myIdx, mv);
+          if (mv && !mv.length) mv = null;
         }
       }
 
-      // Free lead: never null
-      if (mv == null && !cur) {
-        mv = (searchMod.pickFreeLeadHard
-          ? searchMod.pickFreeLeadHard(legals, state, myIdx)
-          : null) || pickFreeLead(state, myIdx, legals, genome) || legals[0];
+      // Free lead: never null (product kill-point / null-free-lead)
+      if ((mv == null || !mv.length) && !cur) {
+        mv = guaranteeFreeLeadPlay(S, state, myIdx, legals, genome);
+        stampSearchStats(_lastSearchStats || {}, {
+          freeLeadGuaranteed: true,
+          mode: (_lastSearchStats && _lastSearchStats.mode) || 'free-lead-guarantee'
+        });
       }
 
       // Cheap force only when search did NOT intentionally pass.
@@ -822,6 +905,9 @@ function getAIMove(state, myIdx, opts = {}) {
         const cheapS = cheapLegals(legals);
         if (cheapS.length) {
           mv = pickBestPlay(state, myIdx, cheapS, genome) || cheapS[0];
+          stampSearchStats(_lastSearchStats || {}, { postSearchCheap: true });
+        } else {
+          stampSearchStats(_lastSearchStats || {}, { intentionalPass: true });
         }
       }
 
@@ -829,44 +915,74 @@ function getAIMove(state, myIdx, opts = {}) {
       if (mv != null && mv.length) {
         const sig = mv.map(c => c.rank * 4 + c.suit).sort((a, b) => a - b).join(',');
         const ok = legals.some(l => l.map(c => c.rank * 4 + c.suit).sort((a, b) => a - b).join(',') === sig);
-        if (!ok) mv = pickBestPlay(state, myIdx, legals, genome) || legals[0];
+        if (!ok) {
+          if (!cur) {
+            mv = guaranteeFreeLeadPlay(S, state, myIdx, legals, genome);
+          } else {
+            mv = pickBestPlay(state, myIdx, legals, genome) || legals[0];
+          }
+        }
       }
 
-      return mv == null ? null : mv;
+      // Final free-lead hard guarantee
+      if (!cur && (mv == null || !mv.length)) {
+        mv = guaranteeFreeLeadPlay(S, state, myIdx, legals, genome);
+        stampSearchStats(_lastSearchStats || {}, { freeLeadGuaranteed: true });
+      }
+
+      return (mv == null || (mv && !mv.length)) ? null : mv;
     } catch (e) {
       try { console.warn('[TiengLen] search failed, expert fallback', e); } catch (_) {}
-      _lastSearchStats = { error: String(e && e.message || e) };
+      stampSearchStats({ error: String(e && e.message || e), mode: 'search-error' });
     }
   }
 
-  // ─── Expert / legacy MCTS fallback ───
+  // ─── Expert / legacy MCTS fallback (search missing or failed) ───
   if (!cur) {
-    return pickFreeLead(state, myIdx, legals, genome) || legals[0];
+    const fl = guaranteeFreeLeadPlay(S, state, myIdx, legals, genome);
+    stampSearchStats(_lastSearchStats || { mode: 'fallback-free-lead' }, {
+      freeLead: true,
+      searchMissing: !useSearch
+    });
+    return fl;
   }
 
   const cheap = cheapLegals(legals);
   if (cheap.length > 0) {
-    if (iters >= 80 && !isFastEnv() && !inBrowser && !searchMod) {
+    if (iters >= 80 && !isFastEnv() && !inBrowser && !S) {
       try {
         const mv = runMCTS(state, myIdx, iters);
-        if (mv && mv.length && !playIsExpensive(mv)) return mv;
-        if (mv && playIsExpensive(mv) && mv.length === hand.length) return mv;
+        if (mv && mv.length && !playIsExpensive(mv)) {
+          stampSearchStats({ mode: 'legacy-mcts' });
+          return mv;
+        }
+        if (mv && playIsExpensive(mv) && mv.length === hand.length) {
+          stampSearchStats({ mode: 'legacy-mcts-out' });
+          return mv;
+        }
       } catch (e) { /* fall through */ }
     }
+    stampSearchStats(_lastSearchStats || { mode: 'fallback-cheap' }, {});
     return pickBestPlay(state, myIdx, cheap, genome) || cheap[0];
   }
 
   if (shouldPassStrategically(state, myIdx, legals, genome)) {
+    // Stats present ⇒ controller must NOT cheap-force-error-only
+    stampSearchStats(_lastSearchStats || { mode: 'fallback-pass' }, { intentionalPass: true });
     return null;
   }
 
-  if (iters >= 80 && !isFastEnv() && !inBrowser && !searchMod) {
+  if (iters >= 80 && !isFastEnv() && !inBrowser && !S) {
     try {
       const mv = runMCTS(state, myIdx, iters);
-      if (mv !== undefined && mv !== null) return mv;
+      if (mv !== undefined && mv !== null) {
+        stampSearchStats({ mode: 'legacy-mcts' });
+        return mv;
+      }
     } catch (e) { /* fall through */ }
   }
 
+  stampSearchStats(_lastSearchStats || { mode: 'fallback-play' }, {});
   return pickBestPlay(state, myIdx, legals, genome) || legals[0];
 }
 
