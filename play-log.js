@@ -26,13 +26,14 @@
   var INDEX_KEY = 'tienlen_playlog_v1_index';
   var GAME_PREFIX = 'tienlen_playlog_v1_game_';
   var REMOTE_CFG_KEY = 'tienlen_playlog_v1_remote_cfg';
-  // Local cache cap. Was 80 — that silently dropped newest GitHub issues when
-  // fetch mirrored into localStorage (see fetchPublicGames rebuild). Keep high
-  // enough for full public history; still bounds quota.
-  var MAX_GAMES = 500;
+  // Local cache cap for full bodies. Index + remoteCache can show more than this
+  // (listGamesMerged unions remoteCache). iOS Safari quota is tight (~5MB).
+  var MAX_GAMES = 2000;
   var MAX_LEGALS_STORED = 24;
   var REMOTE_PAGE_SIZE = 100;
-  var REMOTE_MAX_PAGES = 30;
+  var REMOTE_MAX_PAGES = 50;
+  // Product GM bind fix SITE_BUILD (for pre/post WR stats in UI)
+  var PRODUCT_GM_FIX_SITE_BUILD = '202607231400';
   var ISSUE_MARKER = '<!-- TIENLEN_PLAYLOG_V1 -->';
   var DEFAULT_REMOTE = {
     provider: 'github',
@@ -202,12 +203,19 @@
       for (i = 0; i < idx.length; i++) {
         if (idx[i] && idx[i].id) byId[idx[i].id] = idx[i];
       }
+      var storedBodies = 0;
+      var quotaHits = 0;
       for (i = 0; i < recs.length; i++) {
         var rec = recs[i];
         if (!rec || !rec.id) continue;
+        remoteCache[rec.id] = rec;
         try {
           storage.setItem(gameKey(rec.id), JSON.stringify(rec));
-        } catch (eQ) { /* quota — still keep summary if possible */ }
+          storedBodies++;
+        } catch (eQ) {
+          // iOS quota: keep summary + remoteCache body so UI still lists the game
+          quotaHits++;
+        }
         byId[rec.id] = summarize(rec);
       }
       var merged = [];
@@ -215,7 +223,16 @@
         if (Object.prototype.hasOwnProperty.call(byId, id)) merged.push(byId[id]);
       }
       trimIndexKeepNewest(merged);
-      writeIndex(merged);
+      try {
+        writeIndex(merged);
+      } catch (eW) {
+        // If index too large, keep trimmed half of newest
+        try {
+          var half = merged.slice(0, Math.min(merged.length, 800));
+          writeIndex(half);
+          merged = half;
+        } catch (eW2) { /* ignore */ }
+      }
       return merged;
     }
 
@@ -231,6 +248,7 @@
         aiDifficulty: rec.aiDifficulty,
         aiBuildId: rec.aiBuild && rec.aiBuild.id,
         aiBuildLabel: rec.aiBuild && rec.aiBuild.label,
+        siteBuild: rec.siteBuild || (rec.env && rec.env.siteBuild) || null,
         humanWon: r.humanWon != null ? r.humanWon : null,
         winner: r.winner != null ? r.winner : null,
         loser: r.loser != null ? r.loser : null,
@@ -445,18 +463,37 @@
     }
 
     function listGamesMerged() {
-      // Newest first; mark public when known from remoteCache
-      var idx = sortIndexNewestFirst(readIndex().slice());
-      return idx.map(function (s) {
-        var copy = Object.assign({}, s);
-        if (remoteCache[copy.id]) {
-          copy.public = true;
-          copy.source = 'github';
-          copy.remoteIssueUrl = remoteCache[copy.id]._remoteIssueUrl || copy.remoteIssueUrl;
-          copy.remoteIssueNumber = remoteCache[copy.id]._remoteIssueNumber || copy.remoteIssueNumber;
+      // Union local index + remoteCache so public sync still lists games when
+      // localStorage quota blocked full body writes (iPhone stuck-at-260 class bug).
+      var byId = Object.create(null);
+      var idx = readIndex();
+      var i, id, copy, rec;
+      for (i = 0; i < idx.length; i++) {
+        if (idx[i] && idx[i].id) byId[idx[i].id] = Object.assign({}, idx[i]);
+      }
+      for (id in remoteCache) {
+        if (!Object.prototype.hasOwnProperty.call(remoteCache, id)) continue;
+        rec = remoteCache[id];
+        if (!rec || !rec.id) continue;
+        if (byId[id]) {
+          byId[id].public = true;
+          byId[id].source = 'github';
+          byId[id].remoteIssueUrl = rec._remoteIssueUrl || byId[id].remoteIssueUrl;
+          byId[id].remoteIssueNumber = rec._remoteIssueNumber || byId[id].remoteIssueNumber;
+          if (!byId[id].siteBuild && rec.siteBuild) byId[id].siteBuild = rec.siteBuild;
+          if (byId[id].humanWon == null && rec.result) {
+            byId[id].humanWon = rec.result.humanWon;
+            byId[id].complete = !!rec.endedAt;
+          }
+        } else {
+          byId[id] = summarize(rec);
         }
-        return copy;
-      });
+      }
+      var out = [];
+      for (id in byId) {
+        if (Object.prototype.hasOwnProperty.call(byId, id)) out.push(byId[id]);
+      }
+      return sortIndexNewestFirst(out);
     }
 
     function getPublishStatus() {
@@ -778,17 +815,80 @@
     }
 
     function stats() {
-      var idx = readIndex();
-      var complete = idx.filter(function (g) { return g.complete; });
+      // Prefer merged list (index + remoteCache) so counts match the History UI
+      var idx = listGamesMerged();
+      var complete = idx.filter(function (g) {
+        return g.complete || g.humanWon === true || g.humanWon === false;
+      });
       var humanWins = complete.filter(function (g) { return g.humanWon === true; }).length;
       var aiWins = complete.filter(function (g) { return g.humanWon === false; }).length;
+      var pre = { n: 0, h: 0, a: 0 };
+      var post = { n: 0, h: 0, a: 0 };
+      var withSb = 0;
+      var totalDur = 0;
+      var durN = 0;
+      var totalEvents = 0;
+      var evN = 0;
+      // Calendar fallback when siteBuild missing: real GM fix day 2026-07-23
+      var FIX_DAY = '2026-07-23';
+      for (var i = 0; i < complete.length; i++) {
+        var g = complete[i];
+        var sb = g.siteBuild || null;
+        var when = (g.endedAt || g.startedAt || '').slice(0, 10);
+        var isPost = false;
+        var labeled = false;
+        if (sb) {
+          withSb++;
+          labeled = true;
+          isPost = String(sb) >= PRODUCT_GM_FIX_SITE_BUILD;
+        } else if (when) {
+          // date-only fallback for unlabeled older exports
+          labeled = true;
+          isPost = when >= FIX_DAY;
+        }
+        if (labeled) {
+          var bucket = isPost ? post : pre;
+          bucket.n++;
+          if (g.humanWon === true) bucket.h++;
+          else if (g.humanWon === false) bucket.a++;
+        }
+        if (g.durationMs != null) {
+          totalDur += g.durationMs;
+          durN++;
+        }
+        if (g.eventCount != null) {
+          totalEvents += g.eventCount;
+          evN++;
+        }
+      }
+      function wrOf(b) {
+        return b.n ? b.h / b.n : null;
+      }
       return {
         total: idx.length,
         complete: complete.length,
         humanWins: humanWins,
         aiWins: aiWins,
         humanWinRate: complete.length ? humanWins / complete.length : null,
-        active: !!active
+        active: !!active,
+        // Fun / analytic extras
+        productGmFixSiteBuild: PRODUCT_GM_FIX_SITE_BUILD,
+        preFix: {
+          n: pre.n,
+          humanWins: pre.h,
+          aiWins: pre.a,
+          humanWinRate: wrOf(pre)
+        },
+        postFix: {
+          n: post.n,
+          humanWins: post.h,
+          aiWins: post.a,
+          humanWinRate: wrOf(post)
+        },
+        siteBuildLabeled: withSb,
+        avgDurationSec: durN ? Math.round(totalDur / durN / 1000) : null,
+        avgEvents: evN ? Math.round(totalEvents / evN) : null,
+        remoteCacheSize: Object.keys(remoteCache).length
       };
     }
 
