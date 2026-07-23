@@ -934,7 +934,7 @@
   -->
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <script>
-    window.TIENLEN_SITE_BUILD = '202607231900';
+    window.TIENLEN_SITE_BUILD = '202607232000';
     // Inline fallback so title always has a version even if scripts fail to load
     window.TIENLEN_AI_BUILD = window.TIENLEN_AI_BUILD || {
       id: 'v1.0-sh-L2s337',
@@ -1539,34 +1539,21 @@
         return n + '-card combo';
       }
       /**
-       * Same getAIMove options as controller AI opponent (controller.js ~337–347).
-       * Shared so Hint = what the live AI would play in this seat (hidden, no peek).
+       * Same getAIMove options as controller AI opponent (controller.js runAITurn).
+       * Hint ≡ opponent: no weaker forHint throttle (same timeMs / default brTrials).
+       * forHint is accepted for call-site compatibility but does not change strength.
        */
       function buildProductAiOpts(diff, seed, forHint) {
         const d = diff || 'grandmaster';
         const isGM = d === 'grandmaster';
         const isHard = d === 'hard';
-        // Hint: prefer trial budget over wall-clock so mobile tabs don't abort mid-BR
-        // with empty results (was causing intermittent "unavailable" UX).
-        if (forHint) {
-          return {
-            difficulty: d,
-            perfectInfo: false,
-            hiddenInfo: true,
-            useSearch: true,
-            timeMs: 0,
-            brTrials: isGM ? 20 : (isHard ? 14 : 10),
-            iterations: isGM ? 48 : 32,
-            bestResponse: isGM || isHard,
-            seed: seed != null ? seed : ((Date.now() ^ (Math.random() * 1e9)) >>> 0) || 1
-          };
-        }
+        // Match controller.js browser budgets exactly (hidden BR, no peek).
+        // Do NOT set brTrials — search.js uses the same inBrowser defaults as opponent.
         return {
           difficulty: d,
           perfectInfo: false,
           hiddenInfo: true,
           useSearch: true,
-          // Match controller browser budgets (hidden BR)
           timeMs: isGM ? 700 : (isHard ? 500 : 350),
           bestResponse: isGM || isHard,
           seed: seed != null ? seed : ((Date.now() ^ (Math.random() * 1e9)) >>> 0) || 1
@@ -1659,7 +1646,7 @@
 
         // Prefer real search instrumentation over narrative templates
         if (isSearchStatsUsable(stats)) {
-          reasons.push('same path as live AI opponent: getAIMove + search (hidden-info, no peek)');
+          reasons.push('same path & budget as AI opponent: getAIMove + search (hidden BR, timeMs match)');
           reasons.push('search mode: ' + stats.mode +
             (stats.perfectInfo ? ' (perfect-info)' : ' · hidden det.'));
           if (stats.top && stats.top.length) {
@@ -1771,7 +1758,8 @@
         let getAiCompleted = false;
         let usedDirectSearch = false;
         const seed = ((Date.now() ^ (Math.random() * 1e9)) >>> 0) || 1;
-        const aiOpts = buildProductAiOpts(diff, seed, true /* forHint: trial budget */);
+        // Same opts as AI opponent (controller) — full wall-clock BR budget
+        const aiOpts = buildProductAiOpts(diff, seed, true);
         try {
           window.__TIENLEN_LAST_HINT_SEED = seed;
           window.__TIENLEN_LAST_HINT_OPTS = aiOpts;
@@ -1780,7 +1768,7 @@
         function runChampionMove() {
           ai = resolveAi();
           search = resolveSearch();
-          // 1) Full product AI (same as controller opponent)
+          // 1) Full product AI (identical opts to controller opponent)
           if (ai && typeof ai.getAIMove === 'function') {
             const out = ai.getAIMove(st, seat, aiOpts);
             let stt = null;
@@ -1789,7 +1777,7 @@
             }
             return { mv: normalizeAiMove(out), stats: stt, via: 'getAIMove' };
           }
-          // 2) Direct search core (champion BR) — identical engine when AI wrapper failed to bind
+          // 2) Direct search core — same budgets as buildProductAiOpts / controller
           if (search && typeof search.searchMove === 'function') {
             usedDirectSearch = true;
             const isGM = diff === 'grandmaster';
@@ -1799,10 +1787,9 @@
               inBrowser: true,
               perfectInfo: false,
               hiddenInfo: true,
+              useSearch: true,
               bestResponse: isGM || isHard,
-              timeMs: 0,
-              brTrials: isGM ? 20 : (isHard ? 14 : 10),
-              iterations: isGM ? 48 : 32,
+              timeMs: isGM ? 700 : (isHard ? 500 : 350),
               seed: seed,
               maxBranch: 16
             });
