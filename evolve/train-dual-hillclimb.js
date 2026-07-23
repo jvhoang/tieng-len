@@ -19,7 +19,9 @@ const BASE = process.env.BASE || 'p_l2s15';
 const ROUNDS = parseInt(process.env.ROUNDS || '6', 10);
 const TRAIN_GAMES = parseInt(process.env.TRAIN_GAMES || '30', 10);
 const TRIALS = parseInt(process.env.TRIALS || '18', 10);
-const W_MAX = Math.max(1, Math.floor((os.cpus().length || 2) / 2));
+// Author 2026-07-22: default laptop budget ~25% (CPU_DIV=4). Override: CPU_DIV=2 for blast.
+const CPU_DIV = Math.max(2, parseInt(process.env.CPU_DIV || '4', 10) || 4);
+const W_MAX = Math.max(1, Math.floor((os.cpus().length || 2) / CPU_DIV));
 const WORKERS = Math.min(W_MAX, parseInt(process.env.WORKERS || String(W_MAX), 10));
 
 function freezeTag(tag, id) {
@@ -64,11 +66,9 @@ function loadBaseSearch() {
 }
 
 function loadBaseAi() {
-  let ai = fs.readFileSync(path.join(ROOT, 'policies', BASE + '-ai.js'), 'utf8');
-  ai = ai.replace(/require\(['"]\.\.\/engine\.js['"]\)/g, "require('./engine.js')");
-  ai = ai.replace(/require\(['"]\.\.\/genome\.js['"]\)/g, "require('./genome.js')");
-  ai = ai.replace(new RegExp("require\\(['\"]\\./" + BASE + "-search\\.js['\"]\\)"), "require('./search.js')");
-  return ai;
+  // Shared rewrites (classic require + _loadNode) for post-2026-07 freezes.
+  const P = require('./policy-path-rewrite');
+  return P.freezeToLiveAi(fs.readFileSync(path.join(ROOT, 'policies', BASE + '-ai.js'), 'utf8'));
 }
 
 /** Mutate dualRollout pass/contest thresholds and BR soft-tie window. */

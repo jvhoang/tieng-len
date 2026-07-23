@@ -1685,8 +1685,9 @@
   // L2s243: value retrain SP vs v60 (acc≈0.64, n≈7.4k) — PAIR 0243/0244 near-miss @ λ=0.28
     var VALUE_W = [0.9904,-3.3175,0.5535,1.3074,1.2706,-2.9511,0.871,0.1115,-0.4879,0.879,0.4578,0.5526,-0.0199];
   var VALUE_LAMBDA = 0.28; // sweet spot: 0.22 weak, 0.38 reverse (0245)
-  // L2s85: offline high-trials BR distill scorer (TRAIN SoftN=0 BR_TRIALS=36 teacher)
-  var BRD_W = [0,0,0,0,0,0,0,0,0,0,0,0,2.981318,-4.188063,-0.329445,0.563369,0.084415,0.377463,-2.123878,-1.718802,-0.028057,1.092173,2.778563,-2.614876,0.563369,0.084415,0.377463,0];
+  // L2s85/402: offline high-trials BR distill scorer; FDIM 36 residual/control free-lead dims
+  // (pad zeros until winfilter inject; match train-br-distill-winfilter FDIM=36)
+  var BRD_W = [0,0,0,0,0,0,0,0,0,0,0,0,1.72413,-2.96308,0.49866,0.651993,0.216702,0.153651,-1.873444,-1.444541,0.447977,1.0013,1.868708,-3.090671,0.651993,0.216702,0.153651,0,-2.376926,0.108072,0.563684,-1.380182,0.112486,0.618354,-0.323455,0.047241];
   // FL_WIN infra λ=0 — 0344 null, 0345 leaf reverse, 0347 opp mix null
   var FL_WIN_W = [0.05,0.1674,-0.0369,-0.0535,0.1994,0.0298,-0.148,0.0738,-0.4066,-0.1771,0.1102,0.267,-0.0914,0,0,0,0.067,0.2703];
   var FL_WIN_LAMBDA = 0;
@@ -1737,7 +1738,20 @@
     var isTrashSingle = len === 1 && top <= 6 && (by[top] === 1);
     var isLowPair = len === 2 && top <= 6 && !hasTwo;
     var isLowMulti = len >= 2 && top <= 8 && !hasTwo;
-    var f = [1, handLen/13, omin/13, Math.min(2,twos)/2, Math.min(4,control)/4, Math.min(6,trash)/6, Math.min(6,pairs)/6, free?1:0, handLen>=10?1:0, handLen<=5?1:0, omin<=1?1:0, omin<=2?1:0, len/13, top/12, hasTwo?1:0, isTrashSingle?1:0, isLowPair?1:0, isLowMulti?1:0, typ==='single'?1:0, typ==='pair'?1:0, typ==='triple'?1:0, typ==='quad_or_seq'?1:0, typ==='long'?1:0, Math.min(8,sbc)/8, free&&isTrashSingle?1:0, free&&isLowPair?1:0, free&&isLowMulti?1:0, !free&&isTrashSingle?1:0];
+    // L2s402 residual/control free-lead dims (match train-br-distill-winfilter FDIM=36)
+    var usedB = {}, leftByB = {}, twosLeftB = 0, ri, orphB = 0, resPairsB = 0;
+    for (i = 0; i < cards.length; i++) usedB[cards[i].rank + ':' + cards[i].suit] = 1;
+    for (i = 0; i < hand.length; i++) {
+      if (usedB[hand[i].rank + ':' + hand[i].suit]) continue;
+      leftByB[hand[i].rank] = (leftByB[hand[i].rank] || 0) + 1;
+      if (hand[i].rank === 12) twosLeftB++;
+    }
+    try { orphB = residualOrphans(hand, cards); } catch (eRo) { orphB = 0; }
+    var lkb = Object.keys(leftByB);
+    for (ri = 0; ri < lkb.length; ri++) {
+      if (leftByB[lkb[ri]] >= 2) resPairsB++;
+    }
+    var f = [1, handLen/13, omin/13, Math.min(2,twos)/2, Math.min(4,control)/4, Math.min(6,trash)/6, Math.min(6,pairs)/6, free?1:0, handLen>=10?1:0, handLen<=5?1:0, omin<=1?1:0, omin<=2?1:0, len/13, top/12, hasTwo?1:0, isTrashSingle?1:0, isLowPair?1:0, isLowMulti?1:0, typ==='single'?1:0, typ==='pair'?1:0, typ==='triple'?1:0, typ==='quad_or_seq'?1:0, typ==='long'?1:0, Math.min(8,sbc)/8, free&&isTrashSingle?1:0, free&&isLowPair?1:0, free&&isLowMulti?1:0, !free&&isTrashSingle?1:0, Math.min(5,orphB)/5, Math.min(5,resPairsB)/5, free&&orphB===0&&len>=2?1:0, free&&omin<=3&&isTrashSingle?1:0, free&&handLen>=10&&isLowPair?1:0, free&&len>=5?1:0, free?Math.min(2,twosLeftB)/2:0, free&&top<=4&&isTrashSingle?1:0];
     var s = 0;
     for (i = 0; i < BRD_W.length && i < f.length; i++) s += BRD_W[i] * f[i];
     return s;

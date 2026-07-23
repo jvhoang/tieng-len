@@ -9,6 +9,7 @@
  */
 const fs = require('fs');
 const path = require('path');
+const P = require('./policy-path-rewrite');
 const ROOT = path.join(__dirname, '..');
 
 const bank = process.argv[2];
@@ -27,48 +28,23 @@ if (!fs.existsSync(bankAi) || !fs.existsSync(bankSe)) {
   process.exit(1);
 }
 
-function bankToLiveSearch(src) {
-  return src
-    .replace(/require\(['"]\.\.\/engine\.js['"]\)/g, "require('./engine.js')")
-    .replace(/require\(['"]\.\.\/genome\.js['"]\)/g, "require('./genome.js')");
+const seLive = P.freezeToLiveSearch(fs.readFileSync(bankSe, 'utf8'));
+let aiLive = P.freezeToLiveAi(fs.readFileSync(bankAi, 'utf8'));
+const build = 'const AI_BUILD = {\n  id: ' + JSON.stringify(rid) + ',\n  stamped: ' +
+  JSON.stringify(stamp) + ',\n  label: ' + JSON.stringify('Grandmaster ' + rid) + '\n};';
+if (/const AI_BUILD = \{[\s\S]*?\n\};/.test(aiLive)) {
+  aiLive = aiLive.replace(/const AI_BUILD = \{[\s\S]*?\n\};/, build);
 }
-
-function bankToLiveAi(src, searchName) {
-  let ai = src
-    .replace(/require\(['"]\.\.\/engine\.js['"]\)/g, "require('./engine.js')")
-    .replace(/require\(['"]\.\.\/genome\.js['"]\)/g, "require('./genome.js')")
-    .replace(/require\(['"]\.\/[^'"]+-search\.js['"]\)/g, "require('./search.js')");
-  const build = 'const AI_BUILD = {\n  id: ' + JSON.stringify(rid) + ',\n  stamped: ' +
-    JSON.stringify(stamp) + ',\n  label: ' + JSON.stringify('Grandmaster ' + rid) + '\n};';
-  if (/const AI_BUILD = \{[\s\S]*?\n\};/.test(ai)) {
-    ai = ai.replace(/const AI_BUILD = \{[\s\S]*?\n\};/, build);
-  }
-  return ai;
-}
-
-function liveToFreezeAi(src, freezeTag) {
-  let ai = src
-    .replace(/require\(['"]\.\/engine\.js['"]\)/g, "require('../engine.js')")
-    .replace(/require\(['"]\.\/genome\.js['"]\)/g, "require('../genome.js')")
-    .replace(/require\(['"]\.\/search\.js['"]\)/g, "require('./" + freezeTag + "-search.js')");
-  return ai;
-}
-
-function liveToFreezeSearch(src) {
-  return src
-    .replace(/require\(['"]\.\/engine\.js['"]\)/g, "require('../engine.js')")
-    .replace(/require\(['"]\.\/genome\.js['"]\)/g, "require('../genome.js')");
-}
-
-const seLive = bankToLiveSearch(fs.readFileSync(bankSe, 'utf8'));
-const aiLive = bankToLiveAi(fs.readFileSync(bankAi, 'utf8'));
 
 fs.writeFileSync(path.join(ROOT, 'search.js'), seLive);
 fs.writeFileSync(path.join(ROOT, 'ai.js'), aiLive);
 
-// Freeze under policies/<tag>
-fs.writeFileSync(path.join(ROOT, 'policies', tag + '-search.js'), liveToFreezeSearch(seLive));
-fs.writeFileSync(path.join(ROOT, 'policies', tag + '-ai.js'), liveToFreezeAi(aiLive, tag));
+// Freeze under policies/<tag> (require + _loadNode)
+const frozenAi = P.liveToFreezeAi(aiLive, tag);
+const frozenSe = P.liveToFreezeSearch(seLive);
+P.assertFrozenAi(frozenAi, tag);
+fs.writeFileSync(path.join(ROOT, 'policies', tag + '-search.js'), frozenSe);
+fs.writeFileSync(path.join(ROOT, 'policies', tag + '-ai.js'), frozenAi);
 
 // ai-build.js stamp
 const buildJs = `/**
