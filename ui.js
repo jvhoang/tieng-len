@@ -1595,6 +1595,26 @@
 
       if (doc.addEventListener) {
         doc.addEventListener('keydown', (e) => {
+          // Never steal keys while typing in forms (username, remote PAT, etc.)
+          // or when a modal overlays the title/game UI.
+          try {
+            const t = e.target;
+            if (t) {
+              const tag = (t.tagName || '').toLowerCase();
+              if (tag === 'input' || tag === 'textarea' || tag === 'select' || t.isContentEditable) {
+                return;
+              }
+            }
+            const modalIds = ['username-modal', 'history-modal', 'leaderboard-modal', 'rules-modal', 'friends-lobby'];
+            for (let mi = 0; mi < modalIds.length; mi++) {
+              const m = doc.getElementById(modalIds[mi]);
+              if (m && !m.classList.contains('hidden')) return;
+            }
+            // Only when actively playing (game screen visible)
+            const gs = doc.getElementById('game-screen');
+            if (gs && gs.classList.contains('hidden')) return;
+          } catch (_) { /* fall through to hotkeys */ }
+
           if (!getState()) return;
           const k = (e.key || '').toLowerCase();
           if (k === 'p' || k === 'enter') {
