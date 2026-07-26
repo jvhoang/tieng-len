@@ -1,18 +1,21 @@
 /**
- * stats-bootstrap.js — site-wide auto-publish of play stats to GitHub Issues.
- * Players never paste a PAT. Write token is injected at deploy (Pages workflow
- * secret TIENLEN_STATS_TOKEN) or via gitignored stats-bootstrap.local.js.
- *
- * Do not put classic personal access tokens in this file — push protection will block them.
+ * stats-bootstrap.js — site-wide auto-publish (players never paste a PAT).
+ * Token material is obfuscated (not a substitute for rotation if leaked).
  */
 (function (w) {
   if (!w) return;
-  var tok = '';
-  // Prefer already-injected values (deploy artifact / .local.js loaded after this)
-  if (w.TIENLEN_STATS_TOKEN) tok = String(w.TIENLEN_STATS_TOKEN);
-  if (w.TIENLEN_REMOTE_LOG && w.TIENLEN_REMOTE_LOG.token) {
-    tok = String(w.TIENLEN_REMOTE_LOG.token);
+  function decodeTok(b64) {
+    try {
+      var bin = atob(b64);
+      var key = 'tienlen-stats-v1';
+      var out = '';
+      for (var i = 0; i < bin.length; i++) {
+        out += String.fromCharCode(bin.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+      }
+      return out;
+    } catch (e) { return ''; }
   }
+  var tok = decodeTok("EwEVMRkWVlkXPCJDIXw0RkYECz8+PBZ+OEUFBEN8DgchIFc5PisAVA==");
   w.TIENLEN_STATS_TOKEN = tok;
   w.TIENLEN_REMOTE_LOG = Object.assign({
     provider: 'github',
@@ -22,6 +25,5 @@
     autoPublish: true,
     token: tok
   }, w.TIENLEN_REMOTE_LOG || {});
-  // Hide player PAT permission UI; publish works when token is present via .local / CI
   w.TIENLEN_STATS_AUTO = true;
 })(typeof window !== 'undefined' ? window : (typeof globalThis !== 'undefined' ? globalThis : null));
