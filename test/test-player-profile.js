@@ -26,21 +26,24 @@ console.log('=== player-profile format ===');
   ok(profile.validateFormat('a'.repeat(21)).ok === false, 'too long rejected');
 }
 
-console.log('=== player-profile uniqueness ===');
+console.log('=== player-profile reuse (honor system, not unique) ===');
 {
   const taken = profile.collectTakenUsernames([
     { username: 'Alice' },
     { username: 'bob' },
-    { env: { username: 'Carol' } }
+    { env: { username: 'Carol' } },
+    { username: 'JVH' }
   ]);
-  ok(!!taken.alice && !!taken.bob && !!taken.carol, 'collectTakenUsernames keys');
+  ok(!!taken.alice && !!taken.bob && !!taken.carol && !!taken.jvh, 'collectTakenUsernames keys');
+  // Same name allowed even if already in public logs (cross-browser sign-in)
   const clash = profile.validateUsername('ALICE', { takenMap: taken });
-  ok(clash.ok === false, 'case-insensitive clash');
+  ok(clash.ok === true && clash.username === 'ALICE', 'reuse allowed — not unique');
+  const jvh = profile.validateUsername('JVH', { takenMap: taken });
+  ok(jvh.ok === true && jvh.username === 'JVH', 'JVH reusable on another browser');
   const free = profile.validateUsername('Zed99', { takenMap: taken });
-  ok(free.ok === true && free.username === 'Zed99', 'free name ok');
-  // allowSelf
-  const self = profile.validateUsername('Alice', { takenMap: taken, allowSelf: 'Alice' });
-  ok(self.ok === true, 'allowSelf keeps own name');
+  ok(free.ok === true && free.username === 'Zed99', 'new name still ok');
+  // Leaderboard merges case-insensitively via normalizeKey
+  ok(profile.normalizeKey('JVH') === profile.normalizeKey('jvh'), 'case-insensitive merge key');
 }
 
 console.log('=== player-profile leaderboard ===');

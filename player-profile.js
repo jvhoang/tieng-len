@@ -1,5 +1,6 @@
 /**
- * player-profile.js — required unique username + leaderboard helpers.
+ * player-profile.js — required username (honor system) + leaderboard helpers.
+ * Usernames are NOT unique: same name on different browsers merges stats.
  * Pure browser/Node-friendly; no DOM required for core API.
  */
 (function (root, factory) {
@@ -76,8 +77,9 @@
   }
 
   /**
-   * Collect taken usernames from playlog summaries / full games (case-insensitive keys).
-   * takenMap: { lowerName: displayName }
+   * Collect usernames seen in playlogs (case-insensitive keys).
+   * Kept for analytics / UI hints; not used to block sign-in (honor system).
+   * map: { lowerName: displayName }
    */
   function collectTakenUsernames(gamesOrSummaries) {
     var taken = Object.create(null);
@@ -95,19 +97,14 @@
   }
 
   /**
-   * Validate + uniqueness. opts.takenMap optional; opts.allowSelf keeps current username.
+   * Validate format only. Usernames are reusable across browsers (honor system);
+   * public playlogs + leaderboard merge by case-insensitive name.
+   * opts.takenMap is ignored (kept for API compatibility).
    */
   function validateUsername(name, opts) {
     opts = opts || {};
     var fmt = validateFormat(name);
     if (!fmt.ok) return fmt;
-    var k = normalizeKey(fmt.username);
-    var self = normalizeKey(opts.allowSelf != null ? opts.allowSelf : getUsername());
-    if (self && k === self) return { ok: true, username: fmt.username };
-    var taken = opts.takenMap || {};
-    if (taken[k]) {
-      return { ok: false, error: 'Username already taken — pick another' };
-    }
     return { ok: true, username: fmt.username };
   }
 

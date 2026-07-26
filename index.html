@@ -655,8 +655,8 @@
           Updated: …
         </p>
         <p id="title-username-line" class="mt-3 text-sm text-[#94a3b8]">
-          <button type="button" onclick="showUsernameModal()" class="text-[#2dd4bf] hover:underline">Choose a unique username</button>
-          <span class="text-[#64748b]"> to play &amp; appear on the leaderboard</span>
+          <button type="button" onclick="showUsernameModal()" class="text-[#2dd4bf] hover:underline">Choose a username</button>
+          <span class="text-[#64748b]"> to play &amp; sync stats on the leaderboard</span>
         </p>
       </div>
 
@@ -866,12 +866,13 @@
       <div class="flex justify-between items-start mb-3">
         <div>
           <div class="font-display text-2xl text-white">Choose username</div>
-          <div class="text-xs text-[#2dd4bf] mt-1">Required · unique · used on the public leaderboard</div>
+          <div class="text-xs text-[#2dd4bf] mt-1">Required · family honor system · shared across browsers</div>
         </div>
         <button type="button" onclick="hideUsernameModal(true)" class="text-[#64748b] hover:text-white px-2">✕</button>
       </div>
       <p class="text-[12px] text-[#94a3b8] mb-4 leading-relaxed">
-        Pick a name before you play. Stats from finished games auto-publish to GitHub for the leaderboard — no permission prompts.
+        Use the same name on any device to combine stats on the leaderboard. Names are not exclusive — honor system for family play.
+        Finished games auto-publish to GitHub (no permission prompts).
       </p>
       <label class="block text-[10px] uppercase tracking-widest text-[#64748b] mb-1">Username</label>
       <input id="username-input" type="text" maxlength="20" autocomplete="username" placeholder="e.g. DragonAce"
@@ -907,7 +908,7 @@
         <div class="text-[#64748b] text-sm">Loading rankings…</div>
       </div>
       <div class="px-4 sm:px-6 py-3 border-t border-[#1e293b] text-[10px] text-[#64748b] shrink-0">
-        Ranked by win rate vs Grandmaster on the latest AI build · min 3 completed games · username required
+        Ranked by win rate vs Grandmaster on the latest AI build · min 3 completed games · same username merges across browsers
       </div>
     </div>
   </div>
@@ -1016,7 +1017,7 @@
   -->
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <script>
-    window.TIENLEN_SITE_BUILD = '202607260300';
+    window.TIENLEN_SITE_BUILD = '202607260400';
     // Inline fallback so title always has a version even if scripts fail to load
     window.TIENLEN_AI_BUILD = window.TIENLEN_AI_BUILD || {
       id: 'v1.0-sh-L2s444',
@@ -1573,42 +1574,14 @@
             line.innerHTML = 'Playing as <strong class="text-[#e8d48b]">' + name.replace(/[<>&]/g, '') +
               '</strong> · <button type="button" onclick="showUsernameModal()" class="text-[#2dd4bf] hover:underline">change</button>';
           } else {
-            line.innerHTML = '<button type="button" onclick="showUsernameModal()" class="text-[#2dd4bf] hover:underline">Choose a unique username</button>' +
-              '<span class="text-[#64748b]"> to play &amp; appear on the leaderboard</span>';
+            line.innerHTML = '<button type="button" onclick="showUsernameModal()" class="text-[#2dd4bf] hover:underline">Choose a username</button>' +
+              '<span class="text-[#64748b]"> to play &amp; sync stats on the leaderboard</span>';
           }
         }
         // Update YOU label in-game if present
         try {
           if (name && ui && typeof ui.updatePlayerLabels === 'function') ui.updatePlayerLabels();
         } catch (_) {}
-      }
-
-      function collectTakenMap(cb) {
-        const prof = getProfile();
-        const pl = getPlayLog();
-        const local = [];
-        try {
-          if (pl && pl.listGamesMerged) {
-            const m = pl.listGamesMerged();
-            for (let i = 0; i < m.length; i++) local.push(m[i]);
-          }
-          if (pl && pl.getAllFullGames) {
-            const full = pl.getAllFullGames();
-            for (let j = 0; j < full.length; j++) local.push(full[j]);
-          }
-        } catch (_) {}
-        let taken = prof && prof.collectTakenUsernames ? prof.collectTakenUsernames(local) : {};
-        if (!pl || !pl.fetchPublicGames) {
-          if (cb) cb(taken);
-          return;
-        }
-        pl.fetchPublicGames().then(function (games) {
-          try {
-            const more = prof && prof.collectTakenUsernames ? prof.collectTakenUsernames(games || []) : {};
-            taken = Object.assign({}, more, taken);
-          } catch (_) {}
-          if (cb) cb(taken);
-        }).catch(function () { if (cb) cb(taken); });
       }
 
       window.showUsernameModal = function (opts) {
@@ -1638,25 +1611,23 @@
           return;
         }
         const raw = input ? input.value : '';
-        if (err) err.textContent = 'Checking uniqueness…';
-        collectTakenMap(function (taken) {
-          const res = prof.validateUsername(raw, { takenMap: taken, allowSelf: prof.getUsername() });
-          if (!res.ok) {
-            if (err) err.textContent = res.error || 'Invalid username';
-            return;
-          }
-          prof.setUsername(res.username);
-          if (err) err.textContent = '';
-          refreshUsernameUI();
-          hideUsernameModal(false);
-          // Resume pending play
-          if (_pendingPlay) {
-            const p = _pendingPlay;
-            _pendingPlay = null;
-            if (p.kind === 'vsAI') startVsAIAfterGate(p.n);
-            else if (p.kind === 'live') startLiveAfterGate(p.n);
-          }
-        });
+        // Honor system: same name allowed on every browser; leaderboard merges by name
+        const res = prof.validateUsername(raw);
+        if (!res.ok) {
+          if (err) err.textContent = res.error || 'Invalid username';
+          return;
+        }
+        prof.setUsername(res.username);
+        if (err) err.textContent = '';
+        refreshUsernameUI();
+        hideUsernameModal(false);
+        // Resume pending play
+        if (_pendingPlay) {
+          const p = _pendingPlay;
+          _pendingPlay = null;
+          if (p.kind === 'vsAI') startVsAIAfterGate(p.n);
+          else if (p.kind === 'live') startLiveAfterGate(p.n);
+        }
       };
 
       function requireUsernameThen(kind, n) {
