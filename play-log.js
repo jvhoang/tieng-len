@@ -270,7 +270,9 @@
         siteBuild: rec.siteBuild || (rec.env && rec.env.siteBuild) || null,
         username: rec.username || null,
         vsAI: rec.vsAI !== false,
+        humanSeats: rec.humanSeats || null,
         humanWon: r.humanWon != null ? r.humanWon : null,
+        humanPlacement: r.humanPlacement != null ? r.humanPlacement : null,
         winner: r.winner != null ? r.winner : null,
         loser: r.loser != null ? r.loser : null,
         finishOrder: r.finishOrder || null,
@@ -749,17 +751,34 @@
       var st = extra.fromState || null;
       var finishOrder = st && st.finishOrder ? st.finishOrder.slice() : (active.result && active.result.finishOrder) || [];
       var loser = st && st.loser != null ? st.loser : null;
+      var nP = active.numPlayers || (st && st.numPlayers) || finishOrder.length || 2;
+      // Complete order: winners first, ensure loser + any remaining seats are present
+      if (loser != null && finishOrder.indexOf(loser) < 0) finishOrder.push(loser);
+      var sFill;
+      for (sFill = 0; sFill < nP; sFill++) {
+        if (finishOrder.indexOf(sFill) < 0) finishOrder.push(sFill);
+      }
       var winner = finishOrder.length ? finishOrder[0] : (loser != null ? (loser === 0 ? 1 : 0) : null);
       var humanWon = null;
+      var humanPlacement = null;
+      var humanSeat = (active.humanSeats && active.humanSeats.length) ? active.humanSeats[0] : 0;
       if (winner != null && active.humanSeats) {
         humanWon = active.humanSeats.indexOf(winner) >= 0;
       }
+      if (finishOrder.length && humanSeat != null) {
+        var pIdx = finishOrder.indexOf(humanSeat);
+        if (pIdx >= 0) humanPlacement = pIdx + 1;
+      }
+      if (humanPlacement == null && humanWon === true) humanPlacement = 1;
+      if (humanPlacement == null && humanWon === false && nP <= 2) humanPlacement = 2;
       active.endedAt = nowIso();
       active.result = {
         finishOrder: finishOrder,
         loser: loser,
         winner: winner,
         humanWon: humanWon,
+        humanPlacement: humanPlacement,
+        humanSeats: active.humanSeats ? active.humanSeats.slice() : [humanSeat],
         abandoned: !!extra.abandoned,
         reason: extra.reason || null,
         steps: active.events.filter(function (e) {
@@ -978,10 +997,20 @@
             if (!g.username && merged[i].username) g.username = merged[i].username;
             out.push(g);
           } else if (merged[i]) {
-            // summary-only row (enough for leaderboard if has username + outcome)
-            out.push(Object.assign({}, merged[i], {
-              result: { humanWon: merged[i].humanWon },
-              aiBuild: merged[i].aiBuildId ? { id: merged[i].aiBuildId, label: merged[i].aiBuildLabel } : null
+            // summary-only row — preserve placement fields for multi leaderboard
+            var sm = merged[i];
+            out.push(Object.assign({}, sm, {
+              humanSeats: sm.humanSeats || [0],
+              humanPlacement: sm.humanPlacement != null ? sm.humanPlacement : null,
+              result: {
+                humanWon: sm.humanWon,
+                humanPlacement: sm.humanPlacement != null ? sm.humanPlacement : null,
+                finishOrder: sm.finishOrder || null,
+                winner: sm.winner != null ? sm.winner : null,
+                loser: sm.loser != null ? sm.loser : null,
+                humanSeats: sm.humanSeats || [0]
+              },
+              aiBuild: sm.aiBuildId ? { id: sm.aiBuildId, label: sm.aiBuildLabel } : null
             }));
           }
         }
