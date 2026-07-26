@@ -23,13 +23,13 @@ function _loadNode(path) {
 }
 const engine = (typeof window !== 'undefined')
   ? (window.TienLenEngine || {})
-  : (_loadNode('./engine.js') || {});
+  : (_loadNode('../engine.js') || {});
 const genomeMod = (typeof window !== 'undefined')
   ? (window.TienLenGenome || null)
-  : _loadNode('./genome.js');
+  : _loadNode('../genome.js');
 const searchMod = (typeof window !== 'undefined')
   ? (window.TienLenSearch || null)
-  : _loadNode('./search.js');
+  : _loadNode('./champion-search.js');
 function _eng() {
   try {
     if (typeof window !== 'undefined' && window.TienLenEngine) return window.TienLenEngine;
@@ -1107,9 +1107,9 @@ function getLowestLegalMove(state, myIdx) {
 }
 
 const AI_BUILD = {
-  id: "v1.0-sh-L2s337",
-  stamped: "2026-07-21T09:19:45.044Z",
-  label: "Freeze v1.0-sh-L2s337"
+  id: "v1.0-sh-L2s444",
+  stamped: "2026-07-26T02:00:00.000Z",
+  label: "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship"
 };
 
 const TienLenAI = {

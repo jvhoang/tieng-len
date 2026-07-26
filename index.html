@@ -613,6 +613,16 @@
       </div>
 
       <div class="flex items-center gap-x-2 text-sm">
+        <button type="button" onclick="showUsernameModal()" id="nav-username-btn"
+                class="px-3 py-1.5 rounded-full border border-[#334155] hover:border-[#c9a227] hover:text-[#e8d48b] transition flex items-center gap-x-2 max-w-[10rem]">
+          <i class="fa-solid fa-user"></i>
+          <span id="nav-username-label" class="hidden sm:inline truncate">Set username</span>
+        </button>
+        <button type="button" onclick="showLeaderboard()"
+                class="px-3 py-1.5 rounded-full border border-[#334155] hover:border-[#2dd4bf] hover:text-[#2dd4bf] transition flex items-center gap-x-2">
+          <i class="fa-solid fa-trophy"></i>
+          <span class="hidden sm:inline">Board</span>
+        </button>
         <button onclick="showRules()" 
                 class="px-4 py-1.5 rounded-full border border-[#334155] hover:border-[#2dd4bf] hover:text-[#2dd4bf] transition flex items-center gap-x-2">
           <i class="fa-solid fa-book"></i>
@@ -643,6 +653,10 @@
         </p>
         <p id="ai-update-time" class="mt-2 text-[11px] text-[#64748b] tracking-wide">
           Updated: …
+        </p>
+        <p id="title-username-line" class="mt-3 text-sm text-[#94a3b8]">
+          <button type="button" onclick="showUsernameModal()" class="text-[#2dd4bf] hover:underline">Choose a unique username</button>
+          <span class="text-[#64748b]"> to play &amp; appear on the leaderboard</span>
         </p>
       </div>
 
@@ -700,16 +714,35 @@
         </div>
       </div>
 
-      <!-- Game History / data collection -->
-      <div class="mt-8 max-w-4xl mx-auto">
+      <!-- Leaderboard + Game History -->
+      <div class="mt-8 max-w-4xl mx-auto grid md:grid-cols-2 gap-4">
+        <div onclick="showLeaderboard()"
+             class="group bg-[#121a2f] border-2 border-[#334155] hover:border-[#c9a227] rounded-3xl p-6 cursor-pointer transition-all active:scale-[0.99]">
+          <div class="flex items-center justify-between gap-4">
+            <div class="flex items-center gap-x-3">
+              <div class="text-3xl"><i class="fa-solid fa-trophy text-[#c9a227]"></i></div>
+              <div>
+                <div class="text-xl font-semibold tracking-tight">Leaderboard</div>
+                <div class="text-sm text-[#e8d48b]">Top players vs latest Grandmaster AI</div>
+              </div>
+            </div>
+            <div class="text-right">
+              <div id="leaderboard-summary-count" class="text-2xl font-semibold text-white">—</div>
+              <div class="text-[10px] text-[#64748b] uppercase tracking-widest">ranked</div>
+            </div>
+          </div>
+          <div class="mt-3 text-[11px] text-[#64748b]">
+            1v1 and multiplayer (2–4p) vs Computer · GM difficulty · latest AI build
+          </div>
+        </div>
         <div onclick="showPlayHistory()"
              class="group bg-[#121a2f] border-2 border-[#334155] hover:border-[#2dd4bf] rounded-3xl p-6 cursor-pointer transition-all active:scale-[0.99]">
           <div class="flex items-center justify-between gap-4">
             <div class="flex items-center gap-x-3">
               <div class="text-3xl"><i class="fa-solid fa-clipboard-list text-[#2dd4bf]"></i></div>
               <div>
-                <div class="text-xl font-semibold tracking-tight">Game History &amp; Play Logs</div>
-                <div class="text-sm text-[#2dd4bf]">Every live game is recorded for AI improvement analysis</div>
+                <div class="text-xl font-semibold tracking-tight">Game History</div>
+                <div class="text-sm text-[#2dd4bf]">Auto-synced to GitHub (no setup)</div>
               </div>
             </div>
             <div class="text-right">
@@ -718,7 +751,7 @@
             </div>
           </div>
           <div class="mt-3 text-[11px] text-[#64748b]">
-            Opens a detailed log: deal, every move, AI think time/stats, outcomes. Export JSON for deep dives.
+            Every finished game publishes for analysis &amp; leaderboard ranking.
           </div>
         </div>
       </div>
@@ -827,6 +860,58 @@
     Self-contained static site • jvhoang/tieng-len • Embeddable on finalworth.com
   </div>
 
+  <!-- Username gate modal -->
+  <div id="username-modal" onclick="if (event.target.id==='username-modal') hideUsernameModal(true)" class="hidden fixed inset-0 bg-black/80 z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div onclick="event.stopImmediatePropagation()" class="modal bg-[#121a2f] border border-[#334155] rounded-t-3xl sm:rounded-3xl max-w-md w-full p-6 sm:p-8 text-sm shadow-2xl">
+      <div class="flex justify-between items-start mb-3">
+        <div>
+          <div class="font-display text-2xl text-white">Choose username</div>
+          <div class="text-xs text-[#2dd4bf] mt-1">Required · unique · used on the public leaderboard</div>
+        </div>
+        <button type="button" onclick="hideUsernameModal(true)" class="text-[#64748b] hover:text-white px-2">✕</button>
+      </div>
+      <p class="text-[12px] text-[#94a3b8] mb-4 leading-relaxed">
+        Pick a name before you play. Stats from finished games auto-publish to GitHub for the leaderboard — no permission prompts.
+      </p>
+      <label class="block text-[10px] uppercase tracking-widest text-[#64748b] mb-1">Username</label>
+      <input id="username-input" type="text" maxlength="20" autocomplete="username" placeholder="e.g. DragonAce"
+             class="w-full bg-[#0b1224] border border-[#334155] rounded-2xl px-4 py-3 text-base text-white outline-none focus:border-[#c9a227]"
+             onkeydown="if(event.key==='Enter'){event.preventDefault();confirmUsername();}" />
+      <div id="username-error" class="mt-2 text-xs text-red-300 min-h-[1.1rem]"></div>
+      <div class="mt-1 text-[11px] text-[#64748b]">3–20 chars · start with a letter · letters, numbers, _ or -</div>
+      <div class="mt-5 flex gap-2">
+        <button type="button" onclick="confirmUsername()" class="flex-1 viet-btn py-3 rounded-2xl font-semibold">Save &amp; continue</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaderboard modal -->
+  <div id="leaderboard-modal" onclick="if (event.target.id==='leaderboard-modal') hideLeaderboard()" class="hidden fixed inset-0 bg-black/75 z-[110] flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div onclick="event.stopImmediatePropagation()" class="modal bg-[#0b1224] border border-[#334155] rounded-t-3xl sm:rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl">
+      <div class="flex items-center justify-between gap-3 px-4 sm:px-6 py-4 border-b border-[#1e293b] shrink-0">
+        <div>
+          <div class="font-display text-xl sm:text-2xl text-white">Leaderboard</div>
+          <div id="leaderboard-meta" class="text-[11px] text-[#e8d48b] mt-0.5">vs latest Grandmaster AI</div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="refreshLeaderboard()" class="px-2.5 py-1.5 text-[11px] border border-[#334155] rounded-full text-[#2dd4bf]">↻ Sync</button>
+          <button type="button" onclick="hideLeaderboard()" class="px-2.5 py-1.5 text-[11px] text-[#2dd4bf]">✕</button>
+        </div>
+      </div>
+      <div class="px-4 sm:px-6 pt-3 flex gap-2 flex-wrap shrink-0">
+        <button type="button" data-lb-mode="all" onclick="setLeaderboardMode('all')" class="lb-mode-btn px-3 py-1.5 text-xs rounded-full border border-[#c9a227] bg-[#1a2438] text-[#e8d48b]">All</button>
+        <button type="button" data-lb-mode="1v1" onclick="setLeaderboardMode('1v1')" class="lb-mode-btn px-3 py-1.5 text-xs rounded-full border border-[#334155] text-[#94a3b8]">1v1</button>
+        <button type="button" data-lb-mode="multi" onclick="setLeaderboardMode('multi')" class="lb-mode-btn px-3 py-1.5 text-xs rounded-full border border-[#334155] text-[#94a3b8]">Multi (3–4p)</button>
+      </div>
+      <div id="leaderboard-list" class="flex-1 overflow-y-auto px-4 sm:px-6 py-4 min-h-[200px]">
+        <div class="text-[#64748b] text-sm">Loading rankings…</div>
+      </div>
+      <div class="px-4 sm:px-6 py-3 border-t border-[#1e293b] text-[10px] text-[#64748b] shrink-0">
+        Ranked by win rate vs Grandmaster on the latest AI build · min 3 completed games · username required
+      </div>
+    </div>
+  </div>
+
   <!-- Rules Modal -->
   <div id="rules-modal" onclick="if (event.target.id==='rules-modal') hideRules()" class="hidden fixed inset-0 bg-black/70 z-[100] flex items-center justify-center p-4">
     <div onclick="event.stopImmediatePropagation()" class="modal bg-[#121a2f] border border-[#334155] rounded-3xl max-w-2xl w-full p-8 text-sm max-h-[82vh] overflow-auto">
@@ -874,16 +959,16 @@
 
       <!-- Scrollable body: setup (collapsed) + list + detail -->
       <div class="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 sm:px-6 py-3 -webkit-overflow-scrolling-touch" id="history-scroll-body" style="-webkit-overflow-scrolling: touch;">
-        <!-- Public remote setup — collapsed by default on phone once token saved -->
+        <!-- Stats auto-publish is site-wide (stats-bootstrap.js); advanced override optional -->
         <details id="remote-log-setup" class="mb-3 rounded-2xl border border-[#334155] bg-[#120806] group">
           <summary class="cursor-pointer list-none flex flex-wrap items-center justify-between gap-2 p-3 text-xs select-none">
-            <span class="font-semibold text-[#2dd4bf]">⚙ Public auto-publish (GitHub)</span>
+            <span class="font-semibold text-[#2dd4bf]">✓ Stats auto-publish (GitHub)</span>
             <span id="remote-log-status" class="text-[10px] text-[#64748b] max-w-[55%] text-right truncate">Checking…</span>
           </summary>
           <div class="px-3 pb-3 border-t border-[#334155]/40 pt-2">
             <p class="text-[11px] text-[#64748b] mb-2 leading-relaxed">
-              Finished games publish as issues labeled <code class="text-[#2dd4bf]">play-log</code>.
-              Token needed once to <strong>write</strong>; reading public logs needs no token.
+              Finished games auto-publish as issues labeled <code class="text-[#2dd4bf]">play-log</code> — no player permission needed.
+              Advanced override only if site bootstrap is unavailable.
             </p>
             <div class="grid sm:grid-cols-2 gap-2 mb-2">
               <label class="text-[10px] text-[#64748b]">Repo owner
@@ -893,19 +978,16 @@
                 <input id="remote-repo" class="mt-0.5 w-full bg-[#121a2f] border border-[#334155] rounded-xl px-2 py-1.5 text-xs text-white outline-none focus:border-[#2dd4bf]" value="tieng-len" />
               </label>
             </div>
-            <label class="text-[10px] text-[#64748b] block mb-2">GitHub fine-grained PAT (Issues: Read &amp; Write)
-              <input id="remote-token" type="password" autocomplete="off" placeholder="github_pat_… or ghp_… (this browser only)"
+            <label class="text-[10px] text-[#64748b] block mb-2">Override PAT (optional — site bootstrap preferred)
+              <input id="remote-token" type="password" autocomplete="off" placeholder="Leave empty — site auto-publish is ON"
                 class="mt-0.5 w-full bg-[#121a2f] border border-[#334155] rounded-xl px-2 py-1.5 text-xs text-white outline-none focus:border-[#2dd4bf]" />
             </label>
             <div class="flex flex-wrap gap-2 items-center">
-              <button type="button" onclick="saveRemoteLogConfig()" class="viet-btn px-3 py-1.5 rounded-full text-xs">Save &amp; enable</button>
+              <button type="button" onclick="saveRemoteLogConfig()" class="viet-btn px-3 py-1.5 rounded-full text-xs">Save override</button>
               <button type="button" onclick="testRemoteLogConfig()" class="px-3 py-1.5 text-xs border border-[#334155] rounded-full text-[#94a3b8]">Test</button>
               <a id="remote-issues-link" href="https://github.com/jvhoang/tieng-len/issues?q=label%3Aplay-log" target="_blank" rel="noopener"
                  class="text-[10px] text-[#2dd4bf] underline">View issues ↗</a>
             </div>
-            <p class="text-[10px] text-[#64748b] mt-2">
-              Token: GitHub → Settings → Developer settings → Fine-grained tokens → repo <strong>tieng-len</strong> → Issues: Read and write.
-            </p>
           </div>
         </details>
 
@@ -934,12 +1016,12 @@
   -->
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <script>
-    window.TIENLEN_SITE_BUILD = '202607232000';
+    window.TIENLEN_SITE_BUILD = '202607260200';
     // Inline fallback so title always has a version even if scripts fail to load
     window.TIENLEN_AI_BUILD = window.TIENLEN_AI_BUILD || {
-      id: 'v1.0-sh-L2s337',
-      stamped: '2026-07-21T09:19:45.044Z',
-      label: 'L2s337 product GM — no browser require() (getAIMove bind)'
+      id: 'v1.0-sh-L2s444',
+      stamped: '2026-07-26T02:00:00.000Z',
+      label: 'L2s444 dual champion (PAIR 0436) product ship'
     };
   </script>
   <script>
@@ -948,10 +1030,13 @@
       var bust = isFile ? '' : ('?v=' + (window.TIENLEN_SITE_BUILD || 'dev'));
       var files = [
         'ai-build.js', // zero-dep version stamp FIRST
+        'stats-bootstrap.js', // site-wide auto-publish config (no player PAT UI)
+        'stats-bootstrap.local.js', // optional owner token inject (gitignored)
         'engine.js',
         'genome.js',
         'search.js',
         'ai.js',
+        'player-profile.js',
         'play-log.js',
         'controller.js',
         'hand-order.js',
@@ -1130,17 +1215,32 @@
         if (!el || !pl) return;
         const cfg = pl.getRemoteConfig ? pl.getRemoteConfig() : {};
         const pub = pl.getPublishStatus ? pl.getPublishStatus() : {};
-        if (!cfg.token) {
-          el.textContent = 'Not publishing — add a token once to enable auto-sync';
+        const siteAuto = !!(window.TIENLEN_STATS_AUTO || (window.TIENLEN_REMOTE_LOG && window.TIENLEN_REMOTE_LOG.token) || window.TIENLEN_STATS_TOKEN);
+        // Hide PAT form when site bootstrap handles publish (no player permission)
+        try {
+          const det = document.getElementById('remote-log-setup');
+          const tokenInput = document.getElementById('remote-token');
+          if (siteAuto && tokenInput) {
+            tokenInput.placeholder = 'Site auto-publish (managed) — no action needed';
+            tokenInput.value = '';
+            tokenInput.disabled = true;
+          }
+          if (siteAuto && det) {
+            const sum = det.querySelector('summary span.font-semibold');
+            if (sum) sum.textContent = '✓ Stats auto-publish ON';
+          }
+        } catch (_) {}
+        if (!cfg.token && !siteAuto) {
+          el.textContent = 'Local only — site publish not configured';
           el.className = 'text-[10px] text-amber-400/90';
         } else if (pub.ok === true) {
           el.textContent = 'Last publish OK: ' + (pub.message || '') + (pub.at ? ' @ ' + new Date(pub.at).toLocaleTimeString() : '');
           el.className = 'text-[10px] text-emerald-400';
-        } else if (pub.ok === false && pub.message) {
+        } else if (pub.ok === false && pub.message && pub.message.indexOf('not configured') < 0) {
           el.textContent = 'Last publish: ' + pub.message;
           el.className = 'text-[10px] text-red-300';
         } else {
-          el.textContent = 'Auto-publish enabled for ' + cfg.owner + '/' + cfg.repo;
+          el.textContent = (siteAuto ? 'Auto-publish ON · ' : 'Enabled · ') + (cfg.owner || 'jvhoang') + '/' + (cfg.repo || 'tieng-len');
           el.className = 'text-[10px] text-emerald-400/90';
         }
       }
@@ -1446,17 +1546,230 @@
         if (panel) panel.innerHTML = '<div class="text-[#64748b] text-sm">All logs cleared.</div>';
       };
 
-      window.startVsAI = function(n){
+      // ─── Username gate + leaderboard ───
+      var _pendingPlay = null; // { kind: 'vsAI'|'live', n }
+      var _lbMode = 'all';
+
+      function getProfile() {
+        return (typeof window !== 'undefined' && window.TienLenPlayerProfile) ? window.TienLenPlayerProfile : null;
+      }
+
+      function refreshUsernameUI() {
+        const prof = getProfile();
+        const name = prof && prof.getUsername ? prof.getUsername() : '';
+        const nav = document.getElementById('nav-username-label');
+        const line = document.getElementById('title-username-line');
+        if (nav) nav.textContent = name || 'Set username';
+        if (line) {
+          if (name) {
+            line.innerHTML = 'Playing as <strong class="text-[#e8d48b]">' + name.replace(/[<>&]/g, '') +
+              '</strong> · <button type="button" onclick="showUsernameModal()" class="text-[#2dd4bf] hover:underline">change</button>';
+          } else {
+            line.innerHTML = '<button type="button" onclick="showUsernameModal()" class="text-[#2dd4bf] hover:underline">Choose a unique username</button>' +
+              '<span class="text-[#64748b]"> to play &amp; appear on the leaderboard</span>';
+          }
+        }
+        // Update YOU label in-game if present
+        try {
+          if (name && ui && typeof ui.updatePlayerLabels === 'function') ui.updatePlayerLabels();
+        } catch (_) {}
+      }
+
+      function collectTakenMap(cb) {
+        const prof = getProfile();
+        const pl = getPlayLog();
+        const local = [];
+        try {
+          if (pl && pl.listGamesMerged) {
+            const m = pl.listGamesMerged();
+            for (let i = 0; i < m.length; i++) local.push(m[i]);
+          }
+          if (pl && pl.getAllFullGames) {
+            const full = pl.getAllFullGames();
+            for (let j = 0; j < full.length; j++) local.push(full[j]);
+          }
+        } catch (_) {}
+        let taken = prof && prof.collectTakenUsernames ? prof.collectTakenUsernames(local) : {};
+        if (!pl || !pl.fetchPublicGames) {
+          if (cb) cb(taken);
+          return;
+        }
+        pl.fetchPublicGames().then(function (games) {
+          try {
+            const more = prof && prof.collectTakenUsernames ? prof.collectTakenUsernames(games || []) : {};
+            taken = Object.assign({}, more, taken);
+          } catch (_) {}
+          if (cb) cb(taken);
+        }).catch(function () { if (cb) cb(taken); });
+      }
+
+      window.showUsernameModal = function (opts) {
+        opts = opts || {};
+        const modal = document.getElementById('username-modal');
+        const input = document.getElementById('username-input');
+        const err = document.getElementById('username-error');
+        if (err) err.textContent = '';
+        const prof = getProfile();
+        if (input) input.value = (prof && prof.getUsername && prof.getUsername()) || '';
+        if (modal) modal.classList.remove('hidden');
+        if (input) setTimeout(function () { try { input.focus(); input.select(); } catch (_) {} }, 50);
+      };
+
+      window.hideUsernameModal = function (cancel) {
+        const modal = document.getElementById('username-modal');
+        if (modal) modal.classList.add('hidden');
+        if (cancel) _pendingPlay = null;
+      };
+
+      window.confirmUsername = function () {
+        const prof = getProfile();
+        const input = document.getElementById('username-input');
+        const err = document.getElementById('username-error');
+        if (!prof) {
+          if (err) err.textContent = 'Profile module not loaded';
+          return;
+        }
+        const raw = input ? input.value : '';
+        if (err) err.textContent = 'Checking uniqueness…';
+        collectTakenMap(function (taken) {
+          const res = prof.validateUsername(raw, { takenMap: taken, allowSelf: prof.getUsername() });
+          if (!res.ok) {
+            if (err) err.textContent = res.error || 'Invalid username';
+            return;
+          }
+          prof.setUsername(res.username);
+          if (err) err.textContent = '';
+          refreshUsernameUI();
+          hideUsernameModal(false);
+          // Resume pending play
+          if (_pendingPlay) {
+            const p = _pendingPlay;
+            _pendingPlay = null;
+            if (p.kind === 'vsAI') startVsAIAfterGate(p.n);
+            else if (p.kind === 'live') startLiveAfterGate(p.n);
+          }
+        });
+      };
+
+      function requireUsernameThen(kind, n) {
+        const prof = getProfile();
+        if (prof && prof.hasUsername && prof.hasUsername()) {
+          if (kind === 'vsAI') startVsAIAfterGate(n);
+          else startLiveAfterGate(n);
+          return;
+        }
+        _pendingPlay = { kind: kind, n: n };
+        showUsernameModal({ required: true });
+      }
+
+      function startVsAIAfterGate(n) {
         ui.startVsAI(n || 4);
         document.body.classList.add('playing-active');
         const bar = document.getElementById('action-bar');
         if (bar) bar.classList.remove('hidden');
-      };
-      window.startLive = function(n){ ui.startLive(n || 4); };
+        refreshUsernameUI();
+      }
+      function startLiveAfterGate(n) {
+        ui.startLive(n || 4);
+        refreshUsernameUI();
+      }
+
+      window.startVsAI = function(n){ requireUsernameThen('vsAI', n || 4); };
+      window.startLive = function(n){ requireUsernameThen('live', n || 4); };
       window.playSelected = function(){ ui.playSelected(); };
       window.doPass = function(){ ui.doPass(); };
       window.clearSelection = function(){ if (ui.clearSelection) ui.clearSelection(); };
       window.choosePlayers = function(n, isAI) { if (isAI) window.startVsAI(n); else window.startLive(n); };
+
+      window.setLeaderboardMode = function (mode) {
+        _lbMode = mode || 'all';
+        const btns = document.querySelectorAll('.lb-mode-btn');
+        for (let i = 0; i < btns.length; i++) {
+          const b = btns[i];
+          const on = b.getAttribute('data-lb-mode') === _lbMode;
+          b.className = 'lb-mode-btn px-3 py-1.5 text-xs rounded-full border ' +
+            (on ? 'border-[#c9a227] bg-[#1a2438] text-[#e8d48b]' : 'border-[#334155] text-[#94a3b8]');
+        }
+        renderLeaderboard();
+      };
+
+      function renderLeaderboard() {
+        const list = document.getElementById('leaderboard-list');
+        const meta = document.getElementById('leaderboard-meta');
+        const summary = document.getElementById('leaderboard-summary-count');
+        const prof = getProfile();
+        const pl = getPlayLog();
+        if (!list || !prof || !pl) return;
+        let games = [];
+        try { games = pl.getAllFullGames ? pl.getAllFullGames() : []; } catch (_) { games = []; }
+        const board = prof.buildLeaderboard(games, {
+          modeFilter: _lbMode,
+          minGames: 3,
+          onlyGrandmaster: true,
+          latestAiOnly: true
+        });
+        const rows = board.rows || [];
+        if (meta) {
+          meta.textContent = 'vs ' + (board.meta.latestAiBuildId || 'latest GM AI') +
+            ' · ' + (_lbMode === 'all' ? '1v1 + multi' : _lbMode) +
+            ' · min ' + board.meta.minGames + ' games';
+        }
+        if (summary) summary.textContent = String(rows.length);
+        if (!rows.length) {
+          list.innerHTML = '<div class="text-[#64748b] text-sm leading-relaxed">' +
+            'No ranked players yet for this filter.<br>' +
+            'Play Grandmaster vs Computer (finish ≥3 games) with a username — stats auto-publish to GitHub.</div>';
+          return;
+        }
+        const me = prof.getUsername ? prof.normalizeKey(prof.getUsername()) : '';
+        let html = '<div class="space-y-2">';
+        for (let i = 0; i < rows.length; i++) {
+          const r = rows[i];
+          const isMe = me && prof.normalizeKey(r.username) === me;
+          const wr = (r.winRate * 100).toFixed(1);
+          const rank = i + 1;
+          const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : ('#' + rank);
+          html += '<div class="flex items-center gap-3 rounded-2xl border px-3 py-2.5 ' +
+            (isMe ? 'border-[#c9a227]/70 bg-[#1a2438]' : 'border-[#1e293b] bg-[#121a2f]') + '">' +
+            '<div class="w-10 text-center text-sm font-semibold text-[#e8d48b]">' + medal + '</div>' +
+            '<div class="flex-1 min-w-0">' +
+            '<div class="font-semibold text-white truncate">' + String(r.username).replace(/[<>&]/g, '') +
+            (isMe ? ' <span class="text-[10px] text-[#c9a227]">you</span>' : '') + '</div>' +
+            '<div class="text-[10px] text-[#64748b]">' + r.mode + ' · ' +
+            (r.aiBuildLabel || r.aiBuildId || '') + '</div></div>' +
+            '<div class="text-right shrink-0">' +
+            '<div class="text-lg font-semibold text-[#99f6e4]">' + wr + '%</div>' +
+            '<div class="text-[10px] text-[#64748b]">' + r.wins + 'W–' + r.losses + 'L · ' + r.games + 'g</div>' +
+            '</div></div>';
+        }
+        html += '</div>';
+        list.innerHTML = html;
+      }
+
+      window.refreshLeaderboard = function () {
+        const list = document.getElementById('leaderboard-list');
+        if (list) list.innerHTML = '<div class="text-[#64748b] text-sm">Syncing public games…</div>';
+        const pl = getPlayLog();
+        if (pl && pl.fetchPublicGames) {
+          pl.fetchPublicGames().then(function () {
+            renderLeaderboard();
+            refreshHistorySummary();
+          }).catch(function () { renderLeaderboard(); });
+        } else {
+          renderLeaderboard();
+        }
+      };
+
+      window.showLeaderboard = function () {
+        const modal = document.getElementById('leaderboard-modal');
+        if (modal) modal.classList.remove('hidden');
+        setLeaderboardMode(_lbMode || 'all');
+        refreshLeaderboard();
+      };
+      window.hideLeaderboard = function () {
+        const modal = document.getElementById('leaderboard-modal');
+        if (modal) modal.classList.add('hidden');
+      };
       window.newRound = function(){
         // Must go through UI so AI is kicked when computer opens the new deal
         if (ui && typeof ui.newRound === 'function') {
@@ -1930,6 +2243,8 @@
 
       ui.boot();
       try { refreshHistorySummary(); } catch (_) {}
+      try { refreshUsernameUI(); } catch (_) {}
+      try { updateRemoteStatusLine(); } catch (_) {}
       // Pull public GitHub play-logs into local cache so History count is not stuck at 0
       // (e.g. after a failed glue load, or when opening from another device/browser).
       try {
@@ -1937,12 +2252,26 @@
         if (plBoot && typeof plBoot.fetchPublicGames === 'function') {
           plBoot.fetchPublicGames().then(function () {
             try { refreshHistorySummary(); } catch (_) {}
+            try { renderLeaderboard(); } catch (_) {}
           }).catch(function () {});
         }
       } catch (_) {}
 
       // Re-paint version after full boot (search/logs status may change)
       if (window.__tienlenPaintAIVersion) window.__tienlenPaintAIVersion();
+
+      // Gate first visit: prompt for username (non-blocking until Play is pressed)
+      try {
+        const profBoot = getProfile && getProfile();
+        if (profBoot && !profBoot.hasUsername()) {
+          // soft prompt after short delay so title paints first
+          setTimeout(function () {
+            try {
+              if (profBoot && !profBoot.hasUsername()) showUsernameModal();
+            } catch (_) {}
+          }, 400);
+        }
+      } catch (_) {}
     })();
   </script>
 </body>

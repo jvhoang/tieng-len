@@ -1511,25 +1511,30 @@
     }
 
     function updatePlayerLabels() {
-      const labels = ['YOU (South)', 'EAST', 'NORTH', 'WEST'];
-      const nameIds = [
-        { zone: 'player-0', title: labels[0] },
-        { zone: 'player-1', title: 'P1 · EAST' },
-        { zone: 'player-2', title: 'P2 · NORTH' },
-        { zone: 'player-3', title: 'P3 · WEST' }
-      ];
+      let uname = '';
+      try {
+        if (typeof window !== 'undefined' && window.TienLenPlayerProfile &&
+            typeof window.TienLenPlayerProfile.getUsername === 'function') {
+          uname = window.TienLenPlayerProfile.getUsername() || '';
+        }
+      } catch (_) { uname = ''; }
       // Prefer a clearer layout: map seats 0..n-1 to visible zones
       for (let i = 0; i < 4; i++) {
         const zone = doc.getElementById('player-' + i);
         if (!zone) continue;
-        const title = zone.querySelector('.player-title, [data-player-title], .text-xs');
         // Set data attribute for CSS/tests
         zone.dataset.seat = String(i);
         const firstLabel = zone.querySelector('[data-player-title]') || zone.querySelector('.text-xs');
         if (firstLabel) {
           firstLabel.setAttribute('data-player-title', '1');
-          if (i === 0) firstLabel.innerHTML = 'YOU <span class="opacity-60">(South)</span>';
-          else firstLabel.textContent = 'P' + i + (vsAI ? ' · AI' : '');
+          if (i === 0) {
+            const safe = String(uname || 'YOU').replace(/[<>&]/g, '');
+            firstLabel.innerHTML = (uname
+              ? ('<span class="text-[#e8d48b]">' + safe + '</span> <span class="opacity-60">(You)</span>')
+              : 'YOU <span class="opacity-60">(South)</span>');
+          } else {
+            firstLabel.textContent = 'P' + i + (vsAI ? ' · AI' : '');
+          }
         }
       }
     }

@@ -170,7 +170,8 @@ console.log('=== history cap keeps NEWEST (not oldest) ===');
   // Simulate fetch order: newest first (as GitHub API returns)
   const newestFirst = recs.slice().reverse();
   pl.mergeGamesIntoIndex(newestFirst);
-  const listed = pl.listGamesMerged();
+  // Local index is capped; listGamesMerged may union remoteCache (by design for History UX)
+  const listed = pl.listGames();
   ok(listed.length === 5, 'capped at maxGames=5 (got ' + listed.length + ')');
   const ids = listed.map(function (g) { return g.id; });
   ok(ids.indexOf('g_hist_12') >= 0, 'keeps newest game g_hist_12');

@@ -68,6 +68,12 @@
     function startPlayLog(reason) {
       if (!loggingEnabled || !playLog || typeof playLog.startGame !== 'function') return;
       try {
+        var uname = null;
+        try {
+          if (typeof window !== 'undefined' && window.TienLenPlayerProfile) {
+            uname = window.TienLenPlayerProfile.getUsername() || null;
+          }
+        } catch (eU) { uname = null; }
         playLog.startGame(state, {
           mode: playMode,
           vsAI: vsAI,
@@ -77,6 +83,7 @@
           aiBuild: getAIBuild(),
           seed: state.seed,
           siteBuild: siteBuild,
+          username: uname,
           tags: reason ? [reason] : []
         });
         humanTurnStartedAt = Date.now();

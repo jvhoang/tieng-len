@@ -23,13 +23,13 @@ function _loadNode(path) {
 }
 const engine = (typeof window !== 'undefined')
   ? (window.TienLenEngine || {})
-  : (_loadNode('./engine.js') || {});
+  : (_loadNode('../engine.js') || {});
 const genomeMod = (typeof window !== 'undefined')
   ? (window.TienLenGenome || null)
-  : _loadNode('./genome.js');
+  : _loadNode('../genome.js');
 const searchMod = (typeof window !== 'undefined')
   ? (window.TienLenSearch || null)
-  : _loadNode('./search.js');
+  : _loadNode('./p_l2s444-search.js');
 function _eng() {
   try {
     if (typeof window !== 'undefined' && window.TienLenEngine) return window.TienLenEngine;

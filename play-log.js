@@ -43,6 +43,7 @@
     token: '',
     autoPublish: true
   };
+  var USERNAME_KEY = 'tienlen_player_username_v1';
 
   function nowIso() {
     return new Date().toISOString();
@@ -97,7 +98,25 @@
     var outcome = r.abandoned ? 'abandoned'
       : (r.humanWon === true ? 'human-win' : (r.humanWon === false ? 'ai-win' : 'incomplete'));
     var when = (rec.endedAt || rec.startedAt || '').slice(0, 19);
-    return 'playlog | ' + (rec.numPlayers || '?') + 'p | ' + outcome + ' | ' + when + ' | ' + rec.id;
+    var user = rec.username ? String(rec.username).slice(0, 24) : 'anon';
+    var ai = (rec.aiBuild && rec.aiBuild.id) || rec.aiDifficulty || 'ai';
+    return 'playlog | @' + user + ' | ' + (rec.numPlayers || '?') + 'p | ' + outcome +
+      ' | ' + ai + ' | ' + when + ' | ' + rec.id;
+  }
+
+  function readLocalUsername() {
+    try {
+      if (typeof localStorage !== 'undefined' && localStorage) {
+        return String(localStorage.getItem(USERNAME_KEY) || '').trim();
+      }
+    } catch (e) { /* ignore */ }
+    try {
+      if (typeof window !== 'undefined' && window.TienLenPlayerProfile &&
+          typeof window.TienLenPlayerProfile.getUsername === 'function') {
+        return window.TienLenPlayerProfile.getUsername() || '';
+      }
+    } catch (e2) { /* ignore */ }
+    return '';
   }
 
   function encodeIssueBody(rec) {
@@ -249,6 +268,8 @@
         aiBuildId: rec.aiBuild && rec.aiBuild.id,
         aiBuildLabel: rec.aiBuild && rec.aiBuild.label,
         siteBuild: rec.siteBuild || (rec.env && rec.env.siteBuild) || null,
+        username: rec.username || null,
+        vsAI: rec.vsAI !== false,
         humanWon: r.humanWon != null ? r.humanWon : null,
         winner: r.winner != null ? r.winner : null,
         loser: r.loser != null ? r.loser : null,
@@ -271,12 +292,21 @@
         var raw = storage.getItem(REMOTE_CFG_KEY);
         var cfg = raw ? JSON.parse(raw) : {};
         var out = Object.assign({}, DEFAULT_REMOTE, cfg || {});
-        // Allow page-level override without re-prompt (optional)
+        // Site-wide auto-publish (owner bootstrap / pages inject) — no per-player PAT UI required
         try {
-          if (typeof window !== 'undefined' && window.TIENLEN_REMOTE_LOG) {
-            out = Object.assign({}, out, window.TIENLEN_REMOTE_LOG);
+          if (typeof window !== 'undefined') {
+            if (window.TIENLEN_REMOTE_LOG) {
+              out = Object.assign({}, out, window.TIENLEN_REMOTE_LOG);
+            }
+            // Explicit stats token alias (same shape)
+            if (window.TIENLEN_STATS_TOKEN && !out.token) {
+              out.token = window.TIENLEN_STATS_TOKEN;
+              out.autoPublish = true;
+            }
           }
         } catch (eW) { /* ignore */ }
+        // Always prefer auto-publish when any token is present
+        if (out.token) out.autoPublish = out.autoPublish !== false;
         return out;
       } catch (e) {
         return Object.assign({}, DEFAULT_REMOTE);
@@ -336,12 +366,22 @@
      */
     function publishGame(rec) {
       var cfg = getRemoteConfig();
+      // Stamp username if missing (profile may have been set after game start)
+      if (rec && !rec.username) {
+        var uLate = readLocalUsername();
+        if (uLate) rec.username = uLate;
+      }
       if (!cfg.autoPublish) {
         lastPublishStatus = { ok: false, at: nowIso(), message: 'autoPublish disabled', gameId: rec && rec.id };
         return Promise.resolve({ ok: false, skipped: true, reason: 'disabled' });
       }
       if (!cfg.token) {
-        lastPublishStatus = { ok: false, at: nowIso(), message: 'No GitHub token — set one in History to publish publicly', gameId: rec && rec.id };
+        lastPublishStatus = {
+          ok: false,
+          at: nowIso(),
+          message: 'Stats queued locally — site publish token not configured',
+          gameId: rec && rec.id
+        };
         return Promise.resolve({ ok: false, error: 'no-token', needsAuth: true });
       }
       if (!fetchFn) {
@@ -572,7 +612,7 @@
 
     /**
      * Begin a new game record from a fresh deal state.
-     * cfg: { mode, vsAI, numPlayers, humanSeats, aiDifficulty, aiBuild, seed, siteBuild }
+     * cfg: { mode, vsAI, numPlayers, humanSeats, aiDifficulty, aiBuild, seed, siteBuild, username }
      */
     function startGame(state, cfg) {
       cfg = cfg || {};
@@ -587,6 +627,7 @@
       for (var s = 0; s < n; s++) {
         if (humanSeats.indexOf(s) < 0) aiSeats.push(s);
       }
+      var uname = cfg.username || readLocalUsername() || null;
       active = {
         schemaVersion: SCHEMA_VERSION,
         id: uid(),
@@ -599,6 +640,7 @@
         aiSeats: aiSeats,
         aiDifficulty: cfg.aiDifficulty || 'hard',
         aiBuild: cfg.aiBuild ? clone(cfg.aiBuild) : null,
+        username: uname,
         seed: state.seed != null ? state.seed : (cfg.seed != null ? cfg.seed : null),
         siteBuild: cfg.siteBuild || null,
         env: envMeta(),
@@ -922,6 +964,29 @@
       decodeIssueBody: decodeIssueBody,
       issueTitle: issueTitle,
       mergeGamesIntoIndex: mergeGamesIntoIndex,
+      /**
+       * Full game bodies for leaderboard (remoteCache + local storage).
+       * May omit bodies that failed quota; summaries still in listGamesMerged.
+       */
+      getAllFullGames: function getAllFullGames() {
+        var merged = listGamesMerged();
+        var out = [];
+        for (var i = 0; i < merged.length; i++) {
+          var id = merged[i].id;
+          var g = getGame(id);
+          if (g) {
+            if (!g.username && merged[i].username) g.username = merged[i].username;
+            out.push(g);
+          } else if (merged[i]) {
+            // summary-only row (enough for leaderboard if has username + outcome)
+            out.push(Object.assign({}, merged[i], {
+              result: { humanWon: merged[i].humanWon },
+              aiBuild: merged[i].aiBuildId ? { id: merged[i].aiBuildId, label: merged[i].aiBuildLabel } : null
+            }));
+          }
+        }
+        return out;
+      },
       // test helpers
       _createMemoryStorage: createMemoryStorage,
       _readIndex: readIndex,

@@ -875,7 +875,9 @@
       if (trashPlays.length) return trashPlays[0];
     }
 
-    // Control-backed low-pair pin (Series 4/5): prefer pair top≤6 when deep + 2s/high pairs
+    // Control-backed low-pair pin (Series 4/5 / IMG0526 / P3): prefer pair top≤6 when
+    // deep + control. MUST run before residual-zero multi — otherwise clean mid-seqs
+    // (or full-straight remnants) steal author low-pair free-leads (expert gold red).
     if (info.hasControl && handLen >= 9) {
       var lowPairs = [];
       for (i = 0; i < multi.length; i++) {
@@ -884,6 +886,26 @@
         }
       }
       if (lowPairs.length) return orderLegals(lowPairs, state, myIdx)[0];
+    }
+
+    // L2s437: residual-zero multi package free-lead leaf (after trash-first + low-pair gold).
+    // Changes dualRollout free-lead in BR playouts → root rates re-rank (architecture
+    // leaf, not soft rateV tip). Prefer longest residual-zero multi≥3 when no low-pair pin.
+    if (handLen >= 9 && omin >= 3 && multi.length && typeof residualOrphans === 'function') {
+      var cleanMulti = [];
+      for (i = 0; i < multi.length; i++) {
+        if (multi[i].length < 3 || playHasTwo(multi[i])) continue;
+        try {
+          if (residualOrphans(hand, multi[i]) === 0) cleanMulti.push(multi[i]);
+        } catch (eCm) { /* skip */ }
+      }
+      if (cleanMulti.length) {
+        cleanMulti.sort(function (a, b) {
+          if (b.length !== a.length) return b.length - a.length;
+          return topRank(a) - topRank(b);
+        });
+        return cleanMulti[0];
+      }
     }
 
     // Multi-first + BR-distill residual (L2s85): among low multi, max teacher logit + V
@@ -901,11 +923,12 @@
             var vv = valueEval(stA, myIdx);
             vv -= structureBreakCost(hand, pool[bi]) * 0.02;
             if (typeof brdLogit === 'function') vv += 0.16 * brdLogit(state, myIdx, pool[bi]);
-            // L2s290: stronger FL multi residual leaf (0283 family; CB-PLAN dual-null)
+            // L2s290/437: stronger FL multi residual leaf (0283 family)
             if (typeof residualOrphans === 'function') {
               vv -= 0.08 * Math.min(4, residualOrphans(hand, pool[bi]));
-              vv += 0.012 * Math.min(8, pool[bi].length);
-              if (pool[bi].length >= 3 && residualOrphans(hand, pool[bi]) === 0) vv += 0.04;
+              vv += 0.018 * Math.min(8, pool[bi].length);
+              if (pool[bi].length >= 3 && residualOrphans(hand, pool[bi]) === 0) vv += 0.07;
+              if (pool[bi].length >= 4 && residualOrphans(hand, pool[bi]) === 0) vv += 0.04;
             }
             if (vv > bestV) { bestV = vv; bestP = pool[bi]; }
           } catch (eV2) { /* skip */ }
@@ -1683,13 +1706,13 @@
 
   /* VALUE_NET_START — linear TRAIN value (AlphaZero-lite features) */
   // L2s243: value retrain SP vs v60 (acc≈0.64, n≈7.4k) — PAIR 0243/0244 near-miss @ λ=0.28
-    var VALUE_W = [0.9904,-3.3175,0.5535,1.3074,1.2706,-2.9511,0.871,0.1115,-0.4879,0.879,0.4578,0.5526,-0.0199];
+    var VALUE_W = [1.053527,-2.83743,0.521429,0.910522,1.70305,-2.336375,0.138741,0.083649,-0.623724,0.969978,0.588962,0.369933,0.094732];
   var VALUE_LAMBDA = 0.28; // sweet spot: 0.22 weak, 0.38 reverse (0245)
-  // L2s85/402: offline high-trials BR distill scorer; FDIM 36 residual/control free-lead dims
-  // (pad zeros until winfilter inject; match train-br-distill-winfilter FDIM=36)
-  var BRD_W = [0,0,0,0,0,0,0,0,0,0,0,0,1.72413,-2.96308,0.49866,0.651993,0.216702,0.153651,-1.873444,-1.444541,0.447977,1.0013,1.868708,-3.090671,0.651993,0.216702,0.153651,0,-2.376926,0.108072,0.563684,-1.380182,0.112486,0.618354,-0.323455,0.047241];
+  // L2s85: offline high-trials BR distill scorer (TRAIN SoftN=0 BR_TRIALS=36 teacher)
+  var BRD_W = [0,0,0,0,0,0,0,0,0,0,0,0,2.981318,-4.188063,-0.329445,0.563369,0.084415,0.377463,-2.123878,-1.718802,-0.028057,1.092173,2.778563,-2.614876,0.563369,0.084415,0.377463,0];
   // FL_WIN infra λ=0 — 0344 null, 0345 leaf reverse, 0347 opp mix null
-  var FL_WIN_W = [0.05,0.1674,-0.0369,-0.0535,0.1994,0.0298,-0.148,0.0738,-0.4066,-0.1771,0.1102,0.267,-0.0914,0,0,0,0.067,0.2703];
+  var FL_WIN_W = [0.05,0.503961,0.007679,0.354369,0.210744,0.085157,-0.511638,0.2714,-0.695234,-0.379799,0.158593,0.607411,-0.09946,0,0,0,0.308308,0.814515];
+  // FL_WIN_LAMBDA: 0.18 smoke 0432 dual-negative (−0.67pp); keep weights but λ=0 identity.
   var FL_WIN_LAMBDA = 0;
   function flWinLogit(state, myIdx, cards) {
     if (!cards || !cards.length || !FL_WIN_W || !FL_WIN_W.length) return 0;
@@ -1738,20 +1761,7 @@
     var isTrashSingle = len === 1 && top <= 6 && (by[top] === 1);
     var isLowPair = len === 2 && top <= 6 && !hasTwo;
     var isLowMulti = len >= 2 && top <= 8 && !hasTwo;
-    // L2s402 residual/control free-lead dims (match train-br-distill-winfilter FDIM=36)
-    var usedB = {}, leftByB = {}, twosLeftB = 0, ri, orphB = 0, resPairsB = 0;
-    for (i = 0; i < cards.length; i++) usedB[cards[i].rank + ':' + cards[i].suit] = 1;
-    for (i = 0; i < hand.length; i++) {
-      if (usedB[hand[i].rank + ':' + hand[i].suit]) continue;
-      leftByB[hand[i].rank] = (leftByB[hand[i].rank] || 0) + 1;
-      if (hand[i].rank === 12) twosLeftB++;
-    }
-    try { orphB = residualOrphans(hand, cards); } catch (eRo) { orphB = 0; }
-    var lkb = Object.keys(leftByB);
-    for (ri = 0; ri < lkb.length; ri++) {
-      if (leftByB[lkb[ri]] >= 2) resPairsB++;
-    }
-    var f = [1, handLen/13, omin/13, Math.min(2,twos)/2, Math.min(4,control)/4, Math.min(6,trash)/6, Math.min(6,pairs)/6, free?1:0, handLen>=10?1:0, handLen<=5?1:0, omin<=1?1:0, omin<=2?1:0, len/13, top/12, hasTwo?1:0, isTrashSingle?1:0, isLowPair?1:0, isLowMulti?1:0, typ==='single'?1:0, typ==='pair'?1:0, typ==='triple'?1:0, typ==='quad_or_seq'?1:0, typ==='long'?1:0, Math.min(8,sbc)/8, free&&isTrashSingle?1:0, free&&isLowPair?1:0, free&&isLowMulti?1:0, !free&&isTrashSingle?1:0, Math.min(5,orphB)/5, Math.min(5,resPairsB)/5, free&&orphB===0&&len>=2?1:0, free&&omin<=3&&isTrashSingle?1:0, free&&handLen>=10&&isLowPair?1:0, free&&len>=5?1:0, free?Math.min(2,twosLeftB)/2:0, free&&top<=4&&isTrashSingle?1:0];
+    var f = [1, handLen/13, omin/13, Math.min(2,twos)/2, Math.min(4,control)/4, Math.min(6,trash)/6, Math.min(6,pairs)/6, free?1:0, handLen>=10?1:0, handLen<=5?1:0, omin<=1?1:0, omin<=2?1:0, len/13, top/12, hasTwo?1:0, isTrashSingle?1:0, isLowPair?1:0, isLowMulti?1:0, typ==='single'?1:0, typ==='pair'?1:0, typ==='triple'?1:0, typ==='quad_or_seq'?1:0, typ==='long'?1:0, Math.min(8,sbc)/8, free&&isTrashSingle?1:0, free&&isLowPair?1:0, free&&isLowMulti?1:0, !free&&isTrashSingle?1:0];
     var s = 0;
     for (i = 0; i < BRD_W.length && i < f.length; i++) s += BRD_W[i] * f[i];
     return s;
@@ -1995,8 +2005,27 @@
           return b.length - a.length;
         });
       }
-      for (sfi = 0; sfi < Math.min(6, extrasFl.length); sfi++) leg.push(extrasFl[sfi]);
-      if (maxBranch < 22) maxBranch = 22;
+      // L2s443: force residual-zero multi≥3 into free-lead branch (teacher diversity),
+      // then residual-sorted extras. Wider maxBranch so BR rates re-rank architecture.
+      if (typeof residualOrphans === 'function') {
+        for (sfi = 0; sfi < fullFL.length; sfi++) {
+          var pz = fullFL[sfi];
+          if (!pz || pz.length < 3 || playHasTwo(pz) || seenFl[playSig(pz)]) continue;
+          try {
+            if (residualOrphans(hand, pz) === 0) {
+              leg.push(pz);
+              seenFl[playSig(pz)] = 1;
+            }
+          } catch (eZ) { /* skip */ }
+        }
+      }
+      for (sfi = 0; sfi < Math.min(8, extrasFl.length); sfi++) {
+        if (!seenFl[playSig(extrasFl[sfi])]) {
+          leg.push(extrasFl[sfi]);
+          seenFl[playSig(extrasFl[sfi])] = 1;
+        }
+      }
+      if (maxBranch < 26) maxBranch = 26;
     } else {
       // Include structure-safe answers (not only pure cheap) so gold combat roots exist
       var ch = cheapLegals(leg);
@@ -2062,15 +2091,30 @@
         if (sa !== sb) return sa - sb;
         return topRank(a) - topRank(b);
       });
-      for (sci = 0; sci < Math.min(5, extrasCb.length); sci++) leg.push(extrasCb[sci]);
-      if (maxBranch < 16) maxBranch = 16;
-      leg = orderLegals(leg, state, myIdx);
-      // Prefer single-2 early in branch vs high singles (author 2-for-control)
+      for (sci = 0; sci < Math.min(8, extrasCb.length); sci++) leg.push(extrasCb[sci]);
+      if (maxBranch < 18) maxBranch = 18;
+      // L2s479: combat branch order = structure-safe min-top first (firstdiff 75% combat
+      // overclimb). Do NOT orderLegals here — expert high-bias buried min-beats past maxBranch
+      // (combat analog of free-lead orderLegals wipe kill-point). BR rates re-rank.
+      leg = leg.slice().sort(function (a, b) {
+        var sa = structureBreakCost(hand, a);
+        var sb = structureBreakCost(hand, b);
+        if (sa !== sb) return sa - sb;
+        var ta = topRank(a);
+        var tb = topRank(b);
+        if (ta !== tb) return ta - tb;
+        return a.length - b.length;
+      });
+      // Prefer single-2 early in branch vs high singles (author 2-for-control / K5)
       if (cur && cur.type === 'single' && curTopBr >= 9) {
         leg = leg.slice().sort(function (a, b) {
           var a2 = a.length === 1 && a[0].rank === 12 ? 1 : 0;
           var b2 = b.length === 1 && b[0].rank === 12 ? 1 : 0;
-          return b2 - a2;
+          if (a2 !== b2) return b2 - a2;
+          var sa = structureBreakCost(hand, a);
+          var sb = structureBreakCost(hand, b);
+          if (sa !== sb) return sa - sb;
+          return topRank(a) - topRank(b);
         });
       }
     }
@@ -2193,8 +2237,10 @@
     for (var ai = 0; ai < actions.length; ai++) {
       if (timeMs > 0 && (Date.now() - t0) >= timeMs) break;
       var act = actions[ai];
-      // L2s290: free-lead full scout budget (was 0.55× — under-sampled root rates)
-      var nTry = freeLeadRoot ? Math.max(trials, Math.floor(trials * 0.95)) : trials;
+      // L2s439: free-lead root BR budget 2× (was ~0.95× ≈ identity vs combat trials).
+      // Architecture search leap — denser sampling of free-lead root rates only.
+      // Does not change combat residual packages; no orderLegals wipe.
+      var nTry = freeLeadRoot ? Math.max(trials, Math.floor(trials * 2.0)) : trials;
       var rate = runBrTrials(act, nTry);
       // Value blend: prefer actions that improve TRAIN linear V (general features)
       var vRoot = valueEval(state, myIdx);
@@ -2259,11 +2305,11 @@
     // Progressive deep refine: free-lead top-3 (0165) + combat top-2 (L2s211)
     if (details.length >= 2 && trials >= 10) {
       details.sort(function (a, b) { return b.rateV - a.rateV || b.rate - a.rate || a.sbc - b.sbc; });
-      // L2s290: free-lead deeper top-4 refine (quality over soft residual tips)
+      // L2s441: free-lead deeper top-5 + more refine trials (search architecture leap)
       var deepN2 = freeLeadRoot
-        ? Math.max(14, Math.floor(trials * 1.05))
+        ? Math.max(22, Math.floor(trials * 1.55))
         : Math.max(8, Math.floor(trials * 0.70));
-      var topK2 = freeLeadRoot ? Math.min(4, details.length) : Math.min(2, details.length);
+      var topK2 = freeLeadRoot ? Math.min(5, details.length) : Math.min(2, details.length);
       for (var dj = 0; dj < topK2; dj++) {
         if (timeMs > 0 && (Date.now() - t0) >= timeMs) break;
         var scoutRate = details[dj].rate;
@@ -2313,6 +2359,30 @@
           }
         } catch (eMc) { /* keep progressive BR */ }
       }
+      // L2s441: free-lead residual-zero multi soft pick among near-ties after deep refine.
+      // Architecture re-rank of root rates (not combat residual thrash). Band 0.04.
+      if (freeLeadRoot && details.length >= 2 && typeof residualOrphans === 'function') {
+        details.sort(function (a, b) { return b.rateV - a.rateV || b.rate - a.rate || a.sbc - b.sbc; });
+        var topRv = details[0].rateV;
+        var bestI = 0;
+        var bestSc = -1e99;
+        var ti;
+        for (ti = 0; ti < details.length; ti++) {
+          if (details[ti].rateV < topRv - 0.04) break;
+          var aT = details[ti].act;
+          var scT = details[ti].rateV;
+          if (aT && aT.length >= 3) {
+            try {
+              var orT = residualOrphans(hand, aT);
+              if (orT === 0) scT += 0.028 + 0.004 * Math.min(6, aT.length);
+              else scT -= 0.012 * Math.min(3, orT);
+            } catch (eT) { /* skip */ }
+          }
+          if (scT > bestSc) { bestSc = scT; bestI = ti; }
+        }
+        bestPlay = details[bestI].act;
+        bestRate = details[bestI].rateV;
+      }
     } else {
       details.sort(function (a, b) { return b.rateV - a.rateV || b.rate - a.rate || a.sbc - b.sbc; });
     }
@@ -2327,6 +2397,79 @@
           bestPlay = a1;
           bestRate = d1.rateV;
         }
+      }
+    }
+    // L2s479: combat architecture re-rank after deep refine (firstdiff loss16: 75% combat).
+    // 1) When PASS tops rateV but a structure-safe continue is within 0.05 rateV and
+    //    raw rate within 0.04, prefer continue (over-pass vs v60 mid climbs).
+    // 2) Among near-tied plays (band 0.04 rateV), prefer lower top if sbc≤3 and top≤9
+    //    (min-beat) — except loose high singles (gold 0498) and single-2 vs high (K5).
+    // Never hard-force; BR rates still primary when gaps are large.
+    if (!freeLeadRoot && details.length >= 2) {
+      details.sort(function (a, b) {
+        return (b.rateV || 0) - (a.rateV || 0) || (b.rate || 0) - (a.rate || 0) || (a.sbc || 0) - (b.sbc || 0);
+      });
+      var topDet = details[0];
+      if (topDet.act == null) {
+        var pi;
+        for (pi = 1; pi < details.length; pi++) {
+          if ((details[pi].rateV || 0) < (topDet.rateV || 0) - 0.05) break;
+          var aCont = details[pi].act;
+          if (!aCont || playHasTwo(aCont) || playIsBomb(aCont)) continue;
+          var sbcC = structureBreakCost(hand, aCont);
+          if (sbcC >= 4) continue;
+          if ((details[pi].rate || 0) >= (topDet.rate || 0) - 0.04) {
+            bestPlay = aCont;
+            bestRate = details[pi].rateV;
+            topDet = details[pi];
+            break;
+          }
+        }
+      }
+      // min-beat among near-ties (same length preferred)
+      details.sort(function (a, b) {
+        return (b.rateV || 0) - (a.rateV || 0) || (b.rate || 0) - (a.rate || 0) || (a.sbc || 0) - (b.sbc || 0);
+      });
+      var bandTop = details[0].rateV;
+      var bestMb = 0;
+      var bestMbSc = 1e99;
+      var mi2;
+      for (mi2 = 0; mi2 < details.length; mi2++) {
+        if ((details[mi2].rateV || 0) < bandTop - 0.04) break;
+        var aM = details[mi2].act;
+        if (aM == null) {
+          // keep PASS only if clearly best; score high so plays preferred in band
+          if (mi2 === 0 && bestPlay == null) { bestMb = 0; bestMbSc = 1e98; }
+          continue;
+        }
+        if (playHasTwo(aM) || playIsBomb(aM)) continue;
+        var sbcM = structureBreakCost(hand, aM);
+        if (sbcM > 3) continue;
+        var topM = topRank(aM);
+        // gold 0498: loose high single stays preferred
+        if (aM.length === 1 && isLooseSingle(hand, aM) && topM >= 10) {
+          bestMb = mi2;
+          bestMbSc = -1e9;
+          break;
+        }
+        // K5: single-2 vs high cur stays eligible without min-beat demotion
+        if (aM.length === 1 && aM[0].rank === 12 && cur && cur.type === 'single') {
+          var cT = cur.top ? cur.top.rank : 0;
+          if (cT >= 9) {
+            if (mi2 === 0) { bestMb = 0; bestMbSc = -1e8; }
+            continue;
+          }
+        }
+        // lower top better among mid; slight prefer matching current length
+        var scM = topM + (cur && cur.cards && aM.length === cur.cards.length ? -0.3 : 0) + sbcM * 0.05;
+        if (scM < bestMbSc) {
+          bestMbSc = scM;
+          bestMb = mi2;
+        }
+      }
+      if (bestMbSc < 1e98) {
+        bestPlay = details[bestMb].act;
+        bestRate = details[bestMb].rateV;
       }
     }
     return {
