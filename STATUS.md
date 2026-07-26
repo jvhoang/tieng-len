@@ -6,11 +6,12 @@
 **Climb live:** **v1.0-sh-L2s479** candidate (combat min-top) — **NOT product ship**  
 **Abs WR ~0.62–0.66** (climb) · Gold clean  
 
-## Product (2026-07-26)
+## Product (2026-07-26) — SHIPPED to `main` (`c5f1c05`)
 - Unique **username gate** before vs-AI / friends play (`player-profile.js` + modal)
 - **Auto-publish** play stats to GitHub Issues (no player PAT UI) via `stats-bootstrap.js`
 - **Leaderboard** menu: top WR vs latest GM AI · 1v1 / multi filters
-- SITE_BUILD `202607260200`
+- SITE_BUILD `202607260200` · AI **v1.0-sh-L2s444**
+- Pages: legacy `main` `/` · hard-refresh after build propagates
 
 ## Goal NOT complete
 
