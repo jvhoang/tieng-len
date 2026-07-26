@@ -1215,23 +1215,31 @@
         if (!el || !pl) return;
         const cfg = pl.getRemoteConfig ? pl.getRemoteConfig() : {};
         const pub = pl.getPublishStatus ? pl.getPublishStatus() : {};
-        const siteAuto = !!(window.TIENLEN_STATS_AUTO || (window.TIENLEN_REMOTE_LOG && window.TIENLEN_REMOTE_LOG.token) || window.TIENLEN_STATS_TOKEN);
-        // Hide PAT form when site bootstrap handles publish (no player permission)
+        const hasTok = !!(cfg.token || window.TIENLEN_STATS_TOKEN ||
+          (window.TIENLEN_REMOTE_LOG && window.TIENLEN_REMOTE_LOG.token));
+        // When site bootstrap provides a write token, hide PAT friction (no player permission).
         try {
           const det = document.getElementById('remote-log-setup');
           const tokenInput = document.getElementById('remote-token');
-          if (siteAuto && tokenInput) {
+          if (hasTok && tokenInput) {
             tokenInput.placeholder = 'Site auto-publish (managed) — no action needed';
             tokenInput.value = '';
             tokenInput.disabled = true;
+          } else if (tokenInput) {
+            tokenInput.disabled = false;
+            tokenInput.placeholder = 'Optional override PAT (Issues: Read & Write)';
           }
-          if (siteAuto && det) {
+          if (det) {
             const sum = det.querySelector('summary span.font-semibold');
-            if (sum) sum.textContent = '✓ Stats auto-publish ON';
+            if (sum) {
+              sum.textContent = hasTok
+                ? '✓ Stats auto-publish ON'
+                : '⚙ Stats → GitHub (auto when configured)';
+            }
           }
         } catch (_) {}
-        if (!cfg.token && !siteAuto) {
-          el.textContent = 'Local only — site publish not configured';
+        if (!hasTok) {
+          el.textContent = 'Saving locally — public sync still loads leaderboard reads';
           el.className = 'text-[10px] text-amber-400/90';
         } else if (pub.ok === true) {
           el.textContent = 'Last publish OK: ' + (pub.message || '') + (pub.at ? ' @ ' + new Date(pub.at).toLocaleTimeString() : '');
@@ -1240,7 +1248,7 @@
           el.textContent = 'Last publish: ' + pub.message;
           el.className = 'text-[10px] text-red-300';
         } else {
-          el.textContent = (siteAuto ? 'Auto-publish ON · ' : 'Enabled · ') + (cfg.owner || 'jvhoang') + '/' + (cfg.repo || 'tieng-len');
+          el.textContent = 'Auto-publish ON · ' + (cfg.owner || 'jvhoang') + '/' + (cfg.repo || 'tieng-len');
           el.className = 'text-[10px] text-emerald-400/90';
         }
       }
