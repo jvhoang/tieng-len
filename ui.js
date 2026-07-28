@@ -861,8 +861,15 @@
     }
 
     // ---------- Start modes ----------
+    function sanitizePlayerCount(n, fallback = 4) {
+      let v = (typeof n === 'number' && isFinite(n)) ? Math.floor(n) : parseInt(n, 10);
+      // DOM onclick handlers pass Event objects — never treat those as seat counts
+      if (!(v >= 2 && v <= 4)) v = (fallback >= 2 && fallback <= 4) ? fallback : 4;
+      return v;
+    }
+
     function startVsAI(nPlayersArg = 4) {
-      numPlayers = nPlayersArg || 4;
+      numPlayers = sanitizePlayerCount(nPlayersArg, 4);
       vsAI = true;
       playMode = 'ai';
       humanSeats = [0];
@@ -883,7 +890,7 @@
         if (titleSel) titleSel.value = diff;
       } catch (_) {}
 
-      // ALWAYS recreate so 2/3/4 seats are correct (never reuse stale 4p)
+      // ALWAYS recreate so 2/3/4 seats are correct (never reuse stale instance)
       recreateController({
         vsAI: true,
         numPlayers,
@@ -896,10 +903,36 @@
         siteBuild: (typeof window !== 'undefined' && window.TIENLEN_SITE_BUILD) || null
       });
 
+      // Belt-and-suspenders: verify dealt table size matches request
+      try {
+        const st0 = getState();
+        const dealt = st0 && st0.players ? st0.players.length : 0;
+        if (dealt !== numPlayers) {
+          console.warn('[TiengLen] seat mismatch, re-dealing', { wanted: numPlayers, dealt });
+          numPlayers = sanitizePlayerCount(dealt || numPlayers, 4);
+          if (controller && controller.reconfigure) {
+            controller.reconfigure({
+              vsAI: true, numPlayers, humanSeats: [0], currentHumanSeat: 0,
+              seed: Date.now() + 1, mode: 'vsAI', aiDifficulty: diff,
+              siteBuild: (typeof window !== 'undefined' && window.TIENLEN_SITE_BUILD) || null
+            });
+          }
+        }
+      } catch (_) {}
+
       showGameScreen();
       const sub = doc.getElementById('game-subtitle');
       const diffLabel = diff.charAt(0).toUpperCase() + diff.slice(1);
-      if (sub) sub.innerHTML = `Round 1 • ${numPlayers} Players • vs AI (${diffLabel})`;
+      const stLive = getState();
+      const nLive = (stLive && stLive.players && stLive.players.length) || numPlayers;
+      numPlayers = nLive;
+      if (sub) {
+        sub.innerHTML = `Round 1 • <strong class="text-[#e8d48b]">${nLive} Players</strong> • vs AI (${diffLabel})` +
+          (nLive === 4 ? ' • 3 AI opponents' : (nLive === 3 ? ' • 2 AI opponents' : ' • 1 AI opponent'));
+      }
+      try {
+        if (typeof localStorage !== 'undefined') localStorage.setItem('tienlen_last_vsai_players', String(nLive));
+      } catch (_) {}
 
       updatePlayerLabels();
       updateUIFromController();
@@ -1197,12 +1230,12 @@
 
     function startLive(nPlayersArg = 4) {
       // Show friends lobby (hotseat vs online host/join)
-      numPlayers = nPlayersArg || 4;
+      numPlayers = sanitizePlayerCount(nPlayersArg, 4);
       showFriendsLobby(numPlayers);
     }
 
     function startHotseat(nPlayersArg = 4) {
-      numPlayers = nPlayersArg || 4;
+      numPlayers = sanitizePlayerCount(nPlayersArg, 4);
       vsAI = false;
       playMode = 'hotseat';
       humanSeats = [];

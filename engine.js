@@ -514,6 +514,12 @@ function pass(state, playerIdx) {
 
 // Initialize game state
 function createGameState(numPlayers, seed = Date.now()) {
+  // Coerce: DOM handlers sometimes pass Event objects; only 2–4 are valid
+  let n = (typeof numPlayers === 'number' && isFinite(numPlayers))
+    ? Math.floor(numPlayers)
+    : parseInt(numPlayers, 10);
+  if (!(n >= 2 && n <= 4)) n = 4;
+  numPlayers = n;
   const deal = dealCards(numPlayers, seed);
   const { hands, firstPlayer, firstLeadCard } = deal;
   const players = hands.map((h, i) => ({

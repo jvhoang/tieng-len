@@ -33,8 +33,15 @@
    * createController({ vsAI, numPlayers, humanSeats, seed, playLog, mode, siteBuild })
    * Returns an object with the public API the buttons and tests use.
    */
+  function sanitizePlayerCount(n, fallback) {
+    const fb = (fallback >= 2 && fallback <= 4) ? fallback : 4;
+    let v = (typeof n === 'number' && isFinite(n)) ? Math.floor(n) : parseInt(n, 10);
+    if (!(v >= 2 && v <= 4)) v = fb;
+    return v;
+  }
+
   function createController(opts = {}) {
-    let numPlayers = opts.numPlayers || 4;
+    let numPlayers = sanitizePlayerCount(opts.numPlayers, 4);
     let vsAI = opts.vsAI !== false; // default true
     let aiDifficulty = opts.aiDifficulty || 'grandmaster'; // easy | medium | hard | grandmaster
     let humanSeats = Array.isArray(opts.humanSeats) ? opts.humanSeats.slice() : [0];
@@ -74,10 +81,16 @@
             uname = window.TienLenPlayerProfile.getUsername() || null;
           }
         } catch (eU) { uname = null; }
+        // Prefer actual dealt seats (state.players.length) over any stale flag
+        var nLog = (state.players && state.players.length) || numPlayers;
+        if (state.numPlayers !== nLog) {
+          try { state.numPlayers = nLog; } catch (_) {}
+          numPlayers = nLog;
+        }
         playLog.startGame(state, {
           mode: playMode,
           vsAI: vsAI,
-          numPlayers: numPlayers,
+          numPlayers: nLog,
           humanSeats: humanSeats.slice(),
           aiDifficulty: aiDifficulty,
           aiBuild: getAIBuild(),
@@ -115,9 +128,9 @@
       if (typeof m.vsAI === 'boolean') vsAI = m.vsAI;
       if (Array.isArray(m.humanSeats)) humanSeats = m.humanSeats.slice();
       if (typeof m.currentHumanSeat === 'number') currentHumanSeat = m.currentHumanSeat;
-      if (typeof m.numPlayers === 'number' && m.numPlayers >= 2 && m.numPlayers <= 4) {
+      if (m.numPlayers != null) {
         // Does not re-deal; use reconfigure for full restart
-        numPlayers = m.numPlayers;
+        numPlayers = sanitizePlayerCount(m.numPlayers, numPlayers);
       }
       if (typeof m.aiDifficulty === 'string') aiDifficulty = m.aiDifficulty;
       if (typeof m.mode === 'string') playMode = m.mode;
@@ -142,7 +155,7 @@
      */
     function reconfigure(m = {}) {
       if (typeof m.vsAI === 'boolean') vsAI = m.vsAI;
-      if (typeof m.numPlayers === 'number') numPlayers = m.numPlayers;
+      if (m.numPlayers != null) numPlayers = sanitizePlayerCount(m.numPlayers, numPlayers);
       if (Array.isArray(m.humanSeats)) humanSeats = m.humanSeats.slice();
       if (typeof m.currentHumanSeat === 'number') currentHumanSeat = m.currentHumanSeat;
       if (typeof m.aiDifficulty === 'string') aiDifficulty = m.aiDifficulty;

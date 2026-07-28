@@ -624,7 +624,16 @@
       }
       t0 = Date.now();
       var humanSeats = Array.isArray(cfg.humanSeats) ? cfg.humanSeats.slice() : [0];
-      var n = state.numPlayers || (state.players && state.players.length) || 4;
+      // Authoritative seat count = dealt hands. Never trust a non-numeric Event leak.
+      var handsN = (state && state.players && state.players.length) || 0;
+      var cfgN = cfg.numPlayers;
+      var stateN = state && state.numPlayers;
+      function asSeatCount(v) {
+        var x = (typeof v === 'number' && isFinite(v)) ? Math.floor(v) : parseInt(v, 10);
+        return (x >= 2 && x <= 4) ? x : 0;
+      }
+      var n = handsN || asSeatCount(cfgN) || asSeatCount(stateN) || 4;
+      if (n < 2 || n > 4) n = 4;
       var aiSeats = [];
       for (var s = 0; s < n; s++) {
         if (humanSeats.indexOf(s) < 0) aiSeats.push(s);

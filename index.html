@@ -662,9 +662,9 @@
 
       <!-- Mode Cards -->
       <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-        <!-- VS Computer -->
-        <div onclick="startVsAI()" 
-             class="group bg-[#121a2f] border-2 border-[#334155] hover:border-[#2dd4bf] rounded-3xl p-8 cursor-pointer transition-all active:scale-[0.985]">
+        <!-- VS Computer — only player-count buttons start a game (no card-level click;
+             onclick="startVsAI()" used to pass the MouseEvent as n and corrupt seat count) -->
+        <div class="group bg-[#121a2f] border-2 border-[#334155] hover:border-[#2dd4bf] rounded-3xl p-8 transition-all">
           <div class="flex items-center gap-x-3 mb-4">
             <div class="text-4xl"><i class="fa-solid fa-robot text-[#2dd4bf]"></i></div>
             <div>
@@ -672,7 +672,7 @@
               <div id="title-ai-card-line" class="text-sm text-[#2dd4bf]">Grandmaster AI — loading…</div>
             </div>
           </div>
-          <div class="mt-4" onclick="event.stopImmediatePropagation()">
+          <div class="mt-4">
             <label class="flex flex-col gap-1.5 text-left">
               <span class="text-[10px] uppercase tracking-widest text-[#64748b]">AI difficulty</span>
               <select id="title-ai-difficulty" onchange="setAIDifficulty(this.value)"
@@ -684,17 +684,32 @@
               </select>
             </label>
           </div>
-          <div class="flex gap-2 mt-4">
-            <div onclick="event.stopImmediatePropagation(); choosePlayers(2, true)" class="flex-1 text-center py-2 bg-[#0f172a] hover:bg-[#1a2438] rounded-2xl border border-[#334155] text-sm">2 Players</div>
-            <div onclick="event.stopImmediatePropagation(); choosePlayers(3, true)" class="flex-1 text-center py-2 bg-[#0f172a] hover:bg-[#1a2438] rounded-2xl border border-[#334155] text-sm">3 Players</div>
-            <div onclick="event.stopImmediatePropagation(); choosePlayers(4, true)" class="flex-1 text-center py-2 bg-[#0f172a] hover:bg-[#1a2438] rounded-2xl border border-[#334155] text-sm font-semibold">4 Players</div>
+          <div class="text-[10px] uppercase tracking-widest text-[#64748b] mt-4 mb-2">Table size — tap to start</div>
+          <div class="flex gap-2" id="vsai-player-btns">
+            <button type="button" data-n="2" onclick="choosePlayers(2, true)"
+              class="vsai-n-btn flex-1 text-center py-3 bg-[#0f172a] hover:bg-[#1a2438] rounded-2xl border border-[#334155] text-sm active:scale-[0.98]">
+              <div class="font-semibold">2</div>
+              <div class="text-[10px] text-[#64748b]">1 AI</div>
+            </button>
+            <button type="button" data-n="3" onclick="choosePlayers(3, true)"
+              class="vsai-n-btn flex-1 text-center py-3 bg-[#0f172a] hover:bg-[#1a2438] rounded-2xl border border-[#334155] text-sm active:scale-[0.98]">
+              <div class="font-semibold">3</div>
+              <div class="text-[10px] text-[#64748b]">2 AI</div>
+            </button>
+            <button type="button" data-n="4" onclick="choosePlayers(4, true)"
+              class="vsai-n-btn flex-1 text-center py-3 bg-[#0f3d3a]/50 hover:bg-[#0f3d3a] rounded-2xl border-2 border-[#2dd4bf] text-sm font-semibold text-[#99f6e4] active:scale-[0.98]">
+              <div class="font-semibold">4</div>
+              <div class="text-[10px] text-[#2dd4bf]">3 AI · default</div>
+            </button>
           </div>
-          <div class="text-[10px] text-[#64748b] mt-4">Default: Grandmaster. Change difficulty before you start.</div>
+          <div class="text-[10px] text-[#64748b] mt-3 leading-relaxed">
+            <strong class="text-[#e8d48b]">4 players</strong> = you + 3 AIs (multi leaderboard).
+            <strong>2 players</strong> = pure 1v1. Check the subtitle in-game.
+          </div>
         </div>
 
         <!-- Live Players -->
-        <div onclick="startLive()" 
-             class="group bg-[#121a2f] border-2 border-[#334155] hover:border-[#2dd4bf] rounded-3xl p-8 cursor-pointer transition-all active:scale-[0.985]">
+        <div class="group bg-[#121a2f] border-2 border-[#334155] hover:border-[#2dd4bf] rounded-3xl p-8 transition-all">
           <div class="flex items-center gap-x-3 mb-4">
             <div class="text-4xl"><i class="fa-solid fa-users text-[#2dd4bf]"></i></div>
             <div>
@@ -706,10 +721,11 @@
             Share a link or play together on one device.<br>
             Full 2–4 player support with perfect sync.
           </div>
-          <div class="mt-6 flex gap-2">
-            <div onclick="event.stopImmediatePropagation(); choosePlayers(2, false)" class="flex-1 py-2 text-center rounded-2xl border border-[#334155] hover:bg-[#1a2438] text-sm">2</div>
-            <div onclick="event.stopImmediatePropagation(); choosePlayers(3, false)" class="flex-1 py-2 text-center rounded-2xl border border-[#334155] hover:bg-[#1a2438] text-sm">3</div>
-            <div onclick="event.stopImmediatePropagation(); choosePlayers(4, false)" class="flex-1 py-2 text-center rounded-2xl border border-[#334155] hover:bg-[#1a2438] text-sm font-semibold">4</div>
+          <div class="text-[10px] uppercase tracking-widest text-[#64748b] mt-4 mb-2">Players — tap to open lobby</div>
+          <div class="flex gap-2">
+            <button type="button" onclick="choosePlayers(2, false)" class="flex-1 py-3 text-center rounded-2xl border border-[#334155] hover:bg-[#1a2438] text-sm">2</button>
+            <button type="button" onclick="choosePlayers(3, false)" class="flex-1 py-3 text-center rounded-2xl border border-[#334155] hover:bg-[#1a2438] text-sm">3</button>
+            <button type="button" onclick="choosePlayers(4, false)" class="flex-1 py-3 text-center rounded-2xl border-2 border-[#2dd4bf] hover:bg-[#0f3d3a] text-sm font-semibold text-[#99f6e4]">4</button>
           </div>
         </div>
       </div>
@@ -1018,7 +1034,7 @@
   -->
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <script>
-    window.TIENLEN_SITE_BUILD = '202607260500';
+    window.TIENLEN_SITE_BUILD = '202607280100';
     // Inline fallback so title always has a version even if scripts fail to load
     window.TIENLEN_AI_BUILD = window.TIENLEN_AI_BUILD || {
       id: 'v1.0-sh-L2s444',
@@ -1642,24 +1658,46 @@
         showUsernameModal({ required: true });
       }
 
+      /** Only accept integer 2–4. Ignores DOM Event objects from onclick handlers. */
+      function sanitizePlayerCount(n, fallback) {
+        var fb = (fallback >= 2 && fallback <= 4) ? fallback : 4;
+        var v = (typeof n === 'number' && isFinite(n)) ? Math.floor(n) : parseInt(n, 10);
+        if (!(v >= 2 && v <= 4)) v = fb;
+        return v;
+      }
+
       function startVsAIAfterGate(n) {
-        ui.startVsAI(n || 4);
+        var count = sanitizePlayerCount(n, 4);
+        ui.startVsAI(count);
         document.body.classList.add('playing-active');
         const bar = document.getElementById('action-bar');
         if (bar) bar.classList.remove('hidden');
         refreshUsernameUI();
+        try {
+          console.log('%c[TiengLen] Started vs AI · ' + count + ' players',
+            'color:#c9a227;font-weight:bold');
+        } catch (_) {}
       }
       function startLiveAfterGate(n) {
-        ui.startLive(n || 4);
+        ui.startLive(sanitizePlayerCount(n, 4));
         refreshUsernameUI();
       }
 
-      window.startVsAI = function(n){ requireUsernameThen('vsAI', n || 4); };
-      window.startLive = function(n){ requireUsernameThen('live', n || 4); };
+      window.startVsAI = function(n){
+        // Never use `n || 4` — a click Event is truthy and used to corrupt seat count
+        requireUsernameThen('vsAI', sanitizePlayerCount(n, 4));
+      };
+      window.startLive = function(n){
+        requireUsernameThen('live', sanitizePlayerCount(n, 4));
+      };
       window.playSelected = function(){ ui.playSelected(); };
       window.doPass = function(){ ui.doPass(); };
       window.clearSelection = function(){ if (ui.clearSelection) ui.clearSelection(); };
-      window.choosePlayers = function(n, isAI) { if (isAI) window.startVsAI(n); else window.startLive(n); };
+      window.choosePlayers = function(n, isAI) {
+        var count = sanitizePlayerCount(n, 4);
+        if (isAI) window.startVsAI(count);
+        else window.startLive(count);
+      };
 
       window.setLeaderboardMode = function (mode) {
         _lbMode = mode || 'all';
