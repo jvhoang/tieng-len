@@ -687,9 +687,9 @@
           <div class="text-[10px] uppercase tracking-widest text-[#64748b] mt-4 mb-2">Table size — tap to start</div>
           <div class="flex gap-2" id="vsai-player-btns">
             <button type="button" data-n="2" onclick="choosePlayers(2, true)"
-              class="vsai-n-btn flex-1 text-center py-3 bg-[#0f172a] hover:bg-[#1a2438] rounded-2xl border border-[#334155] text-sm active:scale-[0.98]">
+              class="vsai-n-btn flex-1 text-center py-3 bg-[#0f3d3a]/50 hover:bg-[#0f3d3a] rounded-2xl border-2 border-[#2dd4bf] text-sm font-semibold text-[#99f6e4] active:scale-[0.98]">
               <div class="font-semibold">2</div>
-              <div class="text-[10px] text-[#64748b]">1 AI</div>
+              <div class="text-[10px] text-[#2dd4bf]">1 AI · default</div>
             </button>
             <button type="button" data-n="3" onclick="choosePlayers(3, true)"
               class="vsai-n-btn flex-1 text-center py-3 bg-[#0f172a] hover:bg-[#1a2438] rounded-2xl border border-[#334155] text-sm active:scale-[0.98]">
@@ -697,14 +697,14 @@
               <div class="text-[10px] text-[#64748b]">2 AI</div>
             </button>
             <button type="button" data-n="4" onclick="choosePlayers(4, true)"
-              class="vsai-n-btn flex-1 text-center py-3 bg-[#0f3d3a]/50 hover:bg-[#0f3d3a] rounded-2xl border-2 border-[#2dd4bf] text-sm font-semibold text-[#99f6e4] active:scale-[0.98]">
+              class="vsai-n-btn flex-1 text-center py-3 bg-[#0f172a] hover:bg-[#1a2438] rounded-2xl border border-[#334155] text-sm active:scale-[0.98]">
               <div class="font-semibold">4</div>
-              <div class="text-[10px] text-[#2dd4bf]">3 AI · default</div>
+              <div class="text-[10px] text-[#64748b]">3 AI</div>
             </button>
           </div>
           <div class="text-[10px] text-[#64748b] mt-3 leading-relaxed">
-            <strong class="text-[#e8d48b]">4 players</strong> = you + 3 AIs (multi leaderboard).
-            <strong>2 players</strong> = pure 1v1. Check the subtitle in-game.
+            <strong class="text-[#e8d48b]">2 players</strong> = pure 1v1 (default).
+            <strong>4 players</strong> = you + 3 AIs (multi leaderboard). Check the subtitle in-game.
           </div>
         </div>
 
@@ -1034,7 +1034,7 @@
   -->
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <script>
-    window.TIENLEN_SITE_BUILD = '202607280200';
+    window.TIENLEN_SITE_BUILD = '202607280300';
     // Inline fallback so title always has a version even if scripts fail to load
     window.TIENLEN_AI_BUILD = window.TIENLEN_AI_BUILD || {
       id: 'v1.0-sh-L2s444',
