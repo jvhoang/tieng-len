@@ -1094,6 +1094,26 @@
         if (glow) glow.classList.remove('active');
         if (confetti) confetti.innerHTML = '';
       }
+      // Surface play-log disk failures (iOS quota) so "missing history" is not silent
+      try {
+        const pl = controller && controller.getPlayLog && controller.getPlayLog();
+        const ss = pl && pl.getStorageStatus && pl.getStorageStatus();
+        if (ss && ss.ok === false && sub) {
+          sub.textContent = (sub.textContent || '') +
+            ' · ⚠ History save issue: ' + (ss.message || 'storage full — hard refresh may help');
+        } else if (ss && ss.ok && nLiveSeatsHint(st) >= 3 && sub) {
+          // confirm multi tables are logged with correct size
+          const n = nLiveSeatsHint(st);
+          if (sub && sub.textContent && sub.textContent.indexOf('player') < 0) {
+            /* keep existing subtitle */
+          }
+          void n;
+        }
+      } catch (_) {}
+    }
+
+    function nLiveSeatsHint(st) {
+      return (st && st.players && st.players.length) || st.numPlayers || 0;
     }
 
     function hideRoundResults() {

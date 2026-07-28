@@ -26,12 +26,15 @@
   var INDEX_KEY = 'tienlen_playlog_v1_index';
   var GAME_PREFIX = 'tienlen_playlog_v1_game_';
   var REMOTE_CFG_KEY = 'tienlen_playlog_v1_remote_cfg';
-  // Local cache cap for full bodies. Index + remoteCache can show more than this
-  // (listGamesMerged unions remoteCache). iOS Safari quota is tight (~5MB).
-  var MAX_GAMES = 2000;
-  var MAX_LEGALS_STORED = 24;
+  // Local cache: index can list many; full bodies must stay small for iOS (~5MB).
+  // Remote sync used to write every full GitHub body into localStorage and exhaust
+  // quota so NEW finished games silently failed to save (user saw empty History).
+  var MAX_GAMES = 400;
+  var MAX_LOCAL_FULL_BODIES = 60;
+  var MAX_LEGALS_STORED = 8;
   var REMOTE_PAGE_SIZE = 100;
   var REMOTE_MAX_PAGES = 50;
+  var STORE_REMOTE_BODIES = false; // remote full JSON stays in memory only
   // Product GM bind fix SITE_BUILD (for pre/post WR stats in UI)
   var PRODUCT_GM_FIX_SITE_BUILD = '202607231400';
   var ISSUE_MARKER = '<!-- TIENLEN_PLAYLOG_V1 -->';
@@ -146,7 +149,8 @@
     var t0 = 0;
     var fetchFn = opts.fetch || (typeof fetch === 'function' ? fetch.bind(typeof window !== 'undefined' ? window : globalThis) : null);
     var lastPublishStatus = { ok: null, at: null, message: '', gameId: null };
-    var remoteCache = {}; // id -> full game from GitHub
+    var lastStorageStatus = { ok: true, at: null, message: '', gameId: null };
+    var remoteCache = {}; // id -> full game from GitHub (memory; not all written to disk)
 
     function readIndex() {
       try {
@@ -201,18 +205,181 @@
       return idx;
     }
 
-    function saveGame(rec) {
-      storage.setItem(gameKey(rec.id), JSON.stringify(rec));
-      var idx = readIndex().filter(function (e) { return e.id !== rec.id; });
-      idx.unshift(summarize(rec));
-      trimIndexKeepNewest(idx);
-      writeIndex(idx);
-      return rec.id;
+    function listStoredGameKeys() {
+      var keys = [];
+      try {
+        if (typeof storage.length === 'number' && typeof storage.key === 'function') {
+          for (var i = 0; i < storage.length; i++) {
+            var k = storage.key(i);
+            if (k && k.indexOf(GAME_PREFIX) === 0) keys.push(k);
+          }
+        } else if (storage && typeof storage === 'object') {
+          // memory map adapter
+          for (var mk in storage) {
+            if (Object.prototype.hasOwnProperty.call(storage, mk) && String(mk).indexOf(GAME_PREFIX) === 0) {
+              keys.push(mk);
+            }
+          }
+        }
+      } catch (eL) { /* ignore */ }
+      return keys;
+    }
+
+    /** Drop oldest full bodies from localStorage to free quota for new local games. */
+    function evictOldestFullBodies(keepNewest) {
+      keepNewest = keepNewest != null ? keepNewest : MAX_LOCAL_FULL_BODIES;
+      var keys = listStoredGameKeys();
+      if (keys.length <= keepNewest) return 0;
+      var metas = [];
+      var i, raw, rec, id;
+      for (i = 0; i < keys.length; i++) {
+        try {
+          raw = storage.getItem(keys[i]);
+          rec = raw ? JSON.parse(raw) : null;
+          id = rec && rec.id ? rec.id : keys[i].slice(GAME_PREFIX.length);
+          metas.push({
+            key: keys[i],
+            id: id,
+            t: (rec && (rec.endedAt || rec.startedAt)) || '',
+            local: !(rec && (rec._public || rec._source === 'github'))
+          });
+        } catch (eM) {
+          metas.push({ key: keys[i], id: keys[i], t: '', local: false });
+        }
+      }
+      // Evict non-local / oldest first
+      metas.sort(function (a, b) {
+        if (a.local !== b.local) return a.local ? 1 : -1; // remote first
+        return a.t < b.t ? -1 : (a.t > b.t ? 1 : 0);
+      });
+      var removed = 0;
+      while (metas.length > keepNewest) {
+        var drop = metas.shift();
+        try { storage.removeItem(drop.key); removed++; } catch (eR) { /* ignore */ }
+      }
+      return removed;
+    }
+
+    function slimRecordForStorage(rec) {
+      var copy = clone(rec);
+      if (!copy) return rec;
+      // Drop bulky AI diagnostics; keep enough for analysis
+      if (copy.events && copy.events.length) {
+        for (var i = 0; i < copy.events.length; i++) {
+          var ev = copy.events[i];
+          if (!ev) continue;
+          if (ev.actor === 'ai') {
+            delete ev.handBefore;
+            if (ev.legals && ev.legals.length > 4) ev.legals = ev.legals.slice(0, 4);
+          }
+          if (ev.legals && ev.legals.length > MAX_LEGALS_STORED) {
+            ev.legals = ev.legals.slice(0, MAX_LEGALS_STORED);
+          }
+          if (ev.ai && ev.ai.stats) {
+            var st = ev.ai.stats;
+            ev.ai.stats = {
+              mode: st.mode || null,
+              nodes: st.nodes != null ? st.nodes : null,
+              thinkMs: st.thinkMs != null ? st.thinkMs : (ev.ai.thinkMs != null ? ev.ai.thinkMs : null)
+            };
+          }
+        }
+      }
+      // openingSnapshot duplicates deal hands — drop if huge
+      if (copy.openingSnapshot && copy.deal && copy.deal.hands) {
+        try {
+          if (JSON.stringify(copy.openingSnapshot).length > 8000) delete copy.openingSnapshot;
+        } catch (eO) { /* keep */ }
+      }
+      return copy;
     }
 
     /**
-     * Bulk-merge full game records into local cache without reverse-order bug.
-     * Rebuilds index sorted newest-first and keeps up to maxGames.
+     * Persist a game. Always tries hard to keep YOUR finished games on disk.
+     * Returns { ok, id, slimmed, evicted }.
+     */
+    function saveGame(rec) {
+      if (!rec || !rec.id) return { ok: false, error: 'no-record' };
+      var id = rec.id;
+      var payload = rec;
+      var slimmed = false;
+      var evicted = 0;
+      var attempts = 0;
+      var lastErr = null;
+
+      function tryWrite(body) {
+        storage.setItem(gameKey(id), JSON.stringify(body));
+        var idx = readIndex().filter(function (e) { return e.id !== id; });
+        idx.unshift(summarize(body));
+        trimIndexKeepNewest(idx);
+        writeIndex(idx);
+      }
+
+      while (attempts < 4) {
+        attempts++;
+        try {
+          tryWrite(payload);
+          lastStorageStatus = {
+            ok: true,
+            at: nowIso(),
+            message: slimmed ? 'saved (slimmed)' : 'saved',
+            gameId: id,
+            slimmed: slimmed,
+            evicted: evicted
+          };
+          return { ok: true, id: id, slimmed: slimmed, evicted: evicted };
+        } catch (e) {
+          lastErr = e;
+          if (attempts === 1) {
+            payload = slimRecordForStorage(rec);
+            slimmed = true;
+            continue;
+          }
+          if (attempts === 2) {
+            evicted += evictOldestFullBodies(Math.max(8, Math.floor(MAX_LOCAL_FULL_BODIES / 2)));
+            continue;
+          }
+          if (attempts === 3) {
+            // Nuclear: wipe all full bodies except keep index, save this game only
+            var keys = listStoredGameKeys();
+            for (var ki = 0; ki < keys.length; ki++) {
+              if (keys[ki] !== gameKey(id)) {
+                try { storage.removeItem(keys[ki]); evicted++; } catch (eK) { /* ignore */ }
+              }
+            }
+            continue;
+          }
+        }
+      }
+
+      // Last resort: index summary only (no full body) so History still lists the game
+      try {
+        var idx2 = readIndex().filter(function (e) { return e.id !== id; });
+        idx2.unshift(summarize(rec));
+        trimIndexKeepNewest(idx2);
+        writeIndex(idx2);
+        lastStorageStatus = {
+          ok: false,
+          at: nowIso(),
+          message: 'index-only (quota): ' + String(lastErr && lastErr.message || lastErr || 'quota'),
+          gameId: id,
+          indexOnly: true
+        };
+        return { ok: false, id: id, indexOnly: true, error: String(lastErr && lastErr.message || lastErr) };
+      } catch (eI) {
+        lastStorageStatus = {
+          ok: false,
+          at: nowIso(),
+          message: 'save failed: ' + String(eI && eI.message || eI),
+          gameId: id
+        };
+        return { ok: false, error: String(eI && eI.message || eI) };
+      }
+    }
+
+    /**
+     * Bulk-merge remote games: summaries + memory cache only.
+     * Do NOT fill localStorage with hundreds of full remote bodies (iOS quota death).
      */
     function mergeGamesIntoIndex(recs) {
       if (!recs || !recs.length) return readIndex();
@@ -228,12 +395,13 @@
         var rec = recs[i];
         if (!rec || !rec.id) continue;
         remoteCache[rec.id] = rec;
-        try {
-          storage.setItem(gameKey(rec.id), JSON.stringify(rec));
-          storedBodies++;
-        } catch (eQ) {
-          // iOS quota: keep summary + remoteCache body so UI still lists the game
-          quotaHits++;
+        if (STORE_REMOTE_BODIES) {
+          try {
+            storage.setItem(gameKey(rec.id), JSON.stringify(slimRecordForStorage(rec)));
+            storedBodies++;
+          } catch (eQ) {
+            quotaHits++;
+          }
         }
         byId[rec.id] = summarize(rec);
       }
@@ -245,13 +413,14 @@
       try {
         writeIndex(merged);
       } catch (eW) {
-        // If index too large, keep trimmed half of newest
         try {
-          var half = merged.slice(0, Math.min(merged.length, 800));
+          var half = merged.slice(0, Math.min(merged.length, 200));
           writeIndex(half);
           merged = half;
         } catch (eW2) { /* ignore */ }
       }
+      // Free space after big sync so the next live game can save
+      try { evictOldestFullBodies(MAX_LOCAL_FULL_BODIES); } catch (eEv) { /* ignore */ }
       return merged;
     }
 
@@ -743,7 +912,7 @@
         finishOrder: after && after.finishOrder ? after.finishOrder.slice() : null
       });
       // Persist every action so mid-game crash still keeps full trail
-      try { saveGame(active); } catch (e) { /* quota */ }
+      try { saveGame(active); } catch (e) { /* saveGame is resilient */ }
       if (after && after.roundOver) {
         finalizeActive({ fromState: after });
       }
@@ -801,10 +970,13 @@
         actor: 'system',
         result: clone(active.result)
       });
-      try { saveGame(active); } catch (e) { /* ignore */ }
+      var saveRes = null;
+      try { saveRes = saveGame(active); } catch (e) { saveRes = { ok: false, error: String(e) }; }
       var done = active;
       active = null;
-      // Public auto-publish (async; local already saved)
+      // Keep finished game in memory cache even if disk was full
+      try { if (done && done.id) remoteCache[done.id] = done; } catch (eC) { /* ignore */ }
+      // Public auto-publish (async; local best-effort already attempted)
       try {
         publishGame(done).then(function (res) {
           if (typeof opts.onPublish === 'function') {
@@ -812,6 +984,7 @@
           }
         });
       } catch (ePub) { /* ignore */ }
+      if (done) done._saveResult = saveRes;
       return done;
     }
 
@@ -987,6 +1160,8 @@
       publishGame: publishGame,
       fetchPublicGames: fetchPublicGames,
       getPublishStatus: getPublishStatus,
+      getStorageStatus: function getStorageStatus() { return Object.assign({}, lastStorageStatus); },
+      evictOldestFullBodies: evictOldestFullBodies,
       testRemoteConnection: testRemoteConnection,
       encodeIssueBody: encodeIssueBody,
       decodeIssueBody: decodeIssueBody,
@@ -1035,7 +1210,15 @@
   // Singleton for browser convenience
   var _default = null;
   function getDefault() {
-    if (!_default) _default = createPlayLog();
+    if (!_default) {
+      _default = createPlayLog();
+      // iOS: free space taken by old remote full bodies so new games can save
+      try {
+        if (typeof _default.evictOldestFullBodies === 'function') {
+          _default.evictOldestFullBodies(MAX_LOCAL_FULL_BODIES);
+        }
+      } catch (eEv0) { /* ignore */ }
+    }
     return _default;
   }
 
