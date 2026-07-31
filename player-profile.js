@@ -190,8 +190,32 @@
   }
 
   /**
+   * Wilson score interval (95% default) for a binomial proportion.
+   * Returns { lo, hi, wr } with lo/hi clamped to [0,1].
+   * Used to rank 1v1 by lower bound so 1/1 does not outrank solid samples.
+   */
+  function wilsonInterval(wins, n, z) {
+    z = z == null ? 1.96 : z;
+    if (n <= 0) return { lo: 0, hi: 1, wr: 0 };
+    var ph = wins / n;
+    var z2 = z * z;
+    var den = 1 + z2 / n;
+    var center = (ph + z2 / (2 * n)) / den;
+    var half = (z * Math.sqrt((ph * (1 - ph) + z2 / (4 * n)) / n)) / den;
+    var lo = center - half;
+    var hi = center + half;
+    if (lo < 0) lo = 0;
+    if (hi > 1) hi = 1;
+    return { lo: lo, hi: hi, wr: ph };
+  }
+
+  function wilsonLowerBound(wins, n, z) {
+    return wilsonInterval(wins, n, z).lo;
+  }
+
+  /**
    * Build leaderboard rows from full playlog games.
-   * - 1v1: rank by win rate (also show 1st/2nd counts)
+   * - 1v1: rank by Wilson 95% CI lower bound on win rate (also show raw WR + 1st/2nd)
    * - 3p / 4p: rank by best (lowest) average placement; show #1st..#4th
    *
    * modeFilter: 'all' | '1v1' | '3p' | '4p' | 'multi' (multi = 3p+4p combined view as separate rows)
@@ -301,6 +325,9 @@
       row = map[k];
       if (row.games < minGames) continue;
       row.winRate = row.games ? row.wins / row.games : 0;
+      var wInt = wilsonInterval(row.wins, row.games, 1.96);
+      row.winRateLo = wInt.lo;
+      row.winRateHi = wInt.hi;
       row.avgPlacement = row.placementCount ? (row.placementSum / row.placementCount) : null;
       delete row._stamp;
       rows.push(row);
@@ -309,7 +336,7 @@
     rows.sort(function (a, b) {
       var aMulti = a.mode === '3p' || a.mode === '4p';
       var bMulti = b.mode === '3p' || b.mode === '4p';
-      // Within multi filters / mixed all: multi rows by avg placement, 1v1 by WR
+      // Within multi filters / mixed all: multi rows by avg placement, 1v1 by Wilson LB
       if (aMulti && bMulti) {
         var ap = a.avgPlacement != null ? a.avgPlacement : 99;
         var bp = b.avgPlacement != null ? b.avgPlacement : 99;
@@ -319,6 +346,10 @@
         return String(a.username).localeCompare(String(b.username));
       }
       if (aMulti !== bMulti) return aMulti ? 1 : -1; // 1v1 section first in 'all'
+      // 1v1: higher 95% CI lower bound first (not raw win %)
+      var aLo = a.winRateLo != null ? a.winRateLo : 0;
+      var bLo = b.winRateLo != null ? b.winRateLo : 0;
+      if (bLo !== aLo) return bLo - aLo;
       if (b.winRate !== a.winRate) return b.winRate - a.winRate;
       if (b.wins !== a.wins) return b.wins - a.wins;
       if (b.games !== a.games) return b.games - a.games;
@@ -335,7 +366,7 @@
         onlyGrandmaster: onlyGm,
         latestAiOnly: latestAiOnly,
         totalGamesScanned: list.length,
-        rankBy: isMultiFilter ? 'avgPlacement' : (modeFilter === 'all' ? 'mixed' : 'winRate')
+        rankBy: isMultiFilter ? 'avgPlacement' : (modeFilter === 'all' ? 'mixed' : 'wilsonLB95')
       }
     };
   }
@@ -354,6 +385,8 @@
     completeFinishOrder: completeFinishOrder,
     humanPlacement: humanPlacement,
     modeBucketFor: modeBucketFor,
+    wilsonInterval: wilsonInterval,
+    wilsonLowerBound: wilsonLowerBound,
     buildLeaderboard: buildLeaderboard
   };
 }));

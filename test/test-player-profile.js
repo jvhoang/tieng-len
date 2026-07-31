@@ -153,7 +153,40 @@ console.log('=== player-profile leaderboard 1v1 + 3p/4p placement ===');
   const onev1 = profile.buildLeaderboard(games, { modeFilter: '1v1', minGames: 3, latestAiOnly: true });
   ok(onev1.rows.length === 1 && onev1.rows[0].username === 'Ace', '1v1 only Ace on latest');
   ok(Math.abs(onev1.rows[0].winRate - 2 / 3) < 1e-9, 'Ace ~66% WR');
+  ok(onev1.rows[0].winRateLo != null && onev1.rows[0].winRateLo < onev1.rows[0].winRate,
+    'Ace has Wilson LB below raw WR');
   ok(onev1.rows[0].placeCounts[1] === 2 && onev1.rows[0].placeCounts[2] === 1, 'Ace 2×1st 1×2nd');
+  ok(onev1.meta.rankBy === 'wilsonLB95', '1v1 ranks by Wilson 95% LB');
+
+  // Wilson: tiny perfect record ranks below larger solid sample (same latest build)
+  const wGames = [];
+  for (let i = 0; i < 3; i++) {
+    wGames.push({
+      username: 'Lucky', mode: 'vsAI', vsAI: true, numPlayers: 2, humanSeats: [0],
+      aiDifficulty: 'grandmaster', aiBuild: { id: 'v1.0-sh-L2s444', stamped: '2026-07-26' },
+      humanWon: true, endedAt: '2026-07-26T06:0' + i + ':00Z', complete: true
+    });
+  }
+  for (let j = 0; j < 20; j++) {
+    wGames.push({
+      username: 'Steady', mode: 'vsAI', vsAI: true, numPlayers: 2, humanSeats: [0],
+      aiDifficulty: 'grandmaster', aiBuild: { id: 'v1.0-sh-L2s444', stamped: '2026-07-26' },
+      humanWon: j < 14, endedAt: '2026-07-26T07:' + String(j).padStart(2, '0') + ':00Z', complete: true
+    });
+  }
+  const wBoard = profile.buildLeaderboard(wGames, { modeFilter: '1v1', minGames: 3, latestAiOnly: true });
+  ok(wBoard.rows.length === 2, 'Wilson board has Lucky + Steady');
+  const lucky = wBoard.rows.find(function (r) { return r.username === 'Lucky'; });
+  const steady = wBoard.rows.find(function (r) { return r.username === 'Steady'; });
+  ok(lucky && steady && lucky.winRate > steady.winRate, 'Lucky higher raw WR');
+  ok(steady.winRateLo > lucky.winRateLo, 'Steady higher Wilson LB than Lucky 3-0');
+  ok(wBoard.rows[0].username === 'Steady', 'Steady ranks #1 by Wilson LB not raw %');
+
+  // Direct wilson helper
+  const w3 = profile.wilsonInterval(3, 3, 1.96);
+  const w14 = profile.wilsonInterval(14, 20, 1.96);
+  ok(w3.wr === 1 && w3.lo < 0.9, '3/3 Wilson LB well below 100%');
+  ok(w14.lo > w3.lo, '14/20 LB > 3/3 LB');
 
   const four = profile.buildLeaderboard(games, { modeFilter: '4p' });
   ok(four.meta.latestAiOnly === false, '4p defaults latestAiOnly false');
