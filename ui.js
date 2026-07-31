@@ -561,6 +561,7 @@
 
       const ctrl = getCurrentController();
       if (ctrl && typeof ctrl.playHuman === 'function') {
+        const playedCards = selectedCards.slice();
         const res = ctrl.playHuman(seat, selectedCards);
         if (!res || !res.ok) {
           if (res && res.error) showToast(res.error, 'warn', 1400);
@@ -573,11 +574,16 @@
           try { broadcastChannel.postMessage({ type: 'sync', seat }); } catch (_) {}
         }
         playSound('play');
+        if (trashTalkEnabled()) {
+          maybeTrashTalk({ kind: 'afterHumanPlay', playLabel: describePlay(playedCards) });
+        }
         const c = getCurrentController();
         if (c && typeof c.runAITurnIfNeeded === 'function') {
           setTimeout(() => {
+            const stB = getState();
+            const freeBefore = !!(stB && !stB.currentCombo);
             const acts = c.runAITurnIfNeeded() || [];
-            announceAIActions(acts);
+            announceAIActions(acts, { freeLeadBefore: freeBefore });
             updateUIFromController();
           }, 280);
         }
@@ -585,14 +591,101 @@
       }
     }
 
-    function announceAIActions(acts) {
+    function trashTalkMod() {
+      if (typeof window !== 'undefined' && window.TienLenTrashTalk) return window.TienLenTrashTalk;
+      if (typeof require === 'function') {
+        try { return require('./ai-trash-talk.js'); } catch (_) { return null; }
+      }
+      return null;
+    }
+
+    function trashTalkEnabled() {
+      const mod = trashTalkMod();
+      if (!mod || typeof mod.enabledForGame !== 'function') return false;
+      return !!mod.enabledForGame({ vsAI: vsAI, playMode: playMode, numPlayers: numPlayers });
+    }
+
+    function showTrashTalk(line, ms) {
+      if (!line) return;
+      const safe = String(line)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+      showBanner(
+        'trash',
+        '<span class="banner-trash-who">GM AI · trash talk</span>' +
+          '<span class="banner-trash-line">' + safe + '</span>',
+        ms == null ? 3200 : ms
+      );
+      // Persistent bubble under opponent zone for 1v1
+      try {
+        let bub = doc.getElementById('ai-trash-bubble');
+        const host = doc.getElementById('player-1') || doc.getElementById('table-area') || doc.getElementById('game-screen');
+        if (host) {
+          if (!bub) {
+            bub = doc.createElement('div');
+            bub.id = 'ai-trash-bubble';
+            host.style.position = host.style.position || 'relative';
+            host.appendChild(bub);
+          }
+          bub.innerHTML = '<div class="bubble-inner"><div class="bubble-who">AI</div>' + safe + '</div>';
+          bub.classList.add('show');
+          clearTimeout(showTrashTalk._t);
+          showTrashTalk._t = setTimeout(function () {
+            try { bub.classList.remove('show'); } catch (_) {}
+          }, ms == null ? 4200 : ms + 800);
+        }
+      } catch (_) {}
+    }
+
+    function maybeTrashTalk(ctx) {
+      if (!trashTalkEnabled()) return null;
+      const mod = trashTalkMod();
+      if (!mod || typeof mod.lineFor !== 'function') return null;
+      const line = mod.lineFor(ctx || {});
+      if (line) showTrashTalk(line);
+      return line;
+    }
+
+    function isBombPlay(cards) {
+      try {
+        const com = engine.detectCombo(cards);
+        if (!com) return false;
+        if (com.type === 'quad') return true;
+        if (com.type === 'doubleseq' && (com.numPairs || 0) >= 3) return true;
+        return false;
+      } catch (_) { return false; }
+    }
+
+    function announceAIActions(acts, meta) {
+      meta = meta || {};
+      let freeLeadUsed = false;
       (acts || []).forEach((a, i) => {
         setTimeout(() => {
           if (a.type === 'pass') {
             showBanner('pass', `<span class="banner-pass-label">P${a.seat} PASSED</span>`, 1400);
+            if (trashTalkEnabled()) {
+              maybeTrashTalk({ kind: 'pass' });
+            }
           } else if (a.type === 'play' && a.cards && a.cards.length) {
             const label = describePlay(a.cards);
             showBanner('ok', `<span class="banner-turn-label">P${a.seat} PLAYED</span><span class="banner-sub">${label}</span>`, 1500);
+            if (trashTalkEnabled()) {
+              let kind = 'play';
+              if (!freeLeadUsed && (a.freeLead === true || meta.freeLeadBefore)) {
+                kind = 'freeLead';
+                freeLeadUsed = true;
+              }
+              const topR = a.cards.reduce(function (m, c) {
+                return c && c.rank > m ? c.rank : m;
+              }, -1);
+              maybeTrashTalk({
+                kind: kind,
+                playLabel: label,
+                high: topR >= 10,
+                bomb: isBombPlay(a.cards)
+              });
+            }
           }
         }, i * 420);
       });
@@ -652,6 +745,7 @@
         selectedCards = [];
         showBanner('pass', '<span class="banner-pass-label">YOU PASSED</span>', 1600);
         updateUIFromController();
+        if (trashTalkEnabled()) maybeTrashTalk({ kind: 'afterHumanPass' });
         if (broadcastChannel && broadcastChannel.postMessage) {
           try { broadcastChannel.postMessage({ type: 'sync', seat }); } catch (_) {}
         }
@@ -659,8 +753,10 @@
         const c = getCurrentController();
         if (c && typeof c.runAITurnIfNeeded === 'function') {
           setTimeout(() => {
+            const stB = getState();
+            const freeBefore = !!(stB && !stB.currentCombo);
             const acts = c.runAITurnIfNeeded() || [];
-            announceAIActions(acts);
+            announceAIActions(acts, { freeLeadBefore: freeBefore });
             updateUIFromController();
           }, 200);
         }
@@ -939,6 +1035,9 @@
       ensureSortButton();
 
       // If computer holds first lead (3♠), kick AI immediately
+      if (trashTalkEnabled()) {
+        setTimeout(function () { maybeTrashTalk({ kind: 'start' }); }, 120);
+      }
       kickAIIfNeeded(350);
     }
 
@@ -1058,7 +1157,13 @@
         else title.textContent = place ? (ordinal(place) + ' Place') : 'Round complete';
       }
       if (sub) {
-        if (isWin) sub.textContent = 'You shed all your cards first — chúc mừng!';
+        if (trashTalkEnabled()) {
+          const trash = maybeTrashTalk({ kind: isWin ? 'lose' : 'win' });
+          if (trash) sub.textContent = trash;
+          else if (isWin) sub.textContent = 'You shed all your cards first — chúc mừng!';
+          else if (isLast) sub.textContent = 'Last one holding cards. The table remembers…';
+          else sub.textContent = 'Round finished. See full standings below.';
+        } else if (isWin) sub.textContent = 'You shed all your cards first — chúc mừng!';
         else if (place === 2) sub.textContent = 'Solid finish — so close to the crown.';
         else if (place === 3) sub.textContent = 'Mid of the pack. One more push next round.';
         else if (isLast) sub.textContent = 'Last one holding cards. The table remembers…';
@@ -1201,15 +1306,17 @@
           updateUIFromController();
           return;
         }
+        const freeBefore = !st2.currentCombo;
         const acts = c.runAITurnIfNeeded() || [];
-        announceAIActions(acts);
+        announceAIActions(acts, { freeLeadBefore: freeBefore });
         updateUIFromController();
         // If still AI turn (shouldn't happen unless human seats include only 0 and AI finished oddly), try once more
         const st3 = c.getState && c.getState();
         if (st3 && !st3.roundOver && st3.currentPlayer !== currentHumanSeat) {
           setTimeout(() => {
+            const free2 = !(st3.currentCombo);
             const acts2 = c.runAITurnIfNeeded() || [];
-            announceAIActions(acts2);
+            announceAIActions(acts2, { freeLeadBefore: free2 });
             updateUIFromController();
           }, 200);
         }
@@ -1242,7 +1349,11 @@
       if (typeof window !== 'undefined') window.controller = ctrl;
       updateUIFromController();
       ensureSortButton();
-      if (acts.length) announceAIActions(acts);
+      if (trashTalkEnabled()) maybeTrashTalk({ kind: 'start' });
+      if (acts.length) {
+        // After redeal, first AI play is almost always free-lead
+        announceAIActions(acts, { freeLeadBefore: true });
+      }
       // Belt-and-suspenders: if still AI turn (e.g. vsAI false briefly), async kick
       kickAIIfNeeded(200);
       return ctrl.getState();
