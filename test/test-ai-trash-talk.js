@@ -46,5 +46,9 @@ ok(/fuck|shit|ass|bent|clown|dumbass|lube|pee/i.test(joined), 'pool is explicitl
 ok(/witty|grandmaster|structure|bomb|pass/i.test(joined) || /grandmaster|structure|bomb/i.test(joined),
   'pool has witty game-aware barbs');
 
+// Linger contract: UI must not require a TTL for trash lines (sticky until next).
+// Documented by showTrashTalk(line) taking only the line — assert API stays simple.
+ok(typeof talk.lineFor === 'function', 'lineFor available for sticky UI consumers');
+
 console.log('\n=== RESULT: ' + passed + ' passed, ' + failed + ' failed ===');
 if (failed) process.exit(1);

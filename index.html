@@ -357,6 +357,20 @@
       max-width: min(92vw, 28rem);
       text-align: left;
     }
+    /* Sticky trash: no timed fade — replaced only by next line */
+    .game-banner-trash.sticky-trash {
+      pointer-events: none;
+      position: relative;
+      z-index: 41;
+    }
+    .game-banner-trash.sticky-trash.show {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+    .game-banner-trash.sticky-trash.hide {
+      opacity: 0;
+      pointer-events: none;
+    }
     .banner-trash-who {
       display: block;
       font-size: 0.7rem;

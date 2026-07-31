@@ -605,19 +605,38 @@
       return !!mod.enabledForGame({ vsAI: vsAI, playMode: playMode, numPlayers: numPlayers });
     }
 
-    function showTrashTalk(line, ms) {
+    /**
+     * Trash talk lingers until the next trash line replaces it (no auto-dismiss).
+     * Readable mid-hand; only clears when a newer barb arrives (or game ends / non-1v1).
+     */
+    function showTrashTalk(line) {
       if (!line) return;
       const safe = String(line)
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
-      showBanner(
-        'trash',
+      const html =
         '<span class="banner-trash-who">GM AI · trash talk</span>' +
-          '<span class="banner-trash-line">' + safe + '</span>',
-        ms == null ? 3200 : ms
-      );
-      // Persistent bubble under opponent zone for 1v1
+        '<span class="banner-trash-line">' + safe + '</span>';
+
+      // Sticky center banner (replaces previous trash banner only)
+      try {
+        const host = ensureBannerHost();
+        let el = doc.getElementById('ai-trash-banner-sticky');
+        if (!el) {
+          el = doc.createElement('div');
+          el.id = 'ai-trash-banner-sticky';
+          el.className = 'game-banner game-banner-trash sticky-trash';
+          el.setAttribute('role', 'status');
+          host.appendChild(el);
+        }
+        el.innerHTML = html;
+        el.classList.remove('hide');
+        void el.offsetWidth;
+        el.classList.add('show');
+      } catch (_) {}
+
+      // Sticky bubble on AI seat — stays until next message
       try {
         let bub = doc.getElementById('ai-trash-bubble');
         const host = doc.getElementById('player-1') || doc.getElementById('table-area') || doc.getElementById('game-screen');
@@ -625,16 +644,28 @@
           if (!bub) {
             bub = doc.createElement('div');
             bub.id = 'ai-trash-bubble';
-            host.style.position = host.style.position || 'relative';
+            if (!host.style.position || host.style.position === 'static') {
+              host.style.position = 'relative';
+            }
             host.appendChild(bub);
           }
           bub.innerHTML = '<div class="bubble-inner"><div class="bubble-who">AI</div>' + safe + '</div>';
           bub.classList.add('show');
-          clearTimeout(showTrashTalk._t);
-          showTrashTalk._t = setTimeout(function () {
-            try { bub.classList.remove('show'); } catch (_) {}
-          }, ms == null ? 4200 : ms + 800);
         }
+      } catch (_) {}
+    }
+
+    function clearTrashTalk() {
+      try {
+        const el = doc.getElementById('ai-trash-banner-sticky');
+        if (el) {
+          el.classList.remove('show');
+          el.classList.add('hide');
+        }
+      } catch (_) {}
+      try {
+        const bub = doc.getElementById('ai-trash-bubble');
+        if (bub) bub.classList.remove('show');
       } catch (_) {}
     }
 
@@ -973,6 +1004,7 @@
       selectedCards = [];
       customOrderKeys = null;
       onlineRole = null;
+      try { clearTrashTalk(); } catch (_) {}
       if (mp) { try { mp.disconnect(); } catch (_) {} mp = null; }
 
       // Prefer title-screen difficulty, then in-game select, default grandmaster
