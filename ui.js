@@ -607,7 +607,7 @@
 
     /**
      * Trash talk lingers until the next trash line replaces it (no auto-dismiss).
-     * Readable mid-hand; only clears when a newer barb arrives (or game ends / non-1v1).
+     * Mounted in #ai-trash-dock BELOW the center pile so it never covers cards.
      */
     function showTrashTalk(line) {
       if (!line) return;
@@ -619,39 +619,45 @@
         '<span class="banner-trash-who">GM AI · trash talk</span>' +
         '<span class="banner-trash-line">' + safe + '</span>';
 
-      // Sticky center banner (replaces previous trash banner only)
       try {
-        const host = ensureBannerHost();
+        // Prefer dedicated dock under center pile (not game-banners overlay)
+        let dock = doc.getElementById('ai-trash-dock');
+        if (!dock) {
+          const table = doc.getElementById('table-area');
+          const you = doc.getElementById('player-0');
+          dock = doc.createElement('div');
+          dock.id = 'ai-trash-dock';
+          dock.className = 'ai-trash-dock w-full max-w-xl mx-auto px-2 mb-2';
+          dock.setAttribute('aria-live', 'polite');
+          if (table && you && you.parentNode === table) {
+            table.insertBefore(dock, you);
+          } else if (table) {
+            table.appendChild(dock);
+          } else {
+            (doc.getElementById('game-screen') || doc.body).appendChild(dock);
+          }
+        }
         let el = doc.getElementById('ai-trash-banner-sticky');
         if (!el) {
           el = doc.createElement('div');
           el.id = 'ai-trash-banner-sticky';
           el.className = 'game-banner game-banner-trash sticky-trash';
           el.setAttribute('role', 'status');
-          host.appendChild(el);
+          dock.appendChild(el);
+        } else if (el.parentNode !== dock) {
+          dock.appendChild(el);
         }
         el.innerHTML = html;
         el.classList.remove('hide');
+        el.style.display = '';
         void el.offsetWidth;
         el.classList.add('show');
       } catch (_) {}
 
-      // Sticky bubble on AI seat — stays until next message
+      // Remove legacy bubble if present (used to sit over the table)
       try {
-        let bub = doc.getElementById('ai-trash-bubble');
-        const host = doc.getElementById('player-1') || doc.getElementById('table-area') || doc.getElementById('game-screen');
-        if (host) {
-          if (!bub) {
-            bub = doc.createElement('div');
-            bub.id = 'ai-trash-bubble';
-            if (!host.style.position || host.style.position === 'static') {
-              host.style.position = 'relative';
-            }
-            host.appendChild(bub);
-          }
-          bub.innerHTML = '<div class="bubble-inner"><div class="bubble-who">AI</div>' + safe + '</div>';
-          bub.classList.add('show');
-        }
+        const bub = doc.getElementById('ai-trash-bubble');
+        if (bub && bub.parentNode) bub.parentNode.removeChild(bub);
       } catch (_) {}
     }
 
@@ -661,11 +667,12 @@
         if (el) {
           el.classList.remove('show');
           el.classList.add('hide');
+          el.style.display = 'none';
         }
       } catch (_) {}
       try {
         const bub = doc.getElementById('ai-trash-bubble');
-        if (bub) bub.classList.remove('show');
+        if (bub && bub.parentNode) bub.parentNode.removeChild(bub);
       } catch (_) {}
     }
 

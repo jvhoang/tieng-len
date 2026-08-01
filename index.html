@@ -351,75 +351,61 @@
     .game-banner-error { border-color: #9f1d1d; }
     .game-banner-ok { border-color: #3d8b5a; }
     .game-banner-info { border-color: #5c4630; font-size: 0.95rem; color: #e8d48b; }
+    /* Dock sits under the center pile, above your hand — never over the trick cards */
+    .ai-trash-dock {
+      position: relative;
+      z-index: 20;
+      flex-shrink: 0;
+    }
+    .ai-trash-dock:empty {
+      display: none;
+      min-height: 0;
+      margin: 0;
+      padding: 0;
+    }
     .game-banner-trash {
       border-color: #e11d48;
       background: rgba(40, 8, 18, 0.94);
-      max-width: min(92vw, 28rem);
+      max-width: 100%;
+      width: 100%;
       text-align: left;
+      box-sizing: border-box;
     }
-    /* Sticky trash: no timed fade — replaced only by next line */
+    /* Sticky trash in dock: in-flow, not centered over the pile */
     .game-banner-trash.sticky-trash {
       pointer-events: none;
       position: relative;
-      z-index: 41;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity .2s ease, transform .25s ease;
+      padding: 0.65rem 0.9rem;
+      margin: 0 auto;
+      z-index: 20;
     }
     .game-banner-trash.sticky-trash.show {
       opacity: 1;
-      transform: scale(1) translateY(0);
+      transform: translateY(0);
     }
     .game-banner-trash.sticky-trash.hide {
       opacity: 0;
       pointer-events: none;
+      display: none;
     }
     .banner-trash-who {
       display: block;
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: #fb7185;
       font-weight: 700;
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.2rem;
     }
     .banner-trash-line {
       display: block;
-      font-size: 1.05rem;
+      font-size: 0.9rem;
       line-height: 1.35;
       color: #fecdd3;
       font-weight: 600;
-    }
-    #ai-trash-bubble {
-      position: absolute;
-      left: 50%;
-      top: 0.35rem;
-      transform: translateX(-50%);
-      z-index: 35;
-      max-width: min(90vw, 22rem);
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity .2s ease, transform .25s ease;
-    }
-    #ai-trash-bubble.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-    #ai-trash-bubble .bubble-inner {
-      background: rgba(30, 5, 12, 0.95);
-      border: 1.5px solid #e11d48;
-      border-radius: 1rem 1rem 1rem 0.25rem;
-      padding: 0.55rem 0.85rem;
-      box-shadow: 0 8px 28px rgba(225, 29, 72, 0.35);
-      color: #fecdd3;
-      font-size: 0.82rem;
-      line-height: 1.35;
-      font-weight: 600;
-    }
-    #ai-trash-bubble .bubble-who {
-      font-size: 0.65rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: #fb7185;
-      margin-bottom: 0.15rem;
-      font-weight: 700;
     }
 
     .mp-status-bar {
@@ -898,6 +884,9 @@
             <div id="trick-label" class="absolute bottom-2 text-[10px] text-[#2dd4bf]/60 tracking-widest">CENTER</div>
           </div>
         </div>
+
+        <!-- AI trash talk dock: BELOW center pile so it never covers the cards -->
+        <div id="ai-trash-dock" class="ai-trash-dock w-full max-w-xl mx-auto px-2 mb-2 min-h-0" aria-live="polite"></div>
 
         <!-- YOU -->
         <div class="flex items-end justify-center px-0 sm:px-2">
