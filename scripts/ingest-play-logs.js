@@ -89,13 +89,20 @@ async function fetchAttachment(msg) {
 }
 
 async function recentIssueTitles() {
-  const url = 'https://api.github.com/repos/' + OWNER + '/' + REPO +
-    '/issues?labels=' + encodeURIComponent(LABEL) +
-    '&state=all&per_page=100&page=1&sort=created&direction=desc';
-  const res = await fetch(url, { headers: githubHeaders() });
-  if (!res.ok) return [];
-  const issues = await res.json();
-  return (issues || []).map(function (i) { return String(i.title || ''); });
+  const titles = [];
+  for (let page = 1; page <= 8; page++) {
+    const url = 'https://api.github.com/repos/' + OWNER + '/' + REPO +
+      '/issues?labels=' + encodeURIComponent(LABEL) +
+      '&state=all&per_page=100&page=' + page +
+      '&sort=created&direction=desc';
+    const res = await fetch(url, { headers: githubHeaders() });
+    if (!res.ok) break;
+    const issues = await res.json();
+    if (!Array.isArray(issues) || !issues.length) break;
+    for (let i = 0; i < issues.length; i++) titles.push(String(issues[i].title || ''));
+    if (issues.length < 100) break;
+  }
+  return titles;
 }
 
 async function createIssue(title, body) {

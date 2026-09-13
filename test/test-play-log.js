@@ -355,6 +355,102 @@ console.log('=== GitHub issue encode/decode ===');
           'small playlogs send compact JSON as the ntfy body');
         ok(String(posted[0].body).indexOf('k-test') >= 0, 'ingest key included for Actions');
       });
+    }).then(function () {
+      console.log('=== recover unpublished local games (Jeannie iPhone fixture) ===');
+      function finished(id, extra) {
+        extra = extra || {};
+        return Object.assign({
+          schemaVersion: 1,
+          id: id,
+          username: 'Jeannie',
+          startedAt: extra.startedAt || '2026-09-01T12:00:00.000Z',
+          endedAt: extra.endedAt || '2026-09-01T12:04:00.000Z',
+          mode: 'vsAI',
+          vsAI: true,
+          numPlayers: 2,
+          humanSeats: [0],
+          aiDifficulty: 'grandmaster',
+          aiBuild: { id: 'v1.0-sh-L2s444', label: 'L2s444', stamped: '2026-07-26T02:00:00.000Z' },
+          events: [{ i: 0, type: 'game_start' }],
+          result: { humanWon: true, winner: 0, loser: 1, humanPlacement: 1, abandoned: false }
+        }, extra);
+      }
+      const alreadyRemote = finished('g_jeannie_already_on_github', {
+        startedAt: '2026-08-20T12:00:00.000Z',
+        endedAt: '2026-08-20T12:04:00.000Z'
+      });
+      const localNewA = finished('g_jeannie_post_825_a', {
+        startedAt: '2026-09-02T15:00:00.000Z',
+        endedAt: '2026-09-02T15:06:00.000Z'
+      });
+      const localNewB = finished('g_jeannie_post_825_b', {
+        startedAt: '2026-09-03T15:00:00.000Z',
+        endedAt: '2026-09-03T15:06:00.000Z',
+        result: { humanWon: false, winner: 1, loser: 0, humanPlacement: 2, abandoned: false }
+      });
+      const abandoned = finished('g_jeannie_abandoned', {
+        endedAt: '2026-09-04T15:00:00.000Z',
+        result: { abandoned: true, humanWon: null }
+      });
+      const postedFlush = [];
+      const fetchFlush = function (url, opts) {
+        const u = String(url);
+        const auth = !!(opts && opts.headers && opts.headers.Authorization);
+        if (/\/issues\?/.test(u) && (!opts || !opts.method || opts.method === 'GET')) {
+          return Promise.resolve({
+            ok: true,
+            status: 200,
+            json: function () {
+              return Promise.resolve([{
+                number: 486,
+                html_url: 'https://github.com/jvhoang/tieng-len/issues/486',
+                created_at: alreadyRemote.endedAt,
+                title: playLogMod.issueTitle(alreadyRemote),
+                body: playLogMod.encodeIssueBody(alreadyRemote)
+              }]);
+            }
+          });
+        }
+        postedFlush.push({ url: u, method: (opts && opts.method) || 'GET', body: opts && opts.body, auth: auth });
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: function () { return Promise.resolve({ id: 'ntfy-' + postedFlush.length }); }
+        });
+      };
+      const mem = playLogMod.createMemoryStorage();
+      const plRec = playLogMod.createPlayLog({ storage: mem, fetch: fetchFlush });
+      plRec.setRemoteConfig({
+        owner: 'jvhoang', repo: 'tieng-len', label: 'play-log',
+        token: '', autoPublish: true,
+        ingestUrl: 'https://ntfy.sh/tieng-len-test',
+        ingestKey: 'k-test'
+      });
+      plRec.mergeGamesIntoIndex([alreadyRemote, localNewA, localNewB, abandoned]);
+      mem.setItem('tienlen_playlog_v1_game_' + localNewA.id, JSON.stringify(localNewA));
+      mem.setItem('tienlen_playlog_v1_game_' + localNewB.id, JSON.stringify(localNewB));
+      mem.setItem('tienlen_playlog_v1_game_' + abandoned.id, JSON.stringify(abandoned));
+      mem.setItem('tienlen_playlog_v1_game_' + alreadyRemote.id, JSON.stringify(alreadyRemote));
+      const before = plRec.listUnpublishedLocalGames();
+      ok(before.some(function (g) { return g.id === 'g_jeannie_post_825_a'; }), 'lists unpublished A');
+      ok(before.some(function (g) { return g.id === 'g_jeannie_post_825_b'; }), 'lists unpublished B');
+      ok(!before.some(function (g) { return g.id === 'g_jeannie_abandoned'; }), 'skips abandoned');
+      return plRec.flushUnpublishedLocalGames({ delayMs: 0, includeQueued: false }).then(function (res) {
+        ok(res.queued === 2, 'flush queues 2 unpublished (got ' + res.queued + ')');
+        ok(res.ids.indexOf('g_jeannie_post_825_a') >= 0 && res.ids.indexOf('g_jeannie_post_825_b') >= 0,
+          'queued both post-8/25 Jeannie games');
+        ok(!res.ids.some(function (id) { return id === 'g_jeannie_already_on_github'; }),
+          'does not re-queue game already on GitHub');
+        const bodies = postedFlush.map(function (p) { return String(p.body || ''); }).join('\n');
+        ok(bodies.indexOf('g_jeannie_post_825_a') >= 0 && bodies.indexOf('g_jeannie_post_825_b') >= 0,
+          'mailbox PUTs include both new game ids');
+        ok(bodies.indexOf('g_jeannie_already_on_github') < 0, 'mailbox does not PUT already-published id');
+        return plRec.flushUnpublishedLocalGames({ delayMs: 0, fetchFirst: false, includeQueued: false });
+      }).then(function (res2) {
+        ok(res2.queued === 0, 'second flush is a no-op (dedupe / ingest mark)');
+        const again = plRec.listUnpublishedLocalGames({ includeQueued: false });
+        ok(again.length === 0, 'queued locals no longer listed as unpublished');
+      });
     });
   }).then(function () {
     console.log('=== SUMMARY ===');

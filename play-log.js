@@ -648,6 +648,7 @@
         }
         rec._public = true;
         rec._source = 'ingest';
+        rec._queuedAt = nowIso();
         try { saveGame(rec); } catch (eS) { /* ignore */ }
         remoteCache[rec.id] = rec;
         lastPublishStatus = {
@@ -829,6 +830,141 @@
           gameId: null
         };
         return [];
+      });
+    }
+
+    function isFinishedLocalRecord(rec) {
+      if (!rec || !rec.id) return false;
+      if (rec.result && rec.result.abandoned) return false;
+      if (rec.abandoned) return false;
+      if (rec.endedAt) return true;
+      if (rec.result && (rec.result.humanWon === true || rec.result.humanWon === false)) return true;
+      if (rec.humanWon === true || rec.humanWon === false) return true;
+      if (rec.complete) return true;
+      return false;
+    }
+
+    function publishedIdSet() {
+      var ids = Object.create(null);
+      var id, rec, i, idx;
+      for (id in remoteCache) {
+        if (!Object.prototype.hasOwnProperty.call(remoteCache, id)) continue;
+        rec = remoteCache[id];
+        if (!rec) continue;
+        if (rec._remoteIssueNumber || rec._source === 'github') ids[id] = true;
+      }
+      idx = readIndex();
+      for (i = 0; i < idx.length; i++) {
+        if (!idx[i] || !idx[i].id) continue;
+        if (idx[i].remoteIssueNumber || idx[i].source === 'github') ids[idx[i].id] = true;
+      }
+      return ids;
+    }
+
+    /**
+     * Finished games that still live on this device and are not on GitHub yet.
+     * Used to recover post-revoked-PAT play (e.g. Jeannie's iPhone localStorage).
+     */
+    function listUnpublishedLocalGames(opts) {
+      opts = opts || {};
+      var includeQueued = !!opts.includeQueued;
+      var published = publishedIdSet();
+      var seen = Object.create(null);
+      var out = [];
+
+      function consider(rec) {
+        if (!rec || !rec.id || seen[rec.id]) return;
+        seen[rec.id] = true;
+        if (!isFinishedLocalRecord(rec)) return;
+        if (published[rec.id] || rec._remoteIssueNumber) return;
+        if (rec._source === 'github') return;
+        if (!includeQueued && (rec._source === 'ingest' || rec._queuedAt)) return;
+        out.push(rec);
+      }
+
+      var keys = listStoredGameKeys();
+      var i, raw, rec, idx, full;
+      for (i = 0; i < keys.length; i++) {
+        try {
+          raw = storage.getItem(keys[i]);
+          rec = raw ? JSON.parse(raw) : null;
+          if (rec && rec._source === 'github') continue;
+          consider(rec);
+        } catch (eL) { /* ignore */ }
+      }
+      idx = readIndex();
+      for (i = 0; i < idx.length; i++) {
+        if (!idx[i] || !idx[i].id || seen[idx[i].id]) continue;
+        if (idx[i].source === 'github' || idx[i].remoteIssueNumber) continue;
+        full = getGame(idx[i].id);
+        consider(full || idx[i]);
+      }
+      return sortIndexNewestFirst(out);
+    }
+
+    function delayMs(ms) {
+      return new Promise(function (resolve) { setTimeout(resolve, ms); });
+    }
+
+    /**
+     * Re-queue unpublished local finished games through the same publish path
+     * as live game-end (GitHub PAT if valid, else ntfy mailbox). Dedupes by
+     * game id against fetched issues + already-queued ingest marks.
+     */
+    function publishUnpublishedLocalGames(opts) {
+      opts = opts || {};
+      var includeQueued = !!opts.includeQueued;
+      var wait = opts.delayMs != null ? opts.delayMs : 200;
+      var list = listUnpublishedLocalGames({ includeQueued: includeQueued });
+      var queued = [];
+      var failed = [];
+      var i = 0;
+
+      function step() {
+        if (i >= list.length) {
+          lastPublishStatus = {
+            ok: failed.length === 0,
+            at: nowIso(),
+            message: list.length
+              ? ('Unpublished flush: ' + queued.length + ' queued' +
+                (failed.length ? (', ' + failed.length + ' failed') : ''))
+              : 'No unpublished local games',
+            gameId: null
+          };
+          return Promise.resolve({
+            ok: failed.length === 0,
+            queued: queued.length,
+            failed: failed.length,
+            scanned: list.length,
+            ids: queued.slice()
+          });
+        }
+        var rec = list[i++];
+        return publishGame(rec).then(function (res) {
+          if (res && res.ok) queued.push(rec.id);
+          else failed.push({ id: rec.id, error: (res && res.error) || 'publish failed' });
+          if (wait > 0 && i < list.length) return delayMs(wait).then(step);
+          return step();
+        });
+      }
+
+      if (!list.length) {
+        lastPublishStatus = {
+          ok: true,
+          at: nowIso(),
+          message: 'No unpublished local games',
+          gameId: null
+        };
+        return Promise.resolve({ ok: true, queued: 0, failed: 0, scanned: 0, ids: [] });
+      }
+      return step();
+    }
+
+    function flushUnpublishedLocalGames(opts) {
+      opts = opts || {};
+      var start = opts.fetchFirst === false ? Promise.resolve([]) : fetchPublicGames();
+      return start.then(function () {
+        return publishUnpublishedLocalGames(opts);
       });
     }
 
@@ -1318,6 +1454,9 @@
       hasPublishAuth: hasPublishAuth,
       publishGame: publishGame,
       fetchPublicGames: fetchPublicGames,
+      listUnpublishedLocalGames: listUnpublishedLocalGames,
+      publishUnpublishedLocalGames: publishUnpublishedLocalGames,
+      flushUnpublishedLocalGames: flushUnpublishedLocalGames,
       getPublishStatus: getPublishStatus,
       getStorageStatus: function getStorageStatus() { return Object.assign({}, lastStorageStatus); },
       evictOldestFullBodies: evictOldestFullBodies,
