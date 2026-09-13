@@ -964,6 +964,7 @@
       if (!st) return;
 
       maybeOfferHotseatHandoff();
+      updatePlayerLabels();
 
       const n = (st.players && st.players.length) || st.numPlayers || 0;
 
