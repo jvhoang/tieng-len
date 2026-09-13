@@ -351,9 +351,9 @@ console.log('=== GitHub issue encode/decode ===');
       return plIn.publishGame(sample).then(function (res) {
         ok(res && res.ok === true && res.queued === true, 'publish without PAT queues ingest');
         ok(posted.length === 1 && posted[0].method === 'PUT', 'ntfy ingest uses PUT');
-        ok(String(posted[0].headers.Message || '').indexOf('g_test_remote') >= 0,
-          'ntfy message carries compact game id');
-        ok(String(posted[0].body).indexOf('TIENLEN_PLAYLOG_V1') >= 0, 'full issue body attached');
+        ok(String(posted[0].body).indexOf('g_test_remote') >= 0,
+          'small playlogs send compact JSON as the ntfy body');
+        ok(String(posted[0].body).indexOf('k-test') >= 0, 'ingest key included for Actions');
       });
     });
   }).then(function () {

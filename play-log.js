@@ -605,17 +605,30 @@
       var isNtfy = /ntfy\.sh/i.test(cfg.ingestUrl);
       var req;
       if (isNtfy) {
-        req = fetchFn(cfg.ingestUrl, {
-          method: 'PUT',
-          headers: {
-            'Title': title,
-            'Tags': 'play-log',
-            'Message': JSON.stringify(compact),
-            'Filename': 'playlog.json',
-            'Content-Type': 'text/plain; charset=utf-8'
-          },
-          body: fullBody
-        });
+        var compactJson = JSON.stringify(compact);
+        if (fullBody.length > 4096) {
+          req = fetchFn(cfg.ingestUrl, {
+            method: 'PUT',
+            headers: {
+              'Title': title,
+              'Tags': 'play-log',
+              'Message': compactJson,
+              'Filename': 'playlog.json',
+              'Content-Type': 'text/plain; charset=utf-8'
+            },
+            body: fullBody
+          });
+        } else {
+          req = fetchFn(cfg.ingestUrl, {
+            method: 'PUT',
+            headers: {
+              'Title': title,
+              'Tags': 'play-log',
+              'Content-Type': 'application/json'
+            },
+            body: compactJson
+          });
+        }
       } else {
         req = fetchFn(cfg.ingestUrl, {
           method: 'POST',

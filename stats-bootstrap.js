@@ -16,8 +16,8 @@
     label: 'play-log',
     autoPublish: true,
     token: '',
-    ingestUrl: 'https://ntfy.sh/tieng-len-pl-022fdc9cf276b9185c96d7fcc08066d4',
-    ingestKey: 'GWDZZKzVsedOEkS5wtWAcLic'
+    ingestUrl: 'https://ntfy.sh/tieng-len-pl-c18e44b0a7d5926f',
+    ingestKey: 'tl-ing-p9V3sL6tQ1bN'
   }, w.TIENLEN_REMOTE_LOG || {});
   w.TIENLEN_STATS_AUTO = true;
 })(typeof window !== 'undefined' ? window : (typeof globalThis !== 'undefined' ? globalThis : null));

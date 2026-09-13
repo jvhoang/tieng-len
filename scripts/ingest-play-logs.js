@@ -46,7 +46,7 @@ function saveSeen(seen) {
 async function pollMailbox() {
   const topic = topicFromUrl(remote.ingestUrl);
   if (!topic) return [];
-  const url = 'https://ntfy.sh/' + topic + '/json?poll=1&since=12h';
+  const url = 'https://ntfy.sh/' + topic + '/json?poll=1&since=all';
   const res = await fetch(url, { headers: { 'User-Agent': 'tieng-len-ingest' } });
   if (!res.ok) throw new Error('ntfy poll HTTP ' + res.status);
   const text = (await res.text()).trim();
@@ -65,11 +65,15 @@ function parsePayload(msg) {
   } catch (e) {
     compact = null;
   }
+  if (compact && compact.probe) return { skip: true, reason: 'probe' };
   if (compact && compact.k && compact.k !== remote.ingestKey) {
     return { skip: true, reason: 'bad-key' };
   }
-  if (compact && !compact.id) compact = null;
-  return { compact: compact, title: msg.title || (compact && playLogMod.issueTitle ? null : null) };
+  if (compact && compact.id && compact.username && compact.result) {
+    if (compact.k !== remote.ingestKey) return { skip: true, reason: 'bad-key' };
+    return { compact: compact, title: msg.title || null };
+  }
+  return { compact: null, title: msg.title || null };
 }
 
 async function fetchAttachment(msg) {
