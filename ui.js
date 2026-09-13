@@ -2,6 +2,7 @@
  * ui.js — Extracted UI layer (UMD).
  * createUI({ document, engine, controller, handOrder, multiplayer })
  * Hand: default low→high sort, drag-reorder with visual feedback.
+ * Stage: tap/drag cards onto the center to review, then Play commits.
  * Trick: stacked prior combos + play animation.
  * Large turn / pass banners.
  * Host/join multiplayer wiring.
@@ -31,7 +32,7 @@
       throw new Error('createUI requires document and engine');
     }
 
-    let selectedCards = [];
+    let selectedCards = []; // cards staged onto the center (not yet committed)
     let vsAI = true;
     let numPlayers = 4;
     let humanSeats = [0];
@@ -130,7 +131,48 @@
         customOrderKeys = null;
       }
       renderHand(currentHumanSeat);
+      renderStage();
       showToast('Hand sorted low → high', 'info', 1200);
+    }
+
+    function cardEq(a, b) {
+      return !!(a && b && a.rank === b.rank && a.suit === b.suit);
+    }
+
+    function isStagedCard(card) {
+      return selectedCards.some(sc => cardEq(sc, card));
+    }
+
+    function walkAncestors(node, pred) {
+      let n = node;
+      while (n) {
+        try {
+          if (pred(n)) return n;
+        } catch (_) { /* ignore */ }
+        n = n.parentNode || n.parentElement || null;
+      }
+      return null;
+    }
+
+    function isStageDropTarget(node) {
+      return !!walkAncestors(node, (n) => {
+        const id = n.id || '';
+        if (id === 'stage-area' || id === 'trick-area' || id === 'trick-pile' || id === 'trick-label') return true;
+        if (n.classList && (n.classList.contains('stage-area') || n.classList.contains('staged-card'))) return true;
+        return false;
+      });
+    }
+
+    function isHandDropTarget(node) {
+      return !!walkAncestors(node, (n) => {
+        const id = n.id || '';
+        return id === 'hand-0' || id === 'player-0';
+      });
+    }
+
+    function suppressClickAfterDrag() {
+      dragState = Object.assign({}, dragState || {}, { moved: true });
+      setTimeout(() => { dragState = null; }, 40);
     }
 
     // ---------- Cards ----------
@@ -160,6 +202,7 @@
           `<div class="suit ${rc}">${s}</div>`;
         el.dataset.card = JSON.stringify(card);
         el.dataset.cardKey = String(card.rank * 4 + card.suit);
+        if (extra.staged) el.classList.add('staged-card');
         if (selectable) {
           el.onclick = (ev) => {
             if (dragState && dragState.moved) return;
@@ -196,7 +239,11 @@
         return;
       }
 
-      const display = showCards ? getDisplayHand(playerIdx, p.hand) : (p.hand || []);
+      const displayAll = showCards ? getDisplayHand(playerIdx, p.hand) : (p.hand || []);
+      // Staged cards leave the fan and sit on the center field until Play / unstage
+      const display = (showCards && isActiveHuman)
+        ? displayAll.filter(c => !isStagedCard(c))
+        : displayAll;
       const n = display.length || 0;
 
       // Human face-up: larger cards, up to 2 fan rows (opening 13-card hands)
@@ -271,7 +318,8 @@
           }
           if (showCards && isActiveHuman && !isBack) {
             // Global index keeps drag reorder correct across rows
-            wireDrag(el, globalIdx, container, playerIdx);
+            wireDrag(el, globalIdx, container, playerIdx, c);
+            wireHandUnstageDrop(container);
           }
           if (idxInRow > 0) el.style.marginLeft = (-ov) + 'px';
           else el.style.marginLeft = '0';
@@ -315,35 +363,72 @@
       }
     }
 
-    // ---------- Drag reorder ----------
-    function wireDrag(el, index, container, playerIdx) {
+    function applyHandReorder(from, to) {
+      if (from === to || from < 0 || to < 0) return;
+      const st = getState();
+      if (!st || !st.players[currentHumanSeat]) return;
+      const hand = st.players[currentHumanSeat].hand;
+      const remaining = getDisplayHand(currentHumanSeat, hand).filter(c => !isStagedCard(c));
+      if (from >= remaining.length || to >= remaining.length) return;
+      const nextRemaining = reorderCards(remaining, from, to);
+      // Keep staged cards in their previous relative positions in the full order
+      const staged = selectedCards.slice();
+      const full = getDisplayHand(currentHumanSeat, hand);
+      const nextFull = [];
+      let ri = 0;
+      full.forEach((c) => {
+        if (isStagedCard(c)) nextFull.push(c);
+        else nextFull.push(nextRemaining[ri++]);
+      });
+      // If filter/order drifted, fall back to remaining + staged
+      if (nextFull.filter(Boolean).length !== full.length) {
+        customOrderKeys = orderKeys(nextRemaining.concat(staged));
+      } else {
+        customOrderKeys = orderKeys(nextFull);
+      }
+      renderHand(currentHumanSeat);
+      renderStage();
+    }
+
+    // ---------- Drag reorder (hand) + drag-to-stage ----------
+    function wireDrag(el, index, container, playerIdx, card) {
       el.draggable = true;
       el.setAttribute('draggable', 'true');
 
       el.addEventListener('dragstart', (e) => {
-        dragState = { fromIndex: index, key: el.dataset.cardKey, el, moved: false };
+        dragState = { fromIndex: index, key: el.dataset.cardKey, el, moved: false, card, origin: 'hand' };
         el.classList.add('dragging');
         try {
           e.dataTransfer.effectAllowed = 'move';
           e.dataTransfer.setData('text/plain', String(index));
-          // translucent drag image feel
           if (e.dataTransfer.setDragImage) {
             e.dataTransfer.setDragImage(el, 28, 40);
           }
         } catch (_) {}
         container.classList.add('hand-dragging');
+        const trick = doc.getElementById('trick-area');
+        if (trick) trick.classList.add('stage-drop-ready');
       });
 
       el.addEventListener('dragend', () => {
         el.classList.remove('dragging');
         container.classList.remove('hand-dragging');
         container.querySelectorAll('.card.drag-over').forEach(n => n.classList.remove('drag-over'));
+        const trick = doc.getElementById('trick-area');
+        if (trick) {
+          trick.classList.remove('stage-drop-ready');
+          trick.classList.remove('stage-drop-hover');
+        }
         setTimeout(() => { dragState = null; }, 30);
       });
 
       el.addEventListener('dragover', (e) => {
         e.preventDefault();
         if (!dragState) return;
+        if (dragState.origin === 'stage') {
+          try { e.dataTransfer.dropEffect = 'move'; } catch (_) {}
+          return;
+        }
         el.classList.add('drag-over');
         try { e.dataTransfer.dropEffect = 'move'; } catch (_) {}
       });
@@ -357,21 +442,19 @@
         e.stopPropagation();
         el.classList.remove('drag-over');
         if (!dragState) return;
+        if (dragState.origin === 'stage' && dragState.card) {
+          dragState.moved = true;
+          unstageCard(dragState.card);
+          return;
+        }
         const from = dragState.fromIndex;
         const to = index;
         if (from === to) return;
         dragState.moved = true;
-        const st = getState();
-        if (!st) return;
-        const hand = st.players[currentHumanSeat].hand;
-        const display = getDisplayHand(currentHumanSeat, hand);
-        const next = reorderCards(display, from, to);
-        customOrderKeys = orderKeys(next);
-        selectedCards = [];
-        renderHand(currentHumanSeat);
+        applyHandReorder(from, to);
       });
 
-      // Touch-friendly pointer fallback
+      // Touch-friendly pointer fallback (iPhone Safari has no HTML5 drag)
       el.addEventListener('pointerdown', (e) => {
         if (e.button != null && e.button !== 0) return;
         if (e.pointerType === 'mouse') return; // HTML5 drag handles mouse
@@ -389,8 +472,10 @@
         ghost.style.opacity = '0.92';
         ghost.style.transform = 'scale(1.08) rotate(-4deg)';
         ghost.style.boxShadow = '0 18px 40px rgba(0,0,0,0.55)';
-        doc.body.appendChild(ghost);
+        if (doc.body && doc.body.appendChild) doc.body.appendChild(ghost);
         el.classList.add('dragging');
+        const trick = doc.getElementById('trick-area');
+        if (trick) trick.classList.add('stage-drop-ready');
 
         function onMove(ev) {
           const dx = ev.clientX - startX;
@@ -398,10 +483,10 @@
           if (Math.abs(dx) + Math.abs(dy) > 6) moved = true;
           ghost.style.left = (ev.clientX - 28) + 'px';
           ghost.style.top = (ev.clientY - 40) + 'px';
-          // highlight card under pointer
-          const under = doc.elementFromPoint(ev.clientX, ev.clientY);
+          const under = doc.elementFromPoint ? doc.elementFromPoint(ev.clientX, ev.clientY) : null;
           container.querySelectorAll('.card.drag-over').forEach(n => n.classList.remove('drag-over'));
-          if (under && under.classList && under.classList.contains('card') && under !== el) {
+          if (trick) trick.classList.toggle('stage-drop-hover', !!(under && isStageDropTarget(under)));
+          if (under && under.classList && under.classList.contains('card') && under !== el && !isStageDropTarget(under)) {
             under.classList.add('drag-over');
           }
         }
@@ -411,42 +496,125 @@
           el.classList.remove('dragging');
           try { ghost.remove(); } catch (_) {}
           container.querySelectorAll('.card.drag-over').forEach(n => n.classList.remove('drag-over'));
+          if (trick) {
+            trick.classList.remove('stage-drop-ready');
+            trick.classList.remove('stage-drop-hover');
+          }
           if (!moved) return;
-          const under = doc.elementFromPoint(ev.clientX, ev.clientY);
+          suppressClickAfterDrag();
+          const under = doc.elementFromPoint ? doc.elementFromPoint(ev.clientX, ev.clientY) : null;
+          if (under && isStageDropTarget(under)) {
+            stageCard(card);
+            return;
+          }
           if (!under || !under.dataset || !under.dataset.cardKey) return;
           const kids = Array.from(container.querySelectorAll('.card'));
           const to = kids.indexOf(under);
           if (to < 0 || to === from) return;
-          const st = getState();
-          if (!st) return;
-          const hand = st.players[currentHumanSeat].hand;
-          const display = getDisplayHand(currentHumanSeat, hand);
-          const next = reorderCards(display, from, to);
-          customOrderKeys = orderKeys(next);
-          selectedCards = [];
-          renderHand(currentHumanSeat);
+          applyHandReorder(from, to);
         }
         doc.addEventListener('pointermove', onMove);
         doc.addEventListener('pointerup', onUp);
       });
     }
 
+    function wireHandUnstageDrop(container) {
+      if (!container || container._unstageDropWired) return;
+      container._unstageDropWired = true;
+      container.addEventListener('dragover', (e) => {
+        if (!dragState || dragState.origin !== 'stage') return;
+        e.preventDefault();
+        try { e.dataTransfer.dropEffect = 'move'; } catch (_) {}
+      });
+      container.addEventListener('drop', (e) => {
+        if (!dragState || dragState.origin !== 'stage' || !dragState.card) return;
+        e.preventDefault();
+        e.stopPropagation();
+        dragState.moved = true;
+        unstageCard(dragState.card);
+      });
+    }
+
+    function wireUnstageDrag(el, card) {
+      el.draggable = true;
+      el.setAttribute('draggable', 'true');
+      el.addEventListener('dragstart', (e) => {
+        dragState = { key: el.dataset.cardKey, el, moved: false, card, origin: 'stage' };
+        el.classList.add('dragging');
+        try {
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', 'unstage');
+          if (e.dataTransfer.setDragImage) e.dataTransfer.setDragImage(el, 28, 40);
+        } catch (_) {}
+        const hand = doc.getElementById('hand-0');
+        if (hand) hand.classList.add('hand-unstage-ready');
+      });
+      el.addEventListener('dragend', () => {
+        el.classList.remove('dragging');
+        const hand = doc.getElementById('hand-0');
+        if (hand) hand.classList.remove('hand-unstage-ready');
+        setTimeout(() => { dragState = null; }, 30);
+      });
+      el.addEventListener('pointerdown', (e) => {
+        if (e.button != null && e.button !== 0) return;
+        if (e.pointerType === 'mouse') return;
+        const startX = e.clientX;
+        const startY = e.clientY;
+        let moved = false;
+        const ghost = el.cloneNode(true);
+        ghost.className = el.className + ' drag-ghost';
+        ghost.style.position = 'fixed';
+        ghost.style.pointerEvents = 'none';
+        ghost.style.zIndex = '9999';
+        ghost.style.left = (e.clientX - 28) + 'px';
+        ghost.style.top = (e.clientY - 40) + 'px';
+        ghost.style.opacity = '0.92';
+        if (doc.body && doc.body.appendChild) doc.body.appendChild(ghost);
+        el.classList.add('dragging');
+        function onMove(ev) {
+          if (Math.abs(ev.clientX - startX) + Math.abs(ev.clientY - startY) > 6) moved = true;
+          ghost.style.left = (ev.clientX - 28) + 'px';
+          ghost.style.top = (ev.clientY - 40) + 'px';
+        }
+        function onUp(ev) {
+          doc.removeEventListener('pointermove', onMove);
+          doc.removeEventListener('pointerup', onUp);
+          el.classList.remove('dragging');
+          try { ghost.remove(); } catch (_) {}
+          if (!moved) return;
+          suppressClickAfterDrag();
+          const under = doc.elementFromPoint ? doc.elementFromPoint(ev.clientX, ev.clientY) : null;
+          if (under && isHandDropTarget(under)) unstageCard(card);
+        }
+        doc.addEventListener('pointermove', onMove);
+        doc.addEventListener('pointerup', onUp);
+      });
+    }
+
+    function afterStageChange() {
+      renderHand(currentHumanSeat);
+      renderStage();
+      refreshStageStatus();
+    }
+
+    function stageCard(card) {
+      if (!card || isStagedCard(card)) return;
+      const st = getState();
+      if (!st || st.roundOver || st.currentPlayer !== currentHumanSeat) return;
+      selectedCards.push(card);
+      afterStageChange();
+    }
+
+    function unstageCard(card) {
+      const idx = selectedCards.findIndex(sc => cardEq(sc, card));
+      if (idx < 0) return;
+      selectedCards.splice(idx, 1);
+      afterStageChange();
+    }
+
     function toggleSelect(card, el) {
-      const idx = selectedCards.findIndex(sc => sc.rank === card.rank && sc.suit === card.suit);
-      if (idx >= 0) {
-        selectedCards.splice(idx, 1);
-        if (el && el.classList) el.classList.remove('selected');
-      } else {
-        selectedCards.push(card);
-        if (el && el.classList) el.classList.add('selected');
-      }
-      const info = doc.getElementById('selection-info');
-      const selText = selectedCards.length ? `${selectedCards.length} cards selected` : '';
-      if (info) info.innerHTML = selText;
-      const barSt = doc.getElementById('action-bar-status');
-      if (barSt) barSt.textContent = selText || 'Select cards, then PLAY / PASS';
-      const bp = doc.getElementById('btn-play');
-      if (bp) bp.disabled = !isValidPlaySelection(currentHumanSeat);
+      if (isStagedCard(card)) unstageCard(card);
+      else stageCard(card);
     }
 
     function isValidPlaySelection(seat = 0) {
@@ -462,19 +630,157 @@
       return legals.some(l => l.map(c => c.rank * 4 + c.suit).sort((a, b) => a - b).join(',') === sig);
     }
 
+    function describeStageStatus() {
+      const st = getState();
+      const n = selectedCards.length;
+      if (!st) return { ok: false, empty: true, text: 'Stage cards in the center, then PLAY' };
+      if (st.roundOver) return { ok: false, empty: true, text: 'Round over' };
+      if (st.currentPlayer !== currentHumanSeat) {
+        return { ok: false, empty: true, text: 'Wait for your turn' };
+      }
+      if (!n) {
+        return { ok: false, empty: true, text: 'Stage cards in the center, then PLAY' };
+      }
+      const label = describePlay(selectedCards);
+      if (isValidPlaySelection(currentHumanSeat)) {
+        return { ok: true, empty: false, text: label + ' staged — tap PLAY to commit' };
+      }
+      const com = engine.detectCombo(selectedCards);
+      if (!com) {
+        return { ok: false, empty: false, text: n + ' staged — not a combo. Tap a card to return it.' };
+      }
+      return { ok: false, empty: false, text: label + ' staged — not a legal play. Tap cards to change.' };
+    }
+
+    function refreshStageStatus() {
+      const st = getState();
+      const status = describeStageStatus();
+      const info = doc.getElementById('selection-info');
+      if (info) {
+        if (st && st.roundOver) {
+          const s = computeStandings(st, currentHumanSeat);
+          const me = s.find(r => r.isYou);
+          info.innerHTML = me ? `You placed ${ordinal(me.place)} · New round ready` : 'New round ready';
+        } else {
+          info.innerHTML = status.text;
+        }
+      }
+      const barSt = doc.getElementById('action-bar-status');
+      if (barSt) barSt.textContent = status.text;
+      const bp = doc.getElementById('btn-play');
+      if (bp) bp.disabled = !status.ok;
+      const area = doc.getElementById('stage-area');
+      if (area) {
+        area.classList.toggle('is-empty', !selectedCards.length);
+        area.classList.toggle('is-valid', !!status.ok);
+        area.classList.toggle('is-invalid', !!(selectedCards.length && !status.ok && st && st.currentPlayer === currentHumanSeat && !st.roundOver));
+      }
+      const trick = doc.getElementById('trick-area');
+      if (trick) {
+        trick.classList.toggle('has-stage', selectedCards.length > 0);
+        trick.classList.toggle('is-reviewing', selectedCards.length > 0);
+      }
+    }
+
+    function ensureStageArea() {
+      let area = doc.getElementById('stage-area');
+      const host = doc.getElementById('trick-area');
+      if (!area) {
+        area = doc.createElement('div');
+        area.id = 'stage-area';
+        area.className = 'stage-area';
+        if (host && host.appendChild) host.appendChild(area);
+      }
+      if (host) wireStageDropTarget(host);
+      return area;
+    }
+
+    let stageDropWired = false;
+    function wireStageDropTarget(host) {
+      if (!host || stageDropWired) return;
+      stageDropWired = true;
+      const onOver = (e) => {
+        if (!dragState || dragState.origin !== 'hand') return;
+        e.preventDefault();
+        try { e.dataTransfer.dropEffect = 'move'; } catch (_) {}
+        host.classList.add('stage-drop-hover');
+      };
+      const onLeave = () => { host.classList.remove('stage-drop-hover'); };
+      const onDrop = (e) => {
+        e.preventDefault();
+        if (e.stopPropagation) e.stopPropagation();
+        host.classList.remove('stage-drop-hover');
+        if (!dragState || !dragState.card || dragState.origin !== 'hand') return;
+        dragState.moved = true;
+        stageCard(dragState.card);
+      };
+      [host, doc.getElementById('stage-area'), doc.getElementById('trick-pile')].forEach((t) => {
+        if (!t || !t.addEventListener) return;
+        t.addEventListener('dragover', onOver);
+        t.addEventListener('dragleave', onLeave);
+        t.addEventListener('drop', onDrop);
+      });
+    }
+
+    function renderStage() {
+      const area = ensureStageArea();
+      if (!area) return;
+      area.innerHTML = '';
+      const st = getState();
+      const canAct = !!(st && !st.roundOver && st.currentPlayer === currentHumanSeat);
+      area.className = 'stage-area';
+      area.classList.toggle('is-empty', selectedCards.length === 0);
+      const valid = canAct && isValidPlaySelection(currentHumanSeat);
+      area.classList.toggle('is-valid', valid);
+      area.classList.toggle('is-invalid', canAct && selectedCards.length > 0 && !valid);
+      const trick = doc.getElementById('trick-area');
+      if (trick) {
+        trick.classList.toggle('has-stage', selectedCards.length > 0);
+        trick.classList.toggle('is-reviewing', selectedCards.length > 0);
+        trick.classList.toggle('stage-armed', canAct);
+      }
+      const label = doc.getElementById('trick-label');
+      if (!selectedCards.length) {
+        if (label) label.textContent = canAct ? 'STAGE A PLAY' : 'CENTER';
+        if (canAct) {
+          const hint = doc.createElement('div');
+          hint.className = 'stage-hint';
+          hint.textContent = 'Drag or tap cards here to stage';
+          area.appendChild(hint);
+        }
+        return;
+      }
+      if (label) label.textContent = valid ? 'REVIEW · THEN PLAY' : 'TAP A CARD TO RETURN';
+      const fan = doc.createElement('div');
+      fan.className = 'stage-fan';
+      selectedCards.forEach((c) => {
+        const el = createCardEl(c, false, canAct, { staged: true });
+        if (canAct) wireUnstageDrag(el, c);
+        fan.appendChild(el);
+      });
+      area.appendChild(fan);
+      if (canAct) {
+        const ret = doc.createElement('button');
+        ret.type = 'button';
+        ret.id = 'btn-unstage-all';
+        ret.className = 'stage-return-btn';
+        ret.textContent = 'Return to hand';
+        ret.onclick = () => { clearSelection(); };
+        area.appendChild(ret);
+      }
+    }
+
     function clearSelection() {
       selectedCards = [];
-      const info = doc.getElementById('selection-info');
-      if (info) info.innerHTML = '';
       const st = getState();
       if (st) {
         for (let i = 0; i < st.numPlayers; i++) renderHand(i);
       }
-      const bp = doc.getElementById('btn-play');
-      if (bp) bp.disabled = true;
+      renderStage();
+      refreshStageStatus();
     }
 
-    /** Select cards by rank*4+suit keys (used by Hint to preview AI move). */
+    /** Stage cards by rank*4+suit keys (used by Hint to preview AI move). */
     function selectCardsByKeys(keys) {
       const keySet = {};
       (keys || []).forEach(k => { keySet[k] = true; });
@@ -487,15 +793,8 @@
         if (keySet[k]) selectedCards.push(c);
       });
       renderHand(currentHumanSeat);
-      const info = doc.getElementById('selection-info');
-      const selText = selectedCards.length ? `${selectedCards.length} cards selected (hint)` : '';
-      if (info && selText) {
-        // Hint writer may overwrite with full explanation after this call
-      }
-      const barSt = doc.getElementById('action-bar-status');
-      if (barSt) barSt.textContent = selText || 'Select cards, then PLAY / PASS';
-      const bp = doc.getElementById('btn-play');
-      if (bp) bp.disabled = !isValidPlaySelection(currentHumanSeat);
+      renderStage();
+      refreshStageStatus();
     }
 
     // ---------- Notifications ----------
@@ -538,6 +837,14 @@
       const seat = currentHumanSeat;
       const st = getState();
       if (!st) return;
+      if (!selectedCards.length) {
+        showToast('Stage cards in the center first', 'warn', 1400);
+        return;
+      }
+      if (!isValidPlaySelection(seat)) {
+        showToast('Staged cards are not a legal play', 'warn', 1600);
+        return;
+      }
       // Online guest: send to host
       if (playMode === 'online' && onlineRole === 'guest' && mp) {
         if (!isValidPlaySelection(seat)) return;
@@ -846,6 +1153,10 @@
       const st = getState();
       if (!st) return;
 
+      if (st.roundOver || st.currentPlayer !== currentHumanSeat) {
+        selectedCards = [];
+      }
+
       // Show/hide player zones for 2/3/4 — force visible (override Tailwind hidden)
       for (let i = 0; i < 4; i++) {
         const zone = doc.getElementById('player-' + i);
@@ -892,6 +1203,7 @@
       }
 
       renderTrick(st);
+      renderStage();
 
       // Free-lead hint
       const freeHint = doc.getElementById('free-lead-hint');
@@ -972,21 +1284,7 @@
         if (winBanner) winBanner.classList.add('hidden');
       }
 
-      const info = doc.getElementById('selection-info');
-      if (info) {
-        info.innerHTML = selectedCards.length
-          ? `${selectedCards.length} cards selected`
-          : (st.roundOver
-            ? (function () {
-                const s = computeStandings(st, currentHumanSeat);
-                const me = s.find(r => r.isYou);
-                return me ? `You placed ${ordinal(me.place)} · New round ready` : 'New round ready';
-              })()
-            : 'Select cards · drag to reorder hand');
-      }
-
-      const bp = doc.getElementById('btn-play');
-      if (bp) bp.disabled = st.roundOver || !isValidPlaySelection(currentHumanSeat);
+      refreshStageStatus();
       const bpass = doc.getElementById('btn-pass');
       if (bpass) {
         // Pass only when there is a combo to beat
@@ -1795,6 +2093,7 @@
     function boot() {
       const gameScreen = doc.getElementById('game-screen');
       if (gameScreen) gameScreen.classList.add('hidden');
+      ensureStageArea();
 
       if (doc.addEventListener) {
         doc.addEventListener('keydown', (e) => {
@@ -1856,7 +2155,8 @@
       if (typeof window !== 'undefined') {
         window.TienLenUI = {
           updateUI, startVsAI, startLive, startHotseat, playSelected, doPass,
-          clearSelection, selectCardsByKeys, ensureSeatSwitcher, resetHandOrder, showFriendsLobby
+          clearSelection, selectCardsByKeys, ensureSeatSwitcher, resetHandOrder, showFriendsLobby,
+          stageCard, unstageCard, renderStage
         };
       }
     }
@@ -1884,6 +2184,9 @@
       createCardEl,
       renderHand,
       toggleSelect,
+      stageCard,
+      unstageCard,
+      renderStage,
       isValidPlaySelection,
       playSelected,
       doPass,
@@ -1913,6 +2216,7 @@
       playSound,
       _setController(c) { controller = c; },
       _getSelected() { return selectedCards.slice(); },
+      _getStaged() { return selectedCards.slice(); },
       _getCustomOrderKeys() { return customOrderKeys ? customOrderKeys.slice() : null; },
       _setCustomOrderKeys(k) { customOrderKeys = k ? k.slice() : null; }
     };

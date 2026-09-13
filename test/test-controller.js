@@ -10,7 +10,8 @@ const engine = require('../engine.js');
 const ctrlFac = require('../controller.js');
 const createUI = require('../ui.js');
 
-const SCRATCH = '/var/folders/sq/9sj87lh90pvg6yjc6lt30wsw0000gn/T/grok-goal-9faa41e2b65e/implementer';
+const SCRATCH = process.env.TIENLEN_SCRATCH ||
+  '/tmp/tienlen-scratch';
 const fs = require('fs'); const path = require('path');
 if (!fs.existsSync(SCRATCH)) fs.mkdirSync(SCRATCH,{recursive:true});
 const logp = path.join(SCRATCH, 'controller-tests-final.log');
