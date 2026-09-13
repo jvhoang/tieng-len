@@ -1024,6 +1024,7 @@
           </div>
           <div class="flex flex-wrap gap-1.5 justify-end">
             <button type="button" onclick="refreshPublicPlayLogs()" class="px-2.5 py-1.5 text-[11px] border border-[#334155] rounded-full text-[#94a3b8] hover:border-[#2dd4bf]">↻ Sync</button>
+            <button type="button" id="publish-unpublished-btn" onclick="flushUnpublishedPlayLogs()" class="px-2.5 py-1.5 text-[11px] border border-[#c9a227]/60 rounded-full text-[#e8d48b] hover:border-[#e8d48b]">Publish unpublished</button>
             <button type="button" onclick="exportAllPlayLogs()" class="px-2.5 py-1.5 text-[11px] border border-[#2dd4bf]/50 rounded-full text-[#2dd4bf]">Export</button>
             <button type="button" onclick="hidePlayHistory()" class="px-2.5 py-1.5 text-[11px] text-[#2dd4bf]">✕</button>
           </div>
@@ -1032,6 +1033,9 @@
         <div id="history-fun-stats" class="text-[10px] sm:text-[11px] text-[#94a3b8] leading-relaxed bg-[#0b1224]/80 rounded-xl px-3 py-2 border border-[#334155]/40 mb-2">
           Loading stats…
         </div>
+        <p id="history-recover-hint" class="text-[10px] sm:text-[11px] text-[#e8d48b]/90 leading-relaxed mb-1">
+          Same phone that played? Set your username, then tap <strong>↻ Sync</strong> or <strong>Publish unpublished</strong> — finished local games that never reached GitHub are re-queued. Wait ~10 minutes for the leaderboard.
+        </p>
       </div>
 
       <!-- Scrollable body: setup (collapsed) + list + detail -->
@@ -1093,7 +1097,7 @@
   -->
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <script>
-    window.TIENLEN_SITE_BUILD = '202607280300';
+    window.TIENLEN_SITE_BUILD = '202609130545';
     // Inline fallback so title always has a version even if scripts fail to load
     window.TIENLEN_AI_BUILD = window.TIENLEN_AI_BUILD || {
       id: 'v1.0-sh-L2s444',
@@ -1295,11 +1299,13 @@
         const pub = pl.getPublishStatus ? pl.getPublishStatus() : {};
         const hasTok = !!(cfg.token || window.TIENLEN_STATS_TOKEN ||
           (window.TIENLEN_REMOTE_LOG && window.TIENLEN_REMOTE_LOG.token));
-        // When site bootstrap provides a write token, hide PAT friction (no player permission).
+        const hasIngest = !!(cfg.ingestUrl || (window.TIENLEN_REMOTE_LOG && window.TIENLEN_REMOTE_LOG.ingestUrl));
+        const canPublish = !!(hasTok || hasIngest || (pl.hasPublishAuth && pl.hasPublishAuth()));
+        // When site bootstrap provides a write path, hide PAT friction (no player permission).
         try {
           const det = document.getElementById('remote-log-setup');
           const tokenInput = document.getElementById('remote-token');
-          if (hasTok && tokenInput) {
+          if (canPublish && tokenInput) {
             tokenInput.placeholder = 'Site auto-publish (managed) — no action needed';
             tokenInput.value = '';
             tokenInput.disabled = true;
@@ -1310,13 +1316,13 @@
           if (det) {
             const sum = det.querySelector('summary span.font-semibold');
             if (sum) {
-              sum.textContent = hasTok
+              sum.textContent = canPublish
                 ? '✓ Stats auto-publish ON'
                 : '⚙ Stats → GitHub (auto when configured)';
             }
           }
         } catch (_) {}
-        if (!hasTok) {
+        if (!canPublish) {
           el.textContent = 'Saving locally — public sync still loads leaderboard reads';
           el.className = 'text-[10px] text-amber-400/90';
         } else if (pub.ok === true) {
@@ -1358,6 +1364,35 @@
         window.saveRemoteLogConfig();
       };
 
+      function paintUnpublishedCount() {
+        const pl = getPlayLog();
+        const btn = document.getElementById('publish-unpublished-btn');
+        if (!btn || !pl || !pl.listUnpublishedLocalGames) return 0;
+        const pending = pl.listUnpublishedLocalGames({ includeQueued: false }) || [];
+        const queued = pl.listUnpublishedLocalGames({ includeQueued: true }) || [];
+        const n = pending.length;
+        const retry = Math.max(0, queued.length - pending.length);
+        btn.textContent = n
+          ? ('Publish unpublished (' + n + ')')
+          : (retry ? ('Retry unpublished (' + retry + ')') : 'Publish unpublished');
+        return n;
+      }
+
+      function afterPublicSync(games, thenFlush) {
+        renderHistoryList();
+        refreshHistorySummary();
+        updateRemoteStatusLine();
+        paintUnpublishedCount();
+        const n = Array.isArray(games) ? games.length : 0;
+        const st = getPlayLog() && getPlayLog().stats ? getPlayLog().stats() : {};
+        const fun = document.getElementById('history-fun-stats');
+        if (fun && n === 0 && (st.total || 0) < 50) {
+          fun.innerHTML = '<span class="text-amber-300">Sync returned 0 new bodies — check network / rate limit. Tap ↻ Sync again.</span>';
+        }
+        if (!thenFlush) return Promise.resolve();
+        return flushUnpublishedPlayLogs({ fetchFirst: false, includeQueued: false });
+      }
+
       window.refreshPublicPlayLogs = function () {
         const pl = getPlayLog();
         const list = document.getElementById('history-list');
@@ -1366,14 +1401,53 @@
         if (list) list.innerHTML = '<div class="text-[#64748b] text-xs p-3">Loading all public play-logs from GitHub (paginated)…</div>';
         if (fun) fun.textContent = 'Syncing from GitHub Issues…';
         pl.fetchPublicGames().then(function (games) {
+          return afterPublicSync(games, true);
+        });
+      };
+
+      window.flushUnpublishedPlayLogs = function (opts) {
+        opts = opts || {};
+        const pl = getPlayLog();
+        const fun = document.getElementById('history-fun-stats');
+        const el = document.getElementById('remote-log-status');
+        if (!pl || !pl.flushUnpublishedLocalGames) return Promise.resolve();
+        const fetchFirst = opts.fetchFirst !== false && opts.fetchFirst !== 'false';
+        const includeQueued = opts.includeQueued != null ? !!opts.includeQueued : true;
+        if (el) { el.textContent = 'Publishing unpublished…'; el.className = 'text-[10px] text-[#e8d48b]'; }
+        if (fun) fun.innerHTML = '<span class="text-[#e8d48b]">Checking this device for unpublished games…</span>';
+        const start = (fetchFirst && pl.fetchPublicGames) ? pl.fetchPublicGames() : Promise.resolve([]);
+        return start.then(function () {
+          const pending = pl.listUnpublishedLocalGames
+            ? pl.listUnpublishedLocalGames({ includeQueued: includeQueued })
+            : [];
+          if (fun) {
+            fun.innerHTML = pending.length
+              ? ('<span class="text-[#e8d48b]">Re-queuing ' + pending.length + ' unpublished local game' +
+                (pending.length === 1 ? '' : 's') + ' to the leaderboard pipeline…</span>')
+              : '<span class="text-[#94a3b8]">No unpublished local games on this device.</span>';
+          }
+          return pl.flushUnpublishedLocalGames({
+            fetchFirst: false,
+            includeQueued: includeQueued,
+            delayMs: 200
+          });
+        }).then(function (res) {
           renderHistoryList();
           refreshHistorySummary();
           updateRemoteStatusLine();
-          const n = Array.isArray(games) ? games.length : 0;
-          const st = pl.stats ? pl.stats() : {};
-          if (fun && n === 0 && (st.total || 0) < 50) {
-            fun.innerHTML = '<span class="text-amber-300">Sync returned 0 new bodies — check network / rate limit. Token helps rate limits. Tap ↻ Sync again.</span>';
+          paintUnpublishedCount();
+          if (fun) {
+            if (res && res.queued) {
+              fun.innerHTML = '<span class="text-emerald-300">Queued ' + res.queued +
+                ' unpublished game' + (res.queued === 1 ? '' : 's') +
+                ' — wait ~10 minutes (or run Leaderboard pipeline) for the board to update.</span>';
+            } else if (res && res.failed) {
+              fun.innerHTML = '<span class="text-amber-300">Flush finished with ' + res.failed + ' failure(s). Tap Publish unpublished to retry.</span>';
+            } else {
+              fun.innerHTML = '<span class="text-[#94a3b8]">No unpublished local games on this device — already on GitHub or not saved here.</span>';
+            }
           }
+          return res;
         });
       };
 
@@ -1444,6 +1518,7 @@
         if (listCount) {
           listCount.textContent = games.length + ' game' + (games.length === 1 ? '' : 's') + ' (newest first)';
         }
+        try { paintUnpublishedCount(); } catch (_) {}
         // Collapse PAT panel when token already saved (free screen for game list)
         try {
           const det = document.getElementById('remote-log-setup');
@@ -1804,6 +1879,12 @@
         if (!list || !prof || !pl) return;
         let games = [];
         try { games = pl.getAllFullGames ? pl.getAllFullGames() : []; } catch (_) { games = []; }
+        const staticGames = window.__tienlenStaticGames;
+        const pub = pl.getPublishStatus ? pl.getPublishStatus() : {};
+        const liveFailed = pub && pub.ok === false && String(pub.message || '').indexOf('Fetch public') >= 0;
+        if (staticGames && staticGames.length && (liveFailed || games.length < staticGames.length)) {
+          games = staticGames;
+        }
         const multiMode = _lbMode === '3p' || _lbMode === '4p';
         const board = prof.buildLeaderboard(games, {
           modeFilter: _lbMode,
@@ -2368,6 +2449,25 @@
       try { refreshHistorySummary(); } catch (_) {}
       try { refreshUsernameUI(); } catch (_) {}
       try { updateRemoteStatusLine(); } catch (_) {}
+      try {
+        fetch('data/leaderboard.json', { cache: 'no-store' }).then(function (r) {
+          return r.ok ? r.json() : null;
+        }).then(function (d) {
+          if (!d) return;
+          window.__tienlenStaticLeaderboard = d;
+          const summary = document.getElementById('leaderboard-summary-count');
+          if (summary && d.rows && (summary.textContent === '—' || summary.textContent === '')) {
+            summary.textContent = String(d.rows.length);
+          }
+        }).catch(function () {});
+        fetch('data/playlogs-index.json', { cache: 'no-store' }).then(function (r) {
+          return r.ok ? r.json() : null;
+        }).then(function (d) {
+          if (!d || !d.games) return;
+          window.__tienlenStaticGames = d.games;
+          try { renderLeaderboard(); } catch (_) {}
+        }).catch(function () {});
+      } catch (_) {}
       // Pull public GitHub play-logs into local cache so History count is not stuck at 0
       // (e.g. after a failed glue load, or when opening from another device/browser).
       try {
