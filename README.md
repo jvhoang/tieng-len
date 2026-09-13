@@ -25,7 +25,7 @@ High-quality, polished web implementation of Vietnam's national card game.
 
 - Host is the game authority; everyone stays in sync automatically
 - Uses PeerJS free signaling (works on GitHub Pages). Some strict corporate NATs may block P2P — use hotseat or another network if connect fails
-- **Hotseat (one device)** is also available from the same Friends menu
+- **Hotseat (one device)** is also available from the same Friends menu. After each turn the table hides cards and asks you to pass the device to the next player — their hand then appears at the bottom.
 
 ## Hand UX
 
@@ -70,6 +70,7 @@ node test/test-hand-order.js
 node test/test-multiplayer-sync.js
 node test/test-ui-feedback.js
 node test/test-ui-wired.js
+node test/test-4p-human.js
 # optional full launcher:
 node launch-verify.js
 ```

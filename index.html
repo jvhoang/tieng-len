@@ -421,6 +421,46 @@
       font-size: 0.8rem;
     }
     .friends-lobby { margin-top: 1rem; }
+    .hotseat-handoff {
+      position: fixed;
+      inset: 0;
+      z-index: 180;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(10, 4, 3, 0.78);
+      backdrop-filter: blur(5px);
+      padding: 1rem;
+    }
+    .hotseat-handoff.show { display: flex; }
+    .hotseat-handoff-card {
+      width: min(400px, 100%);
+      background: linear-gradient(160deg, #2c0f0a 0%, #1a0907 60%);
+      border: 2px solid #c9a227;
+      border-radius: 1.5rem;
+      padding: 1.6rem 1.4rem 1.3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.55);
+    }
+    .hotseat-handoff-title {
+      font-family: inherit;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+    .hotseat-handoff-sub {
+      font-size: 0.92rem;
+      color: #d2b48c;
+      line-height: 1.45;
+      margin-bottom: 1.1rem;
+    }
+    .hotseat-claim-btn {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      border-radius: 1rem;
+      font-size: 1rem;
+    }
     #free-lead-hint {
       text-align: left;
       color: #e8d48b;

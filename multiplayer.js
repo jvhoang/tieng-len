@@ -69,6 +69,8 @@
     let nextGuestSeat = 1;
     let numPlayers = 4;
     let destroyed = false;
+    let pendingJoinResolve = null;
+    let pendingJoinTimer = null;
 
     function setStatus(msg, level) {
       onStatus({ message: msg, level: level || 'info', role, roomCode, mySeat });
@@ -178,6 +180,12 @@
         if (controller && msg.state) controller.applyRemoteState(msg.state);
         setStatus('Joined room ' + roomCode + ' as P' + mySeat, 'ok');
         onState(controller ? controller.getState() : msg.state, { type: 'welcome', seat: mySeat });
+        if (pendingJoinResolve) {
+          const fn = pendingJoinResolve;
+          pendingJoinResolve = null;
+          if (pendingJoinTimer) { try { clearTimeout(pendingJoinTimer); } catch (_) {} pendingJoinTimer = null; }
+          fn({ roomCode, role: 'guest', mySeat, shareUrl: buildShareUrl(roomCode), numPlayers });
+        }
         return;
       }
 
@@ -244,34 +252,26 @@
       const peerId = makeRoomId(roomCode);
 
       if (controller && controller.reconfigure) {
-        controller.reconfigure({
-          vsAI: false,
-          numPlayers,
-          humanSeats: [0], // host local seat; remote humans send actions to host
-          currentHumanSeat: 0,
-          seed: cfg.seed != null ? cfg.seed : Date.now()
-        });
-        // Mark all seats as human for online (no AI unless host enables fill)
+        // Single deal: all chairs are human unless the host asked to fill empties with AI.
+        // (A first pass with humanSeats:[0] only used to create a superseded play-log.)
+        const allSeats = [];
+        for (let i = 0; i < numPlayers; i++) allSeats.push(i);
         if (cfg.fillWithAI) {
-          // humanSeats only host; AI fills rest — handled by controller vsAI
           controller.reconfigure({
             vsAI: true,
             numPlayers,
             humanSeats: [0],
             currentHumanSeat: 0,
+            mode: 'vsAI',
             seed: cfg.seed != null ? cfg.seed : Date.now()
           });
         } else {
-          // All seats potentially human; host only acts for seat 0 locally
-          const allSeats = [];
-          for (let i = 0; i < numPlayers; i++) allSeats.push(i);
-          // Host controller: only seat 0 is "local human" for AI skip; remote seats
-          // are not AI — they wait for guest actions. So humanSeats = all, but local UI only seat 0.
           controller.reconfigure({
             vsAI: false,
             numPlayers,
             humanSeats: allSeats,
             currentHumanSeat: 0,
+            mode: 'online',
             seed: cfg.seed != null ? cfg.seed : Date.now()
           });
         }
@@ -336,20 +336,21 @@
           const conn = peer.connect(hostId, { reliable: true });
           conn.on('open', () => {
             wireConnection(conn, false);
+            pendingJoinResolve = resolve;
             sendTo(conn, {
               type: 'hello',
               displayName,
               preferredSeat: cfg.preferredSeat
             });
-            // Resolve after welcome (or timeout)
-            const t = setTimeout(() => {
-              resolve({ roomCode, role: 'guest', mySeat, shareUrl: buildShareUrl(roomCode) });
-            }, 2500);
-            const prevOnState = onState;
-            // welcome handler sets mySeat; we already resolve with current mySeat after short wait
-            void prevOnState;
-            resolve({ roomCode, role: 'guest', peerId: peer.id, hostId, shareUrl: buildShareUrl(roomCode), mySeat });
-            clearTimeout(t);
+            // Resolve on welcome (handleGuestMessage). Timeout keeps old clients unblocked.
+            pendingJoinTimer = setTimeout(() => {
+              if (pendingJoinResolve) {
+                const fn = pendingJoinResolve;
+                pendingJoinResolve = null;
+                pendingJoinTimer = null;
+                fn({ roomCode, role: 'guest', peerId: peer.id, hostId, shareUrl: buildShareUrl(roomCode), mySeat, numPlayers });
+              }
+            }, 4000);
           });
           conn.on('error', (e) => {
             setStatus('Join failed: ' + (e.message || e), 'error');
