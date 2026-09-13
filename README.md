@@ -30,7 +30,9 @@ High-quality, polished web implementation of Vietnam's national card game.
 ## Hand UX
 
 - Your cards default **lowest → highest** (left to right)
-- **Drag** cards to group pairs, straights, or trash as you like
+- **Stage** a combo on the center field (tap or drag) and review it before **PLAY** commits
+- Tap a staged card (or **Return to hand**) to unstage
+- **Drag** across the fan to reorder pairs, straights, or trash
 - **Sort low→high** button (or **R** key) restores default order
 
 ## Rules fidelity
@@ -46,11 +48,11 @@ See [RULES.md](./RULES.md) — Pagat + Wikipedia core:
 
 | Action | How |
 |--------|-----|
-| Select cards | Click |
-| Play | **PLAY** or `P` / `Enter` |
-| Pass | **PASS** or `S` / `Space` (only when beating a pile) |
-| Hint (AI move + why) | **HINT** in action bar, or `H` / `C` |
-| Clear selection | `Esc` |
+| Stage cards | Tap a hand card, or drag it onto the center |
+| Unstage | Tap a staged card, drag it back to the fan, or **Return to hand** / `Esc` |
+| Play | **PLAY** or `P` / `Enter` (only when the staged set is a legal combo) |
+| Pass | **PASS** or `S` / `Space` (only when beating a pile; no cards required) |
+| Hint (AI move + why) | **HINT** in action bar, or `H` / `C` (stages the suggested combo) |
 | Re-sort hand | Sort button or `R` |
 
 ## Tech
@@ -70,6 +72,7 @@ node test/test-hand-order.js
 node test/test-multiplayer-sync.js
 node test/test-ui-feedback.js
 node test/test-ui-wired.js
+node test/test-ui-stage.js
 node test/test-4p-human.js
 # optional full launcher:
 node launch-verify.js

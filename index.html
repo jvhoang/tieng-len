@@ -297,6 +297,116 @@
       transition: all .25s cubic-bezier(0.23, 1, 0.32, 1);
     }
 
+    /* Center staging: review a combo on the field before PLAY commits */
+    #trick-area.stage-armed {
+      border-color: rgba(45, 212, 191, 0.45);
+    }
+    #trick-area.stage-drop-ready {
+      box-shadow: inset 0 0 0 2px rgba(45, 212, 191, 0.55), 0 0 22px rgba(45, 212, 191, 0.18);
+    }
+    #trick-area.stage-drop-hover {
+      box-shadow: inset 0 0 0 3px #2dd4bf, 0 0 28px rgba(45, 212, 191, 0.35);
+    }
+    #trick-area.stage-armed,
+    #trick-area.has-stage {
+      height: 200px;
+    }
+    #trick-area.is-reviewing #trick-pile {
+      opacity: 0.72;
+      transform: translateY(-10px) scale(0.92);
+      filter: none;
+    }
+    #stage-area,
+    .stage-area {
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      bottom: 18px;
+      top: 42%;
+      z-index: 16;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      pointer-events: auto;
+      border-radius: 1rem;
+    }
+    #stage-area.is-empty {
+      top: 10px;
+      bottom: 22px;
+      justify-content: center;
+      border: 1.5px dashed rgba(45, 212, 191, 0.28);
+    }
+    #stage-area.is-empty.over-pile {
+      border-color: transparent;
+    }
+    #trick-area:not(.stage-armed) #stage-area.is-empty {
+      border-color: transparent;
+    }
+    #stage-area.is-valid {
+      border: 2px solid #2dd4bf;
+      box-shadow: 0 0 18px rgba(45, 212, 191, 0.22);
+      background: rgba(15, 61, 58, 0.35);
+    }
+    #stage-area.is-invalid {
+      border: 2px solid #f0c14b;
+      box-shadow: 0 0 16px rgba(240, 193, 75, 0.2);
+      background: rgba(61, 45, 15, 0.28);
+    }
+    .stage-hint {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(45, 212, 191, 0.7);
+      pointer-events: none;
+      text-align: center;
+      padding: 0 8px;
+    }
+    .stage-fan {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      pointer-events: auto;
+    }
+    .stage-fan .card,
+    .card.staged-card {
+      width: 52px;
+      height: 74px;
+      margin-left: -12px;
+      box-shadow: 0 0 0 3px #2dd4bf, 0 10px 20px rgba(0, 0, 0, 0.45);
+      transform: translateY(-2px);
+      z-index: 17;
+    }
+    .stage-fan .card:first-child { margin-left: 0; }
+    #stage-area.is-invalid .stage-fan .card,
+    #stage-area.is-invalid .card.staged-card {
+      box-shadow: 0 0 0 3px #f0c14b, 0 10px 20px rgba(0, 0, 0, 0.45);
+    }
+    .stage-return-btn {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #e8d48b;
+      background: rgba(18, 26, 47, 0.88);
+      border: 1px solid rgba(201, 162, 39, 0.45);
+      border-radius: 999px;
+      padding: 3px 10px;
+      cursor: pointer;
+      z-index: 18;
+    }
+    .stage-return-btn:hover { border-color: #e8d48b; }
+    #hand-0.hand-unstage-ready {
+      box-shadow: inset 0 0 0 2px rgba(232, 212, 139, 0.45);
+    }
+    @media (max-width: 480px) {
+      .stage-fan .card,
+      .card.staged-card {
+        width: 46px;
+        height: 66px;
+      }
+    }
+
     /* Large turn / pass banners */
     .game-banners {
       position: absolute;
@@ -921,7 +1031,8 @@
           <div id="trick-area"
                class="relative w-[300px] h-[160px] bg-[#0f3d3a] rounded-2xl border border-[#1e293b] flex items-center justify-center shadow-inner overflow-visible">
             <div id="trick-pile" class="relative w-72 h-28 flex items-center justify-center trick-pile"></div>
-            <div id="trick-label" class="absolute bottom-2 text-[10px] text-[#2dd4bf]/60 tracking-widest">CENTER</div>
+            <div id="stage-area" class="stage-area is-empty" aria-label="Staged cards"></div>
+            <div id="trick-label" class="absolute bottom-2 text-[10px] text-[#2dd4bf]/60 tracking-widest z-20">CENTER</div>
           </div>
         </div>
 
@@ -938,17 +1049,17 @@
               </div>
             </div>
             <div id="hand-0" class="hand-fan min-h-[96px] bg-[#0f3d3a]/60 rounded-2xl border border-[#1e293b]"></div>
-            <div class="text-[10px] text-[#64748b] mt-1 text-center">Drag cards to reorder · Sort low→high with the button · R key resets order</div>
+            <div class="text-[10px] text-[#64748b] mt-1 text-center">Tap or drag onto the center to stage · Drag across the fan to reorder · Sort low→high with the button</div>
           </div>
         </div>
       </div>
 
       <!-- Selection hint (Play/Pass/Hint live in fixed bar) -->
       <div class="mt-4 px-1">
-        <div class="text-xs text-[#64748b] mb-1">SELECT CARDS TO FORM A COMBO (single, pair, triple, quad, sequence, double sequence)</div>
+        <div class="text-xs text-[#64748b] mb-1">STAGE A COMBO ON THE CENTER (single, pair, triple, quad, sequence, double sequence) THEN PLAY</div>
         <div id="selection-info" class="text-sm min-h-[22px] text-[#94a3b8] max-w-xl mx-auto leading-snug"></div>
         <div class="mt-2 text-[10px] text-[#64748b] flex justify-between">
-          <div>Click cards to select. Legal plays only. Bombs work even after passing.</div>
+          <div>Tap or drag cards onto the center to stage. Tap a staged card to return it. PLAY commits a legal combo only.</div>
           <div id="turn-indicator" class="font-semibold text-[#2dd4bf]"></div>
         </div>
       </div>

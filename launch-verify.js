@@ -60,6 +60,7 @@ ok = runNode('test/test-ui-feedback.js', 'launch-verify-ui-feedback.log') && ok;
 
 log('\n-- 7. Wired UI + controller render --');
 ok = runNode('test/test-ui-wired.js', 'launch-verify-ui-wired.log') && ok;
+ok = runNode('test/test-ui-stage.js', 'launch-verify-ui-stage.log') && ok;
 ok = runNode('test/test-controller.js', 'launch-verify-controller.log') && ok;
 
 // Static file presence
@@ -79,7 +80,8 @@ const structural = [
   [/game-banner/, 'banner CSS'],
   [/free-lead-hint/, 'free lead hint'],
   [/banner-turn-label/, 'turn banner'],
-  [/banner-pass-label/, 'pass banner']
+  [/banner-pass-label/, 'pass banner'],
+  [/id="stage-area"/, 'center stage area']
 ];
 for (const [re, name] of structural) {
   const hit = re.test(indexHtml);
