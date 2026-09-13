@@ -47,6 +47,7 @@
     let customOrderKeys = null; // number[] of card keys for human hand
     let dragState = null; // { fromIndex, key, el }
     let lastResultsKey = null; // avoid re-showing results modal every render
+    let hotseatHandoffSeat = null; // pending "pass the device" seat in hotseat
 
     function getCurrentController() {
       if (controller && typeof controller.getState === 'function') return controller;
@@ -111,6 +112,118 @@
     function syncOrderKeys(hand, prev) {
       if (handOrderMod && handOrderMod.syncOrderKeys) return handOrderMod.syncOrderKeys(hand, prev);
       return orderKeys(sortHandDefault(hand));
+    }
+
+    function tableSize() {
+      const st = getState();
+      const n = (st && st.players && st.players.length) || numPlayers || 4;
+      return (n >= 2 && n <= 4) ? n : 4;
+    }
+
+    /** Rotate the table so the local / current human always sits at visual south (slot 0). */
+    function visualSlotForSeat(seat) {
+      const n = tableSize();
+      const me = currentHumanSeat || 0;
+      const s = (typeof seat === 'number' && isFinite(seat)) ? Math.floor(seat) : 0;
+      return ((s - me) % n + n) % n;
+    }
+
+    function seatForVisual(vis) {
+      const n = tableSize();
+      const me = currentHumanSeat || 0;
+      const v = (typeof vis === 'number' && isFinite(vis)) ? Math.floor(vis) : 0;
+      return ((me + v) % n + n) % n;
+    }
+
+    function getCurrentHumanSeat() {
+      return currentHumanSeat;
+    }
+
+    function isHotseatHandoffVisible() {
+      return hotseatHandoffSeat != null;
+    }
+
+    function hideHotseatHandoff() {
+      hotseatHandoffSeat = null;
+      const el = doc.getElementById('hotseat-handoff');
+      if (el) {
+        el.classList.add('hidden');
+        el.classList.remove('show');
+      }
+    }
+
+    function ensureHotseatHandoff() {
+      let el = doc.getElementById('hotseat-handoff');
+      if (!el) {
+        el = doc.createElement('div');
+        el.id = 'hotseat-handoff';
+        el.className = 'hotseat-handoff hidden';
+        const host = doc.getElementById('game-screen') || doc.body;
+        if (host && host.appendChild) host.appendChild(el);
+      }
+      return el;
+    }
+
+    function showHotseatHandoff(seat) {
+      if (typeof seat !== 'number') return;
+      hotseatHandoffSeat = seat;
+      const el = ensureHotseatHandoff();
+      if (!el) return;
+      el.classList.remove('hidden');
+      el.classList.add('show');
+      el.setAttribute('data-handoff-seat', String(seat));
+      el.innerHTML =
+        '<div class="hotseat-handoff-card" role="dialog" aria-labelledby="hotseat-handoff-title">' +
+          '<div id="hotseat-handoff-title" class="hotseat-handoff-title">Pass the device</div>' +
+          '<div class="hotseat-handoff-sub">It is <strong>Player ' + seat + '</strong>\'s turn. ' +
+            'Hand the phone or keyboard over, then tap below so only they see their cards.</div>' +
+          '<button type="button" id="btn-claim-seat" class="viet-btn hotseat-claim-btn">' +
+            'I\'m Player ' + seat + '</button>' +
+        '</div>';
+      const btn = doc.getElementById('btn-claim-seat');
+      if (btn) btn.onclick = function () { claimHotseatTurn(seat); };
+    }
+
+    /**
+     * Take the south seat as `seat` (hotseat pass-the-device, or online guest bind).
+     * Reveals that hand in #hand-0 and clears the handoff overlay.
+     */
+    function claimHotseatTurn(seat) {
+      const n = tableSize();
+      if (typeof seat !== 'number' || seat < 0 || seat >= n) return { ok: false, error: 'bad seat' };
+      currentHumanSeat = seat;
+      hotseatHandoffSeat = null;
+      customOrderKeys = null;
+      selectedCards = [];
+      const ctrl = getCurrentController();
+      if (ctrl && typeof ctrl.switchSeat === 'function') ctrl.switchSeat(seat);
+      hideHotseatHandoff();
+      updateUIFromController();
+      ensureSeatSwitcher();
+      return { ok: true, currentHumanSeat: seat };
+    }
+
+    function maybeOfferHotseatHandoff() {
+      if (playMode !== 'hotseat') {
+        hideHotseatHandoff();
+        return;
+      }
+      const st = getState();
+      if (!st || st.roundOver) {
+        hideHotseatHandoff();
+        return;
+      }
+      const cp = st.currentPlayer;
+      const ctrl = getCurrentController();
+      if (ctrl && typeof ctrl.isHumanSeat === 'function' && !ctrl.isHumanSeat(cp)) {
+        hideHotseatHandoff();
+        return;
+      }
+      if (cp === currentHumanSeat) {
+        hideHotseatHandoff();
+        return;
+      }
+      showHotseatHandoff(cp);
     }
 
     function getDisplayHand(playerIdx, hand) {
@@ -214,7 +327,8 @@
     }
 
     function renderHand(playerIdx) {
-      const container = doc.getElementById('hand-' + playerIdx);
+      const vis = visualSlotForSeat(playerIdx);
+      const container = doc.getElementById('hand-' + vis);
       if (!container) return;
       container.innerHTML = '';
       const st = getState();
@@ -224,11 +338,14 @@
 
       const isActiveHuman = (playerIdx === currentHumanSeat);
       const isTurnSeat = (playerIdx === st.currentPlayer);
-      // In vsAI show only seat 0 face-up; in hotseat show current human; online show my seat
-      const showCards = vsAI
-        ? (playerIdx === 0)
-        : (playerIdx === currentHumanSeat);
-      const selectableForHand = isTurnSeat && isActiveHuman && !st.roundOver;
+      // South (#hand-0) is always the local/current human after table rotation.
+      // vsAI: only seat 0 face-up. Hotseat/online: only currentHumanSeat.
+      // During pass-the-device, hide every face so the previous player cannot peek.
+      const hideForHandoff = playMode === 'hotseat' && isHotseatHandoffVisible();
+      const showCards = hideForHandoff
+        ? false
+        : (vsAI ? (playerIdx === 0) : (playerIdx === currentHumanSeat));
+      const selectableForHand = isTurnSeat && isActiveHuman && !st.roundOver && !hideForHandoff;
 
       if ((!p.hand || p.hand.length === 0) && !p.finished) {
         container.innerHTML = '<div class="text-xs opacity-50">—</div>';
@@ -1160,16 +1277,22 @@
         selectedCards = [];
       }
 
-      // Show/hide player zones for 2/3/4 — force visible (override Tailwind hidden)
-      for (let i = 0; i < 4; i++) {
-        const zone = doc.getElementById('player-' + i);
+      maybeOfferHotseatHandoff();
+      updatePlayerLabels();
+
+      const n = (st.players && st.players.length) || st.numPlayers || 0;
+
+      // Zones are visual slots (0 = south / current human), not raw seat ids.
+      for (let vis = 0; vis < 4; vis++) {
+        const zone = doc.getElementById('player-' + vis);
         if (zone) {
-          if (i < st.numPlayers) {
+          if (vis < n) {
             zone.style.display = '';
             zone.classList.remove('hidden');
-            // Ensure md:hidden seats still show when active
             zone.style.visibility = 'visible';
-            zone.classList.toggle('active', st.currentPlayer === i && !st.roundOver);
+            const seat = seatForVisual(vis);
+            zone.classList.toggle('active', st.currentPlayer === seat && !st.roundOver);
+            zone.dataset.logicalSeat = String(seat);
           } else {
             zone.style.display = 'none';
           }
@@ -1179,9 +1302,9 @@
       const activeLabel = doc.getElementById('active-seat-label');
       if (activeLabel) activeLabel.textContent = '(P' + currentHumanSeat + ')';
 
-      for (let i = 0; i < st.numPlayers; i++) {
+      for (let i = 0; i < n; i++) {
         renderHand(i);
-        const statusEl = doc.getElementById('status-' + i);
+        const statusEl = doc.getElementById('status-' + visualSlotForSeat(i));
         if (statusEl) {
           const p = st.players[i];
           let txt = (p.hand ? p.hand.length : 0) + ' cards';
@@ -1309,6 +1432,7 @@
       playMode = 'ai';
       humanSeats = [0];
       currentHumanSeat = 0;
+      hideHotseatHandoff();
       selectedCards = [];
       customOrderKeys = null;
       onlineRole = null;
@@ -1712,6 +1836,7 @@
       humanSeats = [];
       for (let i = 0; i < numPlayers; i++) humanSeats.push(i);
       currentHumanSeat = 0;
+      hideHotseatHandoff();
       selectedCards = [];
       customOrderKeys = null;
       onlineRole = null;
@@ -1736,6 +1861,7 @@
       updateUIFromController();
       ensureSeatSwitcher();
       ensureSortButton();
+      maybeOfferHotseatHandoff();
 
       try {
         if (typeof BroadcastChannel !== 'undefined') {
@@ -1775,8 +1901,8 @@
             <button type="button" id="lobby-back" class="text-[#c9a227] text-sm">← Back</button>
           </div>
           <p class="text-sm text-[#d2b48c] mb-6">
-            <strong class="text-white">Same computer:</strong> hotseat — pass the device each turn.<br>
-            <strong class="text-white">Different computers:</strong> host creates a room code; friends join with the code or share link.
+            <strong class="text-white">Same computer:</strong> hotseat — after each turn the table hides cards and asks you to pass the device to the next player.<br>
+            <strong class="text-white">Different computers:</strong> host creates a room code; friends join with the code or share link. Each person sees their own hand at the bottom.
           </p>
           <div class="grid gap-3">
             <button type="button" id="btn-hotseat" class="viet-btn w-full py-3 rounded-2xl text-left px-5">
@@ -1839,17 +1965,25 @@
       }
       // Ensure controller exists for host authority
       if (!getCurrentController()) {
+        const seats = [];
+        for (let i = 0; i < (numPlayers || 4); i++) seats.push(i);
         recreateController({
           vsAI: false,
           numPlayers,
-          humanSeats: [0],
+          humanSeats: seats,
           currentHumanSeat: 0,
-          seed: Date.now()
+          logging: false,
+          mode: playMode === 'online' ? 'online' : 'hotseat'
         });
       }
       mp = mpFactory({
         controller: getCurrentController(),
-        onState: (st) => {
+        onState: (st, ev) => {
+          if (ev && ev.type === 'welcome' && typeof ev.seat === 'number') {
+            currentHumanSeat = ev.seat;
+            const ctrlW = getCurrentController();
+            if (ctrlW && ctrlW.switchSeat) ctrlW.switchSeat(ev.seat);
+          }
           updateUIFromController();
         },
         onStatus: (s) => {
@@ -1882,7 +2016,8 @@
         numPlayers,
         humanSeats: humanSeats.slice(),
         currentHumanSeat: 0,
-        seed: Date.now()
+        logging: false,
+        mode: 'online'
       });
 
       const m = ensureMp();
@@ -1930,13 +2065,14 @@
       selectedCards = [];
       customOrderKeys = null;
 
-      // Guest still needs a controller to hold synced state
+      // Guest placeholder: do not start a play-log (host is authority; welcome replaces state)
       recreateController({
         vsAI: false,
         numPlayers: numPlayers || 4,
         humanSeats: [0, 1, 2, 3],
         currentHumanSeat: 0,
-        seed: 1
+        logging: false,
+        mode: 'online'
       });
 
       const m = ensureMp();
@@ -1947,23 +2083,23 @@
       if (status) status.textContent = 'Joining…';
 
       m.joinGame({ roomCode: code, displayName: 'Guest' }).then((info) => {
-        // mySeat assigned on welcome; poll room info shortly
-        setTimeout(() => {
-          const ri = m.getRoomInfo();
-          currentHumanSeat = (typeof ri.mySeat === 'number') ? ri.mySeat : 0;
-          const ctrl = getCurrentController();
-          if (ctrl && ctrl.switchSeat) ctrl.switchSeat(currentHumanSeat);
-          const lobby = doc.getElementById('friends-lobby');
-          if (lobby) lobby.classList.add('hidden');
-          showGameScreen();
-          const sub = doc.getElementById('game-subtitle');
-          if (sub) sub.innerHTML = `Online • Room ${info.roomCode || code} • You are P${currentHumanSeat}`;
-          ensureMpStatusBar(Object.assign({}, info, ri));
-          updatePlayerLabels();
-          updateUIFromController();
-          ensureSortButton();
-          showToast('Joined as P' + currentHumanSeat, 'ok', 2000);
-        }, 600);
+        const ri = m.getRoomInfo ? m.getRoomInfo() : {};
+        const seat = (typeof info.mySeat === 'number')
+          ? info.mySeat
+          : ((ri && typeof ri.mySeat === 'number') ? ri.mySeat : 0);
+        currentHumanSeat = seat;
+        const ctrl = getCurrentController();
+        if (ctrl && ctrl.switchSeat) ctrl.switchSeat(currentHumanSeat);
+        const lobby = doc.getElementById('friends-lobby');
+        if (lobby) lobby.classList.add('hidden');
+        showGameScreen();
+        const sub = doc.getElementById('game-subtitle');
+        if (sub) sub.innerHTML = `Online • Room ${info.roomCode || code} • You are P${currentHumanSeat}`;
+        ensureMpStatusBar(Object.assign({}, info, ri));
+        updatePlayerLabels();
+        updateUIFromController();
+        ensureSortButton();
+        showToast('Joined as P' + currentHumanSeat, 'ok', 2000);
       }).catch((e) => {
         if (status) status.textContent = 'Join failed: ' + (e.message || e);
         showToast('Join failed — check code / host is online', 'error', 3000);
@@ -2022,22 +2158,35 @@
           uname = window.TienLenPlayerProfile.getUsername() || '';
         }
       } catch (_) { uname = ''; }
-      // Prefer a clearer layout: map seats 0..n-1 to visible zones
-      for (let i = 0; i < 4; i++) {
-        const zone = doc.getElementById('player-' + i);
+      const n = tableSize();
+      const ctrl = getCurrentController();
+      for (let vis = 0; vis < 4; vis++) {
+        const zone = doc.getElementById('player-' + vis);
         if (!zone) continue;
-        // Set data attribute for CSS/tests
-        zone.dataset.seat = String(i);
+        if (vis >= n) {
+          zone.dataset.seat = '';
+          continue;
+        }
+        const seat = seatForVisual(vis);
+        zone.dataset.seat = String(seat);
+        zone.dataset.logicalSeat = String(seat);
         const firstLabel = zone.querySelector('[data-player-title]') || zone.querySelector('.text-xs');
         if (firstLabel) {
           firstLabel.setAttribute('data-player-title', '1');
-          if (i === 0) {
+          const isAI = ctrl && typeof ctrl.isHumanSeat === 'function'
+            ? !ctrl.isHumanSeat(seat)
+            : (vsAI && seat !== 0);
+          if (vis === 0) {
             const safe = String(uname || 'YOU').replace(/[<>&]/g, '');
+            const seatTag = (playMode === 'hotseat' || playMode === 'online')
+              ? (' <span class="opacity-60">(P' + seat + ')</span>')
+              : ' <span class="opacity-60">(South)</span>';
             firstLabel.innerHTML = (uname
-              ? ('<span class="text-[#e8d48b]">' + safe + '</span> <span class="opacity-60">(You)</span>')
-              : 'YOU <span class="opacity-60">(South)</span>');
+              ? ('<span class="text-[#e8d48b]">' + safe + '</span> <span class="opacity-60">(You)</span>' +
+                ((playMode === 'hotseat' || playMode === 'online') ? (' <span class="opacity-60">P' + seat + '</span>') : ''))
+              : ('YOU' + seatTag));
           } else {
-            firstLabel.textContent = 'P' + i + (vsAI ? ' · AI' : '');
+            firstLabel.textContent = 'P' + seat + (isAI ? ' · AI' : '');
           }
         }
       }
@@ -2059,13 +2208,7 @@
         b.className = 'px-2 py-0.5 border border-[#5c4630] rounded ' +
           (s === currentHumanSeat ? 'bg-[#c9a227] text-[#1a0907]' : '');
         b.onclick = () => {
-          currentHumanSeat = s;
-          customOrderKeys = null;
-          const ctrl = getCurrentController();
-          if (ctrl && typeof ctrl.switchSeat === 'function') ctrl.switchSeat(s);
-          selectedCards = [];
-          updateUIFromController();
-          ensureSeatSwitcher();
+          claimHotseatTurn(s);
         };
         bar.appendChild(b);
       }
@@ -2159,7 +2302,8 @@
         window.TienLenUI = {
           updateUI, startVsAI, startLive, startHotseat, playSelected, doPass,
           clearSelection, selectCardsByKeys, ensureSeatSwitcher, resetHandOrder, showFriendsLobby,
-          stageCard, unstageCard, renderStage
+          stageCard, unstageCard, renderStage,
+          claimHotseatTurn, visualSlotForSeat, getCurrentHumanSeat, isHotseatHandoffVisible
         };
       }
     }
@@ -2202,6 +2346,11 @@
       startHotseat,
       showFriendsLobby,
       ensureSeatSwitcher,
+      claimHotseatTurn,
+      visualSlotForSeat,
+      seatForVisual,
+      getCurrentHumanSeat,
+      isHotseatHandoffVisible,
       resetHandOrder,
       newRound,
       kickAIIfNeeded,

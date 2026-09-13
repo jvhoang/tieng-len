@@ -303,6 +303,11 @@
     function applyRemoteState(remoteState) {
       if (!remoteState || !remoteState.players) return { ok: false };
       state = cloneState(remoteState);
+      const n = (state.players && state.players.length) || state.numPlayers;
+      if (n >= 2 && n <= 4) {
+        numPlayers = n;
+        try { state.numPlayers = n; } catch (_) {}
+      }
       notify({ type: 'sync' });
       return { ok: true, state: getState() };
     }
