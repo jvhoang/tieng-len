@@ -1093,7 +1093,7 @@
   -->
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <script>
-    window.TIENLEN_SITE_BUILD = '202607280300';
+    window.TIENLEN_SITE_BUILD = '202609130130';
     // Inline fallback so title always has a version even if scripts fail to load
     window.TIENLEN_AI_BUILD = window.TIENLEN_AI_BUILD || {
       id: 'v1.0-sh-L2s444',
@@ -1295,11 +1295,13 @@
         const pub = pl.getPublishStatus ? pl.getPublishStatus() : {};
         const hasTok = !!(cfg.token || window.TIENLEN_STATS_TOKEN ||
           (window.TIENLEN_REMOTE_LOG && window.TIENLEN_REMOTE_LOG.token));
-        // When site bootstrap provides a write token, hide PAT friction (no player permission).
+        const hasIngest = !!(cfg.ingestUrl || (window.TIENLEN_REMOTE_LOG && window.TIENLEN_REMOTE_LOG.ingestUrl));
+        const canPublish = !!(hasTok || hasIngest || (pl.hasPublishAuth && pl.hasPublishAuth()));
+        // When site bootstrap provides a write path, hide PAT friction (no player permission).
         try {
           const det = document.getElementById('remote-log-setup');
           const tokenInput = document.getElementById('remote-token');
-          if (hasTok && tokenInput) {
+          if (canPublish && tokenInput) {
             tokenInput.placeholder = 'Site auto-publish (managed) — no action needed';
             tokenInput.value = '';
             tokenInput.disabled = true;
@@ -1310,13 +1312,13 @@
           if (det) {
             const sum = det.querySelector('summary span.font-semibold');
             if (sum) {
-              sum.textContent = hasTok
+              sum.textContent = canPublish
                 ? '✓ Stats auto-publish ON'
                 : '⚙ Stats → GitHub (auto when configured)';
             }
           }
         } catch (_) {}
-        if (!hasTok) {
+        if (!canPublish) {
           el.textContent = 'Saving locally — public sync still loads leaderboard reads';
           el.className = 'text-[10px] text-amber-400/90';
         } else if (pub.ok === true) {
@@ -1804,6 +1806,12 @@
         if (!list || !prof || !pl) return;
         let games = [];
         try { games = pl.getAllFullGames ? pl.getAllFullGames() : []; } catch (_) { games = []; }
+        const staticGames = window.__tienlenStaticGames;
+        const pub = pl.getPublishStatus ? pl.getPublishStatus() : {};
+        const liveFailed = pub && pub.ok === false && String(pub.message || '').indexOf('Fetch public') >= 0;
+        if (staticGames && staticGames.length && (liveFailed || games.length < staticGames.length)) {
+          games = staticGames;
+        }
         const multiMode = _lbMode === '3p' || _lbMode === '4p';
         const board = prof.buildLeaderboard(games, {
           modeFilter: _lbMode,
@@ -2368,6 +2376,25 @@
       try { refreshHistorySummary(); } catch (_) {}
       try { refreshUsernameUI(); } catch (_) {}
       try { updateRemoteStatusLine(); } catch (_) {}
+      try {
+        fetch('data/leaderboard.json', { cache: 'no-store' }).then(function (r) {
+          return r.ok ? r.json() : null;
+        }).then(function (d) {
+          if (!d) return;
+          window.__tienlenStaticLeaderboard = d;
+          const summary = document.getElementById('leaderboard-summary-count');
+          if (summary && d.rows && (summary.textContent === '—' || summary.textContent === '')) {
+            summary.textContent = String(d.rows.length);
+          }
+        }).catch(function () {});
+        fetch('data/playlogs-index.json', { cache: 'no-store' }).then(function (r) {
+          return r.ok ? r.json() : null;
+        }).then(function (d) {
+          if (!d || !d.games) return;
+          window.__tienlenStaticGames = d.games;
+          try { renderLeaderboard(); } catch (_) {}
+        }).catch(function () {});
+      } catch (_) {}
       // Pull public GitHub play-logs into local cache so History count is not stuck at 0
       // (e.g. after a failed glue load, or when opening from another device/browser).
       try {

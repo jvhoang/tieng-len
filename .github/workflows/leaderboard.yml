@@ -1,0 +1,59 @@
+name: Leaderboard pipeline
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  issues:
+    types: [opened, edited, labeled]
+  workflow_dispatch:
+  repository_dispatch:
+    types: [play-log, rebuild-leaderboard]
+
+permissions:
+  issues: write
+  contents: write
+
+concurrency:
+  group: leaderboard-pipeline
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name != 'issues' ||
+      (
+        github.actor != 'github-actions[bot]' &&
+        contains(join(github.event.issue.labels.*.name, ','), 'play-log')
+      )
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Ingest mailbox
+        if: github.event_name != 'issues'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/ingest-play-logs.js
+
+      - name: Rebuild static leaderboard
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/rebuild-leaderboard.js
+
+      - name: Commit snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data
+          if git diff --cached --quiet; then
+            echo "No leaderboard changes"
+            exit 0
+          fi
+          git commit -m "chore(leaderboard): refresh snapshot [skip ci]"
+          git push
