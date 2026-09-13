@@ -741,7 +741,7 @@
       }
       const label = doc.getElementById('trick-label');
       if (!selectedCards.length) {
-        const hasPile = !!(st && st.currentCombo);
+        const hasPile = !!(st && (st.currentCombo || (st.trickStack && st.trickStack.length)));
         area.classList.toggle('over-pile', hasPile);
         if (label) label.textContent = canAct ? 'STAGE A PLAY' : 'CENTER';
         // Don't paint hint text over a live pile — the label is enough
