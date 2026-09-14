@@ -74,6 +74,9 @@ node test/test-ui-feedback.js
 node test/test-ui-wired.js
 node test/test-ui-stage.js
 node test/test-4p-human.js
+node test/test-play-log.js
+node test/test-player-profile.js
+node test/test-vsai-forfeit.js
 # optional full launcher:
 node launch-verify.js
 ```

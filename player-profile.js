@@ -177,8 +177,17 @@
     return !d || d === 'grandmaster' || d === 'gm';
   }
 
+  function isForfeitGame(g) {
+    if (!g) return false;
+    if (g.forfeit === true) return true;
+    var r = g.result || {};
+    return !!(r.forfeit || r.reason === 'forfeit' || r.reason === 'exit');
+  }
+
   function isCompleteGame(g) {
     if (!g) return false;
+    // Ranked walkaway: counts as a finished loss even though History can show "left".
+    if (isForfeitGame(g)) return true;
     if (g.result && g.result.abandoned) return false;
     if (g.abandoned) return false;
     if (g.complete) return true;
@@ -277,6 +286,8 @@
       place = humanPlacement(g);
       humanWon = g.humanWon;
       if (humanWon == null && g.result) humanWon = g.result.humanWon;
+      if (humanWon == null && isForfeitGame(g)) humanWon = false;
+      if (place == null && isForfeitGame(g)) place = nP;
       // Multi needs a known placement; 1v1 can use win/loss alone
       if (modeBucket !== '1v1' && place == null) continue;
       if (modeBucket === '1v1' && humanWon !== true && humanWon !== false && place == null) continue;
@@ -385,6 +396,9 @@
     completeFinishOrder: completeFinishOrder,
     humanPlacement: humanPlacement,
     modeBucketFor: modeBucketFor,
+    isCompleteGame: isCompleteGame,
+    isForfeitGame: isForfeitGame,
+    isVsAIGame: isVsAIGame,
     wilsonInterval: wilsonInterval,
     wilsonLowerBound: wilsonLowerBound,
     buildLeaderboard: buildLeaderboard

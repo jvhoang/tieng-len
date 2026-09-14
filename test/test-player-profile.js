@@ -212,6 +212,58 @@ console.log('=== player-profile leaderboard 1v1 + 3p/4p placement ===');
   ok(!multi.rows.some(function (r) { return r.mode === '1v1'; }), 'multi filter excludes 1v1');
 }
 
+console.log('=== forfeit counts as leaderboard loss; abandoned-without-forfeit stays out ===');
+{
+  ok(profile.isCompleteGame({ result: { abandoned: true } }) === false,
+    'abandoned-without-forfeit is not complete');
+  ok(profile.isCompleteGame({
+    result: { abandoned: true, forfeit: true, humanWon: false }, forfeit: true
+  }) === true, 'forfeit is complete for ranking');
+  ok(profile.isForfeitGame({ result: { forfeit: true, reason: 'exit' } }) === true,
+    'isForfeitGame reads result.forfeit');
+
+  const build = { id: 'v1.0-sh-L2s444', label: 'L2s444', stamped: '2026-07-26' };
+  function win(t) {
+    return {
+      username: 'Quilter', mode: 'vsAI', vsAI: true, numPlayers: 2, humanSeats: [0],
+      aiDifficulty: 'grandmaster', aiBuild: build,
+      humanWon: true, result: { humanWon: true, finishOrder: [0, 1], humanPlacement: 1 },
+      endedAt: t, complete: true
+    };
+  }
+  const cherry = [win('2026-07-26T08:00:00Z'), win('2026-07-26T08:10:00Z'), win('2026-07-26T08:20:00Z')];
+  const cherryBoard = profile.buildLeaderboard(cherry, { modeFilter: '1v1', minGames: 3, latestAiOnly: true });
+  ok(cherryBoard.rows[0] && cherryBoard.rows[0].winRate === 1, '3 wins → 100% WR before forfeit');
+
+  const withWalkaway = cherry.slice(0, 2).concat([{
+    username: 'Quilter', mode: 'vsAI', vsAI: true, numPlayers: 2, humanSeats: [0],
+    aiDifficulty: 'grandmaster', aiBuild: build,
+    humanWon: false, forfeit: true,
+    result: {
+      humanWon: false, humanPlacement: 2, abandoned: true, forfeit: true, reason: 'exit',
+      finishOrder: [1, 0], loser: 0
+    },
+    endedAt: '2026-07-26T08:30:00Z', complete: true
+  }]);
+  const qBoard = profile.buildLeaderboard(withWalkaway, { modeFilter: '1v1', minGames: 3, latestAiOnly: true });
+  const quilter = qBoard.rows.find(function (r) { return r.username === 'Quilter'; });
+  ok(!!quilter, 'Quilter appears after forfeit is counted');
+  ok(quilter.games === 3 && quilter.wins === 2 && quilter.losses === 1,
+    'forfeit counts as a 1v1 loss (WR drops vs cherry-pick 3-0)');
+  ok(Math.abs(quilter.winRate - 2 / 3) < 1e-9, 'Quilter WR is 2/3 not 1.0');
+  ok(quilter.winRate < cherryBoard.rows[0].winRate, 'forfeit drops win rate');
+
+  const abandonOnly = cherry.slice(0, 2).concat([{
+    username: 'Quilter', mode: 'vsAI', vsAI: true, numPlayers: 2, humanSeats: [0],
+    aiDifficulty: 'grandmaster', aiBuild: build,
+    result: { abandoned: true, reason: 'superseded' },
+    endedAt: '2026-07-26T08:40:00Z', complete: true
+  }]);
+  const abBoard = profile.buildLeaderboard(abandonOnly, { modeFilter: '1v1', minGames: 2, latestAiOnly: true });
+  ok(abBoard.rows[0] && abBoard.rows[0].games === 2 && abBoard.rows[0].wins === 2,
+    'abandoned-without-forfeit still excluded from WR');
+}
+
 console.log('=== player-profile localStorage (memory shim) ===');
 {
   const before = profile.getUsername();

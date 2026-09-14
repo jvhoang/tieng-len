@@ -99,10 +99,70 @@
 
   // ─── Core store ───
 
+  function isVsAIRecord(rec) {
+    if (!rec) return false;
+    if (rec.vsAI === false) return false;
+    var mode = String(rec.mode || '').toLowerCase();
+    if (mode === 'hotseat' || mode === 'live' || mode === 'online') return false;
+    if (rec.vsAI === true) return true;
+    if (mode.indexOf('vsai') >= 0 || mode === 'ai' || mode === 'vs computer') return true;
+    return mode === '' || rec.mode == null;
+  }
+
+  function isForfeitResult(r) {
+    if (!r) return false;
+    return !!(r.forfeit || r.reason === 'forfeit' || r.reason === 'exit');
+  }
+
+  function isForfeitRecord(rec) {
+    if (!rec) return false;
+    if (rec.forfeit === true) return true;
+    return isForfeitResult(rec.result);
+  }
+
+  /**
+   * Ranked vs-AI walkaway: complete loss for the leaderboard, still labeled
+   * abandoned/forfeit so History can show they left.
+   */
+  function applyForfeitOutcome(rec, extra) {
+    extra = extra || {};
+    if (!rec) return rec;
+    var nP = rec.numPlayers || 2;
+    if (nP < 2) nP = 2;
+    var humanSeat = (rec.humanSeats && rec.humanSeats.length) ? rec.humanSeats[0] : 0;
+    var finishOrder = [];
+    var s;
+    for (s = 0; s < nP; s++) {
+      if (s !== humanSeat) finishOrder.push(s);
+    }
+    finishOrder.push(humanSeat);
+    var winner = finishOrder.length > 1 ? finishOrder[0] : (humanSeat === 0 ? 1 : 0);
+    rec.endedAt = rec.endedAt || nowIso();
+    rec.result = {
+      finishOrder: finishOrder,
+      loser: humanSeat,
+      winner: winner,
+      humanWon: false,
+      humanPlacement: nP,
+      humanSeats: rec.humanSeats ? rec.humanSeats.slice() : [humanSeat],
+      abandoned: true,
+      forfeit: true,
+      reason: extra.reason || 'forfeit',
+      steps: extra.steps != null ? extra.steps : ((rec.events || []).filter(function (e) {
+        return e && (e.type === 'play' || e.type === 'pass');
+      }).length),
+      durationMs: extra.durationMs != null ? extra.durationMs : null,
+      eventCount: extra.eventCount != null ? extra.eventCount
+        : ((rec.events && rec.events.length) || 0)
+    };
+    return rec;
+  }
+
   function issueTitle(rec) {
     var r = rec.result || {};
-    var outcome = r.abandoned ? 'abandoned'
-      : (r.humanWon === true ? 'human-win' : (r.humanWon === false ? 'ai-win' : 'incomplete'));
+    var outcome = isForfeitResult(r) ? 'forfeit'
+      : (r.abandoned ? 'abandoned'
+      : (r.humanWon === true ? 'human-win' : (r.humanWon === false ? 'ai-win' : 'incomplete')));
     var when = (rec.endedAt || rec.startedAt || '').slice(0, 19);
     var user = rec.username ? String(rec.username).slice(0, 24) : 'anon';
     var ai = (rec.aiBuild && rec.aiBuild.id) || rec.aiDifficulty || 'ai';
@@ -163,6 +223,8 @@
         winner: r.winner != null ? r.winner : null,
         loser: r.loser != null ? r.loser : null,
         abandoned: !!r.abandoned,
+        forfeit: !!r.forfeit,
+        reason: r.reason || null,
         durationMs: r.durationMs != null ? r.durationMs : null,
         eventCount: r.eventCount != null ? r.eventCount : null
       },
@@ -495,6 +557,9 @@
         durationMs: r.durationMs != null ? r.durationMs : null,
         seed: rec.seed,
         complete: !!rec.endedAt,
+        abandoned: !!r.abandoned,
+        forfeit: !!r.forfeit,
+        reason: r.reason || null,
         public: !!rec._public,
         remoteIssueUrl: rec._remoteIssueUrl || null,
         remoteIssueNumber: rec._remoteIssueNumber || null,
@@ -835,6 +900,7 @@
 
     function isFinishedLocalRecord(rec) {
       if (!rec || !rec.id) return false;
+      if (isForfeitRecord(rec)) return true;
       if (rec.result && rec.result.abandoned) return false;
       if (rec.abandoned) return false;
       if (rec.endedAt) return true;
@@ -1076,16 +1142,66 @@
       return meta;
     }
 
+    function isUnfinishedRankedDeal(rec) {
+      if (!rec || !isVsAIRecord(rec)) return false;
+      if (isForfeitRecord(rec)) return false;
+      if (rec.result && rec.result.abandoned) return false;
+      if (rec.abandoned && !rec.forfeit) return false;
+      if (rec.endedAt && rec.result &&
+          (rec.result.humanWon === true || rec.result.humanWon === false) &&
+          !rec.result.abandoned) {
+        return false;
+      }
+      if (!rec.endedAt) return true;
+      if (!rec.result) return true;
+      return rec.result.humanWon == null && !rec.result.abandoned;
+    }
+
+    /**
+     * Refresh / crash leftovers: unfinished vsAI deals become ranked forfeit losses
+     * so a weak hand cannot be discarded by reloading, then starting a new game.
+     */
+    function forfeitUnfinishedVsAI(reason) {
+      var skipId = active && active.id;
+      var idx = readIndex();
+      var out = [];
+      var i, sm, rec;
+      for (i = 0; i < idx.length; i++) {
+        sm = idx[i];
+        if (!sm || !sm.id || sm.id === skipId) continue;
+        rec = getGame(sm.id) || sm;
+        if (!isUnfinishedRankedDeal(rec)) continue;
+        applyForfeitOutcome(rec, { reason: reason || 'orphaned' });
+        if (!rec.events) rec.events = [];
+        rec.events.push({
+          type: 'game_end',
+          actor: 'system',
+          result: clone(rec.result)
+        });
+        rec.result.eventCount = rec.events.length;
+        try { saveGame(rec); } catch (eS) { /* ignore */ }
+        try { if (rec.id) remoteCache[rec.id] = rec; } catch (eC) { /* ignore */ }
+        try { publishGame(rec); } catch (eP) { /* ignore */ }
+        out.push(rec);
+      }
+      return out;
+    }
+
     /**
      * Begin a new game record from a fresh deal state.
      * cfg: { mode, vsAI, numPlayers, humanSeats, aiDifficulty, aiBuild, seed, siteBuild, username }
      */
     function startGame(state, cfg) {
       cfg = cfg || {};
-      // Finalize previous unfinished active game as abandoned
+      // vsAI walkaway / new deal: ranked forfeit loss. Hotseat stays abandoned-only.
       if (active && !active.endedAt) {
-        finalizeActive({ abandoned: true, reason: 'superseded' });
+        if (isVsAIRecord(active)) {
+          finalizeActive({ abandoned: true, forfeit: true, reason: 'superseded' });
+        } else {
+          finalizeActive({ abandoned: true, reason: 'superseded' });
+        }
       }
+      try { forfeitUnfinishedVsAI('orphaned'); } catch (eOrph) { /* ignore */ }
       t0 = Date.now();
       var humanSeats = Array.isArray(cfg.humanSeats) ? cfg.humanSeats.slice() : [0];
       // Authoritative seat count = dealt hands. Never trust a non-numeric Event leak.
@@ -1221,45 +1337,55 @@
     function finalizeActive(extra) {
       extra = extra || {};
       if (!active || active.endedAt) return active;
-      var st = extra.fromState || null;
-      var finishOrder = st && st.finishOrder ? st.finishOrder.slice() : (active.result && active.result.finishOrder) || [];
-      var loser = st && st.loser != null ? st.loser : null;
-      var nP = active.numPlayers || (st && st.numPlayers) || finishOrder.length || 2;
-      // Complete order: winners first, ensure loser + any remaining seats are present
-      if (loser != null && finishOrder.indexOf(loser) < 0) finishOrder.push(loser);
-      var sFill;
-      for (sFill = 0; sFill < nP; sFill++) {
-        if (finishOrder.indexOf(sFill) < 0) finishOrder.push(sFill);
+      var rankedForfeit = !!extra.forfeit && isVsAIRecord(active);
+      if (rankedForfeit) {
+        applyForfeitOutcome(active, {
+          reason: extra.reason || 'forfeit',
+          durationMs: Date.now() - t0,
+          eventCount: active.events.length
+        });
+      } else {
+        var st = extra.fromState || null;
+        var finishOrder = st && st.finishOrder ? st.finishOrder.slice() : (active.result && active.result.finishOrder) || [];
+        var loser = st && st.loser != null ? st.loser : null;
+        var nP = active.numPlayers || (st && st.numPlayers) || finishOrder.length || 2;
+        // Complete order: winners first, ensure loser + any remaining seats are present
+        if (loser != null && finishOrder.indexOf(loser) < 0) finishOrder.push(loser);
+        var sFill;
+        for (sFill = 0; sFill < nP; sFill++) {
+          if (finishOrder.indexOf(sFill) < 0) finishOrder.push(sFill);
+        }
+        var winner = finishOrder.length ? finishOrder[0] : (loser != null ? (loser === 0 ? 1 : 0) : null);
+        var humanWon = null;
+        var humanPlacement = null;
+        var humanSeat = (active.humanSeats && active.humanSeats.length) ? active.humanSeats[0] : 0;
+        if (winner != null && active.humanSeats) {
+          humanWon = active.humanSeats.indexOf(winner) >= 0;
+        }
+        if (finishOrder.length && humanSeat != null) {
+          var pIdx = finishOrder.indexOf(humanSeat);
+          if (pIdx >= 0) humanPlacement = pIdx + 1;
+        }
+        if (humanPlacement == null && humanWon === true) humanPlacement = 1;
+        if (humanPlacement == null && humanWon === false && nP <= 2) humanPlacement = 2;
+        active.endedAt = nowIso();
+        active.result = {
+          finishOrder: finishOrder,
+          loser: loser,
+          winner: winner,
+          humanWon: humanWon,
+          humanPlacement: humanPlacement,
+          humanSeats: active.humanSeats ? active.humanSeats.slice() : [humanSeat],
+          abandoned: !!extra.abandoned,
+          forfeit: false,
+          reason: extra.reason || null,
+          steps: active.events.filter(function (e) {
+            return e.type === 'play' || e.type === 'pass';
+          }).length,
+          durationMs: Date.now() - t0,
+          eventCount: active.events.length
+        };
       }
-      var winner = finishOrder.length ? finishOrder[0] : (loser != null ? (loser === 0 ? 1 : 0) : null);
-      var humanWon = null;
-      var humanPlacement = null;
-      var humanSeat = (active.humanSeats && active.humanSeats.length) ? active.humanSeats[0] : 0;
-      if (winner != null && active.humanSeats) {
-        humanWon = active.humanSeats.indexOf(winner) >= 0;
-      }
-      if (finishOrder.length && humanSeat != null) {
-        var pIdx = finishOrder.indexOf(humanSeat);
-        if (pIdx >= 0) humanPlacement = pIdx + 1;
-      }
-      if (humanPlacement == null && humanWon === true) humanPlacement = 1;
-      if (humanPlacement == null && humanWon === false && nP <= 2) humanPlacement = 2;
-      active.endedAt = nowIso();
-      active.result = {
-        finishOrder: finishOrder,
-        loser: loser,
-        winner: winner,
-        humanWon: humanWon,
-        humanPlacement: humanPlacement,
-        humanSeats: active.humanSeats ? active.humanSeats.slice() : [humanSeat],
-        abandoned: !!extra.abandoned,
-        reason: extra.reason || null,
-        steps: active.events.filter(function (e) {
-          return e.type === 'play' || e.type === 'pass';
-        }).length,
-        durationMs: Date.now() - t0,
-        eventCount: active.events.length
-      };
       pushEvent({
         type: 'game_end',
         actor: 'system',
@@ -1436,6 +1562,7 @@
       logAction: logAction,
       logSystem: logSystem,
       finalizeActive: finalizeActive,
+      forfeitUnfinishedVsAI: forfeitUnfinishedVsAI,
       getActive: getActive,
       listGames: listGames,
       listGamesMerged: listGamesMerged,
@@ -1490,6 +1617,9 @@
                 finishOrder: sm.finishOrder || null,
                 winner: sm.winner != null ? sm.winner : null,
                 loser: sm.loser != null ? sm.loser : null,
+                abandoned: !!sm.abandoned,
+                forfeit: !!sm.forfeit,
+                reason: sm.reason || null,
                 humanSeats: sm.humanSeats || [0]
               },
               aiBuild: sm.aiBuildId ? { id: sm.aiBuildId, label: sm.aiBuildLabel } : null
@@ -1516,6 +1646,11 @@
           _default.evictOldestFullBodies(MAX_LOCAL_FULL_BODIES);
         }
       } catch (eEv0) { /* ignore */ }
+      try {
+        if (typeof _default.forfeitUnfinishedVsAI === 'function') {
+          _default.forfeitUnfinishedVsAI('orphaned');
+        }
+      } catch (eFf0) { /* ignore */ }
     }
     return _default;
   }
@@ -1529,6 +1664,9 @@
     encodeIssueBody: encodeIssueBody,
     decodeIssueBody: decodeIssueBody,
     compactPlayLog: compactPlayLog,
-    issueTitle: issueTitle
+    issueTitle: issueTitle,
+    isVsAIRecord: isVsAIRecord,
+    isForfeitRecord: isForfeitRecord,
+    applyForfeitOutcome: applyForfeitOutcome
   };
 }));

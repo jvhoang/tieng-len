@@ -578,6 +578,30 @@
       return results;
     }
 
+    function isRankedLive() {
+      if (!vsAI) return false;
+      if (!state || state.roundOver) return false;
+      return true;
+    }
+
+    function hasUnfinishedRankedGame() {
+      if (!isRankedLive()) return false;
+      if (playLog && typeof playLog.getActive === 'function') {
+        return !!playLog.getActive();
+      }
+      return true;
+    }
+
+    function forfeitActive(reason) {
+      if (!loggingEnabled || !playLog || typeof playLog.finalizeActive !== 'function') return null;
+      if (typeof playLog.getActive === 'function' && !playLog.getActive()) return null;
+      return playLog.finalizeActive({
+        abandoned: true,
+        forfeit: true,
+        reason: reason || 'exit'
+      });
+    }
+
     function newRound() {
       state = engine.createGameState(state.numPlayers, Date.now() + Math.floor(Math.random() * 1000));
       state.isFirstLead = true;
@@ -633,6 +657,9 @@
       getAIDifficulty,
       isHumanSeat: (s) => isHumanSeat(s),
       getPlayLog: () => playLog,
+      isRankedLive,
+      hasUnfinishedRankedGame,
+      forfeitActive,
       // for tests/debug
       _getInternals: () => ({
         vsAI, humanSeats: humanSeats.slice(), currentHumanSeat, numPlayers, aiDifficulty,
