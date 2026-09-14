@@ -1695,6 +1695,205 @@
       }
     }
 
+    const LEAVE_COPY = {
+      exit: {
+        title: 'Leave this game?',
+        body: 'You already saw your cards, so this deal counts. Leaving now is recorded as a loss on the family leaderboard. Stay and finish if you still want a chance to win.',
+        stay: 'Keep playing',
+        go: 'Leave — count as a loss'
+      },
+      newRound: {
+        title: 'Start a new deal?',
+        body: 'This hand is already on the board. Starting over now counts as a loss on the family leaderboard — there is no free redo after seeing your cards.',
+        stay: 'Keep this hand',
+        go: 'New deal — count as a loss'
+      }
+    };
+
+    let leaveConfirmPending = null;
+    let leaveConfirmWired = false;
+
+    function needsLeaveConfirm() {
+      const ctrl = getCurrentController();
+      if (!ctrl) return false;
+      if (typeof ctrl.hasUnfinishedRankedGame === 'function') {
+        return !!ctrl.hasUnfinishedRankedGame();
+      }
+      const internals = ctrl._getInternals && ctrl._getInternals();
+      const st = ctrl.getState && ctrl.getState();
+      if (!st || st.roundOver) return false;
+      if (internals && internals.vsAI === false) return false;
+      return true;
+    }
+
+    function forfeitActiveGame(reason) {
+      const ctrl = getCurrentController();
+      if (ctrl && typeof ctrl.forfeitActive === 'function') {
+        return ctrl.forfeitActive(reason || 'exit');
+      }
+      const pl = ctrl && ctrl.getPlayLog && ctrl.getPlayLog();
+      if (pl && typeof pl.finalizeActive === 'function') {
+        return pl.finalizeActive({ abandoned: true, forfeit: true, reason: reason || 'exit' });
+      }
+      return null;
+    }
+
+    function ensureLeaveConfirm() {
+      let overlay = doc.getElementById('leave-confirm-overlay');
+      if (!overlay) {
+        overlay = doc.createElement('div');
+        overlay.id = 'leave-confirm-overlay';
+        const host = doc.getElementById('game-screen') || doc.body;
+        host.appendChild(overlay);
+      }
+      if (!leaveConfirmWired) {
+        overlay.id = 'leave-confirm-overlay';
+        overlay.className = 'leave-confirm-overlay hidden';
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'true');
+        overlay.setAttribute('aria-labelledby', 'leave-confirm-title');
+        function child(id, tag) {
+          let el = doc.getElementById(id);
+          if (!el) {
+            el = doc.createElement(tag || 'div');
+            el.id = id;
+          }
+          el.id = id;
+          return el;
+        }
+        const card = doc.createElement('div');
+        card.className = 'leave-confirm-card';
+        const emoji = doc.createElement('div');
+        emoji.className = 'leave-confirm-emoji';
+        emoji.setAttribute('aria-hidden', 'true');
+        emoji.textContent = '⚠️';
+        const title = child('leave-confirm-title', 'div');
+        title.className = 'leave-confirm-title font-display';
+        const body = child('leave-confirm-body', 'p');
+        body.className = 'leave-confirm-body';
+        const actions = doc.createElement('div');
+        actions.className = 'leave-confirm-actions';
+        const stay = child('leave-confirm-stay', 'button');
+        stay.type = 'button';
+        stay.className = 'viet-btn leave-confirm-stay';
+        const go = child('leave-confirm-go', 'button');
+        go.type = 'button';
+        go.className = 'leave-confirm-go';
+        overlay.appendChild(card);
+        card.appendChild(emoji);
+        card.appendChild(title);
+        card.appendChild(body);
+        card.appendChild(actions);
+        actions.appendChild(stay);
+        actions.appendChild(go);
+        stay.onclick = function () { cancelLeaveConfirm(); };
+        go.onclick = function () { confirmLeaveConfirm(); };
+        overlay.onclick = function (e) {
+          if (e && e.target === overlay) cancelLeaveConfirm();
+        };
+        leaveConfirmWired = true;
+      }
+      return overlay;
+    }
+
+    function hideLeaveConfirm() {
+      const overlay = doc.getElementById('leave-confirm-overlay');
+      if (overlay) {
+        overlay.classList.add('hidden');
+        overlay.classList.remove('show');
+      }
+      leaveConfirmPending = null;
+    }
+
+    function showLeaveConfirm(opts) {
+      opts = opts || {};
+      const action = opts.action === 'newRound' ? 'newRound' : 'exit';
+      const copy = LEAVE_COPY[action];
+      const overlay = ensureLeaveConfirm();
+      const title = doc.getElementById('leave-confirm-title');
+      const body = doc.getElementById('leave-confirm-body');
+      const stay = doc.getElementById('leave-confirm-stay');
+      const go = doc.getElementById('leave-confirm-go');
+      if (title) title.textContent = copy.title;
+      if (body) body.textContent = copy.body;
+      if (stay) stay.textContent = copy.stay;
+      if (go) go.textContent = copy.go;
+      leaveConfirmPending = {
+        action: action,
+        onConfirm: opts.onConfirm || null,
+        onCancel: opts.onCancel || null
+      };
+      overlay.classList.remove('hidden');
+      overlay.classList.add('show');
+      return overlay;
+    }
+
+    function cancelLeaveConfirm() {
+      const pending = leaveConfirmPending;
+      hideLeaveConfirm();
+      if (pending && typeof pending.onCancel === 'function') pending.onCancel();
+      return { cancelled: true };
+    }
+
+    function confirmLeaveConfirm() {
+      const pending = leaveConfirmPending;
+      hideLeaveConfirm();
+      if (pending && typeof pending.onConfirm === 'function') pending.onConfirm();
+      return { confirmed: true, action: pending && pending.action };
+    }
+
+    function requestLeave(opts) {
+      opts = opts || {};
+      if (!needsLeaveConfirm()) {
+        if (typeof opts.onConfirm === 'function') opts.onConfirm();
+        return { confirmed: true, skipped: true };
+      }
+      showLeaveConfirm(opts);
+      return { pending: true };
+    }
+
+    function leaveToMenu() {
+      hideLeaveConfirm();
+      hideRoundResults();
+      const mode = doc.getElementById('mode-screen');
+      const game = doc.getElementById('game-screen');
+      const lobby = doc.getElementById('friends-lobby');
+      if (mode) mode.classList.remove('hidden');
+      if (game) game.classList.add('hidden');
+      if (lobby) lobby.classList.add('hidden');
+      try {
+        if (typeof document !== 'undefined' && document.body) {
+          document.body.classList.remove('playing-active');
+        }
+      } catch (_) {}
+      const bar = doc.getElementById('action-bar');
+      if (bar) bar.classList.add('hidden');
+      try {
+        if (typeof window !== 'undefined' && typeof window.refreshHistorySummary === 'function') {
+          window.refreshHistorySummary();
+        }
+      } catch (_) {}
+    }
+
+    function requestExitToMenu() {
+      return requestLeave({
+        action: 'exit',
+        onConfirm: function () {
+          forfeitActiveGame('exit');
+          leaveToMenu();
+        }
+      });
+    }
+
+    function requestNewRound() {
+      return requestLeave({
+        action: 'newRound',
+        onConfirm: function () {
+          newRound();
+        }
+      });
+    }
+
     function spawnConfetti(container) {
       if (!container) return;
       container.innerHTML = '';
@@ -2280,7 +2479,8 @@
             clearSelection();
           } else if (k === 'n') {
             e.preventDefault();
-            if (typeof window !== 'undefined' && window.newRound) window.newRound();
+            if (typeof requestNewRound === 'function') requestNewRound();
+            else if (typeof window !== 'undefined' && window.newRound) window.newRound();
           } else if (k === 'r') {
             e.preventDefault();
             resetHandOrder();
@@ -2303,7 +2503,9 @@
           updateUI, startVsAI, startLive, startHotseat, playSelected, doPass,
           clearSelection, selectCardsByKeys, ensureSeatSwitcher, resetHandOrder, showFriendsLobby,
           stageCard, unstageCard, renderStage,
-          claimHotseatTurn, visualSlotForSeat, getCurrentHumanSeat, isHotseatHandoffVisible
+          claimHotseatTurn, visualSlotForSeat, getCurrentHumanSeat, isHotseatHandoffVisible,
+          requestExitToMenu, requestNewRound, requestLeave, needsLeaveConfirm,
+          confirmLeaveConfirm, cancelLeaveConfirm
         };
       }
     }
@@ -2353,6 +2555,17 @@
       isHotseatHandoffVisible,
       resetHandOrder,
       newRound,
+      requestNewRound,
+      requestExitToMenu,
+      requestLeave,
+      needsLeaveConfirm,
+      showLeaveConfirm,
+      hideLeaveConfirm,
+      confirmLeaveConfirm,
+      cancelLeaveConfirm,
+      forfeitActiveGame,
+      leaveToMenu,
+      LEAVE_COPY,
       kickAIIfNeeded,
       computeStandings,
       ordinal,

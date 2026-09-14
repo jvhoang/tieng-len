@@ -167,7 +167,14 @@ function createDOMShim() {
     'active-seat-label',
     'rules-modal',
     'seat-switcher',
-    'winner-banner'
+    'winner-banner',
+    'leave-confirm-overlay',
+    'leave-confirm-title',
+    'leave-confirm-body',
+    'leave-confirm-stay',
+    'leave-confirm-go',
+    'action-bar',
+    'friends-lobby'
   ];
 
   ids.forEach(id => getOrCreate(id));

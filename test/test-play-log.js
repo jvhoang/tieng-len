@@ -83,6 +83,65 @@ console.log('=== play-log basic store ===');
   ok(exp.count === 1 && exp.games[0].id === id, 'exportAll works');
 }
 
+console.log('=== vsAI supersede is a ranked forfeit; hotseat stays abandoned ===');
+{
+  const mem = playLogMod.createMemoryStorage();
+  const pl = playLogMod.createPlayLog({ storage: mem, maxGames: 10 });
+  const st1 = engine.createGameState(2, 7);
+  st1.isFirstLead = true;
+  const id1 = pl.startGame(st1, {
+    mode: 'vsAI', vsAI: true, numPlayers: 2, humanSeats: [0],
+    aiDifficulty: 'grandmaster', username: 'John'
+  });
+  ok(!!pl.getActive(), 'first vsAI deal is live before any play');
+  const st2 = engine.createGameState(2, 8);
+  st2.isFirstLead = true;
+  const id2 = pl.startGame(st2, {
+    mode: 'vsAI', vsAI: true, numPlayers: 2, humanSeats: [0],
+    aiDifficulty: 'grandmaster', username: 'John'
+  });
+  ok(id1 !== id2, 'new deal gets a new id');
+  const old = pl.getGame(id1);
+  ok(old && old.endedAt, 'prior vsAI deal finalized on supersede');
+  ok(old.result && old.result.forfeit === true, 'supersede is a forfeit');
+  ok(old.result.humanWon === false, 'forfeit is a human loss');
+  ok(old.result.abandoned === true, 'History can still show they left');
+  ok(old.result.humanPlacement === 2, '1v1 forfeit is last place');
+  ok(playLogMod.issueTitle(old).indexOf('forfeit') >= 0, 'issue title says forfeit');
+  const compact = playLogMod.compactPlayLog(old);
+  ok(compact.result && compact.result.forfeit === true && compact.result.humanWon === false,
+    'compact ingest payload keeps forfeit loss');
+  ok(pl.getActive() && pl.getActive().id === id2, 'new deal is active — no free mulligan');
+
+  const memH = playLogMod.createMemoryStorage();
+  const plH = playLogMod.createPlayLog({ storage: memH, maxGames: 10 });
+  const h1 = engine.createGameState(4, 3);
+  const hid1 = plH.startGame(h1, { mode: 'hotseat', vsAI: false, numPlayers: 4, humanSeats: [0, 1, 2, 3] });
+  const h2 = engine.createGameState(4, 4);
+  plH.startGame(h2, { mode: 'hotseat', vsAI: false, numPlayers: 4, humanSeats: [0, 1, 2, 3] });
+  const hot = plH.getGame(hid1);
+  ok(hot && hot.result && hot.result.abandoned === true, 'hotseat supersede still abandoned');
+  ok(!hot.result.forfeit, 'hotseat abandon is not a ranked forfeit');
+}
+
+console.log('=== unfinished vsAI leftover (refresh) becomes a forfeit ===');
+{
+  const mem = playLogMod.createMemoryStorage();
+  const pl1 = playLogMod.createPlayLog({ storage: mem, maxGames: 10 });
+  const st = engine.createGameState(2, 11);
+  const orphanId = pl1.startGame(st, {
+    mode: 'vsAI', vsAI: true, numPlayers: 2, humanSeats: [0],
+    aiDifficulty: 'grandmaster', username: 'Jeannie'
+  });
+  ok(pl1.getActive() && !pl1.getActive().endedAt, 'crash snapshot is unfinished');
+  const pl2 = playLogMod.createPlayLog({ storage: mem, maxGames: 10 });
+  const swept = pl2.forfeitUnfinishedVsAI('orphaned');
+  ok(swept.length === 1 && swept[0].id === orphanId, 'orphan sweep finds the leftover deal');
+  const rec = pl2.getGame(orphanId);
+  ok(rec && rec.result && rec.result.forfeit && rec.result.humanWon === false,
+    'refresh leftover is a ranked forfeit loss');
+}
+
 console.log('=== controller logs a mini vs-AI game ===');
 {
   const mem = playLogMod.createMemoryStorage();
@@ -392,6 +451,13 @@ console.log('=== GitHub issue encode/decode ===');
         endedAt: '2026-09-04T15:00:00.000Z',
         result: { abandoned: true, humanWon: null }
       });
+      const forfeited = finished('g_jeannie_forfeit', {
+        endedAt: '2026-09-04T16:00:00.000Z',
+        result: {
+          abandoned: true, forfeit: true, reason: 'exit',
+          humanWon: false, winner: 1, loser: 0, humanPlacement: 2
+        }
+      });
       const postedFlush = [];
       const fetchFlush = function (url, opts) {
         const u = String(url);
@@ -426,19 +492,22 @@ console.log('=== GitHub issue encode/decode ===');
         ingestUrl: 'https://ntfy.sh/tieng-len-test',
         ingestKey: 'k-test'
       });
-      plRec.mergeGamesIntoIndex([alreadyRemote, localNewA, localNewB, abandoned]);
+      plRec.mergeGamesIntoIndex([alreadyRemote, localNewA, localNewB, abandoned, forfeited]);
       mem.setItem('tienlen_playlog_v1_game_' + localNewA.id, JSON.stringify(localNewA));
       mem.setItem('tienlen_playlog_v1_game_' + localNewB.id, JSON.stringify(localNewB));
       mem.setItem('tienlen_playlog_v1_game_' + abandoned.id, JSON.stringify(abandoned));
+      mem.setItem('tienlen_playlog_v1_game_' + forfeited.id, JSON.stringify(forfeited));
       mem.setItem('tienlen_playlog_v1_game_' + alreadyRemote.id, JSON.stringify(alreadyRemote));
       const before = plRec.listUnpublishedLocalGames();
       ok(before.some(function (g) { return g.id === 'g_jeannie_post_825_a'; }), 'lists unpublished A');
       ok(before.some(function (g) { return g.id === 'g_jeannie_post_825_b'; }), 'lists unpublished B');
       ok(!before.some(function (g) { return g.id === 'g_jeannie_abandoned'; }), 'skips abandoned');
+      ok(before.some(function (g) { return g.id === 'g_jeannie_forfeit'; }), 'lists forfeit so it can rank');
       return plRec.flushUnpublishedLocalGames({ delayMs: 0, includeQueued: false }).then(function (res) {
-        ok(res.queued === 2, 'flush queues 2 unpublished (got ' + res.queued + ')');
-        ok(res.ids.indexOf('g_jeannie_post_825_a') >= 0 && res.ids.indexOf('g_jeannie_post_825_b') >= 0,
-          'queued both post-8/25 Jeannie games');
+        ok(res.queued === 3, 'flush queues 3 unpublished including forfeit (got ' + res.queued + ')');
+        ok(res.ids.indexOf('g_jeannie_post_825_a') >= 0 && res.ids.indexOf('g_jeannie_post_825_b') >= 0 &&
+          res.ids.indexOf('g_jeannie_forfeit') >= 0,
+          'queued both post-8/25 Jeannie games plus forfeit');
         ok(!res.ids.some(function (id) { return id === 'g_jeannie_already_on_github'; }),
           'does not re-queue game already on GitHub');
         const bodies = postedFlush.map(function (p) { return String(p.body || ''); }).join('\n');

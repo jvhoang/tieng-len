@@ -625,6 +625,54 @@
 
     .hidden { display: none !important; }
 
+    /* ── Leave / forfeit confirm (vs-AI ranked walkaway) ── */
+    .leave-confirm-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 210;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(10, 4, 3, 0.78);
+      backdrop-filter: blur(4px);
+      padding: 1rem;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .leave-confirm-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .leave-confirm-card {
+      width: min(420px, 100%);
+      background: linear-gradient(160deg, #2c0f0a 0%, #1a0907 70%);
+      border: 2px solid #c9a227;
+      border-radius: 1.5rem;
+      padding: 1.6rem 1.4rem 1.25rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.55);
+      text-align: center;
+    }
+    .leave-confirm-emoji { font-size: 2rem; margin-bottom: 0.35rem; }
+    .leave-confirm-title { font-size: 1.6rem; color: #fff; margin-bottom: 0.6rem; }
+    .leave-confirm-body {
+      font-size: 0.9rem;
+      line-height: 1.45;
+      color: #d2b48c;
+      margin: 0 0 1.15rem;
+    }
+    .leave-confirm-actions { display: flex; flex-direction: column; gap: 0.55rem; }
+    .leave-confirm-stay { width: 100%; padding: 0.75rem 1rem; border-radius: 1rem; font-weight: 600; }
+    .leave-confirm-go {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border-radius: 1rem;
+      border: 1px solid #7f1d1d;
+      background: #2c0f0a;
+      color: #fecaca;
+      font-size: 0.85rem;
+    }
+    .leave-confirm-go:hover { border-color: #f87171; color: #fff; }
+
     /* ── Round results + celebration ── */
     .results-overlay {
       position: fixed;
@@ -1684,10 +1732,11 @@
           const when = (g.endedAt || g.startedAt)
             ? new Date(g.endedAt || g.startedAt).toLocaleString()
             : g.id;
-          const complete = g.complete || g.humanWon === true || g.humanWon === false;
-          const outcome = !complete ? 'in progress / abandoned'
-            : (g.humanWon === true ? 'You won' : (g.humanWon === false ? 'AI won' : 'complete'));
-          const color = g.humanWon === true ? 'text-emerald-400' : (g.humanWon === false ? 'text-red-300' : 'text-[#2dd4bf]');
+          const complete = g.complete || g.humanWon === true || g.humanWon === false || g.forfeit;
+          const outcome = g.forfeit ? 'Left (loss)'
+            : (!complete ? 'in progress / abandoned'
+            : (g.humanWon === true ? 'You won' : (g.humanWon === false ? 'AI won' : 'complete')));
+          const color = g.humanWon === true ? 'text-emerald-400' : (g.humanWon === false || g.forfeit ? 'text-red-300' : 'text-[#2dd4bf]');
           const diff = g.aiDifficulty || '?';
           const n = g.numPlayers || '?';
           const sb = g.siteBuild ? (' · build ' + g.siteBuild) : '';
@@ -1785,8 +1834,9 @@
             ' • seed ' + (g.seed != null ? g.seed : '?') +
             (g.aiBuild ? (' • ' + (g.aiBuild.label || g.aiBuild.id)) : '') +
           '</div>' +
-          '<div class="text-xs mb-2 ' + (r.humanWon === true ? 'text-emerald-400' : (r.humanWon === false ? 'text-red-300' : 'text-[#2dd4bf]')) + '">' +
-            (r.abandoned ? 'Abandoned' : (r.humanWon === true ? 'Human win' : (r.humanWon === false ? 'AI win' : 'Incomplete'))) +
+          '<div class="text-xs mb-2 ' + (r.humanWon === true ? 'text-emerald-400' : (r.humanWon === false || r.forfeit ? 'text-red-300' : 'text-[#2dd4bf]')) + '">' +
+            (r.forfeit ? 'Left early (counts as a loss)'
+              : (r.abandoned ? 'Abandoned' : (r.humanWon === true ? 'Human win' : (r.humanWon === false ? 'AI win' : 'Incomplete')))) +
             (r.finishOrder ? (' • finish ' + JSON.stringify(r.finishOrder)) : '') +
             (r.durationMs != null ? (' • ' + Math.round(r.durationMs / 1000) + 's') : '') +
           '</div>' +
@@ -1963,15 +2013,28 @@
 
       function startVsAIAfterGate(n) {
         var count = sanitizePlayerCount(n, 4);
-        ui.startVsAI(count);
-        document.body.classList.add('playing-active');
-        const bar = document.getElementById('action-bar');
-        if (bar) bar.classList.remove('hidden');
-        refreshUsernameUI();
-        try {
-          console.log('%c[TiengLen] Started vs AI · ' + count + ' players',
-            'color:#c9a227;font-weight:bold');
-        } catch (_) {}
+        function go() {
+          ui.startVsAI(count);
+          document.body.classList.add('playing-active');
+          const bar = document.getElementById('action-bar');
+          if (bar) bar.classList.remove('hidden');
+          refreshUsernameUI();
+          try {
+            console.log('%c[TiengLen] Started vs AI · ' + count + ' players',
+              'color:#c9a227;font-weight:bold');
+          } catch (_) {}
+        }
+        if (ui && typeof ui.needsLeaveConfirm === 'function' && ui.needsLeaveConfirm()) {
+          ui.requestLeave({
+            action: 'exit',
+            onConfirm: function () {
+              if (typeof ui.forfeitActiveGame === 'function') ui.forfeitActiveGame('superseded');
+              go();
+            }
+          });
+          return;
+        }
+        go();
       }
       function startLiveAfterGate(n) {
         ui.startLive(sanitizePlayerCount(n, 4));
@@ -2053,9 +2116,10 @@
         }
         if (foot) {
           foot.innerHTML = multiMode
-            ? 'Ranked by <strong>best average placement</strong> (1 = best). Counts show how often each finish rank. Same username merges across browsers. Abandoned games excluded.'
+            ? 'Ranked by <strong>best average placement</strong> (1 = best). Counts show how often each finish rank. Same username merges across browsers. Leaving an unfinished vs-AI deal counts as a loss. Abandoned-without-forfeit games stay excluded.'
             : '<strong>Ranking:</strong> 1v1 sorts by the <strong>lower bound of a 95% Wilson confidence interval</strong> on win rate (not raw %). ' +
               'That penalizes tiny samples (e.g. 1–0) vs solid records, while still showing raw win %. ' +
+              'Leaving an unfinished vs-AI deal counts as a loss (no free redo after seeing your cards). ' +
               'Latest GM AI only for 1v1 (min 3 games). 3p/4p tabs: average placement (min 1). Same username merges across browsers.';
         }
         if (summary) summary.textContent = String(rows.length);
@@ -2126,6 +2190,11 @@
         if (modal) modal.classList.add('hidden');
       };
       window.newRound = function(){
+        // Ranked vs-AI: confirm first — no free redo after the hand is shown
+        if (ui && typeof ui.requestNewRound === 'function') {
+          ui.requestNewRound();
+          return;
+        }
         // Must go through UI so AI is kicked when computer opens the new deal
         if (ui && typeof ui.newRound === 'function') {
           ui.newRound();
@@ -2148,6 +2217,11 @@
         }
       };
       window.exitToMenu = function(){
+        if (ui && typeof ui.requestExitToMenu === 'function') {
+          ui.requestExitToMenu();
+          try { refreshHistorySummary(); } catch (_) {}
+          return;
+        }
         const mode = document.getElementById('mode-screen');
         const game = document.getElementById('game-screen');
         const lobby = document.getElementById('friends-lobby');
