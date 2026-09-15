@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-15T16:51:23.754Z",
-  "issueCount": 1128,
-  "gameCount": 1128,
+  "generatedAt": "2026-09-15T19:55:35.638Z",
+  "issueCount": 1159,
+  "gameCount": 1159,
   "newestIssue": {
-    "number": 1123,
-    "createdAt": "2026-09-15T16:51:12Z",
-    "title": "playlog | @Yoyolyang | 2p | ai-win | v1.0-sh-L2s444 | 2026-09-15T13:19:25 | g_mu2p6lzu_tx5ux20s"
+    "number": 1154,
+    "createdAt": "2026-09-15T19:55:22Z",
+    "title": "playlog | @Yoycie | 2p | ai-win | v1.0-sh-L2s444 | 2026-09-15T18:53:33 | g_mu3148r3_q0qzuvz7"
   },
   "rows": [
     {
@@ -60,22 +60,22 @@
       "numPlayers": 2,
       "aiBuildId": "v1.0-sh-L2s444",
       "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
-      "games": 234,
-      "wins": 96,
-      "losses": 138,
-      "placementSum": 372,
-      "placementCount": 234,
+      "games": 258,
+      "wins": 104,
+      "losses": 154,
+      "placementSum": 412,
+      "placementCount": 258,
       "placeCounts": {
-        "1": 96,
-        "2": 138,
+        "1": 104,
+        "2": 154,
         "3": 0,
         "4": 0
       },
-      "lastPlayed": "2026-09-15T02:23:24.112Z",
-      "winRate": 0.41025641025641024,
-      "winRateLo": 0.3491759770334819,
-      "winRateHi": 0.4742359071785315,
-      "avgPlacement": 1.5897435897435896
+      "lastPlayed": "2026-09-15T18:53:33.526Z",
+      "winRate": 0.40310077519379844,
+      "winRateLo": 0.34509070044741724,
+      "winRateHi": 0.4639541572069816,
+      "avgPlacement": 1.5968992248062015
     },
     {
       "username": "Yoyolyang",
@@ -83,22 +83,22 @@
       "numPlayers": 2,
       "aiBuildId": "v1.0-sh-L2s444",
       "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
-      "games": 104,
-      "wins": 43,
-      "losses": 61,
-      "placementSum": 165,
-      "placementCount": 104,
+      "games": 109,
+      "wins": 45,
+      "losses": 64,
+      "placementSum": 173,
+      "placementCount": 109,
       "placeCounts": {
-        "1": 43,
-        "2": 61,
+        "1": 45,
+        "2": 64,
         "3": 0,
         "4": 0
       },
-      "lastPlayed": "2026-09-15T13:19:25.924Z",
-      "winRate": 0.41346153846153844,
-      "winRateLo": 0.3235475820993937,
-      "winRateHi": 0.5095409477443771,
-      "avgPlacement": 1.5865384615384615
+      "lastPlayed": "2026-09-15T18:45:13.390Z",
+      "winRate": 0.41284403669724773,
+      "winRateLo": 0.324919801993395,
+      "winRateHi": 0.5067025784053233,
+      "avgPlacement": 1.5871559633027523
     },
     {
       "username": "JVH",
@@ -106,22 +106,45 @@
       "numPlayers": 2,
       "aiBuildId": "v1.0-sh-L2s444",
       "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
-      "games": 46,
+      "games": 45,
       "wins": 18,
-      "losses": 28,
-      "placementSum": 74,
-      "placementCount": 46,
+      "losses": 27,
+      "placementSum": 72,
+      "placementCount": 45,
       "placeCounts": {
         "1": 18,
-        "2": 28,
+        "2": 27,
         "3": 0,
         "4": 0
       },
       "lastPlayed": "2026-09-13T17:35:49.382Z",
-      "winRate": 0.391304347826087,
-      "winRateLo": 0.2639302235524884,
-      "winRateHi": 0.5354341628235508,
-      "avgPlacement": 1.608695652173913
+      "winRate": 0.4,
+      "winRateLo": 0.27024679447957545,
+      "winRateHi": 0.5454840579085527,
+      "avgPlacement": 1.6
+    },
+    {
+      "username": "AsumaSensi1",
+      "mode": "1v1",
+      "numPlayers": 2,
+      "aiBuildId": "v1.0-sh-L2s444",
+      "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
+      "games": 9,
+      "wins": 5,
+      "losses": 4,
+      "placementSum": 13,
+      "placementCount": 9,
+      "placeCounts": {
+        "1": 5,
+        "2": 4,
+        "3": 0,
+        "4": 0
+      },
+      "lastPlayed": "2026-09-15T02:34:30.332Z",
+      "winRate": 0.5555555555555556,
+      "winRateLo": 0.2666473457440297,
+      "winRateHi": 0.811224570528086,
+      "avgPlacement": 1.4444444444444444
     },
     {
       "username": "Jph2956",
@@ -145,29 +168,6 @@
       "winRateLo": 0.24559231101389126,
       "winRateHi": 0.6628393057174837,
       "avgPlacement": 1.5555555555555556
-    },
-    {
-      "username": "AsumaSensi1",
-      "mode": "1v1",
-      "numPlayers": 2,
-      "aiBuildId": "v1.0-sh-L2s444",
-      "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
-      "games": 8,
-      "wins": 4,
-      "losses": 4,
-      "placementSum": 12,
-      "placementCount": 8,
-      "placeCounts": {
-        "1": 4,
-        "2": 4,
-        "3": 0,
-        "4": 0
-      },
-      "lastPlayed": "2026-09-15T02:34:30.332Z",
-      "winRate": 0.5,
-      "winRateLo": 0.21521252682444186,
-      "winRateHi": 0.7847874731755582,
-      "avgPlacement": 1.5
     },
     {
       "username": "Queen_of_Spade",
@@ -292,7 +292,7 @@
     "modeFilter": "all",
     "onlyGrandmaster": true,
     "latestAiOnly": true,
-    "totalGamesScanned": 1128,
+    "totalGamesScanned": 1159,
     "rankBy": "mixed"
   }
 }
