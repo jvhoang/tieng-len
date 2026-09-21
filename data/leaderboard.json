@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-09-21T02:56:40.895Z",
-  "issueCount": 1539,
-  "gameCount": 1539,
+  "generatedAt": "2026-09-21T03:12:59.290Z",
+  "issueCount": 1541,
+  "gameCount": 1541,
   "newestIssue": {
     "number": 1543,
     "createdAt": "2026-09-20T22:19:44Z",
@@ -32,6 +32,29 @@
       "avgPlacement": 1.488262910798122
     },
     {
+      "username": "Yoycie",
+      "mode": "1v1",
+      "numPlayers": 2,
+      "aiBuildId": "v1.0-sh-L2s444",
+      "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
+      "games": 359,
+      "wins": 151,
+      "losses": 208,
+      "placementSum": 567,
+      "placementCount": 359,
+      "placeCounts": {
+        "1": 151,
+        "2": 208,
+        "3": 0,
+        "4": 0
+      },
+      "lastPlayed": "2026-09-20T07:46:20.525Z",
+      "winRate": 0.4206128133704735,
+      "winRateLo": 0.37065111019148184,
+      "winRateHi": 0.47225554659759633,
+      "avgPlacement": 1.5793871866295264
+    },
+    {
       "username": "Jeannie",
       "mode": "1v1",
       "numPlayers": 2,
@@ -53,29 +76,6 @@
       "winRateLo": 0.370506471844866,
       "winRateHi": 0.6016545045253707,
       "avgPlacement": 1.5147058823529411
-    },
-    {
-      "username": "Yoycie",
-      "mode": "1v1",
-      "numPlayers": 2,
-      "aiBuildId": "v1.0-sh-L2s444",
-      "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
-      "games": 358,
-      "wins": 150,
-      "losses": 208,
-      "placementSum": 566,
-      "placementCount": 358,
-      "placeCounts": {
-        "1": 150,
-        "2": 208,
-        "3": 0,
-        "4": 0
-      },
-      "lastPlayed": "2026-09-20T07:46:20.525Z",
-      "winRate": 0.41899441340782123,
-      "winRateLo": 0.3690088509510684,
-      "winRateHi": 0.47070001613331325,
-      "avgPlacement": 1.5810055865921788
     },
     {
       "username": "Yoyolyang",
@@ -292,7 +292,7 @@
     "modeFilter": "all",
     "onlyGrandmaster": true,
     "latestAiOnly": true,
-    "totalGamesScanned": 1539,
+    "totalGamesScanned": 1541,
     "rankBy": "mixed"
   }
 }
