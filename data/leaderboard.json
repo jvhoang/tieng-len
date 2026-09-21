@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-21T19:19:28.860Z",
+  "generatedAt": "2026-09-21T19:29:48.002Z",
   "issueCount": 1551,
   "gameCount": 1551,
   "newestIssue": {
-    "number": 1551,
-    "createdAt": "2026-09-21T18:41:07Z",
-    "title": "playlog | @Yoyolyang | 2p | ai-win | v1.0-sh-L2s444 | 2026-09-21T18:28:35 | g_mubkr0cf_sxf2dypo"
+    "number": 1555,
+    "createdAt": "2026-09-21T19:19:19Z",
+    "title": "playlog | @Yoycie | 2p | ai-win | v1.0-sh-L2s444 | 2026-09-21T19:10:04 | g_mubmcxa0_3w20ri0o"
   },
   "rows": [
     {
@@ -55,29 +55,6 @@
       "avgPlacement": 1.5147058823529411
     },
     {
-      "username": "Yoycie",
-      "mode": "1v1",
-      "numPlayers": 2,
-      "aiBuildId": "v1.0-sh-L2s444",
-      "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
-      "games": 367,
-      "wins": 153,
-      "losses": 214,
-      "placementSum": 581,
-      "placementCount": 367,
-      "placeCounts": {
-        "1": 153,
-        "2": 214,
-        "3": 0,
-        "4": 0
-      },
-      "lastPlayed": "2026-09-21T18:08:40.946Z",
-      "winRate": 0.41689373297002724,
-      "winRateLo": 0.3675652096632667,
-      "winRateHi": 0.46794407516346254,
-      "avgPlacement": 1.5831062670299727
-    },
-    {
       "username": "Yoyolyang",
       "mode": "1v1",
       "numPlayers": 2,
@@ -99,6 +76,29 @@
       "winRateLo": 0.36294456864879027,
       "winRateHi": 0.4605133232439869,
       "avgPlacement": 1.5891472868217054
+    },
+    {
+      "username": "Yoycie",
+      "mode": "1v1",
+      "numPlayers": 2,
+      "aiBuildId": "v1.0-sh-L2s444",
+      "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
+      "games": 367,
+      "wins": 151,
+      "losses": 216,
+      "placementSum": 583,
+      "placementCount": 367,
+      "placeCounts": {
+        "1": 151,
+        "2": 216,
+        "3": 0,
+        "4": 0
+      },
+      "lastPlayed": "2026-09-21T19:10:04.875Z",
+      "winRate": 0.4114441416893733,
+      "winRateLo": 0.3622677052603108,
+      "winRateHi": 0.4624553031616139,
+      "avgPlacement": 1.5885558583106267
     },
     {
       "username": "JVH",
