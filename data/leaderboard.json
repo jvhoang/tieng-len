@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-23T02:05:25.045Z",
-  "issueCount": 1560,
-  "gameCount": 1560,
+  "generatedAt": "2026-09-23T02:32:13.038Z",
+  "issueCount": 1571,
+  "gameCount": 1571,
   "newestIssue": {
-    "number": 1564,
-    "createdAt": "2026-09-23T01:38:02Z",
-    "title": "playlog | @Yoycie | 2p | ai-win | v1.0-sh-L2s444 | 2026-09-23T01:33:52 | g_mudffeaf_q5dpe39n"
+    "number": 1566,
+    "createdAt": "2026-09-23T02:31:57Z",
+    "title": "playlog | @Yoycie | 2p | ai-win | v1.0-sh-L2s444 | 2026-09-23T02:14:15 | g_mudgy5zf_rxzfwqdn"
   },
   "rows": [
     {
@@ -32,27 +32,50 @@
       "avgPlacement": 1.488262910798122
     },
     {
+      "username": "Yoyolyang",
+      "mode": "1v1",
+      "numPlayers": 2,
+      "aiBuildId": "v1.0-sh-L2s444",
+      "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
+      "games": 394,
+      "wins": 163,
+      "losses": 231,
+      "placementSum": 625,
+      "placementCount": 394,
+      "placeCounts": {
+        "1": 163,
+        "2": 231,
+        "3": 0,
+        "4": 0
+      },
+      "lastPlayed": "2026-09-21T19:40:21.088Z",
+      "winRate": 0.4137055837563452,
+      "winRateLo": 0.3661362271874412,
+      "winRateHi": 0.4629414760994951,
+      "avgPlacement": 1.5862944162436547
+    },
+    {
       "username": "Jeannie",
       "mode": "1v1",
       "numPlayers": 2,
       "aiBuildId": "v1.0-sh-L2s444",
       "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
-      "games": 68,
+      "games": 69,
       "wins": 33,
-      "losses": 35,
-      "placementSum": 103,
-      "placementCount": 68,
+      "losses": 36,
+      "placementSum": 105,
+      "placementCount": 69,
       "placeCounts": {
         "1": 33,
-        "2": 35,
+        "2": 36,
         "3": 0,
         "4": 0
       },
       "lastPlayed": "2026-09-13T19:55:19.111Z",
-      "winRate": 0.4852941176470588,
-      "winRateLo": 0.370506471844866,
-      "winRateHi": 0.6016545045253707,
-      "avgPlacement": 1.5147058823529411
+      "winRate": 0.4782608695652174,
+      "winRateLo": 0.36468525497597737,
+      "winRateHi": 0.5941294882476751,
+      "avgPlacement": 1.5217391304347827
     },
     {
       "username": "Yoycie",
@@ -60,45 +83,22 @@
       "numPlayers": 2,
       "aiBuildId": "v1.0-sh-L2s444",
       "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
-      "games": 375,
+      "games": 379,
       "wins": 154,
-      "losses": 221,
-      "placementSum": 596,
-      "placementCount": 375,
+      "losses": 225,
+      "placementSum": 604,
+      "placementCount": 379,
       "placeCounts": {
         "1": 154,
-        "2": 221,
+        "2": 225,
         "3": 0,
         "4": 0
       },
-      "lastPlayed": "2026-09-23T01:33:52.877Z",
-      "winRate": 0.4106666666666667,
-      "winRateLo": 0.3620246624213648,
-      "winRateHi": 0.46112041985048713,
-      "avgPlacement": 1.5893333333333333
-    },
-    {
-      "username": "Yoyolyang",
-      "mode": "1v1",
-      "numPlayers": 2,
-      "aiBuildId": "v1.0-sh-L2s444",
-      "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
-      "games": 388,
-      "wins": 159,
-      "losses": 229,
-      "placementSum": 617,
-      "placementCount": 388,
-      "placeCounts": {
-        "1": 159,
-        "2": 229,
-        "3": 0,
-        "4": 0
-      },
-      "lastPlayed": "2026-09-21T19:40:21.088Z",
-      "winRate": 0.4097938144329897,
-      "winRateLo": 0.3619750491823915,
-      "winRateHi": 0.4593813356424968,
-      "avgPlacement": 1.5902061855670102
+      "lastPlayed": "2026-09-23T02:14:15.011Z",
+      "winRate": 0.40633245382585753,
+      "winRateLo": 0.3580640783157589,
+      "winRateHi": 0.45648063155903007,
+      "avgPlacement": 1.5936675461741425
     },
     {
       "username": "JVH",
@@ -292,7 +292,7 @@
     "modeFilter": "all",
     "onlyGrandmaster": true,
     "latestAiOnly": true,
-    "totalGamesScanned": 1560,
+    "totalGamesScanned": 1571,
     "rankBy": "mixed"
   }
 }
