@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-09-23T01:16:30.027Z",
-  "issueCount": 1557,
-  "gameCount": 1557,
+  "generatedAt": "2026-09-23T01:38:11.895Z",
+  "issueCount": 1560,
+  "gameCount": 1560,
   "newestIssue": {
     "number": 1561,
     "createdAt": "2026-09-22T17:44:45Z",
@@ -60,22 +60,22 @@
       "numPlayers": 2,
       "aiBuildId": "v1.0-sh-L2s444",
       "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
-      "games": 388,
+      "games": 390,
       "wins": 159,
-      "losses": 229,
-      "placementSum": 617,
-      "placementCount": 388,
+      "losses": 231,
+      "placementSum": 621,
+      "placementCount": 390,
       "placeCounts": {
         "1": 159,
-        "2": 229,
+        "2": 231,
         "3": 0,
         "4": 0
       },
       "lastPlayed": "2026-09-21T19:40:21.088Z",
-      "winRate": 0.4097938144329897,
-      "winRateLo": 0.3619750491823915,
-      "winRateHi": 0.4593813356424968,
-      "avgPlacement": 1.5902061855670102
+      "winRate": 0.4076923076923077,
+      "winRateLo": 0.3600515557543596,
+      "winRateHi": 0.4571338304516683,
+      "avgPlacement": 1.5923076923076922
     },
     {
       "username": "Yoycie",
@@ -244,22 +244,22 @@
       "numPlayers": 4,
       "aiBuildId": "v1.0-sh-L2s444",
       "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
-      "games": 10,
+      "games": 11,
       "wins": 4,
-      "losses": 6,
-      "placementSum": 21,
-      "placementCount": 10,
+      "losses": 7,
+      "placementSum": 23,
+      "placementCount": 11,
       "placeCounts": {
         "1": 4,
-        "2": 2,
+        "2": 3,
         "3": 3,
         "4": 1
       },
       "lastPlayed": "2026-09-18T04:54:03.734Z",
-      "winRate": 0.4,
-      "winRateLo": 0.16817758120350967,
-      "winRateHi": 0.6873304525498135,
-      "avgPlacement": 2.1
+      "winRate": 0.36363636363636365,
+      "winRateLo": 0.15166223614131383,
+      "winRateHi": 0.6462032231083628,
+      "avgPlacement": 2.090909090909091
     },
     {
       "username": "ThipC",
@@ -292,7 +292,7 @@
     "modeFilter": "all",
     "onlyGrandmaster": true,
     "latestAiOnly": true,
-    "totalGamesScanned": 1557,
+    "totalGamesScanned": 1560,
     "rankBy": "mixed"
   }
 }
