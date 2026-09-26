@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-09-26T17:51:51.304Z",
-  "issueCount": 1746,
-  "gameCount": 1746,
+  "generatedAt": "2026-09-26T18:04:23.220Z",
+  "issueCount": 1750,
+  "gameCount": 1750,
   "newestIssue": {
     "number": 1750,
     "createdAt": "2026-09-26T15:40:03Z",
@@ -14,22 +14,22 @@
       "numPlayers": 2,
       "aiBuildId": "v1.0-sh-L2s444",
       "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
-      "games": 213,
+      "games": 214,
       "wins": 109,
-      "losses": 104,
-      "placementSum": 317,
-      "placementCount": 213,
+      "losses": 105,
+      "placementSum": 319,
+      "placementCount": 214,
       "placeCounts": {
         "1": 109,
-        "2": 104,
+        "2": 105,
         "3": 0,
         "4": 0
       },
       "lastPlayed": "2026-09-14T02:54:19.337Z",
-      "winRate": 0.5117370892018779,
-      "winRateLo": 0.4449961378228131,
-      "winRateHi": 0.5780621683324632,
-      "avgPlacement": 1.488262910798122
+      "winRate": 0.5093457943925234,
+      "winRateLo": 0.4427942760249925,
+      "winRateHi": 0.5755676897336137,
+      "avgPlacement": 1.4906542056074767
     },
     {
       "username": "Yoycie",
@@ -60,22 +60,22 @@
       "numPlayers": 2,
       "aiBuildId": "v1.0-sh-L2s444",
       "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
-      "games": 477,
-      "wins": 201,
-      "losses": 276,
-      "placementSum": 753,
-      "placementCount": 477,
+      "games": 480,
+      "wins": 203,
+      "losses": 277,
+      "placementSum": 757,
+      "placementCount": 480,
       "placeCounts": {
-        "1": 201,
-        "2": 276,
+        "1": 203,
+        "2": 277,
         "3": 0,
         "4": 0
       },
       "lastPlayed": "2026-09-26T04:44:49.404Z",
-      "winRate": 0.42138364779874216,
-      "winRateLo": 0.3778716491029683,
-      "winRateHi": 0.4661518297308099,
-      "avgPlacement": 1.578616352201258
+      "winRate": 0.42291666666666666,
+      "winRateLo": 0.37950432651609595,
+      "winRateHi": 0.4675530575534012,
+      "avgPlacement": 1.5770833333333334
     },
     {
       "username": "Jeannie",
@@ -292,7 +292,7 @@
     "modeFilter": "all",
     "onlyGrandmaster": true,
     "latestAiOnly": true,
-    "totalGamesScanned": 1746,
+    "totalGamesScanned": 1750,
     "rankBy": "mixed"
   }
 }
