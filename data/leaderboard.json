@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-27T17:52:05.042Z",
+  "generatedAt": "2026-09-27T18:04:28.527Z",
   "issueCount": 1783,
   "gameCount": 1783,
   "newestIssue": {
-    "number": 1786,
-    "createdAt": "2026-09-27T17:43:54Z",
-    "title": "playlog | @Yoycie | 2p | human-win | v1.0-sh-L2s444 | 2026-09-27T17:43:10 | g_muk3wb4q_eqhd3fhv"
+    "number": 1787,
+    "createdAt": "2026-09-27T17:51:53Z",
+    "title": "playlog | @Yoycie | 2p | ai-win | v1.0-sh-L2s444 | 2026-09-27T17:44:16 | g_muk3xmbl_ugeu7iww"
   },
   "rows": [
     {
@@ -38,21 +38,21 @@
       "aiBuildId": "v1.0-sh-L2s444",
       "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
       "games": 490,
-      "wins": 216,
-      "losses": 274,
-      "placementSum": 764,
+      "wins": 215,
+      "losses": 275,
+      "placementSum": 765,
       "placementCount": 490,
       "placeCounts": {
-        "1": 216,
-        "2": 274,
+        "1": 215,
+        "2": 275,
         "3": 0,
         "4": 0
       },
-      "lastPlayed": "2026-09-27T17:43:10.237Z",
-      "winRate": 0.44081632653061226,
-      "winRateLo": 0.3974849656584429,
-      "winRateHi": 0.4850684684791428,
-      "avgPlacement": 1.5591836734693878
+      "lastPlayed": "2026-09-27T17:44:16.414Z",
+      "winRate": 0.4387755102040816,
+      "winRateLo": 0.39548168583487175,
+      "winRateHi": 0.48302186672125136,
+      "avgPlacement": 1.5612244897959184
     },
     {
       "username": "Yoyolyang",
