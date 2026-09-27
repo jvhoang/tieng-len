@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-27T05:22:30.440Z",
+  "generatedAt": "2026-09-27T05:35:31.766Z",
   "issueCount": 1779,
   "gameCount": 1779,
   "newestIssue": {
-    "number": 1781,
-    "createdAt": "2026-09-27T03:45:24Z",
-    "title": "playlog | @Yoyolyang | 2p | ai-win | v1.0-sh-L2s444 | 2026-09-27T03:35:22 | g_muj9cluq_329qw7yu"
+    "number": 1783,
+    "createdAt": "2026-09-27T05:22:20Z",
+    "title": "playlog | @Yoycie | 2p | ai-win | v1.0-sh-L2s444 | 2026-09-27T05:04:57 | g_mujct9hg_v8tbpi3h"
   },
   "rows": [
     {
@@ -37,22 +37,22 @@
       "numPlayers": 2,
       "aiBuildId": "v1.0-sh-L2s444",
       "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
-      "games": 485,
-      "wins": 211,
+      "games": 486,
+      "wins": 212,
       "losses": 274,
-      "placementSum": 759,
-      "placementCount": 485,
+      "placementSum": 760,
+      "placementCount": 486,
       "placeCounts": {
-        "1": 211,
+        "1": 212,
         "2": 274,
         "3": 0,
         "4": 0
       },
-      "lastPlayed": "2026-09-27T02:30:11.969Z",
-      "winRate": 0.4350515463917526,
-      "winRateLo": 0.3916102113112482,
-      "winRateHi": 0.4795136864912303,
-      "avgPlacement": 1.5649484536082474
+      "lastPlayed": "2026-09-27T05:04:57.815Z",
+      "winRate": 0.43621399176954734,
+      "winRateLo": 0.39279413241554645,
+      "winRateHi": 0.4806343391556717,
+      "avgPlacement": 1.5637860082304527
     },
     {
       "username": "Yoyolyang",
@@ -60,22 +60,22 @@
       "numPlayers": 2,
       "aiBuildId": "v1.0-sh-L2s444",
       "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
-      "games": 497,
+      "games": 496,
       "wins": 209,
-      "losses": 288,
-      "placementSum": 785,
-      "placementCount": 497,
+      "losses": 287,
+      "placementSum": 783,
+      "placementCount": 496,
       "placeCounts": {
         "1": 209,
-        "2": 288,
+        "2": 287,
         "3": 0,
         "4": 0
       },
       "lastPlayed": "2026-09-27T03:35:22.195Z",
-      "winRate": 0.42052313883299797,
-      "winRateLo": 0.377895103302196,
-      "winRateHi": 0.46437039541037095,
-      "avgPlacement": 1.579476861167002
+      "winRate": 0.4213709677419355,
+      "winRateLo": 0.3786825887302348,
+      "winRateHi": 0.46526797480829424,
+      "avgPlacement": 1.5786290322580645
     },
     {
       "username": "Jeannie",
