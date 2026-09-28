@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-28T19:30:38.322Z",
+  "generatedAt": "2026-09-28T19:41:21.453Z",
   "issueCount": 1785,
   "gameCount": 1785,
   "newestIssue": {
-    "number": 1788,
-    "createdAt": "2026-09-27T19:35:18Z",
-    "title": "playlog | @Yoycie | 2p | ai-win | v1.0-sh-L2s444 | 2026-09-27T19:34:14 | g_muk7uygr_hqn7ac3z"
+    "number": 1789,
+    "createdAt": "2026-09-28T19:30:19Z",
+    "title": "playlog | @Yoycie | 2p | ai-win | v1.0-sh-L2s444 | 2026-09-28T19:28:59 | g_muln2p6v_2pfbwhx9"
   },
   "rows": [
     {
@@ -48,7 +48,7 @@
         "3": 0,
         "4": 0
       },
-      "lastPlayed": "2026-09-27T19:34:14.965Z",
+      "lastPlayed": "2026-09-28T19:28:59.179Z",
       "winRate": 0.4369918699186992,
       "winRateLo": 0.39381782047324204,
       "winRateHi": 0.48114224741940753,
