@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-09-29T17:03:34.743Z",
-  "issueCount": 1794,
-  "gameCount": 1794,
+  "generatedAt": "2026-09-29T17:22:12.880Z",
+  "issueCount": 1795,
+  "gameCount": 1795,
   "newestIssue": {
     "number": 1798,
     "createdAt": "2026-09-29T13:39:41Z",
@@ -60,22 +60,22 @@
       "numPlayers": 2,
       "aiBuildId": "v1.0-sh-L2s444",
       "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
-      "games": 500,
+      "games": 501,
       "wins": 210,
-      "losses": 290,
-      "placementSum": 790,
-      "placementCount": 500,
+      "losses": 291,
+      "placementSum": 792,
+      "placementCount": 501,
       "placeCounts": {
         "1": 210,
-        "2": 290,
+        "2": 291,
         "3": 0,
         "4": 0
       },
       "lastPlayed": "2026-09-29T13:25:33.000Z",
-      "winRate": 0.42,
-      "winRateLo": 0.3775085874060515,
-      "winRateHi": 0.46371135155889304,
-      "avgPlacement": 1.58
+      "winRate": 0.41916167664670656,
+      "winRateLo": 0.3767299780099743,
+      "winRateHi": 0.4628236562388671,
+      "avgPlacement": 1.5808383233532934
     },
     {
       "username": "Jeannie",
@@ -292,7 +292,7 @@
     "modeFilter": "all",
     "onlyGrandmaster": true,
     "latestAiOnly": true,
-    "totalGamesScanned": 1794,
+    "totalGamesScanned": 1795,
     "rankBy": "mixed"
   }
 }
