@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-09-29T02:29:27.378Z",
-  "issueCount": 1787,
-  "gameCount": 1787,
+  "generatedAt": "2026-09-29T02:48:01.071Z",
+  "issueCount": 1792,
+  "gameCount": 1792,
   "newestIssue": {
     "number": 1791,
     "createdAt": "2026-09-28T21:33:49Z",
@@ -60,22 +60,22 @@
       "numPlayers": 2,
       "aiBuildId": "v1.0-sh-L2s444",
       "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
-      "games": 498,
-      "wins": 210,
+      "games": 499,
+      "wins": 211,
       "losses": 288,
-      "placementSum": 786,
-      "placementCount": 498,
+      "placementSum": 787,
+      "placementCount": 499,
       "placeCounts": {
-        "1": 210,
+        "1": 211,
         "2": 288,
         "3": 0,
         "4": 0
       },
       "lastPlayed": "2026-09-28T21:31:51.630Z",
-      "winRate": 0.42168674698795183,
-      "winRateLo": 0.37907555639443646,
-      "winRateHi": 0.4654969142815697,
-      "avgPlacement": 1.5783132530120483
+      "winRate": 0.4228456913827655,
+      "winRateLo": 0.3802516314479178,
+      "winRateHi": 0.4666186354512409,
+      "avgPlacement": 1.5771543086172344
     },
     {
       "username": "Jeannie",
@@ -129,22 +129,22 @@
       "numPlayers": 2,
       "aiBuildId": "v1.0-sh-L2s444",
       "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
-      "games": 22,
-      "wins": 9,
-      "losses": 13,
-      "placementSum": 35,
-      "placementCount": 22,
+      "games": 26,
+      "wins": 10,
+      "losses": 16,
+      "placementSum": 42,
+      "placementCount": 26,
       "placeCounts": {
-        "1": 9,
-        "2": 13,
+        "1": 10,
+        "2": 16,
         "3": 0,
         "4": 0
       },
       "lastPlayed": "2026-09-16T15:48:40.951Z",
-      "winRate": 0.4090909090909091,
-      "winRateLo": 0.23255559668820378,
-      "winRateHi": 0.6126552261710619,
-      "avgPlacement": 1.5909090909090908
+      "winRate": 0.38461538461538464,
+      "winRateLo": 0.22428359511834428,
+      "winRateHi": 0.5746547996057992,
+      "avgPlacement": 1.6153846153846154
     },
     {
       "username": "AsumaSensi1",
@@ -292,7 +292,7 @@
     "modeFilter": "all",
     "onlyGrandmaster": true,
     "latestAiOnly": true,
-    "totalGamesScanned": 1787,
+    "totalGamesScanned": 1792,
     "rankBy": "mixed"
   }
 }
