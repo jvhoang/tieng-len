@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-10-05T16:17:16.093Z",
-  "issueCount": 1861,
-  "gameCount": 1861,
+  "generatedAt": "2026-10-05T16:36:39.620Z",
+  "issueCount": 1863,
+  "gameCount": 1863,
   "newestIssue": {
     "number": 1865,
     "createdAt": "2026-10-05T03:10:21Z",
@@ -147,29 +147,6 @@
       "avgPlacement": 1.5909090909090908
     },
     {
-      "username": "AsumaSensi1",
-      "mode": "1v1",
-      "numPlayers": 2,
-      "aiBuildId": "v1.0-sh-L2s444",
-      "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
-      "games": 8,
-      "wins": 4,
-      "losses": 4,
-      "placementSum": 12,
-      "placementCount": 8,
-      "placeCounts": {
-        "1": 4,
-        "2": 4,
-        "3": 0,
-        "4": 0
-      },
-      "lastPlayed": "2026-09-15T02:34:30.332Z",
-      "winRate": 0.5,
-      "winRateLo": 0.21521252682444186,
-      "winRateHi": 0.7847874731755582,
-      "avgPlacement": 1.5
-    },
-    {
       "username": "Queen_of_Spade",
       "mode": "1v1",
       "numPlayers": 2,
@@ -191,6 +168,29 @@
       "winRateLo": 0.2076549551264879,
       "winRateHi": 0.9385096847238394,
       "avgPlacement": 1.3333333333333333
+    },
+    {
+      "username": "AsumaSensi1",
+      "mode": "1v1",
+      "numPlayers": 2,
+      "aiBuildId": "v1.0-sh-L2s444",
+      "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
+      "games": 9,
+      "wins": 4,
+      "losses": 5,
+      "placementSum": 14,
+      "placementCount": 9,
+      "placeCounts": {
+        "1": 4,
+        "2": 5,
+        "3": 0,
+        "4": 0
+      },
+      "lastPlayed": "2026-09-15T02:34:30.332Z",
+      "winRate": 0.4444444444444444,
+      "winRateLo": 0.188775429471914,
+      "winRateHi": 0.7333526542559703,
+      "avgPlacement": 1.5555555555555556
     },
     {
       "username": "Yellowdragon",
@@ -267,22 +267,22 @@
       "numPlayers": 4,
       "aiBuildId": "v1.0-sh-L2s444",
       "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
-      "games": 20,
+      "games": 21,
       "wins": 5,
-      "losses": 15,
-      "placementSum": 51,
-      "placementCount": 20,
+      "losses": 16,
+      "placementSum": 53,
+      "placementCount": 21,
       "placeCounts": {
         "1": 5,
-        "2": 4,
+        "2": 5,
         "3": 6,
         "4": 5
       },
       "lastPlayed": "2026-09-13T22:13:05.477Z",
-      "winRate": 0.25,
-      "winRateLo": 0.11186005278940309,
-      "winRateHi": 0.4687050099580636,
-      "avgPlacement": 2.55
+      "winRate": 0.23809523809523808,
+      "winRateLo": 0.10627856389112261,
+      "winRateHi": 0.45091581972345923,
+      "avgPlacement": 2.5238095238095237
     }
   ],
   "meta": {
@@ -292,7 +292,7 @@
     "modeFilter": "all",
     "onlyGrandmaster": true,
     "latestAiOnly": true,
-    "totalGamesScanned": 1861,
+    "totalGamesScanned": 1863,
     "rankBy": "mixed"
   }
 }
