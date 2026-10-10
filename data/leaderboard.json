@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-10-10T03:58:42.959Z",
-  "issueCount": 1902,
-  "gameCount": 1902,
+  "generatedAt": "2026-10-10T04:22:35.213Z",
+  "issueCount": 1904,
+  "gameCount": 1904,
   "newestIssue": {
     "number": 1906,
     "createdAt": "2026-10-10T01:42:39Z",
@@ -37,22 +37,22 @@
       "numPlayers": 2,
       "aiBuildId": "v1.0-sh-L2s444",
       "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
-      "games": 544,
+      "games": 545,
       "wins": 238,
-      "losses": 306,
-      "placementSum": 850,
-      "placementCount": 544,
+      "losses": 307,
+      "placementSum": 852,
+      "placementCount": 545,
       "placeCounts": {
         "1": 238,
-        "2": 306,
+        "2": 307,
         "3": 0,
         "4": 0
       },
       "lastPlayed": "2026-10-09T18:55:56.143Z",
-      "winRate": 0.4375,
-      "winRateLo": 0.39639477057027234,
-      "winRateHi": 0.47948176016415894,
-      "avgPlacement": 1.5625
+      "winRate": 0.43669724770642204,
+      "winRateLo": 0.39564316313402226,
+      "winRateHi": 0.47863750363759283,
+      "avgPlacement": 1.563302752293578
     },
     {
       "username": "Yoyolyang",
@@ -106,22 +106,22 @@
       "numPlayers": 2,
       "aiBuildId": "v1.0-sh-L2s444",
       "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
-      "games": 45,
+      "games": 46,
       "wins": 18,
-      "losses": 27,
-      "placementSum": 72,
-      "placementCount": 45,
+      "losses": 28,
+      "placementSum": 74,
+      "placementCount": 46,
       "placeCounts": {
         "1": 18,
-        "2": 27,
+        "2": 28,
         "3": 0,
         "4": 0
       },
       "lastPlayed": "2026-09-13T17:35:49.382Z",
-      "winRate": 0.4,
-      "winRateLo": 0.27024679447957545,
-      "winRateHi": 0.5454840579085527,
-      "avgPlacement": 1.6
+      "winRate": 0.391304347826087,
+      "winRateLo": 0.2639302235524884,
+      "winRateHi": 0.5354341628235508,
+      "avgPlacement": 1.608695652173913
     },
     {
       "username": "Jph2956",
@@ -292,7 +292,7 @@
     "modeFilter": "all",
     "onlyGrandmaster": true,
     "latestAiOnly": true,
-    "totalGamesScanned": 1902,
+    "totalGamesScanned": 1904,
     "rankBy": "mixed"
   }
 }
