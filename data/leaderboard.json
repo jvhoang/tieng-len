@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-10-22T16:41:03.866Z",
-  "issueCount": 100,
-  "gameCount": 100,
+  "generatedAt": "2026-10-22T16:54:00.278Z",
+  "issueCount": 500,
+  "gameCount": 500,
   "newestIssue": {
     "number": 1922,
     "createdAt": "2026-10-22T01:55:37Z",
@@ -14,22 +14,22 @@
       "numPlayers": 2,
       "aiBuildId": "v1.0-sh-L2s444",
       "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
-      "games": 56,
-      "wins": 23,
-      "losses": 33,
-      "placementSum": 89,
-      "placementCount": 56,
+      "games": 240,
+      "wins": 113,
+      "losses": 127,
+      "placementSum": 367,
+      "placementCount": 240,
       "placeCounts": {
-        "1": 23,
-        "2": 33,
+        "1": 113,
+        "2": 127,
         "3": 0,
         "4": 0
       },
       "lastPlayed": "2026-10-22T01:41:24.396Z",
-      "winRate": 0.4107142857142857,
-      "winRateLo": 0.2916657897956285,
-      "winRateHi": 0.5412263788629634,
-      "avgPlacement": 1.5892857142857142
+      "winRate": 0.4708333333333333,
+      "winRateLo": 0.4086395764916525,
+      "winRateHi": 0.5339461020800103,
+      "avgPlacement": 1.5291666666666666
     },
     {
       "username": "Yoyolyang",
@@ -37,22 +37,22 @@
       "numPlayers": 2,
       "aiBuildId": "v1.0-sh-L2s444",
       "aiBuildLabel": "L2s444 dual champion (PAIR 0436 FL control VALUE) product ship",
-      "games": 43,
-      "wins": 18,
-      "losses": 25,
-      "placementSum": 68,
-      "placementCount": 43,
+      "games": 257,
+      "wins": 104,
+      "losses": 153,
+      "placementSum": 410,
+      "placementCount": 257,
       "placeCounts": {
-        "1": 18,
-        "2": 25,
+        "1": 104,
+        "2": 153,
         "3": 0,
         "4": 0
       },
       "lastPlayed": "2026-10-10T01:42:19.838Z",
-      "winRate": 0.4186046511627907,
-      "winRateLo": 0.2838433433748524,
-      "winRateHi": 0.5667168424428823,
-      "avgPlacement": 1.5813953488372092
+      "winRate": 0.4046692607003891,
+      "winRateLo": 0.34649093015202337,
+      "winRateHi": 0.4656555986225278,
+      "avgPlacement": 1.595330739299611
     }
   ],
   "meta": {
@@ -62,7 +62,7 @@
     "modeFilter": "all",
     "onlyGrandmaster": true,
     "latestAiOnly": true,
-    "totalGamesScanned": 100,
+    "totalGamesScanned": 500,
     "rankBy": "mixed"
   }
 }
