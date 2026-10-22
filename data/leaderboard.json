@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-10-22T17:20:10.743Z",
-  "issueCount": 1600,
-  "gameCount": 1600,
+  "generatedAt": "2026-10-22T17:32:21.637Z",
+  "issueCount": 1918,
+  "gameCount": 1918,
   "newestIssue": {
     "number": 1922,
     "createdAt": "2026-10-22T01:55:37Z",
@@ -292,7 +292,7 @@
     "modeFilter": "all",
     "onlyGrandmaster": true,
     "latestAiOnly": true,
-    "totalGamesScanned": 1600,
+    "totalGamesScanned": 1918,
     "rankBy": "mixed"
   }
 }
